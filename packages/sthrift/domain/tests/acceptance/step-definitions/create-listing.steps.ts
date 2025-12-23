@@ -1,5 +1,4 @@
-import { Given, When, Then, DataTable } from '@cucumber/cucumber';
-import { Ensure, equals, isTrue } from '@serenity-js/assertions';
+import { type DataTable, Given, Then, When } from '@cucumber/cucumber';
 import type { Domain } from '@sthrift/domain';
 
 // World context to store test data
@@ -16,7 +15,7 @@ interface TestWorld {
 // Store the world context
 let world: TestWorld = {};
 
-Given('I am a personal user', function () {
+Given('I am a personal user', () => {
 	// TODO: Set up actor with CreateListingAbility
 	// This will be implemented with proper test setup (MongoDB memory server, etc.)
 	// For now, we're validating the test structure compiles correctly
@@ -25,7 +24,7 @@ Given('I am a personal user', function () {
 
 When(
 	'I create a draft listing with the following details:',
-	function (dataTable: DataTable) {
+	(dataTable: DataTable) => {
 		const rows = dataTable.rowsHash();
 
 		world.listingParams = {
@@ -47,14 +46,14 @@ When(
 	},
 );
 
-Then('the listing should be created successfully', function () {
+Then('the listing should be created successfully', () => {
 	// TODO: Verify listing was created
 	// await actorInTheSpotlight().attemptsTo(
 	//   Ensure.that(world.createdListing, isDefined())
 	// );
 });
 
-Then('the listing should be in draft state', function () {
+Then('the listing should be in draft state', () => {
 	// TODO: Verify listing state
 	// await actorInTheSpotlight().attemptsTo(
 	//   Ensure.that(world.createdListing?.state, equals('DRAFT'))
