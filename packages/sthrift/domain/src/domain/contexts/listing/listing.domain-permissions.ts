@@ -3,6 +3,7 @@ export interface ListingDomainPermissions {
 	canUpdateItemListing: boolean;
 	canDeleteItemListing: boolean;
 	canViewItemListing: boolean;
+	canViewBlockedItemListing: boolean;
 	canPublishItemListing: boolean;
 	canUnpublishItemListing: boolean;
 }

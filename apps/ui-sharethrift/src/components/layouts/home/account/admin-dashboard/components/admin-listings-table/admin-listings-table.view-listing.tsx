@@ -16,7 +16,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
-	AdminListingsTableContainerUnblockListingDocument,
+	BlockListingContainerUnblockListingDocument,
 } from '../../../../../../../generated.tsx';
 
 export function AdminViewListing(): ReactElement {
@@ -37,7 +37,7 @@ export function AdminViewListing(): ReactElement {
 	);
 
 	const [unblockListingMutation] = useMutation(
-		AdminListingsTableContainerUnblockListingDocument,
+		BlockListingContainerUnblockListingDocument,
 	);
 
 	const [deleteListingMutation] = useMutation(

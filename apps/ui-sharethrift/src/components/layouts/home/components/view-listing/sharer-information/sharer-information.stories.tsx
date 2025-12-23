@@ -170,6 +170,28 @@ export const MessageButtonWithError: Story = {
 	},
 };
 
+export const AdminView: Story = {
+	args: {
+		isAdmin: true,
+		isBlocked: false,
+		sharerName: 'John Doe',
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const AdminViewWithBlockedListing: Story = {
+	args: {
+		isAdmin: true,
+		isBlocked: true,
+		sharerName: 'John Doe',
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
 export const MobileView: Story = {
 	parameters: {
 		viewport: {

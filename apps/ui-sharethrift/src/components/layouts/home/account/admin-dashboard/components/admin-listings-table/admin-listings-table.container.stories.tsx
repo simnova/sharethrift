@@ -8,7 +8,7 @@ import {
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
-	AdminListingsTableContainerUnblockListingDocument,
+    AdminListingsTableContainerUnblockListingDocument
 } from '../../../../../../../generated.tsx';
 
 const meta: Meta<typeof AdminListings> = {
@@ -56,10 +56,11 @@ const meta: Meta<typeof AdminListings> = {
 					},
 					result: {
 						data: {
-							unblockItemListing: {
-								__typename: 'MutationStatus',
+							unblockListing: {
+								__typename: 'BlockListingResult',
+								id: 'listing-1',
+								state: 'Published',
 								success: true,
-								errorMessage: null,
 							},
 						},
 					},

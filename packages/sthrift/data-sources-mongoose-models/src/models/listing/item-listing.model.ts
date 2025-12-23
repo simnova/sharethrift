@@ -21,6 +21,7 @@ export interface ItemListing extends Listing {
 		| 'Draft'
 		| 'Expired'
 		| 'Blocked'
+		| 'Appeal Requested'
 	createdAt: Date;
 	updatedAt: Date;
 	sharingHistory?: ObjectId[];
@@ -37,6 +38,7 @@ export const LISTING_STATE_ENUM = [
 	'Draft',
 	'Expired',
 	'Blocked',
+	'Appeal Requested',
 ] as const;
 
 export const ItemListingSchema = new Schema<
