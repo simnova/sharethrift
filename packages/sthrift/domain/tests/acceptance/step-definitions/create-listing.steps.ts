@@ -16,7 +16,7 @@ interface TestWorld {
 // Store the world context
 let world: TestWorld = {};
 
-Given('I am a personal user', async function () {
+Given('I am a personal user', function () {
 	// TODO: Set up actor with CreateListingAbility
 	// This will be implemented with proper test setup (MongoDB memory server, etc.)
 	// For now, we're validating the test structure compiles correctly
@@ -25,7 +25,7 @@ Given('I am a personal user', async function () {
 
 When(
 	'I create a draft listing with the following details:',
-	async function (dataTable: DataTable) {
+	function (dataTable: DataTable) {
 		const rows = dataTable.rowsHash();
 
 		world.listingParams = {
@@ -47,14 +47,14 @@ When(
 	},
 );
 
-Then('the listing should be created successfully', async function () {
+Then('the listing should be created successfully', function () {
 	// TODO: Verify listing was created
 	// await actorInTheSpotlight().attemptsTo(
 	//   Ensure.that(world.createdListing, isDefined())
 	// );
 });
 
-Then('the listing should be in draft state', async function () {
+Then('the listing should be in draft state', function () {
 	// TODO: Verify listing state
 	// await actorInTheSpotlight().attemptsTo(
 	//   Ensure.that(world.createdListing?.state, equals('DRAFT'))
