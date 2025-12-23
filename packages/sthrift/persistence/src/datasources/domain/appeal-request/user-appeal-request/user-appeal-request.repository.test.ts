@@ -38,6 +38,10 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
+function createNullExecChain<T>(result: T) {
+	return { exec: vi.fn(() => Promise.resolve(result)) };
+}
+
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let repository: UserAppealRequestRepository<UserAppealRequestDomainAdapter>;
 	let mockDoc: ReturnType<typeof makeAppealRequestDoc>;
@@ -100,6 +104,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting a user appeal request by a nonexistent ID',
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
+				// Mock to return null for nonexistent ID
+				const mockModel = repository.model as unknown as {
+					findOne: ReturnType<typeof vi.fn>;
+				};
+				mockModel.findOne = vi.fn(() => createNullExecChain(null));
+
 				try {
 					result = await repository.getById('nonexistent-id');
 				} catch (error) {
@@ -110,7 +120,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Then(
 				'an error should be thrown indicating the user appeal request was not found',
 				() => {
-					expect(result).toBeDefined();
+					expect(result).toBeInstanceOf(Error);
+					expect((result as Error).message).toContain('not found');
 				},
 			);
 		},

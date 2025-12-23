@@ -11,3 +11,7 @@ Given a UserAppealRequestReadRepository instance with models and passport
 	Scenario: Getting all appeal requests
 		When I call getAll with pagination parameters
 		Then it should return an empty paginated result
+
+	Scenario: Getting an appeal request by ID when not found
+		When I call getById with a nonexistent ID
+		Then it should return null

@@ -29,6 +29,39 @@ function makePassport(canCreateUser = false, canBlockUsers = false): Passport {
 	} as unknown as Passport);
 }
 
+function makePassportNoPermissions(): Passport {
+	return vi.mocked({
+		user: {
+			forPersonalUser: vi.fn(() => ({
+				determineIf: () => false,
+			})),
+		},
+	} as unknown as Passport);
+}
+
+function makePassportNoEditPermission(): Passport {
+	const determineIfFn = (
+		fn: (p: {
+			isEditingOwnAccount: boolean;
+			canCreateUser: boolean;
+			canBlockUsers: boolean;
+		}) => boolean,
+	) =>
+		fn({
+			isEditingOwnAccount: false,
+			canCreateUser: false,
+			canBlockUsers: false,
+		});
+
+	return vi.mocked({
+		user: {
+			forPersonalUser: vi.fn(() => ({
+				determineIf: determineIfFn,
+			})),
+		},
+	} as unknown as Passport);
+}
+
 function makeBaseProps(
 	overrides: Partial<PersonalUserProps> = {},
 ): PersonalUserProps {
@@ -110,23 +143,30 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Background(({ Given, And }) => {
-		Given('a valid Passport with user permissions', () => {
+		const setupPassport = () => {
 			passport = makePassport(true);
-		});
-		And('a valid UserVisa allowing account creation and self-editing', () => {
+		};
+		const checkUserVisa = () => {
 			// Already handled in makePassport
-		});
+		};
+		const setupBaseUser = () => {
+			baseProps = makeBaseProps();
+			user = new PersonalUser(baseProps, passport);
+		};
+
+		Given('a valid Passport with user permissions', setupPassport);
+		And(
+			'a valid UserVisa allowing account creation and self-editing',
+			checkUserVisa,
+		);
 		And(
 			'base user properties with email "john@example.com", firstName "John", lastName "Doe"',
-			() => {
-				baseProps = makeBaseProps();
-				user = new PersonalUser(baseProps, passport);
-			},
+			setupBaseUser,
 		);
 	});
 
 	Scenario('Creating a new personal user instance', ({ When, Then, And }) => {
-		When('I create a new PersonalUser aggregate using getNewInstance', () => {
+		const createNewUser = () => {
 			newUser = PersonalUser.getNewInstance(
 				makeBaseProps(),
 				passport,
@@ -134,41 +174,52 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'John',
 				'Doe',
 			);
-		});
-		Then('it should have correct email "john@example.com"', () => {
+		};
+		const checkEmail = () =>
 			expect(newUser.account.email).toBe('john@example.com');
-		});
-		And('firstName should be "John"', () => {
+		const checkFirstName = () =>
 			expect(newUser.account.profile.firstName).toBe('John');
-		});
-		And('lastName should be "Doe"', () => {
+		const checkLastName = () =>
 			expect(newUser.account.profile.lastName).toBe('Doe');
-		});
-		And('isNew should be false after creation', () => {
-			expect(newUser.isNew).toBe(false);
-		});
-		And('it should expose a valid PersonalUserAccount instance', () => {
+		const checkIsNew = () => expect(newUser.isNew).toBe(false);
+		const checkAccountInstance = () => {
 			expect(newUser.account).toBeDefined();
 			expect(newUser.account.email).toBe('john@example.com');
-		});
+		};
+
+		When(
+			'I create a new PersonalUser aggregate using getNewInstance',
+			createNewUser,
+		);
+		Then('it should have correct email "john@example.com"', checkEmail);
+		And('firstName should be "John"', checkFirstName);
+		And('lastName should be "Doe"', checkLastName);
+		And('isNew should be false after creation', checkIsNew);
+		And(
+			'it should expose a valid PersonalUserAccount instance',
+			checkAccountInstance,
+		);
 	});
 
 	Scenario(
 		'Updating userType with valid permission',
 		({ Given, And, When, Then }) => {
-			Given('an existing PersonalUser aggregate', () => {
+			const setupUser = () => {
 				passport = makePassport(true);
 				user = new PersonalUser(makeBaseProps(), passport);
-			});
-			And('the user has permission to edit their account', () => {
+			};
+			const checkPermission = () => {
 				// Already handled in makePassport with isEditingOwnAccount: true
-			});
-			When('I set userType to "Sharer"', () => {
+			};
+			const updateUserType = () => {
 				user.userType = 'Sharer';
-			});
-			Then('userType should update successfully', () => {
-				expect(user.userType).toBe('Sharer');
-			});
+			};
+			const verifyUpdate = () => expect(user.userType).toBe('Sharer');
+
+			Given('an existing PersonalUser aggregate', setupUser);
+			And('the user has permission to edit their account', checkPermission);
+			When('I set userType to "Sharer"', updateUserType);
+			Then('userType should update successfully', verifyUpdate);
 		},
 	);
 
@@ -176,220 +227,308 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Blocking a user without permission',
 		({ Given, And, When, Then }) => {
 			let blockUserWithoutPermission: () => void;
-			Given('an existing PersonalUser aggregate', () => {
-				// Create user with no permission (by setting isEditingOwnAccount to false)
-				passport = vi.mocked({
-					user: {
-						forPersonalUser: vi.fn(() => ({
-							determineIf: () => false,
-						})),
-					},
-				} as unknown as Passport);
+			const setupUserNoPermission = () => {
+				passport = makePassportNoPermissions();
 				user = new PersonalUser(makeBaseProps(), passport);
-			});
-			And('the user lacks permission to edit their account', () => {
+			};
+			const checkLackOfPermission = () => {
 				// Already handled above with false permission
-			});
-			When('I attempt to set isBlocked to true', () => {
+			};
+			const attemptBlock = () => {
 				blockUserWithoutPermission = () => {
 					user.isBlocked = true;
 				};
-			});
-			Then('it should throw a PermissionError', () => {
+			};
+			const verifyPermissionError = () => {
 				expect(blockUserWithoutPermission).toThrow(
 					DomainSeedwork.PermissionError,
 				);
 				expect(blockUserWithoutPermission).throws(
 					'Unauthorized: Only admins with canBlockUsers permission can block/unblock users',
 				);
-			});
+			};
+
+			Given('an existing PersonalUser aggregate', setupUserNoPermission);
+			And(
+				'the user lacks permission to edit their account',
+				checkLackOfPermission,
+			);
+			When('I attempt to set isBlocked to true', attemptBlock);
+			Then('it should throw a PermissionError', verifyPermissionError);
 		},
 	);
 
 	Scenario('Completing onboarding', ({ Given, When, Then }) => {
-		Given('a PersonalUser that has not completed onboarding', () => {
+		const setupUnboardedUser = () => {
 			passport = makePassport(true);
 			baseProps = makeBaseProps({ hasCompletedOnboarding: false });
 			user = new PersonalUser(baseProps, passport);
-		});
-		When('I set hasCompletedOnboarding to true', () => {
+		};
+		const completeOnboarding = () => {
 			user.hasCompletedOnboarding = true;
-		});
-		Then('the property should update successfully', () => {
+		};
+		const verifyOnboarding = () =>
 			expect(user.hasCompletedOnboarding).toBe(true);
-		});
+
+		Given(
+			'a PersonalUser that has not completed onboarding',
+			setupUnboardedUser,
+		);
+		When('I set hasCompletedOnboarding to true', completeOnboarding);
+		Then('the property should update successfully', verifyOnboarding);
 	});
 
 	Scenario(
 		'Attempting to complete onboarding twice',
 		({ Given, When, Then }) => {
 			let completeOnboardingAgain: () => void;
-			Given('a PersonalUser that has already completed onboarding', () => {
+			const setupAlreadyOnboarded = () => {
 				passport = makePassport(true);
 				baseProps = makeBaseProps({ hasCompletedOnboarding: true });
 				user = new PersonalUser(baseProps, passport);
-			});
-			When('I set hasCompletedOnboarding to true again', () => {
+			};
+			const attemptSecondOnboarding = () => {
 				completeOnboardingAgain = () => {
 					user.hasCompletedOnboarding = true;
 				};
-			});
-			Then('it should throw a PermissionError', () => {
+			};
+			const verifyOnboardingError = () => {
 				expect(completeOnboardingAgain).toThrow(DomainSeedwork.PermissionError);
 				expect(completeOnboardingAgain).throws(
 					'Users can only be onboarded once.',
 				);
-			});
+			};
+
+			Given(
+				'a PersonalUser that has already completed onboarding',
+				setupAlreadyOnboarded,
+			);
+			When(
+				'I set hasCompletedOnboarding to true again',
+				attemptSecondOnboarding,
+			);
+			Then('it should throw a PermissionError', verifyOnboardingError);
 		},
 	);
 
-	Scenario(
-		'Blocking a user with permission',
-		({ Given, And, When, Then }) => {
-			Given('an existing PersonalUser aggregate', () => {
-				passport = makePassport(true, true);
-				user = new PersonalUser(makeBaseProps(), passport);
-			});
-			And('the user has permission to block users', () => {
-				// Already handled in makePassport with canBlockUsers: true
-			});
-			When('I set isBlocked to true', () => {
-				user.isBlocked = true;
-			});
-			Then('isBlocked should be true', () => {
-				expect(user.isBlocked).toBe(true);
-			});
-		},
-	);
+	Scenario('Blocking a user with permission', ({ Given, And, When, Then }) => {
+		const setupUserWithBlockPermission = () => {
+			passport = makePassport(true, true);
+			user = new PersonalUser(makeBaseProps(), passport);
+		};
+		const checkBlockPermission = () => {
+			// Already handled in makePassport with canBlockUsers: true
+		};
+		const blockUser = () => {
+			user.isBlocked = true;
+		};
+		const verifyBlocked = () => expect(user.isBlocked).toBe(true);
+
+		Given('an existing PersonalUser aggregate', setupUserWithBlockPermission);
+		And('the user has permission to block users', checkBlockPermission);
+		When('I set isBlocked to true', blockUser);
+		Then('isBlocked should be true', verifyBlocked);
+	});
 
 	Scenario(
 		'Unblocking a user with permission',
 		({ Given, And, When, Then }) => {
-			Given('an existing PersonalUser aggregate that is blocked', () => {
+			const setupBlockedUser = () => {
 				passport = makePassport(true, true);
 				user = new PersonalUser(makeBaseProps({ isBlocked: true }), passport);
-			});
-			And('the user has permission to block users', () => {
+			};
+			const checkUnblockPermission = () => {
 				// Already handled in makePassport with canBlockUsers: true
-			});
-			When('I set isBlocked to false', () => {
+			};
+			const unblockUser = () => {
 				user.isBlocked = false;
-			});
-			Then('isBlocked should be false', () => {
-				expect(user.isBlocked).toBe(false);
-			});
+			};
+			const verifyUnblocked = () => expect(user.isBlocked).toBe(false);
+
+			Given(
+				'an existing PersonalUser aggregate that is blocked',
+				setupBlockedUser,
+			);
+			And('the user has permission to block users', checkUnblockPermission);
+			When('I set isBlocked to false', unblockUser);
+			Then('isBlocked should be false', verifyUnblocked);
 		},
 	);
 
 	Scenario('Getting isNew from personal user', ({ Given, When, Then }) => {
-		Given('an existing PersonalUser aggregate', () => {
+		const setupUserForIsNew = () => {
 			passport = makePassport(true, false);
 			user = new PersonalUser(makeBaseProps(), passport);
-		});
-		When('I access the isNew property', () => {
+		};
+		const accessIsNew = () => {
 			// Access happens in Then
-		});
-		Then('it should return false', () => {
-			expect(user.isNew).toBe(false);
-		});
+		};
+		const verifyIsNew = () => expect(user.isNew).toBe(false);
+
+		Given('an existing PersonalUser aggregate', setupUserForIsNew);
+		When('I access the isNew property', accessIsNew);
+		Then('it should return false', verifyIsNew);
 	});
 
 	Scenario(
 		'Getting schemaVersion from personal user',
 		({ Given, When, Then }) => {
-			Given('an existing PersonalUser aggregate', () => {
+			const setupUserForSchema = () => {
 				passport = makePassport(true, false);
 				user = new PersonalUser(makeBaseProps(), passport);
-			});
-			When('I access the schemaVersion property', () => {
+			};
+			const accessSchemaVersion = () => {
 				// Access happens in Then
-			});
-			Then('it should return the schema version', () => {
+			};
+			const verifySchemaVersion = () => {
 				expect(user.schemaVersion).toBeDefined();
 				expect(typeof user.schemaVersion).toBe('string');
-			});
+			};
+
+			Given('an existing PersonalUser aggregate', setupUserForSchema);
+			When('I access the schemaVersion property', accessSchemaVersion);
+			Then('it should return the schema version', verifySchemaVersion);
 		},
 	);
 
-	Scenario(
-		'Getting createdAt from personal user',
-		({ Given, When, Then }) => {
-			Given('an existing PersonalUser aggregate', () => {
-				passport = makePassport(true, false);
-				user = new PersonalUser(makeBaseProps(), passport);
-			});
-			When('I access the createdAt property', () => {
-				// Access happens in Then
-			});
-			Then('it should return a valid date', () => {
-				expect(user.createdAt).toBeInstanceOf(Date);
-				expect(user.createdAt.getTime()).toBeGreaterThan(0);
-			});
-		},
-	);
-
-	Scenario('Getting updatedAt from personal user', ({ Given, When, Then }) => {
-		Given('an existing PersonalUser aggregate', () => {
+	Scenario('Getting createdAt from personal user', ({ Given, When, Then }) => {
+		const setupUserForCreatedAt = () => {
 			passport = makePassport(true, false);
 			user = new PersonalUser(makeBaseProps(), passport);
-		});
-		When('I access the updatedAt property', () => {
+		};
+		const accessCreatedAt = () => {
 			// Access happens in Then
-		});
-		Then('it should return a valid date', () => {
+		};
+		const verifyCreatedAt = () => {
+			expect(user.createdAt).toBeInstanceOf(Date);
+			expect(user.createdAt.getTime()).toBeGreaterThan(0);
+		};
+
+		Given('an existing PersonalUser aggregate', setupUserForCreatedAt);
+		When('I access the createdAt property', accessCreatedAt);
+		Then('it should return a valid date', verifyCreatedAt);
+	});
+
+	Scenario('Getting updatedAt from personal user', ({ Given, When, Then }) => {
+		const setupUserForUpdatedAt = () => {
+			passport = makePassport(true, false);
+			user = new PersonalUser(makeBaseProps(), passport);
+		};
+		const accessUpdatedAt = () => {
+			// Access happens in Then
+		};
+		const verifyUpdatedAt = () => {
 			expect(user.updatedAt).toBeInstanceOf(Date);
 			expect(user.updatedAt.getTime()).toBeGreaterThan(0);
-		});
+		};
+
+		Given('an existing PersonalUser aggregate', setupUserForUpdatedAt);
+		When('I access the updatedAt property', accessUpdatedAt);
+		Then('it should return a valid date', verifyUpdatedAt);
 	});
 
 	Scenario('Adding a billing transaction', ({ Given, And, When, Then }) => {
 		let transactionAdded = false;
-
-		Given('an existing PersonalUser aggregate', () => {
+		const setupUserForTransaction = () => {
 			passport = makePassport(true, false);
 			user = new PersonalUser(makeBaseProps(), passport);
-		});
-		And('the user has permission to edit their account', () => {
+		};
+		const checkEditPermission = () => {
 			// Already set up in makePassport with isEditingOwnAccount: true
-		});
-		When('I add a billing transaction with valid data', () => {
+		};
+		const addTransaction = () => {
 			user.requestAddAccountProfileBillingTransaction(
 				'txn_new_123',
-				150.00,
+				150.0,
 				'ref_new_123',
 				'completed',
 				new Date('2024-06-01'),
 			);
 			transactionAdded = true;
-		});
-		Then('the transaction should be added successfully', () => {
-			expect(transactionAdded).toBe(true);
-		});
+		};
+		const verifyTransactionAdded = () => expect(transactionAdded).toBe(true);
+
+		Given('an existing PersonalUser aggregate', setupUserForTransaction);
+		And('the user has permission to edit their account', checkEditPermission);
+		When('I add a billing transaction with valid data', addTransaction);
+		Then(
+			'the transaction should be added successfully',
+			verifyTransactionAdded,
+		);
 	});
 
-	Scenario('Adding a billing transaction with error message', ({ Given, And, When, Then }) => {
-		let transactionAdded = false;
+	Scenario(
+		'Adding a billing transaction with error message',
+		({ Given, And, When, Then }) => {
+			let transactionAdded = false;
+			const setupUserForFailedTransaction = () => {
+				passport = makePassport(true, false);
+				user = new PersonalUser(makeBaseProps(), passport);
+			};
+			const checkEditPermissionForFailed = () => {
+				// Already set up in makePassport with isEditingOwnAccount: true
+			};
+			const addFailedTransaction = () => {
+				user.requestAddAccountProfileBillingTransaction(
+					'txn_failed_123',
+					75.0,
+					'ref_failed_123',
+					'failed',
+					new Date('2024-06-02'),
+					'Payment declined',
+				);
+				transactionAdded = true;
+			};
+			const verifyFailedTransactionAdded = () =>
+				expect(transactionAdded).toBe(true);
 
-		Given('an existing PersonalUser aggregate', () => {
-			passport = makePassport(true, false);
-			user = new PersonalUser(makeBaseProps(), passport);
-		});
-		And('the user has permission to edit their account', () => {
-			// Already set up in makePassport with isEditingOwnAccount: true
-		});
-		When('I add a billing transaction with an error message', () => {
-			user.requestAddAccountProfileBillingTransaction(
-				'txn_failed_123',
-				75.00,
-				'ref_failed_123',
-				'failed',
-				new Date('2024-06-02'),
-				'Payment declined',
+			Given(
+				'an existing PersonalUser aggregate',
+				setupUserForFailedTransaction,
 			);
-			transactionAdded = true;
-		});
-		Then('the transaction should be added with the error message', () => {
-			expect(transactionAdded).toBe(true);
-		});
+			And(
+				'the user has permission to edit their account',
+				checkEditPermissionForFailed,
+			);
+			When(
+				'I add a billing transaction with an error message',
+				addFailedTransaction,
+			);
+			Then(
+				'the transaction should be added with the error message',
+				verifyFailedTransactionAdded,
+			);
+		},
+	);
+
+	Scenario('Updating userType without permission', ({ Given, When, Then }) => {
+		let updateUserTypeWithoutPermission: () => void;
+		const setupUserNoEditPermission = () => {
+			passport = makePassportNoEditPermission();
+			user = new PersonalUser(makeBaseProps(), passport);
+		};
+		const attemptUserTypeUpdate = () => {
+			updateUserTypeWithoutPermission = () => {
+				user.userType = 'Sharer';
+			};
+		};
+		const verifyUnauthorizedError = () => {
+			expect(updateUserTypeWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
+			);
+			expect(updateUserTypeWithoutPermission).toThrow(
+				'Unauthorized to modify user',
+			);
+		};
+
+		Given(
+			'an existing PersonalUser aggregate without editing permission',
+			setupUserNoEditPermission,
+		);
+		When('I attempt to set userType to "Sharer"', attemptUserTypeUpdate);
+		Then(
+			'it should throw a PermissionError with message "Unauthorized to modify user"',
+			verifyUnauthorizedError,
+		);
 	});
 });
