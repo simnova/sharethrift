@@ -116,7 +116,7 @@ Although Shared Key authorization requires access to the storage account key, th
 - Shared Key–signed headers generation:
     - The backend handles Shared Key–signed headers generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage using carefully permissioned, Shared Key–signed request headers. 
 - Post-Upload Malware Handling:
-    - The backend polls the blob for the Microsoft Defender for Cloud scan result tag: `No threats found` or `Malicious`.
+    - The backend polls the blob for the Microsoft Defender for Storage scan result tag: `No threats found` or `Malicious`.
         - `No threats found` → retain the blob.
         - `Malicious` → delete the current blob version and restore the previous non-malicious version.
             - The previous version is promoted to current using copyBlob.
