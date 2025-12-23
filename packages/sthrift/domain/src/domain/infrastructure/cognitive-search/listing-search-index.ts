@@ -148,32 +148,76 @@ export const ListingSearchIndexSpec: SearchIndex = {
 
 /**
  * Helper function to convert Listing domain entity to search document
+ * Safely extracts data from domain entities that may have incomplete nested data
+ * IMPORTANT: Accesses props directly to avoid triggering getters that may fail on incomplete data
  */
 export function convertListingToSearchDocument(
 	listing: Record<string, unknown>,
 ): Record<string, unknown> {
-	const sharer = listing.sharer as Record<string, unknown> | undefined;
-	const account = sharer?.account as Record<string, unknown> | undefined;
-	const profile = account?.profile as Record<string, unknown> | undefined;
+	// Access props directly to avoid domain entity getters
+	const listingProps = (listing.props as Record<string, unknown>) || {};
+	
+	// Safely extract sharer info - handle both populated domain entities and unpopulated references
+	let sharerName = 'Unknown';
+	let sharerId = '';
+
+	try {
+		const { sharer } = listing;
+		
+		if (typeof sharer === 'string') {
+			// Unpopulated reference - just an ID
+			sharerId = sharer;
+			// sharerName already set to 'Unknown'
+		} else if (sharer && typeof sharer === 'object') {
+			const sharerObj = sharer as Record<string, unknown>;
+			
+			// Try to get the sharer ID from props or id
+			const props = sharerObj.props as Record<string, unknown> | undefined;
+			sharerId = (props?.id as string) || (sharerObj.id as string) || '';
+			
+			// Try to extract account/profile info from props (avoiding getters)
+			const account = props?.account as Record<string, unknown> | undefined;
+			const profile = account?.profile as Record<string, unknown> | undefined;
+			
+			if (profile) {
+				const firstName = (profile.firstName as string) || '';
+				const lastName = (profile.lastName as string) || '';
+				const displayName = (profile.displayName as string) || '';
+				
+				// Use displayName if available, otherwise construct from first/last name
+				if (displayName) {
+					sharerName = displayName.trim();
+				} else if (firstName || lastName) {
+					sharerName = `${firstName} ${lastName}`.trim();
+				}
+			}
+		}
+	} catch (error) {
+		// If anything fails, log and continue with default values
+		console.warn(`Failed to extract sharer info for listing ${listing.id}:`, error);
+	}
+
+	// Safely extract all listing fields from props
+	const description = listingProps.description as Record<string, unknown> | undefined;
+	const category = listingProps.category as Record<string, unknown> | undefined;
+	const location = listingProps.location as Record<string, unknown> | undefined;
+	const state = listingProps.state as Record<string, unknown> | undefined;
 
 	return {
-		id: listing.id,
-		title: listing.title,
-		description: listing.description?.toString() || '',
-		category: listing.category?.toString() || '',
-		location: listing.location?.toString() || '',
-		sharerName:
-			(profile?.firstName?.toString() || '') +
-				' ' +
-				(profile?.lastName?.toString() || '') || '',
-		sharerId: sharer?.id || '',
-		state: listing.state?.toString() || '',
+		id: listingProps.id || listing.id,
+		title: listingProps.title || '',
+		description: description?.value?.toString() || '',
+		category: category?.value?.toString() || '',
+		location: location?.value?.toString() || '',
+		sharerName,
+		sharerId,
+		state: state?.value?.toString() || '',
 		sharingPeriodStart:
-			(listing.sharingPeriodStart as Date)?.toISOString() || '',
+			(listingProps.sharingPeriodStart as Date)?.toISOString() || '',
 		sharingPeriodEnd:
-			(listing.sharingPeriodEnd as Date)?.toISOString() || '',
-		createdAt: (listing.createdAt as Date)?.toISOString() || '',
-		updatedAt: (listing.updatedAt as Date)?.toISOString() || '',
-		images: listing.images || [],
+			(listingProps.sharingPeriodEnd as Date)?.toISOString() || '',
+		createdAt: (listingProps.createdAt as Date)?.toISOString() || '',
+		updatedAt: (listingProps.updatedAt as Date)?.toISOString() || '',
+		images: listingProps.images || [],
 	};
 }

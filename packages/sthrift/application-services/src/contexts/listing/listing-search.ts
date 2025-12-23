@@ -64,18 +64,19 @@ export class ListingSearchApplicationService {
 		totalCount: number;
 		message: string;
 	}> {
-		console.log('Starting bulk indexing of existing listings...');
+		console.log('[BulkIndex] Starting bulk indexing of existing listings...');
 
 		// Ensure the search index exists
 		await this.searchService.createIndexIfNotExists(ListingSearchIndexSpec);
+		console.log('[BulkIndex] Search index verified/created');
 
-		// Fetch all listings from the database
+		// Fetch all listings from the database WITH sharer populated
 		const allListings =
 			await this.dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getAll(
-				{ fields: [] },
+				{ fields: ['sharer'] },
 			);
 
-		console.log(`Found ${allListings.length} listings to index`);
+		console.log(`[BulkIndex] Found ${allListings.length} listings to index`);
 
 		if (allListings.length === 0) {
 			return {
@@ -87,13 +88,19 @@ export class ListingSearchApplicationService {
 
 		// Convert each listing to a search document and index it
 		const errors: Array<{ id: string; error: string }> = [];
+		let successfulIndexes = 0;
 
 		for (const listing of allListings) {
 			try {
+				console.log(`[BulkIndex] Processing listing ${listing.id} - ${listing.title}`);
+				console.log(`[BulkIndex] Sharer data type: ${typeof listing.sharer}, value: ${JSON.stringify(listing.sharer).substring(0, 100)}`);
+				
 				// Convert listing to search document using the domain converter
 				const searchDocument = convertListingToSearchDocument(
 					listing as unknown as Record<string, unknown>,
 				);
+
+				console.log(`[BulkIndex] Converted to search document: ${JSON.stringify(searchDocument).substring(0, 200)}`);
 
 				// Index the document
 				await this.searchService.indexDocument(
@@ -101,11 +108,15 @@ export class ListingSearchApplicationService {
 					searchDocument,
 				);
 
-				console.log(`Indexed listing: ${listing.id} - ${listing.title}`);
+				successfulIndexes++;
+				console.log(`[BulkIndex] ✓ Successfully indexed listing: ${listing.id} - ${listing.title} (${successfulIndexes}/${allListings.length})`);
 			} catch (error) {
 				const errorMessage =
 					error instanceof Error ? error.message : String(error);
-				console.error(`Failed to index listing ${listing.id}:`, errorMessage);
+				console.error(`[BulkIndex] ✗ Failed to index listing ${listing.id}:`, errorMessage);
+				if (error instanceof Error && error.stack) {
+					console.error(`[BulkIndex] Stack trace:`, error.stack);
+				}
 				errors.push({ id: listing.id, error: errorMessage });
 			}
 		}
