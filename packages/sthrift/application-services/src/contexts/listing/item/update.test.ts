@@ -55,7 +55,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		});
 	});
 
-	f.Scenario(
+	Scenario(
 		'Successfully updating listing title',
 		({ Given, When, Then, And }) => {
 			Given('a listing with id {string} and title {string}', () => {
@@ -89,7 +89,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		},
 	);
 
-	f.Scenario(
+	Scenario(
 		'Successfully updating multiple fields',
 		({ Given, When, Then, And }) => {
 			Given('a listing with id {string} and multiple fields', () => {
@@ -133,7 +133,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		},
 	);
 
-	f.Scenario(
+	Scenario(
 		'Successfully updating sharing period dates',
 		({ Given, When, Then, And }) => {
 			Given('a listing with id {string} and no sharing period', () => {
@@ -173,7 +173,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		},
 	);
 
-	f.Scenario(
+	Scenario(
 		'Converting string dates to Date objects',
 		({ Given, When, Then, And }) => {
 			Given('a listing with id {string} and no sharing period start', () => {
@@ -231,7 +231,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		});
 	});
 
-	f.Scenario(
+	Scenario(
 		'Failing to update when UnitOfWork is not available',
 		({ Given, When, Then }) => {
 			Given('the ItemListingUnitOfWork is not available', () => {
@@ -268,7 +268,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		},
 	);
 
-	f.Scenario(
+	Scenario(
 		'Successfully updating images array',
 		({ Given, When, Then, And }) => {
 			Given('a listing with id {string} and empty images array', () => {
@@ -303,7 +303,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		},
 	);
 
-	f.Scenario(
+	Scenario(
 		'Requesting listing deletion via update',
 		({ Given, When, Then, And }) => {
 			Given('a listing with id {string} that supports deletion', () => {
@@ -335,7 +335,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		},
 	);
 
-	f.Scenario(
+	Scenario(
 		'Successfully updating isBlocked status',
 		({ Given, When, Then, And }) => {
 			Given('a listing with id {string}', () => {
