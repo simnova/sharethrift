@@ -1,26 +1,24 @@
 default:
-  # Feature files location - domain-level test features only
-  # Note: Previous tests/acceptance suite (GraphQL/API-level) was removed as it violated
-  #       architectural boundaries; domain tests in this config must exercise only domain logic.
-  #       Serenity/acceptance tests mentioned in the changelog are not configured here and
-  #       should live in a separate configuration targeting the API or higher layers.
+  # Feature files location - Serenity acceptance tests for domain logic
+  # These tests use Serenity.js Screenplay Pattern to test domain behavior
+  # without violating architectural boundaries (no GraphQL/API dependencies)
   paths:
-    - src/domain/**/features/**/*.feature
+    - tests/acceptance/features/**/*.feature
 
-  # Step definitions location - using ESM import
+  # Step definitions location - Serenity step definitions (not vitest-cucumber)
   import:
-    - src/**/*.test.ts
+    - tests/acceptance/step-definitions/**/*.steps.ts
 
-  # Format options with JSON and HTML reports
+  # Serenity reporters - generates JSON for Serenity BDD reports
   format:
-    - pretty
-    - summary
+    - '@serenity-js/cucumber'
+    - '@cucumber/pretty-formatter'
     - json:test-results/cucumber-report.json
-    - html:test-results/cucumber-report.html
 
-  # Serenity BDD report output
+  # Serenity BDD report output configuration
   formatOptions:
     snippetInterface: async-await
+    colorsEnabled: true
 
   # Parallel execution
   parallel: 1
