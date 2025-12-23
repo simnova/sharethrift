@@ -1,5 +1,4 @@
 import { Given, When, Then, DataTable } from '@cucumber/cucumber';
-import { actorCalled, actorInTheSpotlight } from '@serenity-js/core';
 import { Ensure, equals, isTrue } from '@serenity-js/assertions';
 import { CreateListingAbility } from '../screenplay/abilities/create-listing.ability.js';
 import type { Domain } from '@sthrift/domain';
