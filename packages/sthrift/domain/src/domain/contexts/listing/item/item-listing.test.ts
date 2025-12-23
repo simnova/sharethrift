@@ -177,17 +177,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'I create a new ItemListing aggregate using getNewInstance with sharer "user1" and title "New Listing"',
 			() => {
 				newListing = ItemListing.getNewInstance(
-					baseProps.sharer,
-					{
-						title: 'New Listing',
-						description: 'Test Description',
-						category: 'Electronics',
-						location: 'Delhi',
-						sharingPeriodStart: new Date('2025-10-06T00:00:00Z'),
-						sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
-						images: [],
-					},
+					makeBaseProps(),
 					passport,
+					baseProps.sharer,
+					'New Listing',
+					'Test Description',
+					'Electronics',
+					'Delhi',
+					new Date('2025-10-06T00:00:00Z'),
+					new Date('2025-11-06T00:00:00Z'),
+					[],
 				);
 			},
 		);
@@ -214,18 +213,17 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location',
 				() => {
 					newListing = ItemListing.getNewInstance(
-						baseProps.sharer,
-						{
-							title: '',
-							description: '',
-							category: '',
-							location: '',
-							sharingPeriodStart: new Date('2025-10-06T00:00:00Z'),
-							sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
-							images: [],
-							isDraft: true,
-						},
+						makeBaseProps(),
 						passport,
+						baseProps.sharer,
+						'',
+						'',
+						'',
+						'',
+						new Date('2025-10-06T00:00:00Z'),
+						new Date('2025-11-06T00:00:00Z'),
+						[],
+						true,
 					);
 				},
 			);

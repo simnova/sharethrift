@@ -1,4 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ListingVisa } from '../listing.visa.ts';
@@ -31,47 +30,35 @@ export class ItemListing<props extends ItemListingProps>
 
 	//#region Methods
 	public static getNewInstance<props extends ItemListingProps>(
-		sharer: UserEntityReference,
-		fields: {
-			title: string;
-			description: string;
-			category: string;
-			location: string;
-			sharingPeriodStart: Date;
-			sharingPeriodEnd: Date;
-			images?: string[];
-			isDraft?: boolean;
-            expiresAt?: Date;
-		},
+		newProps: props,
 		passport: Passport,
+		sharer: UserEntityReference,
+		title: string,
+		description: string,
+		category: string,
+		location: string,
+		sharingPeriodStart: Date,
+		sharingPeriodEnd: Date,
+		images?: string[],
+		isDraft?: boolean,
+		expiresAt?: Date,
 	): ItemListing<props> {
-		const id = uuidv4();
-		const now = new Date();
-
-		// Use value object constructors to enforce validation rules
-		const newProps = {
-			id,
-			sharer,
-			title: new ValueObjects.Title(fields.title).valueOf(),
-			description: new ValueObjects.Description(fields.description).valueOf(),
-			category: new ValueObjects.Category(fields.category).valueOf(),
-			location: new ValueObjects.Location(fields.location).valueOf(),
-			sharingPeriodStart: fields.sharingPeriodStart,
-			sharingPeriodEnd: fields.sharingPeriodEnd,
-			images: fields.images ?? [],
-			state: fields.isDraft ? 'Draft' : 'Active',
-			createdAt: now,
-			updatedAt: now,
-			schemaVersion: '1.0.0',
-			reports: 0,
-			sharingHistory: [],
-			listingType: 'item',
-			expiresAt: fields.expiresAt,
-			loadSharer: async () => sharer,
-		} as unknown as props;
-
 		const newInstance = new ItemListing(newProps, passport);
 		newInstance.markAsNew();
+		newInstance.sharer = sharer;
+		newInstance.title = title;
+		newInstance.description = description;
+		newInstance.category = category;
+		newInstance.location = location;
+		newInstance.sharingPeriodStart = sharingPeriodStart;
+		newInstance.sharingPeriodEnd = sharingPeriodEnd;
+		if (images !== undefined) {
+			newInstance.images = images;
+		}
+		newInstance.state = isDraft ? 'Draft' : 'Active';
+		if (expiresAt !== undefined) {
+			newInstance.expiresAt = expiresAt;
+		}
 		newInstance.isNew = false;
 		return newInstance;
 	}
@@ -199,9 +186,18 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.state;
 	}
 
-	// Note: State is read-only; the state setter has been removed. Use domain methods
-	// (publish(), pause(), cancel(), reinstate()) to change state so that permission checks
-	// and state transition validations are always enforced.
+	set state(value: string) {
+		if (!this.isNew) {
+			throw new DomainSeedwork.PermissionError(
+				'Cannot set state directly. Use domain methods (publish(), pause(), cancel(), reinstate()) to change state.',
+			);
+		}
+		this.props.state = new ValueObjects.ListingState(value).valueOf();
+	}
+
+	// Note: State is read-only after creation; the state setter only works during creation.
+	// Use domain methods (publish(), pause(), cancel(), reinstate()) to change state so that
+	// permission checks and state transition validations are always enforced.
 
 	get updatedAt(): Date {
 		return this.props.updatedAt;
