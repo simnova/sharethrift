@@ -155,3 +155,9 @@ export interface SearchService extends ServiceBase<unknown> {
 		options?: SearchOptions,
 	): Promise<SearchDocumentsResult>;
 }
+
+/**
+ * This package is types-only and has no runtime exports.
+ * This constant exists solely to ensure TypeScript generates a JavaScript file.
+ */
+export const __TYPES_ONLY_PACKAGE__ = true;

@@ -52,7 +52,6 @@ export class ListingSearchIndexingService {
 		const existingHash = listing.searchHash as string | undefined;
 
 		if (currentHash === existingHash) {
-			console.log('Search document unchanged, skipping index update');
 			return;
 		}
 

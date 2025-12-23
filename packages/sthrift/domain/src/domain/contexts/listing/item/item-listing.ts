@@ -11,6 +11,8 @@ import { AdminUser } from '../../user/admin-user/admin-user.ts';
 import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+import { ItemListingUpdatedEvent } from '../../../events/types/item-listing-updated.event.js';
+import { ItemListingDeletedEvent } from '../../../events/types/item-listing-deleted.event.js';
 
 export class ItemListing<props extends ItemListingProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -382,5 +384,25 @@ public requestDelete(): void {
 	}
 	set listingType(value: string) {
 		this.props.listingType = value;
+	}
+
+	/**
+	 * Hook called when entity is saved
+	 * Raises integration events for search index updates
+	 */
+	public override onSave(isModified: boolean): void {
+		if (this.isDeleted) {
+			// Raise deleted event for search index cleanup
+			this.addIntegrationEvent(ItemListingDeletedEvent, {
+				id: this.props.id,
+				deletedAt: new Date(),
+			});
+		} else if (isModified) {
+			// Raise updated event for search index update
+			this.addIntegrationEvent(ItemListingUpdatedEvent, {
+				id: this.props.id,
+				updatedAt: this.props.updatedAt,
+			});
+		}
 	}
 }

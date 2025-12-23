@@ -6,8 +6,8 @@
  * Azure credentials or external services.
  */
 
-export * from './in-memory-search.js';
+export * from './in-memory-search.ts';
 // Default export for convenience
-export { InMemoryCognitiveSearch as default } from './in-memory-search.js';
-export * from './lunr-search-engine.js';
-export * from './liqe-filter-engine.js';
+export { InMemoryCognitiveSearch as default } from './in-memory-search.ts';
+export * from './lunr-search-engine.ts';
+export * from './liqe-filter-engine.ts';

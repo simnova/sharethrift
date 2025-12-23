@@ -4,8 +4,8 @@ import type {
 	SearchOptions,
 	SearchDocumentsResult,
 } from '@cellix/search-service';
-import { InMemoryCognitiveSearch } from '@sthrift/search-service-mock';
-import { ListingSearchIndexSpec } from './indexes/listing-search-index.js';
+import InMemoryCognitiveSearch from '@sthrift/search-service-mock';
+import { ListingSearchIndexSpec } from '@sthrift/domain';
 
 /**
  * ShareThrift Search Service Index - FACADE

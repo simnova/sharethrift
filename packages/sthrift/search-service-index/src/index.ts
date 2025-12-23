@@ -5,6 +5,8 @@
  * Implements the Facade pattern with support for mock search implementation.
  */
 
-export * from './service-search-index.js';
-export * from './indexes/listing-search-index.js';
-export { ServiceSearchIndex as default } from './service-search-index.js';
+export * from './service-search-index.ts';
+export { ServiceSearchIndex as default } from './service-search-index.ts';
+
+// Re-export domain index specs for convenience
+export { ListingSearchIndexSpec } from '@sthrift/domain';

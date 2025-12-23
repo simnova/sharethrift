@@ -3,8 +3,8 @@
 	"version": "1.0.0",
 	"type": "module",
 	"description": "Application-specific search service for ShareThrift with index definitions",
-	"main": "dist/index.js",
-	"types": "dist/index.d.ts",
+	"main": "dist/src/index.js",
+	"types": "dist/src/index.d.ts",
 	"scripts": {
 		"build": "tsc",
 		"clean": "rm -rf dist",
@@ -22,6 +22,7 @@
 	"license": "MIT",
 	"dependencies": {
 		"@cellix/search-service": "workspace:*",
+		"@sthrift/domain": "workspace:*",
 		"@sthrift/search-service-mock": "workspace:*"
 	},
 	"devDependencies": {
@@ -39,9 +40,9 @@
 	],
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js",
-			"require": "./dist/index.js"
+			"types": "./dist/src/index.d.ts",
+			"import": "./dist/src/index.js",
+			"require": "./dist/src/index.js"
 		}
 	},
 	"publishConfig": {

@@ -1146,6 +1146,9 @@ importers:
       '@cellix/search-service':
         specifier: workspace:*
         version: link:../../cellix/search-service
+      '@sthrift/domain':
+        specifier: workspace:*
+        version: link:../domain
       '@sthrift/search-service-mock':
         specifier: workspace:*
         version: link:../search-service-mock
