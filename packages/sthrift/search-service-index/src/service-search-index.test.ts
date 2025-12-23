@@ -7,7 +7,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ServiceSearchIndex } from './service-search-index';
-import { ListingSearchIndexSpec } from './indexes/listing-search-index';
+import { ListingSearchIndexSpec } from '@sthrift/domain';
 
 describe('ServiceSearchIndex', () => {
 	let searchService: ServiceSearchIndex;
