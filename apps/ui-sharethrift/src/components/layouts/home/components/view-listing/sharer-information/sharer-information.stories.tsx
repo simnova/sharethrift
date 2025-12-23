@@ -170,15 +170,22 @@ export const MessageButtonWithError: Story = {
 	},
 };
 
-export const WithBlockListingElement: Story = {
+export const AdminView: Story = {
 	args: {
-		blockListingElement: (
-			<div style={{ display: 'flex', gap: 8 }}>
-				<button style={{ padding: '8px 16px', borderRadius: '4px', border: '1px solid #d9d9d9' }}>
-					Block Listing
-				</button>
-			</div>
-		),
+		isAdmin: true,
+		isBlocked: false,
+		sharerName: 'John Doe',
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const AdminViewWithBlockedListing: Story = {
+	args: {
+		isAdmin: true,
+		isBlocked: true,
+		sharerName: 'John Doe',
 	},
 	play: async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
