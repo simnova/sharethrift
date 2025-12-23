@@ -2,6 +2,7 @@
 .DS_Store
 **/coverage
 **/test-results
+**/target
 # .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
 lcov-report
 __*

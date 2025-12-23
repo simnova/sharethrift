@@ -13,7 +13,8 @@ default:
   format:
     - '@serenity-js/cucumber'
     - '@cucumber/pretty-formatter'
-    - json:test-results/cucumber-report.json
+    - json:target/site/serenity/cucumber-report.json
+    - html:target/site/serenity/cucumber-report.html
 
   # Serenity BDD report output configuration
   formatOptions:
