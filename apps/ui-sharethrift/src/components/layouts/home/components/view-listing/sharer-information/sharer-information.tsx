@@ -164,14 +164,15 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
 				)}
 			</Col>
 			<Col>
-				{isAdmin &&
-                <BlockListingButton
-                    listingId={listingId}
-                    listingTitle={listingTitle}
-                    isBlocked={isBlocked}
-                    sharerName={sharerName}
-                    renderModals={true}                
-			/>}
+				{isAdmin && (
+					<BlockListingButton
+						listingId={listingId}
+						listingTitle={listingTitle}
+						isBlocked={isBlocked}
+						sharerName={sharerName}
+						renderModals={true}
+					/>
+				)}
 			</Col>
 		</Row>
 	);
