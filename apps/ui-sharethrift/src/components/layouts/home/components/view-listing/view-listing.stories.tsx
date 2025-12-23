@@ -19,7 +19,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 	location: 'Philadelphia, PA',
 	sharingPeriodStart: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
 	sharingPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10), // in 10 days
-	state: 'Published' as string,
+	state: 'Active' as string,
 	images: [
 		'https://placehold.co/600x400?text=Drill+1',
 		'https://placehold.co/600x400?text=Drill+2',
@@ -44,7 +44,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 		updatedAt: new Date().toISOString(),
 		isBlocked: false,
 		schemaVersion: '1.0',
-		userType: 'personal',
+		userType: 'personal-user',
 	},
     listingType: 'item-listing',
 };

@@ -10,15 +10,15 @@ Feature: <AggregateRoot>ItemListing
     When I create a new ItemListing aggregate using getNewInstance with sharer "user1" and title "New Listing"	
     Then the listing's title should be "New Listing"	
     And the listing's sharer should reference "user1"	
-    And the listing state should be "Published"	
+    And the listing state should be "Active"	
         
   Scenario: Creating a new draft listing with missing fields	
     When I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location	
-    Then the listing's title should default to "Draft Title"	
-    And the listing's description should default to "Draft Description"	
-    And the listing's category should default to "Miscellaneous"	
-    And the listing's location should default to "Draft Location"	
-    And the listing state should be "Drafted"	
+    Then the listing's title should default to empty
+    And the listing's description should default to empty
+    And the listing's category should default to empty
+    And the listing's location should default to empty
+    And the listing state should be "Draft"	
         
   Scenario: Changing the title with permission to update listings	
     Given an ItemListing aggregate with permission to update item listing	
@@ -86,7 +86,7 @@ Feature: <AggregateRoot>ItemListing
   Scenario: Publishing a listing with permission	
     Given an ItemListing aggregate with permission to publish item listing	
     When I call publish()	
-    Then the listing's state should be "Published"	
+    Then the listing's state should be "Active"	
     And the updatedAt timestamp should change
 
   Scenario: Publishing a listing without permission
@@ -141,7 +141,7 @@ Feature: <AggregateRoot>ItemListing
   Scenario: Unblocking a listing with permission
     Given an ItemListing aggregate with permission to publish item listing that is currently blocked
     When I call setBlocked(false)
-    Then the listing's state should be "AppealRequested"
+    Then the listing's state should be "Active"
 
   Scenario: Blocking already blocked listing
     Given an ItemListing aggregate with permission to publish item listing that is already blocked
@@ -149,9 +149,9 @@ Feature: <AggregateRoot>ItemListing
     Then the listing's state should remain "Blocked"
 
   Scenario: Unblocking non-blocked listing
-    Given an ItemListing aggregate with permission to publish item listing in Published state
+    Given an ItemListing aggregate with permission to publish item listing in Active state
     When I call setBlocked(false)
-    Then the listing's state should remain "Published"
+    Then the listing's state should remain "Active"
 
   Scenario: Blocking a listing without permission
     Given an ItemListing aggregate without permission to publish item listing
@@ -172,3 +172,28 @@ Feature: <AggregateRoot>ItemListing
     Given an ItemListing aggregate
     When I set the listingType to "premium-listing"
     Then the listingType should be updated to "premium-listing"
+
+  Scenario: Getting expiresAt from item listing
+    Given an ItemListing aggregate with expiresAt set
+    When I access the expiresAt property
+    Then it should return the expiration date
+
+  Scenario: Getting expiresAt when undefined
+    Given an ItemListing aggregate without expiresAt set
+    When I access the expiresAt property
+    Then it should return undefined
+
+  Scenario: Setting expiresAt with permission
+    Given an ItemListing aggregate with permission to update item listing
+    When I set the expiresAt to a specific date
+    Then the expiresAt should be updated
+
+  Scenario: Setting expiresAt without permission
+    Given an ItemListing aggregate without permission to update item listing
+    When I try to set the expiresAt
+    Then a PermissionError should be thrown
+
+  Scenario: Setting expiresAt to undefined with permission
+    Given an ItemListing aggregate with permission to update item listing and expiresAt set
+    When I set the expiresAt to undefined
+    Then the expiresAt should be cleared

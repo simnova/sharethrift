@@ -3,6 +3,7 @@ import type { UserEntityReference } from '../../user/index.ts';
 
 export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	sharer: Readonly<UserEntityReference>;
+  loadSharer(): Promise<UserEntityReference>;
 	title: string;
 	description: string;
 	category: string;
@@ -17,10 +18,10 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	reports?: number;
 	images?: string[]; // Array of image URLs
 	listingType: string;
+    expiresAt?: Date | undefined; // TTL field for automatic expiration
 }
 
 export interface ItemListingEntityReference
-	extends Readonly<Omit<ItemListingProps, 'sharingHistory' | 'images'>> {
-	sharingHistory?: string[];
-	images?: string[];
+	extends Readonly<Omit<ItemListingProps, 'sharer'>> {
+	readonly sharer: UserEntityReference;
 }

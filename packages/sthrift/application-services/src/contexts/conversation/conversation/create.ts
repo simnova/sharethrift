@@ -21,10 +21,10 @@ export const create = (dataSources: DataSources) => {
 			return existingConversation;
 		}
 
-		const sharer = await dataSources.readonlyDataSource.User.getUserById(
+		const sharer = await dataSources.readonlyDataSource.User.User.UserReadRepo.getById(
 			command.sharerId,
 		);
-		const reserver = await dataSources.readonlyDataSource.User.getUserById(
+		const reserver = await dataSources.readonlyDataSource.User.User.UserReadRepo.getById(
 			command.reserverId,
 		);
 		const listing =

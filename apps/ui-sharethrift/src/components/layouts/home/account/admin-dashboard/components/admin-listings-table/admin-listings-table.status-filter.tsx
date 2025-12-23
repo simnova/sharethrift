@@ -1,8 +1,7 @@
-import React from 'react';
+import type React from 'react';
 import { Checkbox } from 'antd';
 
 const STATUS_OPTIONS = [
-  { label: 'Appealed', value: 'Appeal Requested' },
   { label: 'Blocked', value: 'Blocked' },
 ];
 
@@ -29,4 +28,3 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({ statusFilters, onSta
   );
 };
 
-export default StatusFilter;

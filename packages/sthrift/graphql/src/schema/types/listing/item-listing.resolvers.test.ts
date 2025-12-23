@@ -53,7 +53,7 @@ function createMockListing(
 		location: 'Delhi',
 		sharingPeriodStart: new Date('2025-10-06'),
 		sharingPeriodEnd: new Date('2025-11-06'),
-		state: 'Published',
+		state: 'Active',
 		sharer: {
 			id: 'user-1',
 		} as PersonalUserEntity,
@@ -64,6 +64,7 @@ function createMockListing(
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
 		listingType: 'item',
+		loadSharer: async () => createMockUser({ id: 'user-1' }),
 		...overrides,
 	};
 	return baseListing;
@@ -75,7 +76,7 @@ function createMockUser(
 ): PersonalUserEntity {
 	return {
 		id: 'user-1',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
 		schemaVersion: '1.0.0',
@@ -354,13 +355,13 @@ test.for(feature, ({ Scenario }) => {
 				});
 			});
 			And(
-				'it should map state values like "Published" to "Active" and "Drafted" to "Draft"',
+				'it should map state values like "Active" to "Active" and "Draft" to "Draft"',
 				() => {
 					expect(result).toBeDefined();
 					const resultData = result as { items: ItemListingEntity[] };
 					resultData.items.forEach((listing) => {
 						const status = listing.state;
-						expect(['Published', 'Draft', 'Unknown']).toContain(status);
+						expect(['Active', 'Draft', 'Unknown']).toContain(status);
 					});
 				},
 			);
@@ -382,7 +383,7 @@ test.for(feature, ({ Scenario }) => {
 			Given('a verified user and valid pagination arguments', () => {
 				context = makeMockGraphContext();
 			});
-			And('a searchText "camera" and statusFilters ["Published"]', () => {
+			And('a searchText "camera" and statusFilters ["Active"]', () => {
 				vi.mocked(
 					context.applicationServices.Listing.ItemListing.queryPaged,
 				).mockResolvedValue({
@@ -406,7 +407,7 @@ test.for(feature, ({ Scenario }) => {
 						page: 1,
 						pageSize: 10,
 						searchText: 'camera',
-						statusFilters: ['Published'],
+						statusFilters: ['Active'],
 					},
 					context,
 					{} as never,
@@ -422,7 +423,7 @@ test.for(feature, ({ Scenario }) => {
 							page: 1,
 							pageSize: 10,
 							searchText: 'camera',
-							statusFilters: ['Published'],
+							statusFilters: ['Active'],
 							sharerId: 'user-1',
 						}),
 					);
@@ -714,16 +715,15 @@ test.for(feature, ({ Scenario }) => {
 	Scenario(
 		'Mapping item listing fields for myListingsAll',
 		({ Given, When, Then, And }) => {
-			interface MappedListing {
+			type MappedListing = {
 				id: string;
 				title: string;
 				image: string | null;
-				publishedAt: string | null;
+				createdAt: string | null;
 				reservationPeriod: string;
 				status: string;
 				pendingRequestsCount: number;
-			}
-
+			};
 			let mappedItems: MappedListing[] = [];
 
 			Given('a valid result from queryPaged', () => {
@@ -731,7 +731,7 @@ test.for(feature, ({ Scenario }) => {
 				const listingWithImage = createMockListing({
 					id: 'listing-with-image',
 					images: ['pic1.jpg'],
-					state: 'Published',
+					state: 'Active',
 					createdAt: new Date('2025-02-01T10:00:00Z'),
 					sharingPeriodStart: new Date('2025-02-10T00:00:00Z'),
 					sharingPeriodEnd: new Date('2025-02-20T00:00:00Z'),
@@ -773,7 +773,7 @@ test.for(feature, ({ Scenario }) => {
 						id: l.id,
 						title: l.title,
 						image: l.images?.[0] ?? null,
-						publishedAt: l.createdAt?.toISOString() ?? null,
+						createdAt: l.createdAt?.toISOString() ?? null,
 						reservationPeriod,
 						status,
 						pendingRequestsCount: 0, // default placeholder until domain provides counts
@@ -781,14 +781,14 @@ test.for(feature, ({ Scenario }) => {
 				});
 			});
 			Then(
-				'each listing should include id, title, image, publishedAt, reservationPeriod, status, and pendingRequestsCount',
+				'each listing should include id, title, image, createdAt, reservationPeriod, status, and pendingRequestsCount',
 				() => {
 					expect(mappedItems.length).toBe(2);
 					for (const item of mappedItems) {
 						expect(item).toHaveProperty('id');
 						expect(item).toHaveProperty('title');
 						expect(item).toHaveProperty('image');
-						expect(item).toHaveProperty('publishedAt');
+						expect(item).toHaveProperty('createdAt');
 						expect(item).toHaveProperty('reservationPeriod');
 						expect(item).toHaveProperty('status');
 						expect(item).toHaveProperty('pendingRequestsCount');
@@ -840,7 +840,7 @@ test.for(feature, ({ Scenario }) => {
 						page: 1,
 						pageSize: 10,
 						searchText: 'test',
-						statusFilters: ['Published'],
+						statusFilters: ['Active'],
 						sorter: { field: 'title', order: 'ascend' },
 					},
 					context,
@@ -855,7 +855,7 @@ test.for(feature, ({ Scenario }) => {
 						page: 1,
 						pageSize: 10,
 						searchText: 'test',
-						statusFilters: ['Published'],
+						statusFilters: ['Active'],
 						sorter: { field: 'title', order: 'ascend' },
 					}),
 				);
