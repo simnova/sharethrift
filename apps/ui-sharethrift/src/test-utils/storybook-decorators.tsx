@@ -6,6 +6,7 @@ import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
 import type { Decorator, StoryContext } from '@storybook/react';
 import { createMockAuth, createMockUser } from '../test/utils/mockAuth.ts';
+import { UserIdProvider } from '../components/shared/user-context.tsx';
 
 /**
  * Reusable Apollo Client decorator for Storybook stories.
@@ -101,6 +102,31 @@ export const MockUnauthWrapper = ({
 		<AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
 	);
 };
+
+/**
+ * Mock UserIdProvider wrapper for Storybook stories.
+ * Provides a mocked user ID context for components that use useUserId().
+ *
+ * @param userId - The user ID to mock (defaults to 'user-1')
+ * @returns A Storybook decorator function
+ *
+ * @example
+ * ```tsx
+ * export default {
+ *   decorators: [
+ *     withMockApolloClient,
+ *     withMockUserId('user-123'),
+ *   ],
+ * } as Meta;
+ * ```
+ */
+export const withMockUserId =
+	(userId = 'user-1'): Decorator =>
+	(Story) => (
+		<UserIdProvider userId={userId}>
+			<Story />
+		</UserIdProvider>
+	);
 
 /**
  * Reusable Router decorator factory for Storybook stories.

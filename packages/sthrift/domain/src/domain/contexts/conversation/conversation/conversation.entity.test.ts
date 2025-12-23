@@ -40,58 +40,76 @@ test.for(feature, ({ Background, Scenario }) => {
 		});
 	});
 
-	Scenario('Conversation sharer reference should be readonly', ({ When, Then }) => {
-		When('I attempt to modify the sharer property', () => {
-			Object.defineProperty(props, 'sharer', { writable: false, configurable: false, value: props.sharer });
-			try {
-				props.sharer = { id: 'new-sharer-id' };
-			} catch (_error) {
-				// Expected behavior for readonly
-			}
-		});
+	Scenario(
+		'Conversation sharer reference should be readonly',
+		({ When, Then }) => {
+			When('I attempt to modify the sharer property', () => {
+				Object.defineProperty(props, 'sharer', {
+					writable: false,
+					configurable: false,
+					value: props.sharer,
+				});
+				try {
+					props.sharer = { id: 'new-sharer-id' };
+				} catch (_error) {
+					// Expected behavior for readonly
+				}
+			});
 
-		Then('the sharer property should be readonly', () => {
-			const conversationProps: ConversationProps = props;
-			expect(conversationProps.sharer).toEqual({ id: 'test-sharer-id' });
-		});
-	});
+			Then('the sharer property should be readonly', () => {
+				const conversationProps: ConversationProps = props;
+				expect(conversationProps.sharer).toEqual({ id: 'test-sharer-id' });
+			});
+		},
+	);
 
-	Scenario('Conversation reserver reference should be readonly', ({ When, Then }) => {
+	Scenario(
+		'Conversation reserver reference should be readonly',
+		({ When, Then }) => {
+			When('I attempt to modify the reserver property', () => {
+				Object.defineProperty(props, 'reserver', {
+					writable: false,
+					configurable: false,
+					value: props.reserver,
+				});
+				try {
+					props.reserver = { id: 'new-reserver-id' };
+				} catch (_error) {
+					// Expected behavior for readonly
+				}
+			});
 
-		When('I attempt to modify the reserver property', () => {
-			Object.defineProperty(props, 'reserver', { writable: false, configurable: false, value: props.reserver });
-			try {
-				props.reserver = { id: 'new-reserver-id' };
-			} catch (_error) {
-				// Expected behavior for readonly
-			}
-		});
+			Then('the reserver property should be readonly', () => {
+				const conversationProps: ConversationProps = props;
+				expect(conversationProps.reserver).toEqual({ id: 'test-reserver-id' });
+			});
+		},
+	);
 
-		Then('the reserver property should be readonly', () => {
-			const conversationProps: ConversationProps = props;
-			expect(conversationProps.reserver).toEqual({ id: 'test-reserver-id' });
-		});
-	});
+	Scenario(
+		'Conversation listing reference should be readonly',
+		({ When, Then }) => {
+			When('I attempt to modify the listing property', () => {
+				Object.defineProperty(props, 'listing', {
+					writable: false,
+					configurable: false,
+					value: props.listing,
+				});
+				try {
+					props.listing = { id: 'new-listing-id' };
+				} catch (_error) {
+					// Expected behavior for readonly
+				}
+			});
 
-	Scenario('Conversation listing reference should be readonly', ({ When, Then }) => {
-
-		When('I attempt to modify the listing property', () => {
-			Object.defineProperty(props, 'listing', { writable: false, configurable: false, value: props.listing });
-			try {
-				props.listing = { id: 'new-listing-id' };
-			} catch (_error) {
-				// Expected behavior for readonly
-			}
-		});
-
-		Then('the listing property should be readonly', () => {
-			const conversationProps: ConversationProps = props;
-			expect(conversationProps.listing).toEqual({ id: 'test-listing-id' });
-		});
-	});
+			Then('the listing property should be readonly', () => {
+				const conversationProps: ConversationProps = props;
+				expect(conversationProps.listing).toEqual({ id: 'test-listing-id' });
+			});
+		},
+	);
 
 	Scenario('Conversation messaging ID should be a string', ({ When, Then }) => {
-
 		When('I access the messagingConversationId property', () => {
 			// Access the property
 		});
@@ -99,83 +117,102 @@ test.for(feature, ({ Background, Scenario }) => {
 		Then('it should be a string', () => {
 			const conversationProps: ConversationProps = props;
 			expect(typeof conversationProps.messagingConversationId).toBe('string');
-			expect(conversationProps.messagingConversationId).toBe('test-messaging-id');
+			expect(conversationProps.messagingConversationId).toBe(
+				'test-messaging-id',
+			);
 		});
 	});
 
-	Scenario('Conversation messages array should be readonly', ({ When, Then }) => {
+	Scenario(
+		'Conversation messages array should be readonly',
+		({ When, Then }) => {
+			When('I attempt to modify the messages property', () => {
+				Object.defineProperty(props, 'messages', {
+					writable: false,
+					configurable: false,
+					value: props.messages,
+				});
+				try {
+					props.messages = [{ id: 'new-message-id' }];
+				} catch (_error) {
+					// Expected behavior for readonly
+				}
+			});
 
-		When('I attempt to modify the messages property', () => {
-			Object.defineProperty(props, 'messages', { writable: false, configurable: false, value: props.messages });
-			try {
-				props.messages = [{ id: 'new-message-id' }];
-			} catch (_error) {
-				// Expected behavior for readonly
-			}
-		});
+			Then('the messages property should be readonly', () => {
+				const conversationProps: ConversationProps = props;
+				expect(Array.isArray(conversationProps.messages)).toBe(true);
+				expect(conversationProps.messages).toEqual([]);
+			});
+		},
+	);
 
-		Then('the messages property should be readonly', () => {
-			const conversationProps: ConversationProps = props;
-			expect(Array.isArray(conversationProps.messages)).toBe(true);
-			expect(conversationProps.messages).toEqual([]);
-		});
-	});
+	Scenario(
+		'Conversation loadSharer should return a promise',
+		({ When, Then }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let result: any;
 
-	Scenario('Conversation loadSharer should return a promise', ({ When, Then }) => {
-		// biome-ignore lint/suspicious/noExplicitAny: Test variable
-		let result: any;
+			When('I call the loadSharer method', async () => {
+				result = await props.loadSharer();
+			});
 
-		When('I call the loadSharer method', async () => {
-			result = await props.loadSharer();
-		});
+			Then('it should return a sharer reference', () => {
+				expect(result).toEqual({ id: 'test-sharer-id' });
+			});
+		},
+	);
 
-		Then('it should return a sharer reference', () => {
-			expect(result).toEqual({ id: 'test-sharer-id' });
-		});
-	});
+	Scenario(
+		'Conversation loadReserver should return a promise',
+		({ When, Then }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let result: any;
 
-	Scenario('Conversation loadReserver should return a promise', ({ When, Then }) => {
-		// biome-ignore lint/suspicious/noExplicitAny: Test variable
-		let result: any;
+			When('I call the loadReserver method', async () => {
+				result = await props.loadReserver();
+			});
 
-		When('I call the loadReserver method', async () => {
-			result = await props.loadReserver();
-		});
+			Then('it should return a reserver reference', () => {
+				expect(result).toEqual({ id: 'test-reserver-id' });
+			});
+		},
+	);
 
-		Then('it should return a reserver reference', () => {
-			expect(result).toEqual({ id: 'test-reserver-id' });
-		});
-	});
+	Scenario(
+		'Conversation loadListing should return a promise',
+		({ When, Then }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let result: any;
 
-	Scenario('Conversation loadListing should return a promise', ({ When, Then }) => {
-		// biome-ignore lint/suspicious/noExplicitAny: Test variable
-		let result: any;
+			When('I call the loadListing method', async () => {
+				result = await props.loadListing();
+			});
 
-		When('I call the loadListing method', async () => {
-			result = await props.loadListing();
-		});
+			Then('it should return a listing reference', () => {
+				expect(result).toEqual({ id: 'test-listing-id' });
+			});
+		},
+	);
 
-		Then('it should return a listing reference', () => {
-			expect(result).toEqual({ id: 'test-listing-id' });
-		});
-	});
+	Scenario(
+		'Conversation loadMessages should return a promise',
+		({ When, Then }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let result: any;
 
-	Scenario('Conversation loadMessages should return a promise', ({ When, Then }) => {
-		// biome-ignore lint/suspicious/noExplicitAny: Test variable
-		let result: any;
+			When('I call the loadMessages method', async () => {
+				result = await props.loadMessages();
+			});
 
-		When('I call the loadMessages method', async () => {
-			result = await props.loadMessages();
-		});
-
-		Then('it should return an array of messages', () => {
-			expect(Array.isArray(result)).toBe(true);
-			expect(result).toEqual([]);
-		});
-	});
+			Then('it should return an array of messages', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect(result).toEqual([]);
+			});
+		},
+	);
 
 	Scenario('Conversation timestamps should be dates', ({ When, Then }) => {
-
 		When('I access the timestamp properties', () => {
 			// Access the properties
 		});
@@ -187,16 +224,18 @@ test.for(feature, ({ Background, Scenario }) => {
 		});
 	});
 
-	Scenario('Conversation schema version should be readonly', ({ When, Then }) => {
+	Scenario(
+		'Conversation schema version should be readonly',
+		({ When, Then }) => {
+			When('I attempt to access the schemaVersion property', () => {
+				// Access the property
+			});
 
-		When('I attempt to access the schemaVersion property', () => {
-			// Access the property
-		});
-
-		Then('the schemaVersion should be a string', () => {
-			const conversationProps: ConversationProps = props;
-			expect(typeof conversationProps.schemaVersion).toBe('string');
-			expect(conversationProps.schemaVersion).toBe('1.0');
-		});
-	});
+			Then('the schemaVersion should be a string', () => {
+				const conversationProps: ConversationProps = props;
+				expect(typeof conversationProps.schemaVersion).toBe('string');
+				expect(conversationProps.schemaVersion).toBe('1.0');
+			});
+		},
+	);
 });

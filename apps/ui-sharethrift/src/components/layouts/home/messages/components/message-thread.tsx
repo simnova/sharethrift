@@ -148,7 +148,7 @@ export const MessageThread: React.FC<MessageThreadProps> = (props) => {
             htmlType="submit"
             icon={<SendOutlined />}
             loading={props.sendingMessage}
-            disabled={!props.messageText.trim()}
+            disabled={!props.messageText.trim() || props.sendingMessage}
             style={{ fontFamily: "var(--Urbanist, Arial, sans-serif)" }}
           >
             Send
