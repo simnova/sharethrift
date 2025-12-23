@@ -6,7 +6,7 @@ import { InProcEventBusInstance } from '@cellix/event-bus-seedwork-node';
 import { Types } from 'mongoose';
 import type { ClientSession } from 'mongoose';
 
-export interface UserAppealRequestPageResult {
+interface UserAppealRequestPageResult {
 	items: Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequestEntityReference[];
 	total: number;
 	page: number;

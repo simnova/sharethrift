@@ -16,7 +16,7 @@ const mockUsers = [
 		__typename: 'PersonalUser',
 		id: 'user-1',
 		createdAt: '2024-01-15T10:30:00Z',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		account: {
 			__typename: 'PersonalUserAccount',
@@ -33,7 +33,7 @@ const mockUsers = [
 		__typename: 'PersonalUser',
 		id: 'user-2',
 		createdAt: '2024-02-20T14:45:00Z',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: true,
 		account: {
 			__typename: 'PersonalUserAccount',
@@ -300,7 +300,7 @@ export const ManyUsers: Story = {
 									__typename: 'PersonalUser',
 									id: `user-${i + 1}`,
 									createdAt: '2024-01-15T10:30:00Z',
-									userType: 'personal-users',
+									userType: 'personal-user',
 									isBlocked: i % 3 === 0,
 									account: {
 										__typename: 'PersonalUserAccount',

@@ -8,7 +8,7 @@ import { getStatusTagClass } from './status-tag-class.ts';
 
 const { Search } = Input;
 
-export interface AllListingsTableProps {
+interface AllListingsTableProps {
 	data: HomeAllListingsTableContainerListingFieldsFragment[];
 	searchText: string;
 	statusFilters: string[];
@@ -70,7 +70,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 					onClick={() => onAction('pause', record.id)}
 				>
 					Pause
-				</Button>,
+				</Button>
 			);
 		}
 
@@ -117,7 +117,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 			);
 		}
 
-		// Cancel button for active listings
+		// Cancel button for Active listings
 		if (status === 'Active' || status === 'Paused') {
 			buttons.push(
 				<Popconfirm

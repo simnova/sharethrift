@@ -14,7 +14,7 @@ import { expect, within } from 'storybook/test';
 
 const mockUserSarah: PersonalUser = {
 	id: '507f1f77bcf86cd799439099',
-	userType: 'personal',
+	userType: 'personal-user',
 	account: {
 		accountType: 'verified-personal',
 
@@ -36,7 +36,7 @@ const mockUserSarah: PersonalUser = {
 
 const mockUserAlex: PersonalUser = {
 	id: '507f1f77bcf86cd799439102',
-	userType: 'personal',
+	userType: 'personal-user',
 	account: {
 		profile: {
 			firstName: 'Alex',
@@ -62,7 +62,7 @@ const mockTwoListings: ItemListing[] = [
 			'Perfect city bike for commuting and leisure rides around the neighborhood.',
 		category: 'Vehicles & Transportation',
 		location: 'Philadelphia, PA',
-		state: 'Published',
+		state: 'Active',
 		images: ['/assets/item-images/bike.png'],
 		createdAt: '2024-08-01T00:00:00.000Z',
 		sharingPeriodStart: '2024-08-11T00:00:00.000Z',
@@ -76,7 +76,7 @@ const mockTwoListings: ItemListing[] = [
 		description: 'HD projector for movie nights and presentations.',
 		category: 'Electronics',
 		location: 'Philadelphia, PA',
-		state: 'Published',
+		state: 'Active',
 		images: ['/assets/item-images/projector.png'],
 		createdAt: '2024-08-13T00:00:00.000Z',
 		sharingPeriodStart: '2024-08-13T00:00:00.000Z',

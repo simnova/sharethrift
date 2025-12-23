@@ -58,7 +58,7 @@ function makeBaseProps(
 ): ItemListingProps {
 	const user = new PersonalUser<PersonalUserProps>(
 		{
-			userType: 'personal-users',
+			userType: 'personal-user',
 			id: 'user-1',
 			isBlocked: false,
 			schemaVersion: '1.0.0',
@@ -130,7 +130,7 @@ function makeBaseProps(
 		location: 'Delhi',
 		sharingPeriodStart: new Date('2025-10-06T00:00:00Z'),
 		sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
-		state: 'Published',
+		state: 'Active',
 		images: [],
 		sharingHistory: [],
 		reports: 0,
@@ -138,6 +138,7 @@ function makeBaseProps(
 		updatedAt: new Date('2020-01-02T00:00:00Z'),
 		schemaVersion: '1.0.0',
 		listingType: 'item',
+    loadSharer: async () => user,
 		...overrides,
 	};
 }
@@ -176,6 +177,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'I create a new ItemListing aggregate using getNewInstance with sharer "user1" and title "New Listing"',
 			() => {
 				newListing = ItemListing.getNewInstance(
+					makeBaseProps(),
+					passport,
 					baseProps.sharer,
 					{
 						title: 'New Listing',
@@ -186,7 +189,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
 						images: [],
 					},
-					passport,
 				);
 			},
 		);
@@ -196,13 +198,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		And('the listing\'s sharer should reference "user1"', () => {
 			expect(newListing.sharer.id).toBe('user-1');
 		});
-		And('the listing state should be "Published"', () => {
+		And('the listing state should be "Active"', () => {
 			// Note: getNewInstance stores state as a ValueObject, not a string
 			const stateValue =
 				typeof newListing.state === 'string'
 					? newListing.state
 					: (newListing.state as { valueOf: () => string }).valueOf();
-			expect(stateValue).toBe('Published');
+			expect(stateValue).toBe('Active');
 		});
 	});
 
@@ -213,6 +215,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'I create a new ItemListing aggregate using getNewInstance with isDraft true and empty title, description, category, and location',
 				() => {
 					newListing = ItemListing.getNewInstance(
+						makeBaseProps(),
+						passport,
 						baseProps.sharer,
 						{
 							title: '',
@@ -224,42 +228,38 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							images: [],
 							isDraft: true,
 						},
-						passport,
 					);
 				},
 			);
-			Then('the listing\'s title should default to "Draft Title"', () => {
-				expect(newListing.title).toBe('Draft Title');
+			Then("the listing's title should default to empty", () => {
+				expect(newListing.title).toBe('');
 			});
-			And(
-				'the listing\'s description should default to "Draft Description"',
-				() => {
-					expect(newListing.description).toBe('Draft Description');
-				},
-			);
-			And('the listing\'s category should default to "Miscellaneous"', () => {
+			And("the listing's description should default to empty", () => {
+				expect(newListing.description).toBe('');
+			});
+			And("the listing's category should default to empty", () => {
 				// Note: getNewInstance stores category as a ValueObject, not a string
 				const categoryValue =
 					typeof newListing.category === 'string'
 						? newListing.category
 						: (newListing.category as { valueOf: () => string }).valueOf();
-				expect(categoryValue).toBe('Miscellaneous');
+				expect(categoryValue).toBe('');
 			});
-			And('the listing\'s location should default to "Draft Location"', () => {
+			And("the listing's location should default to empty", () => {
 				// Note: getNewInstance stores location as a ValueObject, not a string
 				const locationValue =
 					typeof newListing.location === 'string'
 						? newListing.location
 						: (newListing.location as { valueOf: () => string }).valueOf();
-				expect(locationValue).toBe('Draft Location');
+				expect(locationValue).toBe('');
 			});
-			And('the listing state should be "Drafted"', () => {
+			And('the listing state should be "Draft"', () => {
 				// Note: getNewInstance stores state as a ValueObject, not a string
 				const stateValue =
 					typeof newListing.state === 'string'
 						? newListing.state
 						: (newListing.state as { valueOf: () => string }).valueOf();
-				expect(stateValue).toBe('Drafted');
+				expect(stateValue).toBe('Draft');
 			});
 		},
 	);
@@ -536,7 +536,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'an ItemListing aggregate with permission to publish item listing',
 				() => {
 					passport = makePassport(true, true, true);
-					const draftProps = makeBaseProps({ state: 'Drafted' });
+					const draftProps = makeBaseProps({ state: 'Draft' });
 					listing = new ItemListing(draftProps, passport);
 					initialUpdatedAt = listing.updatedAt;
 				},
@@ -544,8 +544,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When('I call publish()', () => {
 				listing.publish();
 			});
-			Then('the listing\'s state should be "Published"', () => {
-				expect(listing.state).toBe('Published');
+			Then('the listing\'s state should be "Active"', () => {
+				expect(listing.state).toBe('Active');
 			});
 			And('the updatedAt timestamp should change', () => {
 				expect(listing.updatedAt.getTime()).toBeGreaterThanOrEqual(
@@ -563,7 +563,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'an ItemListing aggregate without permission to publish item listing',
 				() => {
 					passport = makePassport(true, false, true, true);
-					listing = new ItemListing(makeBaseProps({ state: 'Drafted' }), passport);
+					listing = new ItemListing(makeBaseProps({ state: 'Draft' }), passport);
 				},
 			);
 			When('I try to call publish()', () => {
@@ -657,7 +657,7 @@ Scenario(
 				'an ItemListing aggregate with permission to unpublish item listing',
 				() => {
 					passport = makePassport(true, true, true, true);
-					listing = new ItemListing(makeBaseProps({ state: 'Published' }), passport);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 					initialUpdatedAt = listing.updatedAt;
 				},
 			);
@@ -683,7 +683,7 @@ Scenario(
 				'an ItemListing aggregate without permission to unpublish item listing',
 				() => {
 					passport = makePassport(true, true, false, true);
-					listing = new ItemListing(makeBaseProps({ state: 'Published' }), passport);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 				},
 			);
 			When('I try to call pause()', () => {
@@ -702,7 +702,7 @@ Scenario(
 			'an ItemListing aggregate with permission to delete item listing',
 			() => {
 				passport = makePassport(true, true, true, true);
-				listing = new ItemListing(makeBaseProps({ state: 'Published' }), passport);
+				listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 			},
 		);
 		When('I call cancel()', () => {
@@ -721,7 +721,7 @@ Scenario(
 				'an ItemListing aggregate without permission to delete item listing',
 				() => {
 					passport = makePassport(true, true, true, false);
-					listing = new ItemListing(makeBaseProps({ state: 'Published' }), passport);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 				},
 			);
 			When('I try to call cancel()', () => {
@@ -740,7 +740,7 @@ Scenario(
 			'an ItemListing aggregate with permission to publish item listing',
 			() => {
 				passport = makePassport(true, true, true, true);
-				listing = new ItemListing(makeBaseProps({ state: 'Published' }), passport);
+				listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 			},
 		);
 		When('I call setBlocked(true)', () => {
@@ -764,8 +764,8 @@ Scenario(
 			When('I call setBlocked(false)', () => {
 				listing.setBlocked(false);
 			});
-			Then('the listing\'s state should be "AppealRequested"', () => {
-				expect(listing.state).toBe('Appeal Requested');
+			Then('the listing\'s state should be "Active"', () => {
+				expect(listing.state).toBe('Active');
 			});
 		},
 	);
@@ -793,17 +793,17 @@ Scenario(
 		'Unblocking non-blocked listing',
 		({ Given, When, Then }) => {
 			Given(
-				'an ItemListing aggregate with permission to publish item listing in Published state',
+				'an ItemListing aggregate with permission to publish item listing in Active state',
 				() => {
 					passport = makePassport(true, true, true, true);
-					listing = new ItemListing(makeBaseProps({ state: 'Published' }), passport);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 				},
 			);
 			When('I call setBlocked(false)', () => {
 				listing.setBlocked(false);
 			});
-			Then('the listing\'s state should remain "Published"', () => {
-				expect(listing.state).toBe('Published');
+			Then('the listing\'s state should remain "Active"', () => {
+				expect(listing.state).toBe('Active');
 			});
 		},
 	);
@@ -816,7 +816,7 @@ Scenario(
 				'an ItemListing aggregate without permission to publish item listing',
 				() => {
 					passport = makePassport(true, false, true, true);
-					listing = new ItemListing(makeBaseProps({ state: 'Published' }), passport);
+					listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
 				},
 			);
 			When('I try to call setBlocked(true)', () => {
@@ -883,4 +883,76 @@ Scenario(
 			});
 		},
 	);
+
+	Scenario('Getting expiresAt from item listing', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with expiresAt set', () => {
+			const expirationDate = new Date('2025-12-31T23:59:59Z');
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ expiresAt: expirationDate }), passport);
+		});
+		When('I access the expiresAt property', () => {
+			// Access happens in Then
+		});
+		Then('it should return the expiration date', () => {
+			expect(listing.expiresAt).toEqual(new Date('2025-12-31T23:59:59Z'));
+		});
+	});
+
+	Scenario('Getting expiresAt when undefined', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate without expiresAt set', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ expiresAt: undefined }), passport);
+		});
+		When('I access the expiresAt property', () => {
+			// Access happens in Then
+		});
+		Then('it should return undefined', () => {
+			expect(listing.expiresAt).toBeUndefined();
+		});
+	});
+
+	Scenario('Setting expiresAt with permission', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with permission to update item listing', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('I set the expiresAt to a specific date', () => {
+			const expirationDate = new Date('2025-12-31T23:59:59Z');
+			listing.expiresAt = expirationDate;
+		});
+		Then('the expiresAt should be updated', () => {
+			expect(listing.expiresAt).toEqual(new Date('2025-12-31T23:59:59Z'));
+		});
+	});
+
+	Scenario('Setting expiresAt without permission', ({ Given, When, Then }) => {
+		let settingExpiresAtWithoutPermission: () => void;
+		Given('an ItemListing aggregate without permission to update item listing', () => {
+			passport = makePassport(false, false, false, false);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('I try to set the expiresAt', () => {
+			settingExpiresAtWithoutPermission = () => {
+				listing.expiresAt = new Date('2025-12-31T23:59:59Z');
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(settingExpiresAtWithoutPermission).toThrow(DomainSeedwork.PermissionError);
+			expect(settingExpiresAtWithoutPermission).toThrow('You do not have permission to update this expiration');
+		});
+	});
+
+	Scenario('Setting expiresAt to undefined with permission', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with permission to update item listing and expiresAt set', () => {
+			const expirationDate = new Date('2025-12-31T23:59:59Z');
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ expiresAt: expirationDate }), passport);
+		});
+		When('I set the expiresAt to undefined', () => {
+			listing.expiresAt = undefined;
+		});
+		Then('the expiresAt should be cleared', () => {
+			expect(listing.expiresAt).toBeUndefined();
+		});
+	});
 });

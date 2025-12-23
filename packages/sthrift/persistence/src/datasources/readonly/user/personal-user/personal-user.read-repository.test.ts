@@ -30,7 +30,7 @@ function makeMockUser(
 	const base = {
 		_id: new MongooseSeedwork.ObjectId(),
 		id: 'user-1',
-		userType: 'personal-users',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: false,
 		account: {

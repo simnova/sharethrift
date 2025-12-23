@@ -20,10 +20,7 @@
 		"@ant-design/v5-patch-for-react-19": "^1.0.3",
 		"@apollo/client": "^4.0.7",
 		"@sthrift/ui-components": "workspace:*",
-		"@tailwindcss/vite": "^4.1.11",
-		"@twilio/conversations": "^2.6.3",
 		"antd": "^5.27.1",
-		"clean": "^4.0.2",
 		"crypto-hash": "^3.1.0",
 		"dayjs": "^1.11.18",
 		"graphql": "^16.11.0",
@@ -32,8 +29,7 @@
 		"react-dom": "^19.1.1",
 		"react-oidc-context": "^3.3.0",
 		"react-router-dom": "^7.8.0",
-		"rxjs": "^7.8.2",
-		"tailwindcss": "^4.1.11"
+		"rxjs": "^7.8.2"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
@@ -57,8 +53,7 @@
 		"eslint-plugin-react-hooks": "^5.2.0",
 		"eslint-plugin-react-refresh": "^0.4.20",
 		"globals": "^16.3.0",
-		"rollup": "^4.46.3",
-		"storybook": "^9.1.1",
+		"storybook": "catalog:",
 		"typescript": "~5.8.3",
 		"typescript-eslint": "^8.35.1",
 		"vite": "^7.1.2",
