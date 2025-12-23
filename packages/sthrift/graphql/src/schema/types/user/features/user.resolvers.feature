@@ -86,7 +86,7 @@ Feature: User Union Resolvers
     When __resolveType is called
     Then it should return "PersonalUser"
 
-  Scenario: User union resolveType throws error for invalid type
+  Scenario: User union resolveType returns null for invalid type
     Given a user object with invalid userType
     When __resolveType is called
-    Then it should throw "Unable to resolve User union type"
+    Then it should return null

@@ -267,6 +267,8 @@ stages:
         targetType: 'inline'
         script: |
           set -euo pipefail
+          echo "Ensuring vitest-config is built before knip analysis..."
+          pnpm --filter @cellix/vitest-config run build
           echo "Running knip to detect unused dependencies..."
           pnpm knip
         workingDirectory: ''

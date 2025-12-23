@@ -23,28 +23,39 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		state: string;
 		reason: string;
 	};
-	let mockUser: { id: string; email: string };
-	let mockBlocker: { id: string; email: string };
+	let mockUser: { id: string; email: string; userType?: string };
+	let mockBlocker: { id: string; email: string; userType?: string };
 	let result: unknown;
 
 	BeforeEachScenario(() => {
 		mockUser = {
 			id: '507f1f77bcf86cd799439015',
-			email: 'user@test.com',
-		};
+		userType: 'personal-user',
+		account: { email: 'user@test.com' },
+		isBlocked: false,
+		hasCompletedOnboarding: true,
+		schemaVersion: '1.0',
+		createdAt: new Date('2024-01-01'),
+		updatedAt: new Date('2024-01-01'),
+	};
 
-		mockBlocker = {
-			id: '507f1f77bcf86cd799439016',
-			email: 'admin@test.com',
-		};
+	mockBlocker = {
+		id: '507f1f77bcf86cd799439016',
+		userType: 'admin-user',
+		account: { email: 'admin@test.com' },
+		role: { roleName: 'Admin' },
+		schemaVersion: '1.0',
+		createdAt: new Date('2024-01-01'),
+		updatedAt: new Date('2024-01-01'),
+	};
 
-		mockUserAppealRequest = {
-			id: '507f1f77bcf86cd799439017',
-			user: { id: '507f1f77bcf86cd799439015' },
-			blocker: { id: '507f1f77bcf86cd799439016' },
-			state: 'Draft',
-			reason: 'Test appeal reason',
-		};
+	mockUserAppealRequest = {
+		id: '507f1f77bcf86cd799439017',
+		user: { id: '507f1f77bcf86cd799439015' },
+		blocker: { id: '507f1f77bcf86cd799439016' },
+		state: 'Draft',
+		reason: 'Test appeal reason',
+	};
 
 		// Initialize mockContext with mock data configured
 		mockContext = {

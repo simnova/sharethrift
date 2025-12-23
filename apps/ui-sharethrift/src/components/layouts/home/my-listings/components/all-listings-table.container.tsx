@@ -2,6 +2,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { message } from 'antd';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
 	HomeAllListingsTableContainerCancelItemListingDocument,
 	HomeAllListingsTableContainerDeleteListingDocument,
@@ -17,6 +18,7 @@ interface AllListingsTableContainerProps {
 export const AllListingsTableContainer: React.FC<
 	AllListingsTableContainerProps
 > = ({ currentPage, onPageChange }) => {
+	const navigate = useNavigate();
 	const [searchText, setSearchText] = useState('');
 	const [statusFilters, setStatusFilters] = useState<string[]>([]);
 	const [sorter, setSorter] = useState<{
@@ -114,6 +116,8 @@ export const AllListingsTableContainer: React.FC<
 			await cancelListing({ variables: { id: listingId } });
 		} else if (action === 'delete') {
 			await deleteListing({ variables: { id: listingId } });
+		} else if (action === 'edit') {
+			navigate(`/my-listings/${listingId}/edit`);
 		} else {
 			message.info(`Action "${action}" for listing ${listingId} coming soon.`);
 		}

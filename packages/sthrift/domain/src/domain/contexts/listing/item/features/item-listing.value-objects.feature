@@ -14,6 +14,11 @@ Feature: Listing value objects
     When I check isActive
     Then the result should be true
 
+  Scenario: Checking if an Active ListingState is considered active
+    Given a ListingState with value "Active"
+    When I check isActive
+    Then the result should be true
+
   Scenario: Checking if a ListingState is inactive
     Given a ListingState with value "Draft"
     When I check isActive

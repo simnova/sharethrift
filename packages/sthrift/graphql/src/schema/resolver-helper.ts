@@ -108,9 +108,31 @@ export const extractUserProfileFromJwt = (context: GraphContext): {
 export const PopulateUserFromField = (fieldName: string) => {
 	// biome-ignore lint/suspicious/noExplicitAny: parent can be various types with dynamic field access
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
-			const userId = parent[fieldName].id;
+		const existingValue = parent[fieldName];
+		const existingUserType = existingValue?.userType;
 
+		// Only return early if we have BOTH userType AND a valid id
+		if (existingUserType && existingValue?.id) {
+			return existingValue;
+		}
+
+		let userId: string | undefined;
+		if (typeof existingValue === 'string') {
+			userId = existingValue;
+		} else if (existingValue && typeof existingValue === 'object') {
+			if (typeof existingValue.id === 'string') {
+				userId = existingValue.id;
+			}
+		}
+
+		if (!userId && parent[fieldName]) {
+			const maybeId = parent[fieldName].toString?.();
+			if (typeof maybeId === 'string') {
+				userId = maybeId;
+			}
+		}
+
+		if (userId && isValidObjectId(userId)) {
 			// Try AdminUser first
 			try {
 				const adminUser =
@@ -118,10 +140,21 @@ export const PopulateUserFromField = (fieldName: string) => {
 						id: userId,
 					});
 				if (adminUser) {
-					return adminUser;
+					// Access properties from the domain entity
+					const userData = {
+						id: adminUser.id,
+						userType: adminUser.userType || 'admin-user',
+						account: adminUser.account,
+						role: adminUser.role,
+						schemaVersion: adminUser.schemaVersion,
+						createdAt: adminUser.createdAt,
+						updatedAt: adminUser.updatedAt,
+					};
+					return userData;
 				}
-			} catch {
+			} catch (error) {
 				// AdminUser not found, try PersonalUser
+				console.debug('AdminUser not found, trying PersonalUser:', error);
 			}
 
 			// Try PersonalUser
@@ -131,25 +164,51 @@ export const PopulateUserFromField = (fieldName: string) => {
 						id: userId,
 					});
 				if (personalUser) {
-					return personalUser;
+					// Access properties from the domain entity
+					const userData = {
+						id: personalUser.id,
+						userType: personalUser.userType || 'personal-user',
+						isBlocked: personalUser.isBlocked,
+						hasCompletedOnboarding: personalUser.hasCompletedOnboarding,
+						account: personalUser.account,
+						schemaVersion: personalUser.schemaVersion,
+						createdAt: personalUser.createdAt,
+						updatedAt: personalUser.updatedAt,
+					};
+					return userData;
 				}
-			} catch {
+			} catch (error) {
 				// PersonalUser not found
+				console.debug('PersonalUser not found:', error);
 			}
 		}
-		return parent[fieldName];
+
+		// If we couldn't resolve a user, return null
+		return null;
 	};
 };
 
 export const PopulateItemListingFromField = (fieldName: string) => {
 	// biome-ignore lint/suspicious/noExplicitAny: parent can be various types with dynamic field access
 	return async (parent: any, _: unknown, context: GraphContext) => {
-		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
+		const existingValue = parent[fieldName];
+		
+		// If the field is a string (ObjectId), query by that ID
+		if (typeof existingValue === 'string' && isValidObjectId(existingValue)) {
 			return await context.applicationServices.Listing.ItemListing.queryById({
-				id: parent[fieldName].id,
+				id: existingValue,
 			});
 		}
-		return parent[fieldName];
+		
+		// If the field is an object with an id property, query by that ID
+		if (existingValue && typeof existingValue === 'object' && isValidObjectId(existingValue.id)) {
+			return await context.applicationServices.Listing.ItemListing.queryById({
+				id: existingValue.id,
+			});
+		}
+		
+		// Otherwise return the existing value (might already be populated)
+		return existingValue;
 	};
 };
 

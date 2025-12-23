@@ -61,8 +61,8 @@ test.for(feature, ({ Background, Scenario }) => {
 				},
 				readonlyDataSource: {
 					User: {
-						PersonalUser: {
-							PersonalUserReadRepo: {
+						User: {
+							UserReadRepo: {
 								getByEmail: vi.fn().mockResolvedValue(mockUser),
 							},
 						},
@@ -165,8 +165,8 @@ userEmail: 'test@example.com',
 	Scenario('Failing to delete when user is not found', ({ Given, When, Then }) => {
 		Given('the user email {string} does not exist', () => {
 			(
-				mockDataSources.readonlyDataSource.User.PersonalUser
-					.PersonalUserReadRepo.getByEmail as ReturnType<typeof vi.fn>
+				mockDataSources.readonlyDataSource.User.User
+					.UserReadRepo.getByEmail as ReturnType<typeof vi.fn>
 			).mockResolvedValue(null);
 		});
 
