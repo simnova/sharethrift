@@ -8,7 +8,6 @@ import type {
 	CreateConversationMutation,
 	CreateConversationMutationVariables,
 } from '../../../../../../generated.tsx';
-import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 
 type Sharer = {
 	id: string;

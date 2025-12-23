@@ -8,7 +8,7 @@ import {
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
-	BlockListingContainerUnblockListingDocument,
+    AdminListingsTableContainerUnblockListingDocument
 } from '../../../../../../../generated.tsx';
 
 const meta: Meta<typeof AdminListings> = {
@@ -52,7 +52,7 @@ const meta: Meta<typeof AdminListings> = {
 				},
 				{
 					request: {
-						query: BlockListingContainerUnblockListingDocument,
+						query: AdminListingsTableContainerUnblockListingDocument,
 					},
 					result: {
 						data: {
