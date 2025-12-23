@@ -193,7 +193,17 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	get state(): string {
-		return this.props.state;
+		// Field-level authorization: check if user has permission to view blocked listings
+		const currentState = this.props.state.valueOf();
+		const isBlocked = currentState === ValueObjects.ListingStateEnum.Blocked;
+		
+		if (isBlocked && !this.visa.determineIf((permissions) => permissions.canViewBlockedItemListing)) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to view this blocked listing',
+			);
+		}
+		
+		return currentState;
 	}
 
 	set state(value: string) {
@@ -382,7 +392,8 @@ public requestDelete(): void {
 	 * Create a reference to this entity for use in other contexts
 	 */
 	getEntityReference(): ItemListingEntityReference {
-		return this.props as ItemListingEntityReference;
+		// biome-ignore lint/suspicious/noExplicitAny: Safe cast - this aggregate implements the interface
+		return this as unknown as ItemListingEntityReference;
 	}
 
 	get listingType(): string {

@@ -1,6 +1,6 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.js';
-import { PopulateUserFromField, currentViewerIsAdmin } from '../../resolver-helper.ts';
+import { PopulateUserFromField } from '../../resolver-helper.ts';
 
 // Helper type for paged arguments
 export type PagedArgs = {
@@ -67,19 +67,9 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		itemListing: async (_parent, args, context) => {
-			const listing = await context.applicationServices.Listing.ItemListing.queryById({
+			return await context.applicationServices.Listing.ItemListing.queryById({
 				id: args.id,
 			});
-
-			// Authorization check: non-admins cannot view blocked listings
-			if (listing && listing.state === 'Blocked') {
-				const isAdmin = await currentViewerIsAdmin(context);
-				if (!isAdmin) {
-					return null; // Non-admins cannot access blocked listings
-				}
-			}
-
-			return listing;
 		},
 		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
@@ -125,11 +115,7 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		unblockListing: async (_parent, args, context) => {
-			// Authorization check: only admins can unblock listings
-			const isAdmin = await currentViewerIsAdmin(context);
-			if (!isAdmin) {
-				throw new Error('Forbidden: Only administrators can unblock listings');
-			}
+			// Permission checks are enforced at the domain level via the visa pattern
 			const listing = await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
 			});
@@ -140,11 +126,7 @@ const itemListingResolvers: Resolvers = {
 			};
 		},
 		blockListing: async (_parent, args, context) => {
-			// Authorization check: only admins can block listings
-			const isAdmin = await currentViewerIsAdmin(context);
-			if (!isAdmin) {
-				throw new Error('Forbidden: Only administrators can block listings');
-			}
+			// Permission checks are enforced at the domain level via the visa pattern
 			const listing = await context.applicationServices.Listing.ItemListing.block({
 				id: args.id,
 			});
@@ -158,18 +140,22 @@ const itemListingResolvers: Resolvers = {
 			_parent: unknown,
 			args: { id: string },
 			context,
-		) => ({
-			status: { success: true },
-			listing: await context.applicationServices.Listing.ItemListing.cancel({
-				id: args.id,
-			}),
-		}),
+		) => {
+			// Permission checks are enforced at the domain level via the visa pattern
+			return {
+				status: { success: true },
+				listing: await context.applicationServices.Listing.ItemListing.cancel({
+					id: args.id,
+				}),
+			};
+		},
 
 		deleteItemListing: async (
 			_parent: unknown,
 			args: { id: string },
 			context: GraphContext,
 		) => {
+			// Permission checks are enforced at the domain level via the visa pattern
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
 				userEmail:

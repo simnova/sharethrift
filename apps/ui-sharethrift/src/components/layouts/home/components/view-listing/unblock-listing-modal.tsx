@@ -15,8 +15,6 @@ export const UnblockListingModal: React.FC<UnblockListingModalProps> = ({
 	visible,
 	listingTitle,
 	listingSharer,
-	blockReason,
-	blockDescription,
 	onConfirm,
 	onCancel,
 	loading = false,
@@ -37,25 +35,6 @@ export const UnblockListingModal: React.FC<UnblockListingModalProps> = ({
 					posted by <strong>{listingSharer}</strong>?
 				</p>
 			</div>
-			{blockReason && (
-				<div style={{ marginBottom: 8 }}>
-					<strong>Block Information</strong>
-					<div style={{ marginTop: 8 }}>
-						<div>
-							<strong>Reason:</strong>
-						</div>
-						<div style={{ marginLeft: 8 }}>{blockReason}</div>
-					</div>
-					{blockDescription && (
-						<div style={{ marginTop: 8 }}>
-							<div>
-								<strong>Description:</strong>
-							</div>
-							<div style={{ marginLeft: 8 }}>{blockDescription}</div>
-						</div>
-					)}
-				</div>
-			)}
 		</Modal>
 	);
 };

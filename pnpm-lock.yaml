@@ -564,15 +564,6 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
 
-  packages/cellix/transactional-email-service:
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
   packages/cellix/typescript-config: {}
 
   packages/cellix/ui-core:
@@ -784,9 +775,6 @@ importers:
 
   packages/sthrift/event-handler:
     dependencies:
-      '@cellix/transactional-email-service':
-        specifier: workspace:*
-        version: link:../../cellix/transactional-email-service
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../domain

@@ -21,8 +21,7 @@
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
-    "@sthrift/domain": "workspace:*",
-    "@cellix/transactional-email-service": "workspace:*"
+    "@sthrift/domain": "workspace:*"
   },
   "devDependencies": {
     "@cellix/typescript-config": "workspace:*",

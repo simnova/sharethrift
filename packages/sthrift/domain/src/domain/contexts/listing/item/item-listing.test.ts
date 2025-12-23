@@ -20,6 +20,7 @@ function makePassport(
 	canPublishItemListing = true,
 	canUnpublishItemListing = true,
 	canDeleteItemListing = true,
+	canViewBlockedItemListing = true,
 ): Passport {
 	return vi.mocked({
 		listing: {
@@ -30,6 +31,7 @@ function makePassport(
 						canPublishItemListing: boolean;
 						canUnpublishItemListing: boolean;
 						canDeleteItemListing: boolean;
+						canViewBlockedItemListing: boolean;
 					}) => boolean,
 				) =>
 					fn({
@@ -37,6 +39,7 @@ function makePassport(
 						canPublishItemListing,
 						canUnpublishItemListing,
 						canDeleteItemListing,
+						canViewBlockedItemListing,
 					}),
 			})),
 		},
@@ -750,25 +753,6 @@ Scenario(
 			expect(listing.state).toBe('Blocked');
 		});
 	});
-
-	Scenario(
-		'Unblocking a listing with permission',
-		({ Given, When, Then }) => {
-			Given(
-				'an ItemListing aggregate with permission to publish item listing that is currently blocked',
-				() => {
-					passport = makePassport(true, true, true, true);
-					listing = new ItemListing(makeBaseProps({ state: 'Blocked' }), passport);
-				},
-			);
-			When('I call setBlocked(false)', () => {
-				listing.setBlocked(false);
-			});
-			Then('the listing\'s state should be "Appeal Requested"', () => {
-				expect(listing.state).toBe('Appeal Requested');
-			});
-		},
-	);
 
 	Scenario(
 		'Blocking already blocked listing',

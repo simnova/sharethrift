@@ -33,6 +33,8 @@ export class AdminUserListingItemListingVisa<
 				rolePermissions?.userPermissions?.canDeleteContent ?? false,
 			// Admins can view all listings
 			canViewItemListing: true,
+			// Admins can view blocked listings
+			canViewBlockedItemListing: true,
 			// Admins can publish listings if they have moderation permission
 			canPublishItemListing:
 				rolePermissions?.listingPermissions?.canModerateListings ?? false,

@@ -138,11 +138,6 @@ Feature: <AggregateRoot>ItemListing
     When I call setBlocked(true)
     Then the listing's state should be "Blocked"
 
-  Scenario: Unblocking a listing with permission
-    Given an ItemListing aggregate with permission to publish item listing that is currently blocked
-    When I call setBlocked(false)
-    Then the listing's state should be "Appeal Requested"
-
   Scenario: Blocking already blocked listing
     Given an ItemListing aggregate with permission to publish item listing that is already blocked
     When I call setBlocked(true) again

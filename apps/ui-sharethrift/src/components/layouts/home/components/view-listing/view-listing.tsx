@@ -30,7 +30,7 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	sharedTimeAgo,
 	isAdmin,
 }) => {
-	// Mock sharer info (since ItemListing.sharer is just an ID)
+
 	const { sharer } = listing;
 
 	const isBlocked = listing.state === 'Blocked';
@@ -127,6 +127,7 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						className="sharer-info-responsive"
 						sharedTimeAgo={sharedTimeAgo}
 						currentUserId={currentUserId}
+                        isAdmin={isAdmin}
 						blockListingElement={
 							isAdmin ? (
 								<BlockListingButton
