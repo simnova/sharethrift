@@ -1,8 +1,6 @@
 import { useState } from 'react';
 import { Avatar as AntAvatar } from 'antd';
 import { Link } from 'react-router-dom';
-import { isValidUserId } from './utils/user-validation.ts';
-import { getUserProfilePath } from './utils/user-routes.ts';
 import { ShareThriftLogo } from './sharethrift-logo.tsx';
 
 /**
@@ -26,11 +24,10 @@ interface UserAvatarProps {
 }
 
 /**
- * UserAvatar component displays a user's avatar that optionally links to their profile.
- * When a valid userId is provided, clicking the avatar navigates to the user's profile.
- * Falls back to a non-clickable avatar when userId is missing or invalid.
+ * UserAvatar component displays a user's avatar that links to their profile.
+ * Clicking the avatar navigates to the user's profile page.
  * @param props - The component props
- * @returns JSX element containing the avatar, optionally wrapped in a link
+ * @returns JSX element containing the avatar wrapped in a link
  */
 export const UserAvatar: React.FC<UserAvatarProps> = ({
 	userId,
@@ -41,9 +38,6 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 	style = {},
 	shape = 'circle',
 }) => {
-	// Determine if we have a valid userId for linking
-	const isClickable = isValidUserId(userId);
-	
 	// Track if the avatar image failed to load
 	const [imageError, setImageError] = useState(false);
 	const showImageAvatar = !!avatarUrl && !imageError;
@@ -54,7 +48,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 			src={avatarUrl}
 			shape={shape}
 			className={className}
-			style={{ ...style, cursor: isClickable ? 'pointer' : 'default' }}
+			style={{ ...style, cursor: 'pointer' }}
 			alt={`${userName}'s avatar`}
 			onError={() => {
 				// If the image fails to load, fall back to the logo/initials variant
@@ -74,7 +68,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 				justifyContent: 'center',
 				flexShrink: 0,
 				fontFamily: 'var(--Urbanist, Arial, sans-serif)',
-				cursor: isClickable ? 'pointer' : 'default',
+				cursor: 'pointer',
 				...style,
 			}}
 			icon={<ShareThriftLogo size={24} />}
@@ -83,13 +77,8 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 		</AntAvatar>
 	);
 
-	// If no valid userId, render avatar without link
-	if (!isClickable) {
-		return avatarContent;
-	}
-
 	return (
-		<Link to={getUserProfilePath(userId)} aria-label={`View ${userName}'s profile`}>
+		<Link to={`/user/${userId}`} aria-label={`View ${userName}'s profile`}>
 			{avatarContent}
 		</Link>
 	);

@@ -48,7 +48,6 @@ type ListingRequest {
 	title: String!
 	image: String
 	requestedBy: String!
-	requestedById: ObjectID
 	requestedOn: String!
 	reservationPeriod: String!
 	status: String!

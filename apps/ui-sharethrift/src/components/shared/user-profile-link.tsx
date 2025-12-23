@@ -1,6 +1,4 @@
 import { Link } from 'react-router-dom';
-import { isValidUserId } from './utils/user-validation.ts';
-import { getUserProfilePath } from './utils/user-routes.ts';
 
 /**
  * Props for UserProfileLink component
@@ -18,10 +16,8 @@ interface UserProfileLinkProps {
 
 /**
  * UserProfileLink component renders a clickable link to a user's profile.
- * When a valid userId is provided, renders a navigation link.
- * Falls back to plain text when userId is missing or invalid.
  * @param props - The component props
- * @returns JSX element containing either a link or plain text
+ * @returns JSX element containing a navigation link
  */
 export const UserProfileLink: React.FC<UserProfileLinkProps> = ({
 	userId,
@@ -29,18 +25,9 @@ export const UserProfileLink: React.FC<UserProfileLinkProps> = ({
 	className = '',
 	style = {},
 }) => {
-	// If no valid userId, render as plain text instead of a broken link
-	if (!isValidUserId(userId)) {
-		return (
-			<span className={className} style={style}>
-				{displayName}
-			</span>
-		);
-	}
-
 	return (
 		<Link 
-			to={getUserProfilePath(userId)} 
+			to={`/user/${userId}`} 
 			className={className}
 			style={{ 
 				textDecoration: 'none',

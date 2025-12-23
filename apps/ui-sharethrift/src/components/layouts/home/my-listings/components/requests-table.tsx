@@ -8,7 +8,6 @@ import {
 	getStatusTagClass,
 	getActionButtons,
 } from './requests-status-helpers.tsx';
-import { UserProfileLink } from '../../../../shared/user-profile-link.tsx';
 
 const { Search } = Input;
 
@@ -108,18 +107,9 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			key: 'requestedBy',
 			sorter: true,
 			sortOrder: sorter.field === 'requestedBy' ? sorter.order : null,
-			render: (username: string, record: ListingRequestData) => {
-				if (record.requestedById) {
-					return (
-						<UserProfileLink
-							userId={record.requestedById}
-							displayName={username}
-							style={{ fontWeight: 500, color: '#1890ff' }}
-						/>
-					);
-				}
-				return <span style={{ fontWeight: 500, color: '#1890ff' }}>{username}</span>;
-			},
+			render: (username: string) => (
+				<span style={{ fontWeight: 500, color: '#1890ff' }}>{username}</span>
+			),
 		},
 		{
 			title: 'Requested On',
