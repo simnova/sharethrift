@@ -9,12 +9,18 @@ import type { ReservationRequestEntityReference } from '../../../../contexts/res
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/personal-user.reservation-request.visa.feature'),
+	path.resolve(
+		__dirname,
+		'features/personal-user.reservation-request.visa.feature',
+	),
 );
 
 test.for(feature, ({ Scenario }) => {
 	Scenario('Reservation visa evaluates sharer permissions', ({ Given, When, Then }) => {
-		const mockUser = { id: 'user-123', isBlocked: false } as PersonalUserEntityReference;
+		const mockUser = {
+			id: 'user-123',
+			isBlocked: false,
+		} as PersonalUserEntityReference;
 		const mockReservation = {
 			id: 'reservation-1',
 			listing: { sharer: { id: 'user-123' } },
@@ -24,7 +30,10 @@ test.for(feature, ({ Scenario }) => {
 		let canEdit: boolean;
 
 		Given('I have a reservation visa as sharer', () => {
-			visa = new PersonalUserReservationRequestVisa(mockReservation, mockUser);
+			visa = new PersonalUserReservationRequestVisa(
+				mockReservation,
+				mockUser,
+			);
 		});
 
 		When('I check edit permission', () => {
@@ -37,7 +46,10 @@ test.for(feature, ({ Scenario }) => {
 	});
 
 	Scenario('Reservation visa is created properly', ({ Given, When, Then }) => {
-		const mockUser = { id: 'user-123', isBlocked: false } as PersonalUserEntityReference;
+		const mockUser = {
+			id: 'user-123',
+			isBlocked: false,
+		} as PersonalUserEntityReference;
 		const mockReservation = {
 			id: 'reservation-1',
 			listing: { sharer: { id: 'user-123' } },
