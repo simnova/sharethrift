@@ -61,10 +61,6 @@ export const UserProfileViewContainer: React.FC = () => {
   // This would require a backend query to fetch public listings by user ID.
   const listings: ItemListing[] = [];
 
-  if (!userId) {
-    return <div>User ID is required</div>;
-  }
-
   return (
     <ComponentQueryLoader
       loading={userLoading}
