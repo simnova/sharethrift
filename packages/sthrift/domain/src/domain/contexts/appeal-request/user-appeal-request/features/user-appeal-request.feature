@@ -62,3 +62,11 @@ Feature: UserAppealRequest Aggregate
   Scenario: Getting schemaVersion
     When I get the schemaVersion from the appeal request
     Then the schemaVersion should be a non-empty string
+
+  Scenario: Loading the user asynchronously
+    When I call loadUser on the user appeal request
+    Then the loaded user should be a PersonalUser entity
+
+  Scenario: Loading the blocker asynchronously
+    When I call loadBlocker on the user appeal request
+    Then the loaded blocker should be a PersonalUser entity
