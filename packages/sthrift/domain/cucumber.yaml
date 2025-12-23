@@ -11,10 +11,6 @@ default:
   import:
     - src/**/*.test.ts
 
-  # TypeScript support - using tsx with ESM loader
-  loader:
-    - tsx
-
   # Format options with JSON and HTML reports
   format:
     - pretty
