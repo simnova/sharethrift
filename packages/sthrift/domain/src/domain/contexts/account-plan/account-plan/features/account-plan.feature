@@ -24,3 +24,11 @@ Feature: AccountPlan aggregate
 
   Scenario: Getting all properties
     Then all properties should return correct values
+
+  Scenario: Updating status with valid permission
+    When I set status to "INACTIVE"
+    Then status should be "INACTIVE"
+
+  Scenario: Updating cybersourcePlanId with valid permission
+    When I set cybersourcePlanId to "new-cs-456"
+    Then cybersourcePlanId should be "new-cs-456"

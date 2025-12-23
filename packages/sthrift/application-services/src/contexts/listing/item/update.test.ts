@@ -5,12 +5,13 @@ import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
 import { update, type ItemListingUpdateCommand } from './update.ts';
 
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/update.feature'),
 );
 
-describeFeature(feature, (f) => {
+test.for(feature, ({ Background, Scenario }) => {
 	let mockListing: Record<string, unknown>;
 	let mockRepo: {
 		get: ReturnType<typeof vi.fn>;
@@ -23,7 +24,7 @@ describeFeature(feature, (f) => {
 	let thrownError: Error | null;
 	let updateFunction: (command: ItemListingUpdateCommand) => Promise<unknown>;
 
-	f.Background(({ Given }) => {
+	Background(({ Given }) => {
 		Given('the listing repository is available', () => {
 			mockListing = {
 				title: 'Old Title',
@@ -209,7 +210,7 @@ describeFeature(feature, (f) => {
 		},
 	);
 
-	f.Scenario('Failing to update with invalid date string', ({ When, Then }) => {
+	Scenario('Failing to update with invalid date string', ({ When, Then }) => {
 		When('I update a listing with invalid date string {string}', async () => {
 			thrownError = null;
 			try {
@@ -365,7 +366,7 @@ describeFeature(feature, (f) => {
 		});
 	});
 
-	f.Scenario('Update fails when save returns undefined', ({ Given, And, When, Then }) => {
+	Scenario('Update fails when save returns undefined', ({ Given, And, When, Then }) => {
 		Given('a listing with id {string}', () => {
 			mockListing = {
 				title: 'Old Title',

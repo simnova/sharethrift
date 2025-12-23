@@ -5,12 +5,13 @@ import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
 import { deleteListings } from './delete.ts';
 
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/delete.feature'),
 );
 
-describeFeature(feature, (f) => {
+test.for(feature, ({ Background, Scenario }) => {
 	let mockListing: { requestDelete: ReturnType<typeof vi.fn> };
 	let mockRepo: {
 		get: ReturnType<typeof vi.fn>;
@@ -25,7 +26,7 @@ describeFeature(feature, (f) => {
 	let thrownError: Error | null;
 	let deleteFunction: (command: { id: string; userEmail: string }) => Promise<boolean>;
 
-	f.Background(({ Given, And }) => {
+	Background(({ Given, And }) => {
 		Given('a valid user with email {string}', () => {
 			mockUser = {
 				email: 'test@example.com',
@@ -81,7 +82,7 @@ describeFeature(feature, (f) => {
 		});
 	});
 
-	f.Scenario(
+	Scenario(
 'Successfully deleting a listing with no active reservations',
 ({ Given, When, Then, And }) => {
 			Given('there are no active reservation requests for the listing', () => {
@@ -115,7 +116,7 @@ userEmail: 'test@example.com',
 		},
 	);
 
-	f.Scenario(
+	Scenario(
 'Failing to delete a listing with active reservations',
 ({ Given, When, Then, And }) => {
 			Given(
@@ -161,7 +162,7 @@ userEmail: 'test@example.com',
 		},
 	);
 
-	f.Scenario('Failing to delete when user is not found', ({ Given, When, Then }) => {
+	Scenario('Failing to delete when user is not found', ({ Given, When, Then }) => {
 		Given('the user email {string} does not exist', () => {
 			(
 				mockDataSources.readonlyDataSource.User.User
@@ -190,7 +191,7 @@ userEmail: 'nonexistent@example.com',
 		});
 	});
 
-	f.Scenario(
+	Scenario(
 'Failing to delete when listing is not found',
 ({ Given, When, Then }) => {
 			Given('the listing with id {string} does not exist', () => {
@@ -220,7 +221,7 @@ userEmail: 'test@example.com',
 		},
 	);
 
-	f.Scenario(
+	Scenario(
 		'Failing to delete when unit of work is not available',
 		({ Given, When, Then }) => {
 			Given('the unit of work is not available', () => {

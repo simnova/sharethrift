@@ -106,6 +106,7 @@ export const extractUserProfileFromJwt = (context: GraphContext): {
  * Used for GraphQL field resolvers that need to resolve User union types.
  */
 export const PopulateUserFromField = (fieldName: string) => {
+	// biome-ignore lint/suspicious/noExplicitAny: parent can be various types with dynamic field access
 	return async (parent: any, _: unknown, context: GraphContext) => {
 		const existingValue = parent[fieldName];
 		const existingUserType = existingValue?.userType;
@@ -188,6 +189,7 @@ export const PopulateUserFromField = (fieldName: string) => {
 };
 
 export const PopulateItemListingFromField = (fieldName: string) => {
+	// biome-ignore lint/suspicious/noExplicitAny: parent can be various types with dynamic field access
 	return async (parent: any, _: unknown, context: GraphContext) => {
 		const existingValue = parent[fieldName];
 		
