@@ -100,7 +100,7 @@ Although Shared Key authorization requires access to the storage account key, th
 
 ## Consequences
 
-- Good, because uploading directly from the client to Azure Blob Storage using the Valet Key pattern significantly reduces backend bandwidth usage and infrastructure costs.
+- Good, because uploading directly from the client to Azure Blob Storage using the Valet Key/direct upload pattern significantly reduces backend bandwidth usage and infrastructure costs.
 - Good, because versioning support allows easy rollback in case of corruption or malicious file detection.
 - Bad, because malware scanning occurs after upload, introducing a brief exposure window before a file is fully validated.
 
