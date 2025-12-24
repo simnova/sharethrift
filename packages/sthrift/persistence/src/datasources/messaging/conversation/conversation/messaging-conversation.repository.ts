@@ -5,7 +5,9 @@ import { toDomainMessage } from './messaging-conversation.domain-adapter.ts';
 export interface MessagingConversationRepository {
 	getMessages: (
 		conversationId: string,
-	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]>;
+	) => Promise<
+		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
+	>;
 
 	sendMessage: (
 		conversationId: string,
@@ -21,7 +23,9 @@ export interface MessagingConversationRepository {
 	) => Promise<{ id: string; displayName?: string }>;
 }
 
-export class MessagingConversationRepositoryImpl implements MessagingConversationRepository {
+export class MessagingConversationRepositoryImpl
+	implements MessagingConversationRepository
+{
 	private readonly messagingService: MessagingService;
 
 	constructor(messagingService: MessagingService, _passport: Domain.Passport) {
@@ -30,18 +34,25 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 
 	async getMessages(
 		conversationId: string,
-	): Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference[]> {
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
+	> {
 		try {
 			const messages = await this.messagingService.getMessages(conversationId);
-			
+
 			return messages.map((msg) => {
-				const authorId = msg.author 
-					? new Domain.Contexts.Conversation.Conversation.AuthorId(msg.author) 
-					: new Domain.Contexts.Conversation.Conversation.AuthorId(Domain.Contexts.Conversation.Conversation.ANONYMOUS_AUTHOR_ID);
+				const authorId = msg.author
+					? new Domain.Contexts.Conversation.Conversation.AuthorId(msg.author)
+					: new Domain.Contexts.Conversation.Conversation.AuthorId(
+							Domain.Contexts.Conversation.Conversation.ANONYMOUS_AUTHOR_ID,
+						);
 				return toDomainMessage(msg, authorId);
 			});
 		} catch (error) {
-			console.error(`Error fetching messages for conversation ${conversationId}:`, error);
+			console.error(
+				`Error fetching messages for conversation ${conversationId}:`,
+				error,
+			);
 			return [];
 		}
 	}
@@ -58,7 +69,9 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 				author,
 			);
 
-			const authorId = new Domain.Contexts.Conversation.Conversation.AuthorId(author);
+			const authorId = new Domain.Contexts.Conversation.Conversation.AuthorId(
+				author,
+			);
 			return toDomainMessage(message, authorId);
 		} catch (error) {
 			console.error('Error sending message to messaging service:', error);
@@ -70,7 +83,10 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 		try {
 			await this.messagingService.deleteConversation(conversationId);
 		} catch (error) {
-			console.error('Error deleting conversation from messaging service:', error);
+			console.error(
+				'Error deleting conversation from messaging service:',
+				error,
+			);
 			throw error;
 		}
 	}
@@ -84,13 +100,13 @@ export class MessagingConversationRepositoryImpl implements MessagingConversatio
 				displayName,
 				uniqueIdentifier,
 			);
-			const result: { id: string; displayName?: string } = {
-				id: conversation.id,
-			};
 			if (conversation.displayName) {
-				result.displayName = conversation.displayName;
+				return {
+					id: conversation.id,
+					displayName: conversation.displayName,
+				};
 			}
-			return result;
+			return { id: conversation.id };
 		} catch (error) {
 			console.error('Error creating conversation in messaging service:', error);
 			throw error;

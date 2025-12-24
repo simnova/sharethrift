@@ -252,11 +252,11 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	Scenario(
 		'PopulateUserFromField returns field value for invalid ID',
 		({ Given, When, Then }) => {
-			const parent = { userId: 'invalid-id' };
+			const parent = { userId: { id: 'invalid-id' } };
 
 			Given('a parent object with an invalid user ID', () => {
-				// Invalid ObjectId
-				expect(parent.userId).toBe('invalid-id');
+				// Invalid ObjectId shape but still includes id field
+				expect(parent.userId.id).toBe('invalid-id');
 			});
 
 			When('PopulateUserFromField resolver is called', async () => {
@@ -265,10 +265,43 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 
 			Then('it should return the original field value', () => {
-				expect(result).toBe('invalid-id');
+				expect(result).toBe(parent.userId);
 			});
 		},
 	);
+
+		Scenario(
+			'PopulateUserFromField returns original object when lookups fail',
+			({ Given, When, Then }) => {
+				const parent = {
+					userId: { id: '507f1f77bcf86cd799439099', name: 'Cached User' },
+				};
+
+				Given('both AdminUser and PersonalUser lookups return null', () => {
+					vi.mocked(
+						mockContext.applicationServices.User.AdminUser.queryById,
+					).mockResolvedValue(null);
+					vi.mocked(
+						mockContext.applicationServices.User.PersonalUser.queryById,
+					).mockResolvedValue(null);
+				});
+
+				When('PopulateUserFromField resolver is called', async () => {
+					const resolver = PopulateUserFromField('userId');
+					result = await resolver(parent, {}, mockContext);
+				});
+
+				Then('it should fall back to the original field object', () => {
+					expect(result).toBe(parent.userId);
+					expect(
+						mockContext.applicationServices.User.AdminUser.queryById,
+					).toHaveBeenCalledWith({ id: '507f1f77bcf86cd799439099' });
+					expect(
+						mockContext.applicationServices.User.PersonalUser.queryById,
+					).toHaveBeenCalledWith({ id: '507f1f77bcf86cd799439099' });
+				});
+			},
+		);
 
 	Scenario(
 		'PopulateItemListingFromField resolves listing by ID',
@@ -311,6 +344,29 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+		Scenario(
+			'PopulateItemListingFromField skips lookup for non-ObjectId shapes',
+			({ Given, When, Then }) => {
+				const parent = { listingId: { id: 'not-a-valid-object-id', title: 'Cached' } };
+
+				Given('listingId has an id field that is not a valid ObjectId', () => {
+					expect(parent.listingId.id).toBe('not-a-valid-object-id');
+				});
+
+				When('PopulateItemListingFromField resolver is called', async () => {
+					const resolver = PopulateItemListingFromField('listingId');
+					result = await resolver(parent, {}, mockContext);
+				});
+
+				Then('it should return the original listing object without querying', () => {
+					expect(result).toBe(parent.listingId);
+					expect(
+						mockContext.applicationServices.Listing.ItemListing.queryById,
+					).not.toHaveBeenCalled();
+				});
+			},
+		);
 
 	Scenario(
 		'getRequestedFieldPaths extracts field paths from selection',

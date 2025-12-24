@@ -1,13 +1,9 @@
-import { Input, Checkbox, Image, Tag } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
-import type { TableProps } from 'antd';
+import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-components';
-import { RequestsCard } from './requests-card.tsx';
+import type { TableProps } from 'antd';
+import { Button, Checkbox, Image, Input, Popconfirm, Tag } from 'antd';
 import type { ListingRequestData } from './my-listings-dashboard.types.tsx';
-import {
-	getStatusTagClass,
-	getActionButtons,
-} from './requests-status-helpers.tsx';
+import { RequestsCard } from './requests-card.tsx';
 
 const { Search } = Input;
 
@@ -24,18 +20,20 @@ interface RequestsTableProps {
 	onStatusFilter: (checkedValues: string[]) => void;
 	onTableChange: TableProps<ListingRequestData>['onChange'];
 	onPageChange: (page: number) => void;
-	onAction: (action: string, requestId: string) => void;
+	onAccept: (requestId: string) => Promise<void>;
+	onReject: (requestId: string) => void;
+	onClose: (requestId: string) => void;
+	onDelete: (requestId: string) => void;
+	onMessage: (requestId: string) => void;
 }
 
 const REQUEST_STATUS_OPTIONS = [
+	{ label: 'Requested', value: 'Requested' },
 	{ label: 'Accepted', value: 'Accepted' },
 	{ label: 'Rejected', value: 'Rejected' },
 	{ label: 'Closed', value: 'Closed' },
-	{ label: 'Pending', value: 'Pending' },
-	{ label: 'Closing', value: 'Closing' },
+	{ label: 'Expired', value: 'Expired' },
 ];
-
-// getStatusTagClass and getActionButtons moved to requests-status-helpers.tsx
 
 export const RequestsTable: React.FC<RequestsTableProps> = ({
 	data,
@@ -50,7 +48,11 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 	onStatusFilter,
 	onTableChange,
 	onPageChange,
-	onAction,
+	onAccept,
+	onReject,
+	onClose,
+	onDelete,
+	onMessage,
 }) => {
 	const columns: TableProps<ListingRequestData>['columns'] = [
 		{
@@ -143,7 +145,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 				// Try to format both as yyyy-mm-dd
 				function formatDate(str: string) {
 					const d = new Date(str);
-					if (isNaN(d.getTime())) {
+					if (Number.isNaN(d.getTime())) {
 						return str;
 					}
 					const yyyy = d.getFullYear();
@@ -188,27 +190,140 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 						style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
 					/>
 				</div>
-			),
-			filterIcon: (filtered: boolean) => (
-				<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-			),
-			render: (status: string) => (
-				<Tag className={getStatusTagClass(status)}>{status}</Tag>
-			),
+		),
+		filterIcon: (filtered: boolean) => (
+			<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+		),
+		render: (status: string) => {
+			let statusClass = '';
+			switch (status) {
+				case 'Accepted':
+					statusClass = 'requestAcceptedTag';
+					break;
+				case 'Rejected':
+					statusClass = 'requestRejectedTag';
+					break;
+				case 'Closed':
+					statusClass = 'expiredTag';
+					break;
+				case 'Pending':
+				case 'Requested':
+					statusClass = 'pendingTag';
+					break;
+				case 'Closing':
+					statusClass = 'closingTag';
+					break;
+				case 'Expired':
+					statusClass = 'expiredTag';
+					break;
+			}
+			return <Tag className={statusClass}>{status}</Tag>;
 		},
-		{
-			title: 'Actions',
-			key: 'actions',
-			width: 200,
-			render: (_: unknown, record: ListingRequestData) => (
-				<div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-					{getActionButtons(record, onAction)}
-				</div>
-			),
-		},
-	];
+	},
+	{
+		title: 'Actions',
+		key: 'actions',
+		width: 200,
+		render: (_: unknown, record: ListingRequestData) => {
+			let actions: string[] = [];
+			switch (record.status) {
+				case 'Pending':
+				case 'Requested':
+					actions = ['accept', 'reject'];
+					break;
+				case 'Accepted':
+					actions = ['close', 'message'];
+					break;
+				case 'Closed':
+					actions = ['message'];
+					break;
+				case 'Rejected':
+				case 'Expired':
+				case 'Cancelled':
+					actions = ['delete'];
+					break;
+			}
 
-	return (
+			const actionButtons = actions.map((action) => {
+				if (action === 'accept') {
+					return (
+						<Button
+							key="accept"
+							type="link"
+							size="small"
+							onClick={() => onAccept(record.id)}
+						>
+							Accept
+						</Button>
+					);
+				}
+				if (action === 'reject') {
+					return (
+						<Button
+							key="reject"
+							type="link"
+							size="small"
+							onClick={() => onReject(record.id)}
+						>
+							Reject
+						</Button>
+					);
+				}
+				if (action === 'close') {
+					return (
+						<Popconfirm
+							key="close"
+							title="Close this request?"
+							description="Are you sure you want to close this request?"
+							onConfirm={() => onClose(record.id)}
+							okText="Yes"
+							cancelText="No"
+						>
+							<Button type="link" size="small">
+								Close
+							</Button>
+						</Popconfirm>
+					);
+				}
+				if (action === 'message') {
+					return (
+						<Button
+							key="message"
+							type="link"
+							size="small"
+							onClick={() => onMessage(record.id)}
+						>
+							Message
+						</Button>
+					);
+				}
+				if (action === 'delete') {
+					return (
+						<Popconfirm
+							key="delete"
+							title="Delete this request?"
+							description="Are you sure you want to delete this request? This action cannot be undone."
+							onConfirm={() => onDelete(record.id)}
+							okText="Yes"
+							cancelText="No"
+						>
+							<Button type="link" size="small" danger>
+								Delete
+							</Button>
+						</Popconfirm>
+					);
+				}
+				return null;
+			});
+
+			return (
+				<div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+					{actionButtons}
+				</div>
+			);
+		},
+	},
+];	return (
 		<Dashboard
 			data={data}
 			columns={columns}
@@ -220,8 +335,15 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			showPagination={true}
 			onChange={onTableChange}
 			renderGridItem={(listing) => (
-				<RequestsCard listing={listing} onAction={onAction} />
+				<RequestsCard
+					listing={listing}
+					onAccept={onAccept}
+					onReject={onReject}
+					onClose={onClose}
+					onDelete={onDelete}
+					onMessage={onMessage}
+				/>
 			)}
 		/>
 	);
-}
+};

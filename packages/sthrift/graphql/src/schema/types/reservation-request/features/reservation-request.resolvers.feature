@@ -39,30 +39,24 @@ So that I can view my reservations and make new ones through the GraphQL API
     Then it should propagate the error message
 
   Scenario: Querying reservation requests for listings owned by sharer
-    Given a valid sharerId
-    And valid pagination arguments (page, pageSize)
+    Given a valid sharerId and reservation requests
     When the myListingsRequests query is executed
-    Then it should call ReservationRequest.queryListingRequestsBySharerId with the provided sharerId
-    And it should paginate and map the results using paginateAndFilterListingRequests
-    And it should return items, total, page, and pageSize
+    Then it should return raw domain objects without UI transformation
 
-  Scenario: Filtering myListingsRequests by search text
+  Scenario: Returning all reservation requests without filtering
     Given reservation requests for a sharer
-    And a searchText "camera"
     When the myListingsRequests query is executed
-    Then only listings whose titles include "camera" should be returned
+    Then all reservation requests should be returned
 
-  Scenario: Filtering myListingsRequests by status
-    Given reservation requests with mixed statuses ["Pending", "Approved"]
-    And a statusFilters ["Approved"]
+  Scenario: Returning mixed status reservation requests
+    Given reservation requests with mixed statuses
     When the myListingsRequests query is executed
-    Then only requests with status "Approved" should be included
+    Then all requests should be returned with their domain state
 
-  Scenario: Sorting myListingsRequests by requestedOn descending
+  Scenario: Returning reservation requests with different timestamps
     Given reservation requests with varying createdAt timestamps
-    And sorter field "requestedOn" with order "descend"
     When the myListingsRequests query is executed
-    Then results should be sorted by requestedOn in descending order
+    Then all requests should be returned in their original order
 
   Scenario: Error while querying myListingsRequests
     Given ReservationRequest.queryListingRequestsBySharerId throws an error
@@ -126,19 +120,29 @@ So that I can view my reservations and make new ones through the GraphQL API
     When the createReservationRequest mutation is executed
     Then it should propagate the error message
 
-  Scenario: Mapping listing request fields
-    Given a ListingRequestDomainShape object with title, state, and reserver username
-    When paginateAndFilterListingRequests is called
-    Then it should map title, requestedBy, requestedOn, reservationPeriod, and status into ListingRequestUiShape
-    And missing fields should default to 'Unknown', '@unknown', or 'Pending' as appropriate
+  Scenario: Returning domain reservation request objects
+    Given a reservation request with complete domain properties
+    When the myListingsRequests query is executed
+    Then it should return domain objects with all properties
 
-  Scenario: Paginating listing requests
-    Given 25 listing requests and a pageSize of 10
-    When paginateAndFilterListingRequests is called for page 2
-    Then it should return 10 items starting from index 10 and total 25
+  Scenario: Returning all listing requests
+    Given 25 listing requests
+    When the myListingsRequests query is executed
+    Then it should return all 25 requests
 
-  Scenario: Sorting listing requests by title ascending
+  Scenario: Returning listing requests with different titles
     Given multiple listing requests with varying titles
-    And sorter field "title" with order "ascend"
-    When paginateAndFilterListingRequests is called
-    Then the results should be sorted alphabetically by title
+    When the myListingsRequests query is executed
+    Then all requests should be returned in their original order
+
+  Scenario: Accepting a reservation request successfully
+    Given a verified user with a valid verifiedJwt containing email
+    And a valid reservation request id
+    When the acceptReservationRequest mutation is executed
+    Then it should call ReservationRequest.update with id and state "Accepted"
+    And it should return the accepted reservation request
+
+  Scenario: Accepting a reservation request without authentication
+    Given a user without a verifiedJwt in their context
+    When the acceptReservationRequest mutation is executed
+    Then it should throw a "User must be authenticated to accept a reservation request" error

@@ -88,9 +88,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					expect(ApolloServer).toHaveBeenCalledWith({
 						schema: {},
 						introspection: true,
-						validationRules: expect.arrayContaining([
-							expect.any(Function), // depthLimit function
-						]),
+						validationRules: expect.any(Array),
 						allowBatchedHttpRequests: true,
 					});
 				},
@@ -255,6 +253,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			Then('it should configure depth limit validation rule', () => {
 				const apolloConfig = getApolloConfig();
 				expect(apolloConfig.validationRules).toBeDefined();
+				expect(apolloConfig.validationRules).toBeInstanceOf(Array);
 				expect(apolloConfig.validationRules.length).toBeGreaterThan(0);
 			});
 

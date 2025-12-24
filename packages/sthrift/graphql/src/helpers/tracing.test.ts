@@ -45,12 +45,15 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
 						spanName: string,
 						fn: (span: Span) => Promise<unknown>,
 					): Promise<unknown> => {
-						const mockSpan = createMockSpan();
-						// Store references for assertions
-						(global as Record<string, unknown>)['__mockSpan'] = mockSpan;
-						(global as Record<string, unknown>)['__mockTracerName'] = tracerName;
-						(global as Record<string, unknown>)['__mockSpanName'] = spanName;
-						return fn(mockSpan);
+					const mockSpan = createMockSpan();
+					// Store references for assertions
+					// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures
+					(global as Record<string, unknown>)['__mockSpan'] = mockSpan;
+					// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures
+					(global as Record<string, unknown>)['__mockTracerName'] = tracerName;
+					// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures
+					(global as Record<string, unknown>)['__mockSpanName'] = spanName;
+					return fn(mockSpan);
 					},
 				),
 			})),

@@ -1,6 +1,7 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ReservationRequestVisa } from '../reservation-request.visa.ts';
+import { ReservationRequestAcceptedEvent } from './events/reservation-request-accepted.event.ts';
 import { ReservationRequestStates } from './reservation-request.value-objects.ts';
 import * as ValueObjects from './reservation-request.value-objects.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
@@ -266,9 +267,19 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			throw new Error('Can only accept requested reservations');
 		}
 
+		const now = new Date();
 		this.props.state = new ValueObjects.ReservationRequestStateValue(
 			ReservationRequestStates.ACCEPTED,
 		).valueOf();
+
+		// Emit domain event for automatic conversation creation
+		this.addDomainEvent(ReservationRequestAcceptedEvent, {
+			reservationRequestId: this.id,
+			listingId: this.props.listing.id,
+			sharerId: this.props.listing.sharer.id,
+			reserverId: this.props.reserver.id,
+			acceptedAt: now,
+		});
 	}
 
 	private reject(): void {

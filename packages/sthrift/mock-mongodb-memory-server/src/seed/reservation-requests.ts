@@ -77,4 +77,34 @@ export const reservationRequests = [
 		createdAt: new Date('2025-08-11T10:00:00Z'),
 		updatedAt: new Date('2025-08-11T10:00:00Z'),
 	},
+	{
+		_id: '907f1f77bcf86cd799439056',
+		state: 'Requested',
+		reservationPeriodStart: new Date('2024-12-01T08:00:00Z'),
+		reservationPeriodEnd: new Date('2024-12-07T20:00:00Z'),
+		schemaVersion: '1.0.0',
+		listing: new ObjectId('707f1f77bcf86cd799439034'), // Cordless Drill (Duy's listing)
+		reserver: new ObjectId('507f1f77bcf86cd799439011'), // Alice (reserver)
+		closeRequestedBySharer: false,
+		closeRequestedByReserver: false,
+		version: 1,
+		discriminatorKey: 'reservation-request',
+		createdAt: new Date('2024-11-25T10:00:00Z'),
+		updatedAt: new Date('2024-11-25T10:00:00Z'),
+	},
+	{
+		_id: '907f1f77bcf86cd799439057',
+		state: 'Requested',
+		reservationPeriodStart: new Date('2024-12-10T08:00:00Z'),
+		reservationPeriodEnd: new Date('2024-12-15T20:00:00Z'),
+		schemaVersion: '1.0.0',
+		listing: new ObjectId('707f1f77bcf86cd799439035'), // Hand Mixer (Duy's listing)
+		reserver: new ObjectId('507f1f77bcf86cd799439012'), // Bob (reserver)
+		closeRequestedBySharer: false,
+		closeRequestedByReserver: false,
+		version: 1,
+		discriminatorKey: 'reservation-request',
+		createdAt: new Date('2024-11-26T10:00:00Z'),
+		updatedAt: new Date('2024-11-26T10:00:00Z'),
+	},
 ] as unknown as Models.ReservationRequest.ReservationRequest[];
