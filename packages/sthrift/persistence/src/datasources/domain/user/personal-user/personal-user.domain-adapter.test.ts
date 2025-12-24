@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { PersonalUserDomainAdapter } from './personal-user.domain-adapter.ts';
 
 const test = { for: describeFeature };
@@ -292,5 +292,84 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			const billing = adapter.account.profile.billing;
 			expect(billing).toBeDefined();
 		});
+	});
+});
+
+// Additional non-BDD tests for edge cases
+describe('PersonalUserDomainAdapter - Additional Coverage', () => {
+	it('should handle error in transactions mapping and return empty array', () => {
+		const doc = makeUserDoc({
+			account: {
+				accountType: 'EmailPassword',
+				email: 'test@example.com',
+				username: 'testuser',
+				profile: {
+					aboutMe: 'About me',
+					firstName: 'John',
+					lastName: 'Doe',
+					location: {
+						address1: '123 Main St',
+						address2: null,
+						city: 'Test City',
+						state: 'TS',
+						country: 'Testland',
+						zipCode: '12345',
+					},
+					billing: {
+						cybersourceCustomerId: 'customer-123',
+						subscription: null,
+						transactions: {
+							items: [
+								{
+									get id() {
+										throw new Error('Error accessing id');
+									},
+									transactionId: 'tx-1',
+									amount: 100,
+									referenceId: 'ref-1',
+									status: 'completed',
+									completedAt: new Date(),
+									errorMessage: null,
+								},
+							],
+						},
+					},
+				},
+			},
+		});
+		const adapter = new PersonalUserDomainAdapter(doc);
+		const result = adapter.entityReference;
+		expect(result.account.profile.billing.transactions).toEqual([]);
+	});
+
+	it('should return empty array when transactions items are null', () => {
+		const doc = makeUserDoc({
+			account: {
+				accountType: 'EmailPassword',
+				email: 'test@example.com',
+				username: 'testuser',
+				profile: {
+					aboutMe: 'About me',
+					firstName: 'John',
+					lastName: 'Doe',
+					location: {
+						address1: '123 Main St',
+						address2: null,
+						city: 'Test City',
+						state: 'TS',
+						country: 'Testland',
+						zipCode: '12345',
+					},
+					billing: {
+						cybersourceCustomerId: 'customer-123',
+						subscription: null,
+						transactions: null,
+					},
+				},
+			},
+		});
+		const adapter = new PersonalUserDomainAdapter(doc);
+		const result = adapter.entityReference;
+		expect(result.account.profile.billing.transactions).toEqual([]);
 	});
 });

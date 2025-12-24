@@ -107,3 +107,18 @@ And an AdminRoleDomainAdapter wrapping the document
 		Then the canEditReservations permission should be true
 		When I set canModerateReservations to true
 		Then the canModerateReservations permission should be true
+
+	Scenario: Accessing conversation permissions when undefined
+		Given an AdminRole document with undefined conversationPermissions
+		When I access the conversationPermissions
+		Then the conversationPermissions should be created and accessible
+
+	Scenario: Accessing listing permissions when undefined
+		Given an AdminRole document with undefined listingPermissions
+		When I access the listingPermissions
+		Then the listingPermissions should be created and accessible
+
+	Scenario: Accessing reservation request permissions when undefined
+		Given an AdminRole document with undefined reservationRequestPermissions
+		When I access the reservationRequestPermissions
+		Then the reservationRequestPermissions should be created and accessible
