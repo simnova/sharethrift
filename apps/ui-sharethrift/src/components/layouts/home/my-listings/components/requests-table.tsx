@@ -126,11 +126,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			sorter: true,
 			sortOrder: sorter.field === 'reservationPeriod' ? sorter.order : null,
 			render: (period: string) => {
-				if (!period) {
-					return 'N/A';
-				}
 				// Expect format 'yyyy-mm-dd - yyyy-mm-dd' or similar
-				// If not, try to parse and format
 				let start = '',
 					end = '';
 				if (period.includes(' - ')) {
@@ -140,7 +136,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 				} else {
 					start = period ?? '';
 				}
-				// Try to format both as yyyy-mm-dd
+				// Format both dates as yyyy-mm-dd
 				function formatDate(str: string) {
 					const d = new Date(str);
 					if (isNaN(d.getTime())) {
