@@ -27,8 +27,8 @@ interface MessageThreadProps {
   handleSendMessage: (e: React.FormEvent) => void;
   currentUserId: string;
   contentContainerStyle?: React.CSSProperties;
-  sharer?: UserInfo;
-  reserver?: UserInfo;
+  sharer: UserInfo;
+  reserver: UserInfo;
 }
 
 export const MessageThread: React.FC<MessageThreadProps> = (props) => {
@@ -36,10 +36,10 @@ export const MessageThread: React.FC<MessageThreadProps> = (props) => {
 
   // Helper to get display name for a given authorId - memoized for performance
   const getAuthorDisplayName = useCallback((authorId: string): string => {
-    if (props.sharer?.id === authorId) {
+    if (props.sharer.id === authorId) {
       return props.sharer.displayName || "Sharer";
     }
-    if (props.reserver?.id === authorId) {
+    if (props.reserver.id === authorId) {
       return props.reserver.displayName || "Reserver";
     }
     return "User";

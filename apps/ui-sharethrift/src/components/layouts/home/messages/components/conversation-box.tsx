@@ -26,7 +26,7 @@ const getUserDisplayName = (
 export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 	const [messageText, setMessageText] = useState('');
 
-	const currentUserId = props?.data?.sharer?.id;
+	const currentUserId = props?.data?.sharer?.id || '';
 
 	const handleSendMessage = useCallback(
 		(e: React.FormEvent) => {
@@ -38,24 +38,18 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 
 	// Build user info for sharer and reserver - memoized to avoid unnecessary rerenders
 	const sharerInfo = useMemo(
-		() =>
-			props.data?.sharer
-				? {
-						id: props.data.sharer.id,
-						displayName: getUserDisplayName(props.data.sharer),
-					}
-				: undefined,
+		() => ({
+			id: props.data.sharer?.id || '',
+			displayName: getUserDisplayName(props.data.sharer),
+		}),
 		[props.data?.sharer],
 	);
 
 	const reserverInfo = useMemo(
-		() =>
-			props.data?.reserver
-				? {
-						id: props.data.reserver.id,
-						displayName: getUserDisplayName(props.data.reserver),
-					}
-				: undefined,
+		() => ({
+			id: props.data.reserver?.id || '',
+			displayName: getUserDisplayName(props.data.reserver),
+		}),
 		[props.data?.reserver],
 	);
 
