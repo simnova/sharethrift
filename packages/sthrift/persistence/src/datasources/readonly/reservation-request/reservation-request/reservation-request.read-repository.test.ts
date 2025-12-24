@@ -22,7 +22,10 @@ function createValidObjectId(id: string): string {
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/reservation-request.read-repository.feature'),
+	path.resolve(
+		__dirname,
+		'features/reservation-request.read-repository.feature',
+	),
 );
 
 function makePassport(): Domain.Passport {
@@ -43,6 +46,12 @@ function makePassport(): Domain.Passport {
 			})),
 		},
 	} as unknown as Domain.Passport);
+}
+
+function createNullPopulateChain<T>(result: T) {
+	const innerLean = { lean: vi.fn(async () => result) };
+	const innerPopulate = { populate: vi.fn(() => innerLean) };
+	return { populate: vi.fn(() => innerPopulate) };
 }
 
 function makeMockUser(id: string): Models.User.PersonalUser {
@@ -83,7 +92,10 @@ function makeMockUser(id: string): Models.User.PersonalUser {
 	} as unknown as Models.User.PersonalUser;
 }
 
-function makeMockListing(id: string, sharerId = 'sharer-1'): Models.Listing.ItemListing {
+function makeMockListing(
+	id: string,
+	sharerId = 'sharer-1',
+): Models.Listing.ItemListing {
 	return {
 		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
 		id: id,
@@ -98,7 +110,9 @@ function makeMockReservationRequest(
 ): Models.ReservationRequest.ReservationRequest {
 	const reservationId = overrides.id || 'reservation-1';
 	const defaultReservation = {
-		_id: new MongooseSeedwork.ObjectId(createValidObjectId(reservationId as string)),
+		_id: new MongooseSeedwork.ObjectId(
+			createValidObjectId(reservationId as string),
+		),
 		id: reservationId,
 		state: 'Pending',
 		reserver: makeMockUser('user-1'),
@@ -147,6 +161,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			mockQuery.limit.mockReturnValue(mockQuery);
 			mockQuery.select.mockReturnValue(mockQuery);
 			
+
 			// Make the query thenable (like Mongoose queries are) by adding then as property
 			Object.defineProperty(mockQuery, 'then', {
 				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
@@ -180,7 +195,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			},
 		} as unknown as ModelsContext;
 
-		repository = new ReservationRequestReadRepositoryImpl(modelsContext, passport);
+		repository = new ReservationRequestReadRepositoryImpl(
+			modelsContext,
+			passport,
+		);
 		result = undefined;
 	});
 
@@ -200,7 +218,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		Given('multiple ReservationRequest documents in the database', () => {
 			mockReservationRequests = [
 				makeMockReservationRequest(),
-				makeMockReservationRequest({ id: 'reservation-2' } as unknown as Partial<Models.ReservationRequest.ReservationRequest>),
+				makeMockReservationRequest({
+					id: 'reservation-2',
+				} as unknown as Partial<Models.ReservationRequest.ReservationRequest>),
 			];
 		});
 		When('I call getAll', async () => {
@@ -217,41 +237,43 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Getting a reservation request by ID', ({ Given, When, Then, And }) => {
-		Given('a ReservationRequest document with id "reservation-1"', () => {
-			mockReservationRequests = [makeMockReservationRequest()];
-		});
-		When('I call getById with "reservation-1"', async () => {
-			const validObjectId = createValidObjectId('reservation-1');
-			result = await repository.getById(validObjectId);
-		});
-		Then('I should receive a ReservationRequest entity', () => {
-			expect(result).toBeDefined();
-			expect(result).not.toBeNull();
-		});
-		And('the entity\'s id should be "reservation-1"', () => {
-			const reservation =
-				result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
-			expect(reservation.id).toBeDefined();
-		});
-	});
+	Scenario(
+		'Getting a reservation request by ID',
+		({ Given, When, Then, And }) => {
+			Given('a ReservationRequest document with id "reservation-1"', () => {
+				mockReservationRequests = [makeMockReservationRequest()];
+			});
+			When('I call getById with "reservation-1"', async () => {
+				const validObjectId = createValidObjectId('reservation-1');
+				result = await repository.getById(validObjectId);
+			});
+			Then('I should receive a ReservationRequest entity', () => {
+				expect(result).toBeDefined();
+				expect(result).not.toBeNull();
+			});
+			And('the entity\'s id should be "reservation-1"', () => {
+				const reservation =
+					result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
+				expect(reservation.id).toBeDefined();
+			});
+		},
+	);
 
-	Scenario('Getting a reservation request by nonexistent ID', ({ When, Then }) => {
-		When('I call getById with "nonexistent-id"', async () => {
-			mockModel.findById = vi.fn(() => ({
-				populate: vi.fn(() => ({
-					populate: vi.fn(() => ({
-						lean: vi.fn(async () => null),
-					})),
-				})),
-			})) as unknown as typeof mockModel.findById;
+	Scenario(
+		'Getting a reservation request by nonexistent ID',
+		({ When, Then }) => {
+			When('I call getById with "nonexistent-id"', async () => {
+				mockModel.findById = vi.fn(() =>
+					createNullPopulateChain(null),
+				) as unknown as typeof mockModel.findById;
 
-			result = await repository.getById('nonexistent-id');
-		});
-		Then('it should return null', () => {
-			expect(result).toBeNull();
-		});
-	});
+				result = await repository.getById('nonexistent-id');
+			});
+			Then('it should return null', () => {
+				expect(result).toBeNull();
+			});
+		},
+	);
 
 	Scenario(
 		'Getting reservation requests by reserver ID',
@@ -264,62 +286,82 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				];
 			});
 			When('I call getByReserverId with "user-1"', async () => {
-				result = await repository.getByReserverId(createValidObjectId('user-1'));
+				result = await repository.getByReserverId(
+					createValidObjectId('user-1'),
+				);
 			});
 			Then('I should receive an array of ReservationRequest entities', () => {
 				expect(Array.isArray(result)).toBe(true);
 			});
-			And('the array should contain reservation requests where reserver is "user-1"', () => {
-				const reservations =
-					result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
-				expect(reservations.length).toBeGreaterThan(0);
-			});
+			And(
+				'the array should contain reservation requests where reserver is "user-1"',
+				() => {
+					const reservations =
+						result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+					expect(reservations.length).toBeGreaterThan(0);
+				},
+			);
 		},
 	);
 
 	Scenario(
 		'Getting active reservation requests by reserver ID with listing and sharer',
 		({ Given, When, Then, And }) => {
-			Given('a ReservationRequest document with reserver "user-1" and state "Accepted"', () => {
-				mockReservationRequests = [
-					makeMockReservationRequest({
-						reserver: makeMockUser('user-1'),
-						state: 'Accepted',
-					}),
-				];
-			});
-			When('I call getActiveByReserverIdWithListingWithSharer with "user-1"', async () => {
-				result = await repository.getActiveByReserverIdWithListingWithSharer(
-					createValidObjectId('user-1'),
-				);
-			});
+			Given(
+				'a ReservationRequest document with reserver "user-1" and state "Accepted"',
+				() => {
+					mockReservationRequests = [
+						makeMockReservationRequest({
+							reserver: makeMockUser('user-1'),
+							state: 'Accepted',
+						}),
+					];
+				},
+			);
+			When(
+				'I call getActiveByReserverIdWithListingWithSharer with "user-1"',
+				async () => {
+					result = await repository.getActiveByReserverIdWithListingWithSharer(
+						createValidObjectId('user-1'),
+					);
+				},
+			);
 			Then('I should receive an array of ReservationRequest entities', () => {
 				expect(Array.isArray(result)).toBe(true);
 			});
-			And('the array should contain active reservation requests with populated listing and reserver', () => {
-				const reservations =
-					result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
-				expect(reservations.length).toBeGreaterThan(0);
-			});
+			And(
+				'the array should contain active reservation requests with populated listing and reserver',
+				() => {
+					const reservations =
+						result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+					expect(reservations.length).toBeGreaterThan(0);
+				},
+			);
 		},
 	);
 
 	Scenario(
 		'Getting past reservation requests by reserver ID',
 		({ Given, When, Then, And }) => {
-			Given('a ReservationRequest document with reserver "user-1" and state "Closed"', () => {
-				mockReservationRequests = [
-					makeMockReservationRequest({
-						reserver: makeMockUser('user-1'),
-						state: 'Closed',
-					}),
-				];
-			});
-			When('I call getPastByReserverIdWithListingWithSharer with "user-1"', async () => {
-				result = await repository.getPastByReserverIdWithListingWithSharer(
-					createValidObjectId('user-1'),
-				);
-			});
+			Given(
+				'a ReservationRequest document with reserver "user-1" and state "Closed"',
+				() => {
+					mockReservationRequests = [
+						makeMockReservationRequest({
+							reserver: makeMockUser('user-1'),
+							state: 'Closed',
+						}),
+					];
+				},
+			);
+			When(
+				'I call getPastByReserverIdWithListingWithSharer with "user-1"',
+				async () => {
+					result = await repository.getPastByReserverIdWithListingWithSharer(
+						createValidObjectId('user-1'),
+					);
+				},
+			);
 			Then('I should receive an array of ReservationRequest entities', () => {
 				expect(Array.isArray(result)).toBe(true);
 			});
@@ -334,13 +376,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	Scenario(
 		'Getting listing requests by sharer ID',
 		({ Given, When, Then, And }) => {
-			Given('a ReservationRequest document with listing owned by "sharer-1"', () => {
-				mockReservationRequests = [
-					makeMockReservationRequest({
-						listing: makeMockListing('listing-1', 'sharer-1'),
-					}),
-				];
-			});
+			Given(
+				'a ReservationRequest document with listing owned by "sharer-1"',
+				() => {
+					mockReservationRequests = [
+						makeMockReservationRequest({
+							listing: makeMockListing('listing-1', 'sharer-1'),
+						}),
+					];
+				},
+			);
 			When('I call getListingRequestsBySharerId with "sharer-1"', async () => {
 				result = await repository.getListingRequestsBySharerId(
 					createValidObjectId('sharer-1'),
@@ -349,11 +394,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Then('I should receive an array of ReservationRequest entities', () => {
 				expect(Array.isArray(result)).toBe(true);
 			});
-			And('the array should contain reservation requests for listings owned by "sharer-1"', () => {
-				const reservations =
-					result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
-				expect(reservations.length).toBeGreaterThan(0);
-			});
+			And(
+				'the array should contain reservation requests for listings owned by "sharer-1"',
+				() => {
+					const reservations =
+						result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+					expect(reservations.length).toBeGreaterThan(0);
+				},
+			);
 		},
 	);
 
@@ -372,12 +420,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					];
 				},
 			);
-			When('I call getActiveByReserverIdAndListingId with "user-1" and "listing-1"', async () => {
-				result = await repository.getActiveByReserverIdAndListingId(
-					createValidObjectId('user-1'),
-					createValidObjectId('listing-1'),
-				);
-			});
+			When(
+				'I call getActiveByReserverIdAndListingId with "user-1" and "listing-1"',
+				async () => {
+					result = await repository.getActiveByReserverIdAndListingId(
+						createValidObjectId('user-1'),
+						createValidObjectId('listing-1'),
+					);
+				},
+			);
 			Then('I should receive a ReservationRequest entity', () => {
 				expect(result).toBeDefined();
 				expect(result).not.toBeNull();
@@ -414,46 +465,58 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When(
 				'I call getOverlapActiveReservationRequestsForListing with "listing-1", start "2025-10-22", end "2025-10-27"',
 				async () => {
-					result = await repository.getOverlapActiveReservationRequestsForListing(
-						createValidObjectId('listing-1'),
-						new Date('2025-10-22'),
-						new Date('2025-10-27'),
-					);
+					result =
+						await repository.getOverlapActiveReservationRequestsForListing(
+							createValidObjectId('listing-1'),
+							new Date('2025-10-22'),
+							new Date('2025-10-27'),
+						);
 				},
 			);
 			Then('I should receive an array of ReservationRequest entities', () => {
 				expect(Array.isArray(result)).toBe(true);
 			});
-			And('the array should contain overlapping active reservation requests', () => {
-				const reservations =
-					result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
-				expect(reservations.length).toBeGreaterThan(0);
-			});
+			And(
+				'the array should contain overlapping active reservation requests',
+				() => {
+					const reservations =
+						result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+					expect(reservations.length).toBeGreaterThan(0);
+				},
+			);
 		},
 	);
 
 	Scenario(
 		'Getting active reservations by listing ID',
 		({ Given, When, Then, And }) => {
-			Given('a ReservationRequest document with listing "listing-1" and state "Requested"', () => {
-				mockReservationRequests = [
-					makeMockReservationRequest({
-						listing: makeMockListing('listing-1'),
-						state: 'Requested',
-					}),
-				];
-			});
+			Given(
+				'a ReservationRequest document with listing "listing-1" and state "Requested"',
+				() => {
+					mockReservationRequests = [
+						makeMockReservationRequest({
+							listing: makeMockListing('listing-1'),
+							state: 'Requested',
+						}),
+					];
+				},
+			);
 			When('I call getActiveByListingId with "listing-1"', async () => {
-				result = await repository.getActiveByListingId(createValidObjectId('listing-1'));
+				result = await repository.getActiveByListingId(
+					createValidObjectId('listing-1'),
+				);
 			});
 			Then('I should receive an array of ReservationRequest entities', () => {
 				expect(Array.isArray(result)).toBe(true);
 			});
-			And('the array should contain active reservation requests for the listing', () => {
-				const reservations =
-					result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
-				expect(reservations.length).toBeGreaterThan(0);
-			});
+			And(
+				'the array should contain active reservation requests for the listing',
+				() => {
+					const reservations =
+						result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+					expect(reservations.length).toBeGreaterThan(0);
+				},
+			);
 		},
 	);
 });

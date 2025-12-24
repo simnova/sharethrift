@@ -64,3 +64,8 @@ And valid Conversation documents exist in the database
 		Given an error will occur during the query
 		When I call getBySharerReserverListing
 		Then it should return null due to error
+
+	Scenario: Getting conversation with invalid ObjectId format
+		Given an invalid ObjectId will cause an error
+		When I call getBySharerReserverListing with invalid ID
+		Then it should return null due to ObjectId error
