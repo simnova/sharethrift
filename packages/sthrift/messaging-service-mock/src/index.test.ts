@@ -1,21 +1,24 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { Server } from 'node:http';
+import type { AddressInfo } from 'node:net';
 import { ServiceMessagingMock } from './index.ts';
 import { startServer, stopServer } from '@sthrift/mock-messaging-server';
 
 describe('ServiceMessagingMock Integration Tests', () => {
 	let service: ServiceMessagingMock;
 	let mockServer: Server;
+	let mockServerUrl: string;
 	const originalEnv = { ...process.env };
-	const MOCK_SERVER_PORT = 10000;
-	const MOCK_SERVER_URL = `http://localhost:${MOCK_SERVER_PORT}`;
+	const MOCK_SERVER_HOST = 'http://localhost';
 
 	beforeAll(async () => {
-		process.env['MESSAGING_MOCK_URL'] = MOCK_SERVER_URL;
-		
-		mockServer = await startServer(MOCK_SERVER_PORT, true);
-		
-		await new Promise((resolve) => setTimeout(resolve, 500));
+		mockServer = await startServer(0, true);
+		const address = mockServer.address();
+		if (!address || typeof address === 'string') {
+			throw new Error('Mock server did not provide a TCP address');
+		}
+		mockServerUrl = `${MOCK_SERVER_HOST}:${(address as AddressInfo).port}`;
+		process.env['MESSAGING_MOCK_URL'] = mockServerUrl;
 	}, 15000);
 
 	afterAll(async () => {
@@ -27,14 +30,14 @@ describe('ServiceMessagingMock Integration Tests', () => {
 
 	describe('Service Lifecycle', () => {
 		it('should start up successfully in mock mode', async () => {
-			service = new ServiceMessagingMock(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(mockServerUrl);
 			await service.startUp();
 			expect(service).toBeDefined();
 			await service.shutDown();
 		});
 
 		it('should throw error when starting up twice', async () => {
-			service = new ServiceMessagingMock(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(mockServerUrl);
 			await service.startUp();
 			await expect(service.startUp()).rejects.toThrow(
 				'ServiceMessagingMock is already started',
@@ -43,7 +46,7 @@ describe('ServiceMessagingMock Integration Tests', () => {
 		});
 
 		it('should throw error when shutting down without starting', async () => {
-			service = new ServiceMessagingMock(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(mockServerUrl);
 			await expect(service.shutDown()).rejects.toThrow(
 				'ServiceMessagingMock is not started - shutdown cannot proceed',
 			);
@@ -54,7 +57,7 @@ describe('ServiceMessagingMock Integration Tests', () => {
 		let conversationId: string;
 
 		beforeAll(async () => {
-			service = new ServiceMessagingMock(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(mockServerUrl);
 			await service.startUp();
 		});
 
@@ -116,7 +119,7 @@ describe('ServiceMessagingMock Integration Tests', () => {
 		let createdConversationId: string;
 
 		beforeAll(async () => {
-			service = new ServiceMessagingMock(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(mockServerUrl);
 			await service.startUp();
 		});
 
@@ -150,7 +153,7 @@ describe('ServiceMessagingMock Integration Tests', () => {
 
 	describe('End-to-End Workflow', () => {
 		beforeAll(async () => {
-			service = new ServiceMessagingMock(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(mockServerUrl);
 			await service.startUp();
 		});
 
@@ -198,7 +201,7 @@ describe('ServiceMessagingMock Integration Tests', () => {
 
 	describe('Error Handling', () => {
 		beforeAll(async () => {
-			service = new ServiceMessagingMock(MOCK_SERVER_URL);
+			service = new ServiceMessagingMock(mockServerUrl);
 			await service.startUp();
 		});
 

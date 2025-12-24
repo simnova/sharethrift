@@ -13,7 +13,7 @@ interface ListingRequestDomainShape {
 	reservationPeriodStart?: Date;
 	reservationPeriodEnd?: Date;
 	listing?: { title?: string; [k: string]: unknown };
-	reserver?: { account?: { username?: string } };
+	reserver?: { id?: string; account?: { username?: string } };
 	[k: string]: unknown; // allow passthrough
 }
 
@@ -29,7 +29,8 @@ interface ListingRequestUiShape {
 	[k: string]: unknown; // enable dynamic field sorting access
 }
 
-function paginateAndFilterListingRequests(
+// Exported for unit testing the request mapping/pagination logic
+export function paginateAndFilterListingRequests(
 	requests: ListingRequestDomainShape[],
 	options: {
 		page: number;

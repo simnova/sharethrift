@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { MessageThread } from "../components/message-thread.tsx";
+import { BrowserRouter } from "react-router-dom";
 import { expect, within } from 'storybook/test';
 
 const mockMessages = [
@@ -15,11 +16,21 @@ const mockMessages = [
     id: "m2",
     messagingMessageId: "SM2",
     conversationId: "1",
-    authorId: "Alice",
+    authorId: "alice456",
     content: "Yes, it is! Do you want to see it?",
     createdAt: "2025-08-08T12:02:00Z",
   },
 ];
+
+const mockSharer = {
+  id: "alice456",
+  displayName: "Alice Johnson",
+};
+
+const mockReserver = {
+  id: "user123",
+  displayName: "Bob Smith",
+};
 
 const meta: Meta<typeof MessageThread> = {
   title: "Components/Messages/MessageThread",
@@ -28,6 +39,13 @@ const meta: Meta<typeof MessageThread> = {
     setMessageText: { action: 'message text set' },
     handleSendMessage: { action: 'message sent' },
   },
+  decorators: [
+    (Story) => (
+      <BrowserRouter>
+        <Story />
+      </BrowserRouter>
+    ),
+  ],
 };
 export default meta;
 type Story = StoryObj<typeof MessageThread>;
@@ -48,6 +66,8 @@ export const Default: Story = {
     },
     currentUserId: "user123",
     contentContainerStyle: { paddingLeft: 24 },
+    sharer: mockSharer,
+    reserver: mockReserver,
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
