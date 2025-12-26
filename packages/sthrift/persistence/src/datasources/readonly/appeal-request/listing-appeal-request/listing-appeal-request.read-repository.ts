@@ -18,6 +18,10 @@ export interface ListingAppealRequestReadRepository {
 		id: string,
 	) => Promise<Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference | null>;
 
+	getByListingId: (
+		listingId: string,
+	) => Promise<Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference | null>;
+
 	getAll: (args: {
 		page: number;
 		pageSize: number;
@@ -45,6 +49,17 @@ export const getListingAppealRequestReadRepository = (
 	return {
 		getById: (id: string) => {
 			return repository.getById(id).then((result) => result ?? null);
+		},
+
+		getByListingId: async (
+			listingId: string,
+		): Promise<Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference | null> => {
+			const results = await repository.getByListingId(listingId);
+			// Return the most recent appeal request for this listing
+			if (results && results.length > 0 && results[0]) {
+				return results[0];
+			}
+			return null;
 		},
 
 		getAll: (args) => {

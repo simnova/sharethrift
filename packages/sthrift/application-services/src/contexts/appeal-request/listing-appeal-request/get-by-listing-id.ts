@@ -9,14 +9,8 @@ export const getByListingId = (dataSources: DataSources) => {
 	return async (
 		command: GetListingAppealRequestByListingIdCommand,
 	): Promise<Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference | null> => {
-		const appealRequests =
-			await dataSources.domainDataSource.AppealRequest.ListingAppealRequest.getByListingId(
-				command.listingId,
-			);
-		// Return the most recent appeal request for this listing
-		if (appealRequests.length > 0) {
-			return appealRequests[0];
-		}
-		return null;
+		return await dataSources.readonlyDataSource.AppealRequest.ListingAppealRequest.ListingAppealRequestReadRepo.getByListingId(
+			command.listingId,
+		);
 	};
 };

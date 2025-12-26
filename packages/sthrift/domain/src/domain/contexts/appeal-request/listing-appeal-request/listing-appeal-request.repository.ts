@@ -31,4 +31,11 @@ export interface ListingAppealRequestRepository<
 	 * @throws Error if the appeal request is not found
 	 */
 	getById(id: string): Promise<ListingAppealRequest<props>>;
+
+	/**
+	 * Retrieves all ListingAppealRequests for a specific listing.
+	 * @param listingId - The ID of the listing
+	 * @returns Array of ListingAppealRequest instances for the listing
+	 */
+	getByListingId(listingId: string): Promise<ListingAppealRequest<props>[]>;
 }

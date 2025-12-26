@@ -19,8 +19,8 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	images?: string[]; // Array of image URLs
 	listingType: string;
     expiresAt?: Date | undefined; // TTL field for automatic expiration
-	blockReason?: string; // Reason for blocking (e.g., "Profanity")
-	blockDescription?: string; // Detailed description of why listing was blocked
+	blockReason?: string | undefined; // Reason for blocking (e.g., "Profanity")
+	blockDescription?: string | undefined; // Detailed description of why listing was blocked
 }
 
 export interface ItemListingEntityReference
