@@ -1,12 +1,20 @@
-import { Row, Col, Button } from 'antd';
+import { Row, Col, Button, Alert } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@apollo/client/react';
+import { message } from 'antd';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
+import { BlockInformationModal } from './block-information-modal.tsx';
+import { AppealConfirmationModal } from './appeal-confirmation-modal.tsx';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
+	ViewListingAppealRequestByListingIdQuery,
 } from '../../../../../generated.tsx';
+import { HomeListingInformationCreateListingAppealRequestDocument } from '../../../../../generated.tsx';
 
 interface ViewListingProps {
 	listing: ItemListing;
@@ -16,6 +24,11 @@ interface ViewListingProps {
 	userReservationRequest:
 		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
 		| null;
+	appealRequest:
+		| ViewListingAppealRequestByListingIdQuery['getListingAppealRequestByListingId']
+		| null
+		| undefined;
+	onAppealRequestSuccess?: () => void;
 	sharedTimeAgo?: string;
 }
 
@@ -25,14 +38,68 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	isAuthenticated,
 	currentUserId,
 	userReservationRequest,
+	appealRequest,
+	onAppealRequestSuccess,
 	sharedTimeAgo,
 }) => {
+	const navigate = useNavigate();
+	const [blockInfoModalVisible, setBlockInfoModalVisible] = useState(false);
+	const [appealConfirmModalVisible, setAppealConfirmModalVisible] =
+		useState(false);
+	const [appealSuccess, setAppealSuccess] = useState(false);
+
+	const [createAppealRequest, { loading: appealLoading }] = useMutation(
+		HomeListingInformationCreateListingAppealRequestDocument,
+		{
+			onCompleted: () => {
+				setAppealSuccess(true);
+				setAppealConfirmModalVisible(false);
+				setBlockInfoModalVisible(false);
+				message.success('Appeal requested successfully.');
+				onAppealRequestSuccess?.();
+			},
+			onError: (error) => {
+				message.error(`Failed to submit appeal: ${error.message}`);
+			},
+		},
+	);
+
 	// Mock sharer info (since ItemListing.sharer is just an ID)
 	const sharer = listing.sharer;
 
 	const handleBack = () => {
 		window.location.href = '/';
 	};
+
+	const handleEditListing = () => {
+		navigate(`/create-listing/${listing.id}`);
+	};
+
+	const handleAppealBlock = () => {
+		setBlockInfoModalVisible(false);
+		setAppealConfirmModalVisible(true);
+	};
+
+	const handleAppealConfirm = async () => {
+		if (!currentUserId || !listing.id) {
+			message.error('Unable to submit appeal. Please try again.');
+			return;
+		}
+
+		await createAppealRequest({
+			variables: {
+				input: {
+					userId: currentUserId,
+					listingId: listing.id,
+					reason: 'User is appealing the block on this listing',
+					blockerId: listing.sharer?.id || currentUserId, // Fallback if blocker not available
+				},
+			},
+		});
+	};
+
+	const isBlocked = listing.state === 'Blocked';
+	const appealRequested = appealRequest?.state === 'REQUESTED';
 
 	return (
 		<>
@@ -90,6 +157,33 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 				gutter={[0, 24]}
 				className="view-listing-responsive"
 			>
+				{/* Blocked Listing Banner */}
+				{isBlocked && (
+					<Col span={24} style={{ marginBottom: 16 }}>
+						<Alert
+							message={
+								appealRequested || appealSuccess
+									? 'This listing is blocked. Your appeal is awaiting approval.'
+									: 'This listing is blocked.'
+							}
+							type="error"
+							showIcon
+							action={
+								<Button size="small" onClick={() => setBlockInfoModalVisible(true)}>
+									View Details
+								</Button>
+							}
+						/>
+						{appealSuccess && (
+							<Alert
+								message="Appeal requested successfully."
+								type="success"
+								showIcon
+								style={{ marginTop: 8 }}
+							/>
+						)}
+					</Col>
+				)}
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					<Button
 						className="primaryButton"
@@ -150,6 +244,22 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 					</Row>
 				</Col>
 			</Row>
+			{/* Modals */}
+			<BlockInformationModal
+				visible={blockInfoModalVisible}
+				onClose={() => setBlockInfoModalVisible(false)}
+				onEditListing={handleEditListing}
+				onAppealBlock={handleAppealBlock}
+				blockReason={listing.blockReason ?? undefined}
+				blockDescription={listing.blockDescription ?? undefined}
+				appealRequested={appealRequested}
+			/>
+			<AppealConfirmationModal
+				visible={appealConfirmModalVisible}
+				onConfirm={handleAppealConfirm}
+				onCancel={() => setAppealConfirmModalVisible(false)}
+				loading={appealLoading}
+			/>
 			{/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
 		</>
 	);

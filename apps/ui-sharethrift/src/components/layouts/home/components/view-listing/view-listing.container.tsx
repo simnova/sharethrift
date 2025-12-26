@@ -6,6 +6,7 @@ import {
 	ViewListingActiveReservationRequestForListingDocument,
 	ViewListingCurrentUserDocument,
 	ViewListingDocument,
+	ViewListingAppealRequestByListingIdDocument,
 } from '../../../../../generated.tsx';
 import { ViewListing } from './view-listing';
 
@@ -59,6 +60,17 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		skip,
 	});
 
+	// Fetch appeal request for blocked listing
+	const {
+		data: appealRequestData,
+		loading: appealRequestLoading,
+		refetch: refetchAppealRequest,
+	} = useQuery(ViewListingAppealRequestByListingIdDocument, {
+		variables: { listingId: listingId ?? '' },
+		skip: !listingId,
+		fetchPolicy: 'network-only',
+	});
+
 	const sharedTimeAgo = listingData?.itemListing?.createdAt
 		? computeTimeAgo(listingData.itemListing.createdAt)
 		: undefined;
@@ -66,7 +78,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 	const userIsSharer = false;
 	return (
 		<ComponentQueryLoader
-			loading={userReservationLoading || listingLoading || currentUserLoading}
+			loading={userReservationLoading || listingLoading || currentUserLoading || appealRequestLoading}
 			error={listingError}
 			errorComponent={<div>Error loading listing.</div>}
 			hasData={listingData?.itemListing}
@@ -80,6 +92,8 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 					userReservationRequest={
 						userReservationData?.myActiveReservationForListing
 					}
+					appealRequest={appealRequestData?.getListingAppealRequestByListingId}
+					onAppealRequestSuccess={refetchAppealRequest}
 				/>
 			}
 		/>
