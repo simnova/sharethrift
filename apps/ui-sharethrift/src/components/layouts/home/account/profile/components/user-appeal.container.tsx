@@ -24,9 +24,11 @@ export const UserAppealContainer: React.FC<
 
 	const handleSubmitAppeal = async (reason: string) => {
 		try {
-			// If we don't have a blockerId, we'll need to fetch it from the backend
-			// For now, using a placeholder - this should be improved to fetch the actual blocker
-			const effectiveBlockerId = blockerId || userId; // Temporary fallback
+			// TODO: SECURITY - Need to fetch the actual blockerId from the backend
+			// Currently using userId as a temporary fallback which is not correct
+			// The backend should provide the blocker information or allow null blockerId
+			// Issue: https://github.com/simnova/sharethrift/issues/XXX
+			const effectiveBlockerId = blockerId || userId;
 
 			await createAppealMutation({
 				variables: {

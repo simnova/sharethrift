@@ -80,9 +80,12 @@ export const AdminAppealsTableContainer: React.FC = () => {
 		action: 'accept' | 'deny' | 'view-user',
 		appealId: string,
 	) => {
+		// TODO: Implement navigation to user profile
+		// The view-user action should navigate to the user's profile page
+		// Example: navigate(`/admin/users/${appealId}`)
 		if (action === 'view-user') {
-			// Navigate to user profile
 			console.log('Navigate to user:', appealId);
+			message.info('User profile navigation not yet implemented');
 			return;
 		}
 
@@ -111,7 +114,10 @@ export const AdminAppealsTableContainer: React.FC = () => {
 
 	const appealsList = data?.getAllUserAppealRequests?.items || [];
 
-	// Filter by search text
+	// TODO: PERFORMANCE - Move search filtering to server-side
+	// Current implementation filters on the client which won't scale well
+	// The GraphQL schema needs to be extended to support searchText parameter
+	// Issue: https://github.com/simnova/sharethrift/issues/XXX
 	const filteredAppeals = searchText
 		? appealsList.filter(
 				(appeal) =>
