@@ -14,6 +14,7 @@ import { SettingOutlined, UserOutlined } from '@ant-design/icons';
 import '../components/profile-view.overrides.css';
 import type { ItemListing } from '../../../../../../generated';
 import type { ProfileUser } from './profile-view.types';
+import { UserAppealContainer } from './user-appeal.container.tsx';
 
 const { Text } = Typography;
 
@@ -43,6 +44,14 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
 
 	return (
 		<div className="max-w-4xl mx-auto p-6">
+			{/* User Appeal Section - shown when user is blocked */}
+			{isOwnProfile && user.isBlocked && (
+				<UserAppealContainer
+					userId={user.id}
+					isBlocked={user.isBlocked}
+				/>
+			)}
+
 			{/* Profile Header */}
 			<Card className="mb-6 profile-header">
 				{/* Mobile Account Settings Button */}

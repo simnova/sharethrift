@@ -33,7 +33,7 @@ export const ProfileViewContainer: React.FC = () => {
 	};
 
 	const currentUser = userQueryData?.currentUser;
-	const { account, createdAt } = currentUser || {};
+	const { account, createdAt, isBlocked } = currentUser || {};
 
 	if (!currentUser) {
 		return null;
@@ -51,6 +51,7 @@ export const ProfileViewContainer: React.FC = () => {
 			state: account?.profile?.location?.state || '',
 		},
 		createdAt: createdAt || '',
+		isBlocked: isBlocked || false,
 	};
 
 	const listings = (listingsData?.myListingsAll?.items || []).map((listing) => ({
