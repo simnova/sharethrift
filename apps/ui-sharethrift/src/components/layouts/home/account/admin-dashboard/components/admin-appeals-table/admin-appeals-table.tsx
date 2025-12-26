@@ -154,6 +154,28 @@ export const AdminAppealsTable: React.FC<
 			key: 'userName',
 			sorter: true,
 			sortOrder: sorter?.field === 'userName' ? sorter.order : undefined,
+			filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+				<div style={{ padding: 8 }}>
+					<Search
+						placeholder="Search by user name or email"
+						value={
+							selectedKeys.length ? (selectedKeys[0] as string) : searchText
+						}
+						onChange={(e) => {
+							setSelectedKeys(e.target.value ? [e.target.value] : []);
+						}}
+						onSearch={(value) => {
+							confirm();
+							onSearch(value);
+						}}
+						style={{ width: 250 }}
+						allowClear
+					/>
+				</div>
+			),
+			filterIcon: (filtered: boolean) => (
+				<SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+			),
 		},
 		{
 			title: 'Email',
@@ -178,6 +200,22 @@ export const AdminAppealsTable: React.FC<
 				value: opt.value,
 			})),
 			filteredValue: statusFilters,
+			filterDropdown: ({ setSelectedKeys, selectedKeys, confirm }) => (
+				<div style={{ padding: 8 }}>
+					<Checkbox.Group
+						options={STATUS_OPTIONS}
+						value={selectedKeys as string[]}
+						onChange={(values) => {
+							setSelectedKeys(values);
+							onStatusFilter(values as string[]);
+							confirm();
+						}}
+					/>
+				</div>
+			),
+			filterIcon: (filtered: boolean) => (
+				<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+			),
 		},
 		{
 			title: 'Submitted',
@@ -203,44 +241,15 @@ export const AdminAppealsTable: React.FC<
 
 	return (
 		<div>
-			<Dashboard.FilterBar>
-				<Search
-					placeholder="Search by user name or email"
-					allowClear
-					enterButton={<SearchOutlined />}
-					onSearch={onSearch}
-					defaultValue={searchText}
-					style={{ width: 300 }}
-				/>
-				<Dashboard.Dropdown
-					trigger={
-						<Button icon={<FilterOutlined />}>
-							Status
-							{statusFilters.length > 0 && ` (${statusFilters.length})`}
-						</Button>
-					}
-				>
-					<Checkbox.Group
-						options={STATUS_OPTIONS}
-						value={statusFilters}
-						onChange={(values) => onStatusFilter(values as string[])}
-					/>
-				</Dashboard.Dropdown>
-			</Dashboard.FilterBar>
-
-			<Dashboard.DataTable<AdminAppealData>
+			<Dashboard
+				data={data}
 				columns={columns}
-				dataSource={data}
-				rowKey="id"
 				loading={loading}
-				pagination={{
-					current: currentPage,
-					pageSize: pageSize,
-					total: total,
-					onChange: onPageChange,
-					showSizeChanger: true,
-					showTotal: (total) => `Total ${total} appeals`,
-				}}
+				currentPage={currentPage}
+				pageSize={pageSize}
+				total={total}
+				onPageChange={(page: number) => onPageChange(page, pageSize)}
+				showPagination={true}
 				onChange={onTableChange}
 			/>
 

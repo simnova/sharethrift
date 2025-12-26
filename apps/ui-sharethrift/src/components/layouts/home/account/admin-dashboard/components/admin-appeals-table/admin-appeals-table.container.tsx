@@ -6,8 +6,8 @@ import { message } from 'antd';
 import {
 	AdminAppealsTableContainerGetAllUserAppealRequestsDocument,
 	AdminAppealsTableContainerUpdateUserAppealRequestStateDocument,
-	AppealRequestState,
-} from '../../../../../../generated.tsx';
+	type AdminAppealsTableContainerGetAllUserAppealRequestsQuery,
+} from '../../../../../../../generated.tsx';
 import type { AdminAppealData } from './admin-appeals-table.types.ts';
 
 export const AdminAppealsTableContainer: React.FC = () => {
@@ -20,24 +20,23 @@ export const AdminAppealsTableContainer: React.FC = () => {
 	const [currentPage, setCurrentPage] = useState(1);
 	const [pageSize, setPageSize] = useState(10);
 
-	const { data, loading, error, refetch } = useQuery(
-		AdminAppealsTableContainerGetAllUserAppealRequestsDocument,
-		{
-			variables: {
-				input: {
-					page: currentPage,
-					pageSize: pageSize,
-					stateFilters: statusFilters.length > 0 ? statusFilters : undefined,
-					sorter: sorter
-						? {
-								field: sorter.field,
-								direction: sorter.order === 'ascend' ? 'ASC' : 'DESC',
-							}
-						: undefined,
-				},
+	const { data, loading, error, refetch } = useQuery<
+		AdminAppealsTableContainerGetAllUserAppealRequestsQuery
+	>(AdminAppealsTableContainerGetAllUserAppealRequestsDocument, {
+		variables: {
+			input: {
+				page: currentPage,
+				pageSize: pageSize,
+				stateFilters: statusFilters.length > 0 ? statusFilters : undefined,
+				sorter: sorter
+					? {
+							field: sorter.field,
+							direction: sorter.order === 'ascend' ? 'ASC' : 'DESC',
+						}
+					: undefined,
 			},
 		},
-	);
+	});
 
 	const [updateAppealState] = useMutation(
 		AdminAppealsTableContainerUpdateUserAppealRequestStateDocument,
@@ -55,7 +54,7 @@ export const AdminAppealsTableContainer: React.FC = () => {
 
 	const handleTableChange = (
 		_pagination: unknown,
-		filters: unknown,
+		_filters: unknown,
 		sorter: unknown,
 	) => {
 		// Handle sorting
@@ -89,9 +88,7 @@ export const AdminAppealsTableContainer: React.FC = () => {
 
 		try {
 			const newState =
-				action === 'accept'
-					? AppealRequestState.Accepted
-					: AppealRequestState.Denied;
+				action === 'accept' ? ('ACCEPTED' as const) : ('DENIED' as const);
 
 			await updateAppealState({
 				variables: {
@@ -146,7 +143,7 @@ export const AdminAppealsTableContainer: React.FC = () => {
 		<ComponentQueryLoader
 			loading={loading}
 			error={error}
-			hasData={!!data?.getAllUserAppealRequests}
+			hasData={data?.getAllUserAppealRequests ?? null}
 			hasDataComponent={
 				<AdminAppealsTable
 					data={appealsData}

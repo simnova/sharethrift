@@ -33,7 +33,12 @@ export const ProfileViewContainer: React.FC = () => {
 	};
 
 	const currentUser = userQueryData?.currentUser;
-	const { account, createdAt, isBlocked } = currentUser || {};
+	const account = currentUser?.account;
+	const createdAt = currentUser?.createdAt;
+	const isBlocked =
+		currentUser?.__typename === 'PersonalUser'
+			? currentUser.isBlocked
+			: false;
 
 	if (!currentUser) {
 		return null;
