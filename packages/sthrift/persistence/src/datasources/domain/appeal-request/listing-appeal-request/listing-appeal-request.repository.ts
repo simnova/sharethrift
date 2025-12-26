@@ -26,6 +26,20 @@ export class ListingAppealRequestRepository<
 		return this.typeConverter.toDomain(appealRequest, this.passport);
 	}
 
+	async getByListingId(
+		listingId: string,
+	): Promise<
+		Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequest<PropType>[]
+	> {
+		const appealRequests = await this.model
+			.find({ 'listing._id': listingId })
+			.sort({ createdAt: -1 })
+			.exec();
+		return Promise.all(
+			appealRequests.map((ar) => this.typeConverter.toDomain(ar, this.passport)),
+		);
+	}
+
 	getNewInstance(
 		userId: string,
 		listingId: string,

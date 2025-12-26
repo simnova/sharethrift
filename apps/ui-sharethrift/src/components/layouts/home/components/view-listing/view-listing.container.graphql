@@ -16,6 +16,8 @@ fragment ViewListingContainerListingFields on ItemListing {
 	reports
 	sharingHistory
 	schemaVersion
+	blockReason
+	blockDescription
 	sharer {
 		... on PersonalUser {
 			id

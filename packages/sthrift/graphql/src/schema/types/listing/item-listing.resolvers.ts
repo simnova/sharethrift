@@ -121,6 +121,22 @@ const itemListingResolvers: Resolvers = {
 			});
 			return true;
 		},
+		
+		blockListing: async (_parent, args, context) => {
+			// TODO: SECURITY - Add proper role-based authorization check
+			// Admin-note: role-based authorization MUST be implemented before production
+			// Only admin users should be able to block listings
+			const listing = await context.applicationServices.Listing.ItemListing.block({
+				id: args.input.id,
+				blockReason: args.input.blockReason,
+				blockDescription: args.input.blockDescription,
+			});
+			return { 
+				status: { success: true },
+				listing 
+			};
+		},
+
 		cancelItemListing: async (
 			_parent: unknown,
 			args: { id: string },

@@ -11,6 +11,7 @@ import { type ItemListingCancelCommand, cancel } from './cancel.ts';
 import { type ItemListingDeleteCommand, deleteListings } from './delete.ts';
 import { type ItemListingUpdateCommand, update } from './update.ts';
 import { type ItemListingUnblockCommand, unblock } from './unblock.ts';
+import { type ItemListingBlockCommand, block } from './block.ts';
 import { queryPaged } from './query-paged.ts';
 
 export interface ItemListingApplicationService {
@@ -37,6 +38,9 @@ export interface ItemListingApplicationService {
 	deleteListings: (command: ItemListingDeleteCommand) => Promise<boolean>;
 	unblock: (
 		command: ItemListingUnblockCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+	block: (
+		command: ItemListingBlockCommand,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	queryPaged: (command: {
 		page: number;
@@ -65,6 +69,7 @@ export const ItemListing = (
 		update: update(dataSources),
 	deleteListings: deleteListings(dataSources),
 		unblock: unblock(dataSources),
+		block: block(dataSources),
 		queryPaged: queryPaged(dataSources),
 	};
 };
