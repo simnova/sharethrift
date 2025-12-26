@@ -31,6 +31,18 @@ const listingAppealRequestResolvers: Resolvers = {
 				args,
 			);
 		},
+		getListingAppealRequestByListingId: async (
+			_parent: unknown,
+			args: { listingId: string },
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			// TODO: SECURITY - Add authentication check
+			// Should verify user has permission to view appeal request for this listing
+			return await context.applicationServices.AppealRequest.ListingAppealRequest.getByListingId(
+				{ listingId: args.listingId },
+			);
+		},
 		getAllListingAppealRequests: async (
 			_parent: unknown,
 			args: QueryGetAllListingAppealRequestsArgs,

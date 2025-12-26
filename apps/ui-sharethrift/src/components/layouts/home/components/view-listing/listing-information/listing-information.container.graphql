@@ -42,3 +42,21 @@ mutation HomeListingInformationCreateReservationRequest(
 		updatedAt
 	}
 }
+
+mutation HomeListingInformationCreateListingAppealRequest(
+	$input: CreateListingAppealRequestInput!
+) {
+	createListingAppealRequest(input: $input) {
+		id
+		state
+		reason
+	}
+}
+
+query ViewListingAppealRequestByListingId($listingId: ObjectID!) {
+	getListingAppealRequestByListingId(listingId: $listingId) {
+		id
+		state
+		reason
+	}
+}

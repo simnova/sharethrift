@@ -3,6 +3,10 @@ import type { DataSources } from '@sthrift/persistence';
 import { create, type CreateListingAppealRequestCommand } from './create.ts';
 import { getById, type GetListingAppealRequestByIdCommand } from './get-by-id.ts';
 import {
+	getByListingId,
+	type GetListingAppealRequestByListingIdCommand,
+} from './get-by-listing-id.ts';
+import {
 	getAll,
 	type GetAllListingAppealRequestsCommand,
 	type ListingAppealRequestPageResult,
@@ -19,6 +23,9 @@ export interface ListingAppealRequestApplicationService {
 	getById: (
 		command: GetListingAppealRequestByIdCommand,
 	) => Promise<Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference | null>;
+	getByListingId: (
+		command: GetListingAppealRequestByListingIdCommand,
+	) => Promise<Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference | null>;
 	getAll: (
 		command: GetAllListingAppealRequestsCommand,
 	) => Promise<ListingAppealRequestPageResult>;
@@ -33,6 +40,7 @@ export const ListingAppealRequest = (
 	return {
 		create: create(dataSources),
 		getById: getById(dataSources),
+		getByListingId: getByListingId(dataSources),
 		getAll: getAll(dataSources),
 		updateState: updateState(dataSources),
 	};
