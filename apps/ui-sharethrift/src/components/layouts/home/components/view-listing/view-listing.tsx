@@ -86,13 +86,17 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 			return;
 		}
 
+		// TODO: SECURITY - Get actual blocker ID from listing block metadata
+		// For now, using a placeholder. The blocker should be tracked when blocking occurs.
+		const blockerId = listing.sharer?.id || currentUserId;
+
 		await createAppealRequest({
 			variables: {
 				input: {
 					userId: currentUserId,
 					listingId: listing.id,
 					reason: 'User is appealing the block on this listing',
-					blockerId: listing.sharer?.id || currentUserId, // Fallback if blocker not available
+					blockerId,
 				},
 			},
 		});
@@ -160,26 +164,39 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 				{/* Blocked Listing Banner */}
 				{isBlocked && (
 					<Col span={24} style={{ marginBottom: 16 }}>
-						<Alert
-							message={
-								appealRequested || appealSuccess
-									? 'This listing is blocked. Your appeal is awaiting approval.'
-									: 'This listing is blocked.'
-							}
-							type="error"
-							showIcon
-							action={
-								<Button size="small" onClick={() => setBlockInfoModalVisible(true)}>
-									View Details
-								</Button>
-							}
-						/>
-						{appealSuccess && (
+						{appealSuccess ? (
+							<>
+								<Alert
+									message="This listing is blocked. Your appeal is awaiting approval."
+									type="error"
+									showIcon
+									action={
+										<Button size="small" onClick={() => setBlockInfoModalVisible(true)}>
+											View Details
+										</Button>
+									}
+								/>
+								<Alert
+									message="Appeal requested successfully."
+									type="success"
+									showIcon
+									style={{ marginTop: 8 }}
+								/>
+							</>
+						) : (
 							<Alert
-								message="Appeal requested successfully."
-								type="success"
+								message={
+									appealRequested
+										? 'This listing is blocked. Your appeal is awaiting approval.'
+										: 'This listing is blocked.'
+								}
+								type="error"
 								showIcon
-								style={{ marginTop: 8 }}
+								action={
+									<Button size="small" onClick={() => setBlockInfoModalVisible(true)}>
+										View Details
+									</Button>
+								}
 							/>
 						)}
 					</Col>

@@ -38,7 +38,8 @@ const listingAppealRequestResolvers: Resolvers = {
 			_info: GraphQLResolveInfo,
 		) => {
 			// TODO: SECURITY - Add authentication check
-			// Should verify user has permission to view appeal request for this listing
+			// TODO: SECURITY - Should verify user has permission to view appeal request for this listing
+			// (either they own the listing or are an admin)
 			return await context.applicationServices.AppealRequest.ListingAppealRequest.getByListingId(
 				{ listingId: args.listingId },
 			);

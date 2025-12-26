@@ -56,6 +56,7 @@ export const getListingAppealRequestReadRepository = (
 		): Promise<Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference | null> => {
 			const results = await repository.getByListingId(listingId);
 			// Return the most recent appeal request for this listing
+			// The repository implementation sorts by createdAt descending
 			if (results && results.length > 0 && results[0]) {
 				return results[0];
 			}
