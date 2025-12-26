@@ -3,7 +3,9 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { Domain } from '@sthrift/domain';
 import { expect, vi } from 'vitest';
+import { AdminRoleDomainAdapter } from '../../role/admin-role/admin-role.domain-adapter.ts';
 import { AdminUserDomainAdapter } from './admin-user.domain-adapter.ts';
 
 const test = { for: describeFeature };
@@ -233,5 +235,92 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect((result as { country: string }).country).toBe('USA');
 			expect((result as { zipCode: string }).zipCode).toBe('90210');
 		});
+	});
+});
+
+// Additional non-BDD tests for edge cases
+import { describe, it } from 'vitest';
+
+describe('AdminUserDomainAdapter - Additional Coverage', () => {
+	it('should initialize profile when undefined', () => {
+		const doc = {
+			account: {
+				profile: undefined,
+				set: vi.fn(),
+			} as unknown as Models.User.AdminUserAccount,
+		} as Models.User.AdminUser;
+		const adapter = new AdminUserDomainAdapter(doc);
+		const profile = adapter.account.profile;
+		expect(profile).toBeDefined();
+		expect(doc.account.set).toHaveBeenCalledWith('profile', {});
+	});
+
+	it('should initialize location in profile when undefined', () => {
+		const doc = {
+			account: {
+				profile: {
+					location: undefined,
+					set: vi.fn(),
+				} as unknown as Models.User.AdminUserAccountProfile,
+			} as Models.User.AdminUserAccount,
+		} as Models.User.AdminUser;
+		const adapter = new AdminUserDomainAdapter(doc);
+		const location = adapter.account.profile.location;
+		expect(location).toBeDefined();
+		expect(doc.account.profile.set).toHaveBeenCalledWith('location', {});
+	});
+
+	it('should throw error when role is null in getter', () => {
+		const doc = {} as Models.User.AdminUser;
+		doc.role = null as never;
+		const adapter = new AdminUserDomainAdapter(doc);
+		expect(() => adapter.role).toThrow('role is not populated');
+	});
+
+	it('should throw TypeError when role is ObjectId in getter', () => {
+		const doc = {} as Models.User.AdminUser;
+		const roleId = new MongooseSeedwork.ObjectId();
+		doc.role = roleId as never;
+		const adapter = new AdminUserDomainAdapter(doc);
+		expect(() => adapter.role).toThrow(TypeError);
+		expect(() => adapter.role).toThrow('role is not populated');
+	});
+
+	it('should throw error when role is null in loadRole', async () => {
+		const doc = {} as Models.User.AdminUser;
+		doc.role = null as never;
+		const adapter = new AdminUserDomainAdapter(doc);
+		await expect(adapter.loadRole()).rejects.toThrow('role is not populated');
+	});
+
+	it('should set role with entity reference object', () => {
+		const doc = {
+			set: vi.fn(),
+		} as unknown as Models.User.AdminUser;
+		const adapter = new AdminUserDomainAdapter(doc);
+		const roleId = new MongooseSeedwork.ObjectId().toString();
+		const roleEntity = {
+			id: roleId,
+			name: 'Test Role',
+			permissions: [],
+		};
+		adapter.role = roleEntity as never;
+		// It should call set with an ObjectId
+		expect(doc.set).toHaveBeenCalled();
+		const call = (doc.set as ReturnType<typeof vi.fn>).mock.calls[0];
+		expect(call[0]).toBe('role');
+		expect(call[1]).toBeInstanceOf(MongooseSeedwork.ObjectId);
+	});
+
+	it('should set role with AdminRole instance', () => {
+		const doc = {
+			set: vi.fn(),
+		} as unknown as Models.User.AdminUser;
+		const adapter = new AdminUserDomainAdapter(doc);
+		const roleDoc = makeRoleDoc();
+		const roleAdapter = new AdminRoleDomainAdapter(roleDoc);
+		const roleEntity = new Domain.Contexts.Role.AdminRole.AdminRole(roleAdapter);
+		adapter.role = roleEntity as never;
+		expect(doc.set).toHaveBeenCalledWith('role', roleDoc);
 	});
 });

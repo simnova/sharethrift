@@ -74,3 +74,8 @@ Feature: AdminUser Aggregate Operations
     Given an existing AdminUser aggregate
     When I access the updatedAt property
     Then it should return a valid date
+
+  Scenario: Updating userType without permission
+    Given an existing AdminUser aggregate without editing permission
+    When I attempt to set userType to "SuperAdmin"
+    Then it should throw a PermissionError with message "Unauthorized to modify user"
