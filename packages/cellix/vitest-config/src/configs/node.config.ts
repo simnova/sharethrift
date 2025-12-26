@@ -6,12 +6,6 @@ export const nodeConfig = mergeConfig(baseConfig, defineConfig({
     include: ["src/**/*.test.ts"],
     environment: "node",
     testTimeout: 5000,
-    poolOptions: {
-      threads: {
-        maxThreads: 4,
-        minThreads: 1,
-      },
-    },
     coverage: {
       exclude: [
         "**/*.test.*",

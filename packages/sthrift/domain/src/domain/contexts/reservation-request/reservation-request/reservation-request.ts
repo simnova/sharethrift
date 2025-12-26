@@ -37,13 +37,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		reservationPeriodEnd: Date,
 		passport: Passport,
 	): ReservationRequest<props> {
-		// Validate required parameters
-		if (!listing) {
-			throw new Error('value cannot be null or undefined');
-		}
-		if (!reserver) {
-			throw new Error('value cannot be null or undefined');
-		}
 		
 		// Validate reservation period
 		if (
