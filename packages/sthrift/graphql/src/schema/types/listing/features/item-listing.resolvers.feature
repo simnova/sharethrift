@@ -41,26 +41,26 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given a user with a verifiedJwt in their context
 		And valid pagination arguments (page, pageSize)
 		When the myListingsAll query is executed
-		Then it should call Listing.ItemListing.queryPaged with sharerId, page, and pageSize
+		Then it should call Listing.ItemListing.queryPagedWithSearchFallback with sharerId, page, and pageSize
         And it should transform each listing into ListingAll shape
-		And it should map state values like "Active" to "Active" and "Draft" to "Draft"
+		And it should use domain state values directly without mapping
 		And it should return items, total, page, and pageSize in the response
     
     Scenario: Querying myListingsAll with search and filters
 		Given a verified user and valid pagination arguments
 		And a searchText "camera" and statusFilters ["Active"]
 		When the myListingsAll query is executed
-		Then it should call Listing.ItemListing.queryPaged with those filters
+		Then it should call Listing.ItemListing.queryPagedWithSearchFallback with those filters
 		And it should return matching listings only
 
 	Scenario: Querying myListingsAll without authentication
 		Given a user without a verifiedJwt in their context
 		When the myListingsAll query is executed
-		Then it should call Listing.ItemListing.queryPaged without sharerId
+		Then it should call Listing.ItemListing.queryPagedWithSearchFallback without sharerId
         And it should still return paged results
 
 	Scenario: Error while querying myListingsAll
-		Given Listing.ItemListing.queryPaged throws an error
+		Given Listing.ItemListing.queryPagedWithSearchFallback throws an error
 		When the myListingsAll query is executed
 		Then it should propagate the error message
 
@@ -88,7 +88,7 @@ So that I can view, filter, and create listings through the GraphQL API
 		Then it should propagate the error message
     
 	Scenario: Mapping item listing fields for myListingsAll
-		Given a valid result from queryPaged
+		Given a valid result from queryPagedWithSearchFallback
 		When items are mapped
 		Then each listing should include id, title, image, createdAt, reservationPeriod, status, and pendingRequestsCount
 		And missing images should map image to null

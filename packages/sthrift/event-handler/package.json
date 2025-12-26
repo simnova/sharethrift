@@ -16,14 +16,19 @@
 		"prebuild": "biome lint",
 		"build": "tsc --build",
 		"watch": "tsc --watch",
+		"test": "vitest run",
+		"test:coverage": "vitest run --coverage",
 		"lint": "biome lint",
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
+		"@cellix/event-bus-seedwork-node": "workspace:*",
+		"@cellix/search-service": "workspace:*",
 		"@sthrift/domain": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
 		"typescript": "^5.8.3",
 		"rimraf": "^6.0.1"
 	},

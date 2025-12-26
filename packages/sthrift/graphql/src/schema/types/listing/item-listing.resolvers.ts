@@ -23,21 +23,21 @@ function buildPagedArgs(
 	},
 	extra?: Partial<PagedArgs>,
 ): PagedArgs {
-  return {
-    page: args.page,
-    pageSize: args.pageSize,
-    ...(args.searchText == null ? {} : { searchText: args.searchText }),
-    ...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
-    ...(args.sorter
-      ? {
-          sorter: {
-            field: args.sorter.field,
-            order: args.sorter.order as 'ascend' | 'descend',
-          },
-        }
-      : {}),
-    ...extra,
-  };
+	return {
+		page: args.page,
+		pageSize: args.pageSize,
+		...(args.searchText == null ? {} : { searchText: args.searchText }),
+		...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
+		...(args.sorter
+			? {
+					sorter: {
+						field: args.sorter.field,
+						order: args.sorter.order as 'ascend' | 'descend',
+					},
+				}
+			: {}),
+		...extra,
+	};
 }
 
 const itemListingResolvers: Resolvers = {
@@ -45,23 +45,6 @@ const itemListingResolvers: Resolvers = {
 		sharer: PopulateUserFromField('sharer'),
 	},
 	Query: {
-		myListingsAll: async (_parent: unknown, args, context) => {
-			const currentUser = context.applicationServices.verifiedUser;
-			const email = currentUser?.verifiedJwt?.email;
-			let sharerId: string | undefined;
-			if (email) {
-				sharerId =
-					await context.applicationServices.User.PersonalUser.queryByEmail({
-						email: email,
-					}).then((user) => (user ? user.id : undefined));
-			}
-
-			const pagedArgs = buildPagedArgs(args, sharerId ? { sharerId } : {});
-
-			return await context.applicationServices.Listing.ItemListing.queryPaged(
-				pagedArgs,
-			);
-		},
 		itemListings: async (_parent, _args, context) => {
 			return await context.applicationServices.Listing.ItemListing.queryAll({});
 		},
@@ -70,6 +53,65 @@ const itemListingResolvers: Resolvers = {
 			return await context.applicationServices.Listing.ItemListing.queryById({
 				id: args.id,
 			});
+		},
+
+		myListingsAll: async (_parent: unknown, args, context) => {
+			const currentUser = context.applicationServices.verifiedUser;
+			const email = currentUser?.verifiedJwt?.email;
+			let sharerId: string | undefined =
+				context.applicationServices.verifiedUser?.verifiedJwt?.sub;
+			if (email) {
+				const user =
+					await context.applicationServices.User.PersonalUser.queryByEmail({
+						email,
+					});
+				sharerId = user ? user.id : sharerId;
+			}
+
+			const { page, pageSize, searchText, statusFilters, sorter } = args;
+
+			// Use the service method that handles search-vs-database flow
+			const result =
+				await context.applicationServices.Listing.ItemListing.queryPagedWithSearchFallback(
+					{
+						page,
+						pageSize,
+						...(searchText ? { searchText } : {}),
+						...(statusFilters ? { statusFilters: [...statusFilters] } : {}),
+						...(sorter
+							? {
+									sorter: {
+										field: sorter.field,
+										order: sorter.order as 'ascend' | 'descend',
+									},
+								}
+							: {}),
+						...(sharerId ? { sharerId } : {}),
+					},
+				);
+
+			// Convert domain entities to GraphQL format
+			const items = result.items.map((item) => {
+				const sharingStart = new Date(item.sharingPeriodStart).toISOString();
+				const sharingEnd = new Date(item.sharingPeriodEnd).toISOString();
+
+			return {
+				id: item.id,
+				title: item.title,
+				image: item.images && item.images.length > 0 ? item.images[0] : null,
+				publishedAt: item.createdAt,
+				reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
+				status: item.state || 'Unknown',
+				pendingRequestsCount: 0, // TODO: integrate reservation request counts
+			};
+			});
+
+			return {
+				items,
+				total: result.total,
+				page: result.page,
+				pageSize: result.pageSize,
+			};
 		},
 		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
@@ -125,24 +167,33 @@ const itemListingResolvers: Resolvers = {
 			_parent: unknown,
 			args: { id: string },
 			context,
-		) => ({
-			status: { success: true },
-			listing: await context.applicationServices.Listing.ItemListing.cancel({
+		) => {
+			const listing = await context.applicationServices.Listing.ItemListing.cancel({
 				id: args.id,
-			}),
-		}),
+			});
+			return {
+				status: { success: true },
+				listing,
+			};
+		},
 
 		deleteItemListing: async (
 			_parent: unknown,
 			args: { id: string },
 			context: GraphContext,
 		) => {
+			const listing = await context.applicationServices.Listing.ItemListing.queryById({
+				id: args.id,
+			});
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
 				userEmail:
 					context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
 			});
-			return { status: { success: true } };
+			return {
+				status: { success: true },
+				listing,
+			};
 		},
 	},
 };

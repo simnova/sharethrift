@@ -5,7 +5,10 @@ import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../test-utils/storybook-decorators.tsx';
-import { ListingsPageContainerGetListingsDocument } from '../../../../generated.tsx';
+import { 
+	ListingsPageContainerGetListingsDocument,
+	ListingsPageSearchListingsDocument,
+} from '../../../../generated.tsx';
 
 const mockListings = [
 	{
@@ -52,6 +55,49 @@ const meta: Meta<typeof ListingsPageContainer> = {
 					result: {
 						data: {
 							itemListings: mockListings,
+						},
+					},
+				},
+				{
+					request: {
+						query: ListingsPageSearchListingsDocument,
+						variables: {
+							input: {
+								searchString: undefined,
+								options: {
+									filter: {
+										category: undefined,
+									},
+									skip: 0,
+									top: 20,
+								},
+							},
+						},
+					},
+					result: {
+						data: {
+							searchListings: {
+								__typename: 'ListingSearchResult',
+								count: mockListings.length,
+								items: mockListings.map(listing => ({
+									...listing,
+									sharerName: 'Test User',
+									sharerId: 'user-1',
+								})),
+								facets: {
+									__typename: 'SearchFacets',
+									category: [
+										{ __typename: 'SearchFacet', value: 'Tools & Equipment', count: 1 },
+										{ __typename: 'SearchFacet', value: 'Musical Instruments', count: 1 },
+									],
+									state: [
+										{ __typename: 'SearchFacet', value: 'Active', count: 2 },
+									],
+									sharerId: [
+										{ __typename: 'SearchFacet', value: 'user-1', count: 2 },
+									],
+								},
+							},
 						},
 					},
 				},
@@ -115,6 +161,33 @@ export const EmptyListings: Story = {
 						},
 					},
 				},
+				{
+					request: {
+						query: ListingsPageSearchListingsDocument,
+						variables: {
+							input: {
+								searchString: undefined,
+								options: {
+									filter: {
+										category: undefined,
+									},
+									skip: 0,
+									top: 20,
+								},
+							},
+						},
+					},
+					result: {
+						data: {
+							searchListings: {
+								__typename: 'ListingSearchResult',
+								count: 0,
+								items: [],
+								facets: null,
+							},
+						},
+					},
+				},
 			],
 		},
 	},
@@ -146,7 +219,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);

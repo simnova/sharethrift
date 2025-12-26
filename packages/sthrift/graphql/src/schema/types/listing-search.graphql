@@ -1,0 +1,72 @@
+type ListingSearchResult {
+	items: [ListingSearchDocument!]!
+	count: Int!
+	facets: SearchFacets
+}
+
+type ListingSearchDocument {
+	id: ID!
+	title: String!
+	description: String!
+	category: String!
+	location: String!
+	sharerName: String!
+	sharerId: ID!
+	state: String!
+	sharingPeriodStart: DateTime!
+	sharingPeriodEnd: DateTime!
+	createdAt: DateTime!
+	updatedAt: DateTime!
+	images: [String!]!
+}
+
+type SearchFacets {
+	category: [SearchFacet!]
+	state: [SearchFacet!]
+	sharerId: [SearchFacet!]
+	createdAt: [SearchFacet!]
+}
+
+type SearchFacet {
+	value: String!
+	count: Int!
+}
+
+input ListingSearchInput {
+	searchString: String
+	options: SearchOptions
+}
+
+input SearchOptions {
+	filter: ListingSearchFilter
+	top: Int
+	skip: Int
+	orderBy: [String!]
+}
+
+input ListingSearchFilter {
+	category: [String!]
+	state: [String!]
+	sharerId: [ID!]
+	location: String
+	dateRange: DateRangeFilter
+}
+
+input DateRangeFilter {
+	start: DateTime
+	end: DateTime
+}
+
+extend type Query {
+	searchListings(input: ListingSearchInput!): ListingSearchResult!
+}
+
+extend type Mutation {
+	bulkIndexListings: BulkIndexResult!
+}
+
+type BulkIndexResult {
+	successCount: Int!
+	totalCount: Int!
+	message: String!
+}

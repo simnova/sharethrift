@@ -50,6 +50,12 @@ describe('Application Services Factory', () => {
 				withPassport: vi.fn().mockReturnValue(mockDataSources),
 			},
 			messagingService: {},
+			searchService: {
+				search: vi.fn(),
+				indexDocument: vi.fn(),
+				deleteDocument: vi.fn(),
+				createIndexIfNotExists: vi.fn(),
+			},
 		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 	});

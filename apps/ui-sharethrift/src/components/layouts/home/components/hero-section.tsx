@@ -4,7 +4,7 @@ import heroImg from '@sthrift/ui-components/src/assets/hero/hero.png';
 import heroImgSmall from '@sthrift/ui-components/src/assets/hero/hero-small.png';
 
 interface HeroSectionProps {
-	onSearch?: (query: string) => void;
+	onSearch?: () => void;
 	searchValue?: string;
 	onSearchChange?: (value: string) => void;
 }
@@ -12,11 +12,8 @@ interface HeroSectionProps {
 export const HeroSection: React.FC<HeroSectionProps> = ({
 	onSearch,
 	searchValue = '',
+	onSearchChange,
 }) => {
-	const handleSearch = (value: string) => {
-		onSearch?.(value);
-	};
-
 	return (
 		<div className={styles['heroContainer']}>
 			<picture className={styles['heroImage']}>
@@ -34,8 +31,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 				<div className={styles['searchContainer']}>
 					<SearchBar
 						searchValue={searchValue}
-						onSearchChange={handleSearch}
-						onSearch={handleSearch}
+						onSearchChange={onSearchChange}
+						onSearch={onSearch}
 					/>
 				</div>
 			</div>

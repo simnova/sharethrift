@@ -23,6 +23,7 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
+		"@cellix/search-service": "workspace:*",
 		"@sthrift/context-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*",
 		"@sthrift/persistence": "workspace:*",

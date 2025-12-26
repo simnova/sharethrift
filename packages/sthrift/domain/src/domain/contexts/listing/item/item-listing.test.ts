@@ -8,6 +8,8 @@ import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import type { ItemListingProps } from './item-listing.entity.ts';
 import { ItemListing } from './item-listing.ts';
+import { ItemListingUpdatedEvent } from '../../../events/types/item-listing-updated.event.ts';
+import { ItemListingDeletedEvent } from '../../../events/types/item-listing-deleted.event.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -953,6 +955,85 @@ Scenario(
 		});
 		Then('the expiresAt should be cleared', () => {
 			expect(listing.expiresAt).toBeUndefined();
+		});
+	});
+
+	Scenario('Raising integration event when listing is modified', ({ Given, When, Then, And }) => {
+		Given('an ItemListing aggregate that has been modified', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('the onSave method is called with isModified true', () => {
+			listing.onSave(true);
+		});
+		Then('an ItemListingUpdatedEvent should be raised', () => {
+			const events = listing.getIntegrationEvents();
+			expect(events.length).toBeGreaterThan(0);
+			expect(events.some(e => e instanceof ItemListingUpdatedEvent)).toBe(true);
+		});
+		And('the event should contain the listing id', () => {
+			const event = listing.getIntegrationEvents().find(e => e instanceof ItemListingUpdatedEvent);
+			expect(event?.payload).toHaveProperty('id');
+		});
+		And('the event should contain the updatedAt timestamp', () => {
+			const event = listing.getIntegrationEvents().find(e => e instanceof ItemListingUpdatedEvent);
+			expect(event?.payload).toHaveProperty('updatedAt');
+		});
+	});
+
+	Scenario('Not raising update event when listing is not modified', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate that has not been modified', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('the onSave method is called with isModified false', () => {
+			listing.onSave(false);
+		});
+		Then('no integration events should be raised', () => {
+			const events = listing.getIntegrationEvents();
+			expect(events.length).toBe(0);
+		});
+	});
+
+	Scenario('Raising integration event when listing is deleted', ({ Given, When, Then, And }) => {
+		Given('an ItemListing aggregate marked as deleted', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+			listing.requestDelete();
+		});
+		When('the onSave method is called', () => {
+			listing.onSave(true);
+		});
+		Then('an ItemListingDeletedEvent should be raised', () => {
+			const events = listing.getIntegrationEvents();
+			expect(events.some(e => e instanceof ItemListingDeletedEvent)).toBe(true);
+		});
+		And('the event should contain the listing id', () => {
+			const event = listing.getIntegrationEvents().find(e => e instanceof ItemListingDeletedEvent);
+			expect(event?.payload).toHaveProperty('id');
+		});
+		And('the event should contain the deletedAt timestamp', () => {
+			const event = listing.getIntegrationEvents().find(e => e instanceof ItemListingDeletedEvent);
+			expect(event?.payload).toHaveProperty('deletedAt');
+		});
+	});
+
+	Scenario('Prioritizing delete event over update event', ({ Given, When, Then, And }) => {
+		Given('an ItemListing aggregate that is both modified and deleted', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+			listing.requestDelete();
+		});
+		When('the onSave method is called with isModified true', () => {
+			listing.onSave(true);
+		});
+		Then('only an ItemListingDeletedEvent should be raised', () => {
+			const events = listing.getIntegrationEvents();
+			expect(events.some(e => e instanceof ItemListingDeletedEvent)).toBe(true);
+		});
+		And('no ItemListingUpdatedEvent should be raised', () => {
+			const events = listing.getIntegrationEvents();
+			expect(events.some(e => e instanceof ItemListingUpdatedEvent)).toBe(false);
 		});
 	});
 });

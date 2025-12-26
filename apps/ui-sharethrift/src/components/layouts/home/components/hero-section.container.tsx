@@ -3,7 +3,7 @@ import { HeroSection } from './hero-section.tsx';
 interface HeroSectionContainerProps {
 	searchValue?: string;
 	onSearchChange?: (value: string) => void;
-	onSearch?: (query: string) => void;
+	onSearch?: () => void;
 }
 
 export const HeroSectionContainer: React.FC<HeroSectionContainerProps> = ({
