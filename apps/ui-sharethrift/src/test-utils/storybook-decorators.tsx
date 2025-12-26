@@ -120,12 +120,12 @@ export const MockUnauthWrapper = ({
  * ```
  */
 export const withMockRouter =
-	(initialRoute = '/'): Decorator =>
+	(initialRoute = '/', routePattern = '*'): Decorator =>
 	(Story) => (
 		<MockAuthWrapper>
 			<MemoryRouter initialEntries={[initialRoute]}>
 				<Routes>
-					<Route path="*" element={<Story />} />
+					<Route path={routePattern} element={<Story />} />
 				</Routes>
 			</MemoryRouter>
 		</MockAuthWrapper>
