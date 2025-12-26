@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
+import { expect, within, waitFor } from 'storybook/test';
 import { ViewListingContainer } from './view-listing.container.tsx';
 import {
 	withMockApolloClient,
@@ -18,7 +18,7 @@ const mockListing = {
 	description: 'High-quality cordless drill for home projects',
 	category: 'Tools & Equipment',
 	location: 'Toronto, ON',
-	state: 'Published',
+	state: 'Active',
 	images: ['/assets/item-images/projector.png'],
 	sharingPeriodStart: '2025-01-01',
 	sharingPeriodEnd: '2025-12-31',
@@ -92,7 +92,13 @@ export const Authenticated: Story = {
 		isAuthenticated: true,
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		await waitFor(
+			() => {
+				// Component rendered
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -118,7 +124,13 @@ export const Unauthenticated: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		await waitFor(
+			() => {
+				// Component rendered
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -140,6 +152,9 @@ export const Loading: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };

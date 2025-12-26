@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within } from 'storybook/test';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { CreateListingContainer } from './create-listing.container.tsx';
 import {
 	withMockApolloClient,
@@ -36,7 +36,7 @@ const meta: Meta<typeof CreateListingContainer> = {
 								__typename: 'ItemListing',
 								id: '1',
 								title: 'Test Listing',
-								state: 'Published',
+								state: 'Active',
 							},
 						},
 					},
@@ -92,7 +92,7 @@ export const WithDraftSuccess: Story = {
 								__typename: 'ItemListing',
 								id: '1',
 								title: 'Test Listing',
-								state: 'Drafted',
+								state: 'Draft',
 							},
 						},
 					},
@@ -124,7 +124,7 @@ export const WithPublishSuccess: Story = {
 								__typename: 'ItemListing',
 								id: '1',
 								title: 'Test Listing',
-								state: 'Published',
+								state: 'Active',
 							},
 						},
 					},
@@ -180,5 +180,288 @@ export const Loading: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ImageHandling: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CancelAction: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Click the Cancel button to trigger handleCancel
+		const cancelBtn = canvas.queryByRole('button', { name: /Cancel/i });
+		if (cancelBtn) {
+			await userEvent.click(cancelBtn);
+		}
+	},
+};
+
+export const ViewListingAction: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Verify the form is rendered
+		expect(canvas.queryByLabelText(/Description/i)).toBeInTheDocument();
+	},
+};
+
+export const ViewDraftAction: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Draft',
+								state: 'Drafted',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Verify the form is rendered
+		expect(canvas.queryByLabelText(/Description/i)).toBeInTheDocument();
+	},
+};
+
+export const ModalCloseAction: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Verify the form is rendered
+		expect(canvas.queryByLabelText(/Description/i)).toBeInTheDocument();
+	},
+};
+
+export const CategorySelection: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Click on category dropdown if available
+		const categoryLabel = canvas.queryByLabelText(/Category/i);
+		if (categoryLabel) {
+			await userEvent.click(categoryLabel);
+		}
+	},
+};
+
+export const UnauthenticatedSubmit: Story = {
+	args: {
+		isAuthenticated: false,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeCreateListingContainerCreateItemListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createItemListing: {
+								__typename: 'ItemListing',
+								id: '1',
+								title: 'Test Listing',
+								state: 'Published',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+		// Try to submit as unauthenticated user
+		const submitBtn =
+			canvas.queryByRole('button', { name: /Publish/i }) ||
+			canvas.queryByRole('button', { name: /Submit/i });
+		if (submitBtn) {
+			await userEvent.click(submitBtn);
+		}
 	},
 };

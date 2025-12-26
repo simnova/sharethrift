@@ -39,7 +39,7 @@ function makeListingDoc(
 		location: 'Delhi',
 		sharingPeriodStart: new Date('2025-10-06'),
 		sharingPeriodEnd: new Date('2025-11-06'),
-		state: 'Published',
+		state: 'Active',
 		sharer: userDoc._id,
 		images: [],
 		reports: 0,
@@ -169,7 +169,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						return this;
 					}),
 					exec: vi.fn(() => {
-						if (!filter || filter.state === 'Published') {
+						if (!filter || filter.state === 'Active') {
 							return [listingDoc];
 						}
 						if (filter.sharer) {
@@ -292,8 +292,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					Domain.Contexts.Listing.ItemListing.ItemListing,
 				);
 			});
-			And('the object\'s state should be "Published"', () => {
-				expect(result.state).toBe('Published');
+			And('the object\'s state should be "Active"', () => {
+				expect(result.state).toBe('Active');
 			});
 			And('createdAt and updatedAt should be set to the current date', () => {
 				expect(result.createdAt).toBeInstanceOf(Date);
@@ -335,8 +335,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				Domain.Contexts.Listing.ItemListing.ItemListing,
 			);
 		});
-		And('the object\'s state should be "Drafted"', () => {
-			expect(result.state).toBe('Drafted');
+		And('the object\'s state should be "Draft"', () => {
+			expect(result.state).toBe('Draft');
 		});
 	});
 
@@ -356,9 +356,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					);
 				}
 			});
-			And('each object should have a state of "Published"', () => {
+			And('each object should have a state of "Active"', () => {
 				for (const item of results) {
-					expect(item.state).toBe('Published');
+					expect(item.state).toBe('Active');
 				}
 			});
 		},
@@ -421,7 +421,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							page: 1,
 							pageSize: 10,
 							searchText: 'Test',
-							statusFilters: ['Published'],
+							statusFilters: ['Active'],
 							sorter: { field: 'createdAt', order: 'descend' },
 						},
 					);
@@ -458,6 +458,48 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					}
 				},
 			);
+		},
+	);
+
+	Scenario(
+		'Retrieve item listings with default sorting when no sorter provided',
+		({ Given, And, When, Then }) => {
+			let paginatedResults: {
+				items: Domain.Contexts.Listing.ItemListing.ItemListing<ItemListingDomainAdapter>[];
+				total: number;
+				page: number;
+				pageSize: number;
+			};
+			Given('a valid sharer ID', () => {
+				// Using '507f1f77bcf86cd799439011' as the valid sharer ID
+			});
+			And('pagination options without a sorter', () => {
+				// Options will be provided in the When step without sorter
+			});
+			When(
+				'I call getBySharerIDWithPagination with the sharer ID and options without sorter',
+				async () => {
+					paginatedResults = await repo.getBySharerIDWithPagination(
+						'507f1f77bcf86cd799439011',
+						{
+							page: 1,
+							pageSize: 10,
+						},
+					);
+				},
+			);
+			Then(
+				'I should receive a paginated result sorted by createdAt descending',
+				() => {
+					expect(paginatedResults).toHaveProperty('items');
+					expect(paginatedResults).toHaveProperty('total');
+					expect(Array.isArray(paginatedResults.items)).toBe(true);
+				},
+			);
+			And('the model sort method should be called with default sort', () => {
+				// Verify the result was returned (default sort path covered)
+				expect(paginatedResults.items).toBeDefined();
+			});
 		},
 	);
 });

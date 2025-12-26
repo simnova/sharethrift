@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { expect, vi } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 import { ListingAppealRequestDomainAdapter } from './listing-appeal-request.domain-adapter.ts';
 
 const test = { for: describeFeature };
@@ -376,5 +376,80 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		Then('it should return the document type value', () => {
 			expect(adapter.type).toBe('inappropriate');
 		});
+	});
+});
+
+// Additional non-BDD tests for edge cases
+describe('ListingAppealRequestDomainAdapter - Additional Coverage', () => {
+	it('should return entity reference when blocker is ObjectId', () => {
+		const doc = makeAppealRequestDoc();
+		const blockerId = new MongooseSeedwork.ObjectId();
+		doc.blocker = blockerId as never;
+		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
+		const result = adapter.blocker;
+		expect(result).toBeDefined();
+		expect(result.id).toBe(blockerId.toString());
+	});
+
+	it('should throw error when blocker is null in getter', () => {
+		const doc = makeAppealRequestDoc();
+		doc.blocker = null as never;
+		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
+		expect(() => adapter.blocker).toThrow('blocker is not populated');
+	});
+
+	it('should throw error when blocker is null in loadBlocker', async () => {
+		const doc = makeAppealRequestDoc();
+		doc.blocker = null as never;
+		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
+		await expect(adapter.loadBlocker()).rejects.toThrow('blocker is not populated');
+	});
+
+	it('should populate blocker when it is ObjectId in loadBlocker', async () => {
+		const doc = makeAppealRequestDoc();
+		const blockerId = new MongooseSeedwork.ObjectId();
+		doc.blocker = blockerId as never;
+		const mockPopulate = vi.fn().mockResolvedValue(undefined);
+		doc.populate = mockPopulate as never;
+		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
+		await adapter.loadBlocker();
+		expect(mockPopulate).toHaveBeenCalledWith('blocker');
+	});
+
+	it('should throw error when user is null in getter', () => {
+		const doc = makeAppealRequestDoc();
+		doc.user = null as never;
+		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
+		expect(() => adapter.user).toThrow('user is not populated');
+	});
+
+	it('should throw error when user is null in loadUser', async () => {
+		const doc = makeAppealRequestDoc();
+		doc.user = null as never;
+		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
+		await expect(adapter.loadUser()).rejects.toThrow('user is not populated');
+	});
+
+	it('should throw error when listing is null in getter', () => {
+		const doc = makeAppealRequestDoc();
+		doc.listing = null as never;
+		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
+		expect(() => adapter.listing).toThrow('listing is not populated');
+	});
+
+	it('should throw TypeError when listing is ObjectId in getter', () => {
+		const doc = makeAppealRequestDoc();
+		const listingId = new MongooseSeedwork.ObjectId();
+		doc.listing = listingId as never;
+		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
+		expect(() => adapter.listing).toThrow(TypeError);
+		expect(() => adapter.listing).toThrow('listing is not populated');
+	});
+
+	it('should throw error when listing is null in loadListing', async () => {
+		const doc = makeAppealRequestDoc();
+		doc.listing = null as never;
+		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
+		await expect(adapter.loadListing()).rejects.toThrow('listing is not populated');
 	});
 });

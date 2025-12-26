@@ -20,7 +20,7 @@ function makeItemListingDoc() {
 		description: 'Test Description',
 		category: 'Electronics',
 		location: 'New York',
-		state: 'Published',
+		state: 'Active',
 		sharingPeriodStart: new Date(),
 		sharingPeriodEnd: new Date(),
 		// Populated sharer object (not ObjectId) for tests that access .sharer property
@@ -135,12 +135,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Modifying item listing state', ({ When, Then }) => {
-		When('I set the state to "Published"', () => {
-			adapter.state = 'Published';
+		When('I set the state to "Active"', () => {
+			adapter.state = 'Active';
 		});
 
-		Then('the state should be "Published"', () => {
-			expect(adapter.state).toBe('Published');
+		Then('the state should be "Active"', () => {
+			expect(adapter.state).toBe('Active');
 		});
 	});
 
@@ -369,8 +369,91 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			doc.state = null as never;
 		});
 
-		Then('the state getter should return "Published"', () => {
-			expect(adapter.state).toBe('Published');
+		Then('the state getter should return "Active"', () => {
+			expect(adapter.state).toBe('Active');
 		});
+	});
+
+	Scenario('Setting and getting expiresAt', ({ When, Then }) => {
+		let testDate: Date;
+
+		When('I set expiresAt to a specific date', () => {
+			testDate = new Date('2025-12-31T23:59:59Z');
+			adapter.expiresAt = testDate;
+		});
+
+		Then('expiresAt should return that date', () => {
+			expect(adapter.expiresAt).toEqual(testDate);
+		});
+	});
+
+	Scenario('Getting expiresAt when not set returns undefined', ({ When, Then }) => {
+		let result: Date | undefined;
+
+		When('I get expiresAt when it\'s not set', () => {
+			doc.expiresAt = undefined as never;
+			result = adapter.expiresAt;
+		});
+
+		Then('it should return undefined', () => {
+			expect(result).toBeUndefined();
+		});
+	});
+});
+
+// Additional non-BDD tests for edge cases
+import { describe, it } from 'vitest';
+
+describe('ItemListingDomainAdapter - Additional Coverage', () => {
+	it('should throw error when sharer is null in loadSharer', async () => {
+		const doc = {} as Models.Listing.ItemListing;
+		doc.sharer = null as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		await expect(adapter.loadSharer()).rejects.toThrow('sharer is not populated');
+	});
+
+	it('should populate sharer when it is ObjectId in loadSharer', async () => {
+		const doc = {} as Models.Listing.ItemListing;
+		const sharerId = new MongooseSeedwork.ObjectId();
+		doc.sharer = sharerId as never;
+		const mockPopulate = vi.fn().mockResolvedValue(undefined);
+		doc.populate = mockPopulate as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		await adapter.loadSharer();
+		expect(mockPopulate).toHaveBeenCalledWith('sharer');
+	});
+
+	it('should return AdminUser when sharer userType is admin-user in loadSharer', async () => {
+		const doc = {} as Models.Listing.ItemListing;
+		const adminUserDoc = {
+			userType: 'admin-user',
+			id: new MongooseSeedwork.ObjectId(),
+		} as Models.User.AdminUser;
+		doc.sharer = adminUserDoc as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		const result = await adapter.loadSharer();
+		expect(result).toBeDefined();
+	});
+
+	it('should return entity reference when sharer is ObjectId in getter', () => {
+		const doc = {} as Models.Listing.ItemListing;
+		const sharerId = new MongooseSeedwork.ObjectId();
+		doc.sharer = sharerId as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		expect(adapter.sharer.id).toBe(sharerId.toString());
+	});
+
+	it('should return entity when sharer is populated admin-user in getter', () => {
+		const doc = {} as Models.Listing.ItemListing;
+		const adminUserDoc = {
+			userType: 'admin-user',
+			id: new MongooseSeedwork.ObjectId(),
+		} as Models.User.AdminUser;
+		doc.sharer = adminUserDoc as never;
+		const adapter = new ItemListingDomainAdapter(doc);
+		const sharerEntity = adapter.sharer;
+		// Just verify it returns an entity (coverage achieved)
+		expect(sharerEntity).toBeDefined();
+		expect(sharerEntity.id).toBeDefined();
 	});
 });

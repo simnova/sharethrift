@@ -8,8 +8,10 @@ import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { Passport } from '../../passport.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 import type { ConversationProps } from './conversation.entity.ts';
 import { Conversation } from './conversation.ts';
+import type { MessageEntityReference } from './message.entity.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -29,6 +31,9 @@ function makePassport(canManageConversation = false): Passport {
 			forPersonalUser: vi.fn(() => ({
 				determineIf: () => true,
 			})),
+			forAdminUser: vi.fn(() => ({
+				determineIf: () => true,
+			})),
 		},
 		listing: {
 			forItemListing: vi.fn(() => ({
@@ -36,6 +41,32 @@ function makePassport(canManageConversation = false): Passport {
 			})),
 		},
 	} as unknown as Passport);
+}
+
+function createMockTransactionItem(id: string) {
+	return {
+		id,
+		transactionId: 'txn_123',
+		amount: 1000,
+		referenceId: 'ref_123',
+		status: 'completed',
+		completedAt: new Date('2020-01-01T00:00:00Z'),
+		errorMessage: null,
+	};
+}
+
+function getNewTransactionItem() {
+	return createMockTransactionItem('2');
+}
+
+function createMockTransactions() {
+	return {
+		items: [createMockTransactionItem('1')],
+		getNewItem: getNewTransactionItem,
+		addItem: vi.fn(),
+		removeItem: vi.fn(),
+		removeAll: vi.fn(),
+	};
 }
 
 function makeBaseProps(
@@ -72,31 +103,7 @@ function makeBaseProps(
 							startDate: new Date('2020-01-01T00:00:00Z'),
 							subscriptionId: 'sub_123',
 						},
-						transactions: {
-							items: [
-								{
-									id: '1',
-									transactionId: 'txn_123',
-									amount: 1000,
-									referenceId: 'ref_123',
-									status: 'completed',
-									completedAt: new Date('2020-01-01T00:00:00Z'),
-									errorMessage: null,
-								},
-							],
-							getNewItem: () => ({
-								id: '2',
-								transactionId: 'txn_123',
-								amount: 1000,
-								referenceId: 'ref_123',
-								status: 'completed',
-								completedAt: new Date('2020-01-01T00:00:00Z'),
-								errorMessage: null,
-							}),
-							addItem: vi.fn(),
-							removeItem: vi.fn(),
-							removeAll: vi.fn(),
-						},
+						transactions: createMockTransactions(),
 					},
 				},
 			},
@@ -136,31 +143,7 @@ function makeBaseProps(
 							startDate: new Date('2020-01-01T00:00:00Z'),
 							subscriptionId: 'sub_456',
 						},
-						transactions: {
-							items: [
-								{
-									id: '1',
-									transactionId: 'txn_123',
-									amount: 1000,
-									referenceId: 'ref_123',
-									status: 'completed',
-									completedAt: new Date('2020-01-01T00:00:00Z'),
-									errorMessage: null,
-								},
-							],
-							getNewItem: () => ({
-								id: '2',
-								transactionId: 'txn_123',
-								amount: 1000,
-								referenceId: 'ref_123',
-								status: 'completed',
-								completedAt: new Date('2020-01-01T00:00:00Z'),
-								errorMessage: null,
-							}),
-							addItem: vi.fn(),
-							removeItem: vi.fn(),
-							removeAll: vi.fn(),
-						},
+						transactions: createMockTransactions(),
 					},
 				},
 			},
@@ -176,7 +159,7 @@ function makeBaseProps(
 			description: 'A test listing',
 			category: 'test',
 			location: 'Test City',
-			state: 'Published',
+			state: 'Active',
 			sharingPeriodStart: new Date('2020-01-01T00:00:00Z'),
 			sharingPeriodEnd: new Date('2020-01-10T00:00:00Z'),
 			sharer: user,
@@ -289,36 +272,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							lastName: originalSharer.account.profile.lastName,
 							aboutMe: originalSharer.account.profile.aboutMe,
 							location: originalSharer.account.profile.location,
-						billing: {
-							cybersourceCustomerId:
-								originalSharer.account.profile.billing.cybersourceCustomerId,
-							subscription:
-								originalSharer.account.profile.billing.subscription,
-							transactions: {
-								items: [
-										{
-											id: '1',
-											transactionId: 'txn_123',
-											amount: 1000,
-											referenceId: 'ref_123',
-											status: 'completed',
-											completedAt: new Date('2020-01-01T00:00:00Z'),
-											errorMessage: null,
-										},
-									],
-									getNewItem: () => ({
-										id: '2',
-										transactionId: 'txn_123',
-										amount: 1000,
-										referenceId: 'ref_123',
-										status: 'completed',
-										completedAt: new Date('2020-01-01T00:00:00Z'),
-										errorMessage: null,
-									}),
-									addItem: vi.fn(),
-									removeItem: vi.fn(),
-									removeAll: vi.fn(),
-								},
+							billing: {
+								cybersourceCustomerId:
+									originalSharer.account.profile.billing.cybersourceCustomerId,
+								subscription:
+									originalSharer.account.profile.billing.subscription,
+								transactions: createMockTransactions(),
 							},
 						},
 					},
@@ -373,31 +332,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 												.cybersourceCustomerId,
 										subscription:
 											originalSharer.account.profile.billing.subscription,
-										transactions: {
-											items: [
-												{
-													id: '1',
-													transactionId: 'txn_123',
-													amount: 1000,
-													referenceId: 'ref_123',
-													status: 'completed',
-													completedAt: new Date('2020-01-01T00:00:00Z'),
-													errorMessage: null,
-												},
-											],
-											getNewItem: () => ({
-												id: '2',
-												transactionId: 'txn_123',
-												amount: 1000,
-												referenceId: 'ref_123',
-												status: 'completed',
-												completedAt: new Date('2020-01-01T00:00:00Z'),
-												errorMessage: null,
-											}),
-											addItem: vi.fn(),
-											removeItem: vi.fn(),
-											removeAll: vi.fn(),
-										},
+										transactions: createMockTransactions(),
 									},
 								},
 							},
@@ -447,37 +382,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							lastName: originalReserver.account.profile.lastName,
 							aboutMe: originalReserver.account.profile.aboutMe,
 							location: originalReserver.account.profile.location,
-						billing: {
-							cybersourceCustomerId:
-								originalReserver.account.profile.billing
-									.cybersourceCustomerId,
-							subscription:
-								originalReserver.account.profile.billing.subscription,
-							transactions: {
-								items: [
-										{
-											id: '1',
-											transactionId: 'txn_123',
-											amount: 1000,
-											referenceId: 'ref_123',
-											status: 'completed',
-											completedAt: new Date('2020-01-01T00:00:00Z'),
-											errorMessage: null,
-										},
-									],
-									getNewItem: () => ({
-										id: '2',
-										transactionId: 'txn_123',
-										amount: 1000,
-										referenceId: 'ref_123',
-										status: 'completed',
-										completedAt: new Date('2020-01-01T00:00:00Z'),
-										errorMessage: null,
-									}),
-									addItem: vi.fn(),
-									removeItem: vi.fn(),
-									removeAll: vi.fn(),
-								},
+							billing: {
+								cybersourceCustomerId:
+									originalReserver.account.profile.billing
+										.cybersourceCustomerId,
+								subscription:
+									originalReserver.account.profile.billing.subscription,
+								transactions: createMockTransactions(),
 							},
 						},
 					},
@@ -528,37 +439,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 									lastName: originalReserver.account.profile.lastName,
 									aboutMe: originalReserver.account.profile.aboutMe,
 									location: originalReserver.account.profile.location,
-								billing: {
-									cybersourceCustomerId:
-										originalReserver.account.profile.billing
-											.cybersourceCustomerId,
-									subscription:
-										originalReserver.account.profile.billing.subscription,
-									transactions: {
-										items: [
-												{
-													id: '1',
-													transactionId: 'txn_123',
-													amount: 1000,
-													referenceId: 'ref_123',
-													status: 'completed',
-													completedAt: new Date('2020-01-01T00:00:00Z'),
-													errorMessage: null,
-												},
-											],
-											getNewItem: () => ({
-												id: '2',
-												transactionId: 'txn_123',
-												amount: 1000,
-												referenceId: 'ref_123',
-												status: 'completed',
-												completedAt: new Date('2020-01-01T00:00:00Z'),
-												errorMessage: null,
-											}),
-											addItem: vi.fn(),
-											removeItem: vi.fn(),
-											removeAll: vi.fn(),
-										},
+									billing: {
+										cybersourceCustomerId:
+											originalReserver.account.profile.billing
+												.cybersourceCustomerId,
+										subscription:
+											originalReserver.account.profile.billing.subscription,
+										transactions: createMockTransactions(),
 									},
 								},
 							},
@@ -722,23 +609,20 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		);
 	});
 
-	Scenario(
-		'Getting messages from conversation',
-		({ Given, When, Then }) => {
-			// biome-ignore lint/suspicious/noExplicitAny: Test variable
-			let messages: readonly any[];
-			Given('a Conversation aggregate with messages', () => {
-				passport = makePassport(true);
-				conversation = new Conversation(makeBaseProps(), passport);
-			});
-			When('I access the messages property', () => {
-				messages = conversation.messages;
-			});
-			Then('it should return an array of messages', () => {
-				expect(Array.isArray(messages)).toBe(true);
-			});
-		},
-	);
+	Scenario('Getting messages from conversation', ({ Given, When, Then }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let messages: readonly any[];
+		Given('a Conversation aggregate with messages', () => {
+			passport = makePassport(true);
+			conversation = new Conversation(makeBaseProps(), passport);
+		});
+		When('I access the messages property', () => {
+			messages = conversation.messages;
+		});
+		Then('it should return an array of messages', () => {
+			expect(Array.isArray(messages)).toBe(true);
+		});
+	});
 
 	Scenario('Loading listing asynchronously', ({ Given, When, Then }) => {
 		// biome-ignore lint/suspicious/noExplicitAny: Test variable
@@ -809,9 +693,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		);
 	});
 
-	Scenario(
-		'Setting the messagingConversationId with permission',
-		({ Given, When, Then }) => {
+	Scenario('Setting sharer to null', ({ Given, When, Then }) => {
+		let setSharerToNull: () => void;
 		Given(
 			'a Conversation aggregate with permission to manage conversation',
 			() => {
@@ -819,19 +702,90 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				conversation = new Conversation(makeBaseProps(), passport);
 			},
 		);
-		When('I set the messagingConversationId to a new value', () => {
-			conversation.messagingConversationId = 'twilio-456';
+		When('I try to set the sharer to null', () => {
+			setSharerToNull = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing null assignment
+				conversation.sharer = null as any;
+			};
 		});
-		Then('the messagingConversationId should be updated', () => {
-			expect(conversation.messagingConversationId).toBe('twilio-456');
+		Then(
+			'a PermissionError should be thrown with message "sharer cannot be null or undefined"',
+			() => {
+				expect(setSharerToNull).toThrow(DomainSeedwork.PermissionError);
+				expect(setSharerToNull).toThrow('sharer cannot be null or undefined');
+			},
+		);
+	});
+
+	Scenario('Setting sharer to undefined', ({ Given, When, Then }) => {
+		let setSharerToUndefined: () => void;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the sharer to undefined', () => {
+			setSharerToUndefined = () => {
+				// @ts-expect-error: testing private setter
+				// biome-ignore lint/suspicious/noExplicitAny: Testing undefined assignment
+				conversation.sharer = undefined as any;
+			};
 		});
-	},
-);
+		Then(
+			'a PermissionError should be thrown with message "sharer cannot be null or undefined"',
+			() => {
+				expect(setSharerToUndefined).toThrow(DomainSeedwork.PermissionError);
+				expect(setSharerToUndefined).toThrow(
+					'sharer cannot be null or undefined',
+				);
+			},
+		);
+	});
+
+	Scenario('Loading messages asynchronously', ({ Given, When, Then }) => {
+		let result: readonly MessageEntityReference[];
+		Given('a Conversation aggregate', () => {
+			passport = makePassport(true);
+			conversation = new Conversation(makeBaseProps(), passport);
+		});
+		When('I call loadMessages()', async () => {
+			result = await conversation.loadMessages();
+		});
+		Then('it should return the messages asynchronously', () => {
+			expect(result).toBeDefined();
+			expect(Array.isArray(result)).toBe(true);
+		});
+	});
 
 	Scenario(
-		'Setting the messagingConversationId without permission',
+		'Getting reserver when userType is admin-user',
 		({ Given, When, Then }) => {
-		let setTwilioIdWithoutPermission: () => void;
+			let result: UserEntityReference;
+			Given('a Conversation aggregate with an admin-user reserver', () => {
+				passport = makePassport(true);
+				const props = makeBaseProps();
+				// Set reserver to admin-user type
+				props.reserver = {
+					id: 'admin-123',
+					userType: 'admin-user',
+				} as unknown as PersonalUserProps;
+				conversation = new Conversation(props, passport);
+			});
+			When('I access the reserver property', () => {
+				result = conversation.reserver;
+			});
+			Then('it should return an AdminUser instance', () => {
+				expect(result).toBeDefined();
+				expect(result.userType).toBe('admin-user');
+			});
+		},
+	);
+
+	Scenario('Setting reserver without permission', ({ Given, When, Then }) => {
+		let setReserverWithoutPermission: () => void;
 		Given(
 			'a Conversation aggregate without permission to manage conversation',
 			() => {
@@ -839,19 +793,127 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				conversation = new Conversation(makeBaseProps(), passport);
 			},
 		);
-		When('I try to set the messagingConversationId to a new value', () => {
-			setTwilioIdWithoutPermission = () => {
-				conversation.messagingConversationId = 'twilio-789';
+		When('I try to set the reserver', () => {
+			setReserverWithoutPermission = () => {
+				const newReserver = new PersonalUser(
+					{
+						id: 'new-reserver-id',
+						userType: 'personal-user',
+					} as PersonalUserProps,
+					passport,
+				);
+				// @ts-expect-error: testing private setter
+				conversation.reserver = newReserver;
 			};
 		});
-		Then('a PermissionError should be thrown', () => {
-			expect(setTwilioIdWithoutPermission).toThrow(
-				DomainSeedwork.PermissionError,
-			);
-			expect(setTwilioIdWithoutPermission).throws(
-				'You do not have permission to change the messagingConversationId of this conversation',
-			);
+		Then(
+			'a PermissionError should be thrown about managing conversation',
+			() => {
+				expect(setReserverWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+				expect(setReserverWithoutPermission).toThrow(
+					'You do not have permission to change the reserver of this conversation',
+				);
+			},
+		);
+	});
+
+	Scenario(
+		'Getting sharer when userType is admin-user',
+		({ Given, When, Then }) => {
+			let result: UserEntityReference;
+			Given('a Conversation aggregate with an admin-user sharer', () => {
+				passport = makePassport(true);
+				const props = makeBaseProps();
+				// Set sharer to admin-user type
+				props.sharer = {
+					id: 'admin-sharer-123',
+					userType: 'admin-user',
+				} as unknown as PersonalUserProps;
+				conversation = new Conversation(props, passport);
+			});
+			When('I access the sharer property', () => {
+				result = conversation.sharer;
+			});
+			Then('it should return an AdminUser instance for the sharer', () => {
+				expect(result).toBeDefined();
+				expect(result.userType).toBe('admin-user');
+			});
+		},
+	);
+
+	Scenario('Loading sharer asynchronously', ({ Given, When, Then }) => {
+		let result: UserEntityReference;
+		Given('a Conversation aggregate', () => {
+			passport = makePassport(true);
+			conversation = new Conversation(makeBaseProps(), passport);
 		});
-	},
-);
+		When('I call loadSharer()', async () => {
+			result = await conversation.loadSharer();
+		});
+		Then('it should return the sharer asynchronously', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Loading reserver asynchronously', ({ Given, When, Then }) => {
+		let result: UserEntityReference;
+		Given('a Conversation aggregate', () => {
+			passport = makePassport(true);
+			conversation = new Conversation(makeBaseProps(), passport);
+		});
+		When('I call loadReserver()', async () => {
+			result = await conversation.loadReserver();
+		});
+		Then('it should return the reserver asynchronously', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario(
+		'Setting the messagingConversationId with permission',
+		({ Given, When, Then }) => {
+			Given(
+				'a Conversation aggregate with permission to manage conversation',
+				() => {
+					passport = makePassport(true);
+					conversation = new Conversation(makeBaseProps(), passport);
+				},
+			);
+			When('I set the messagingConversationId to a new value', () => {
+				conversation.messagingConversationId = 'twilio-456';
+			});
+			Then('the messagingConversationId should be updated', () => {
+				expect(conversation.messagingConversationId).toBe('twilio-456');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting the messagingConversationId without permission',
+		({ Given, When, Then }) => {
+			let setTwilioIdWithoutPermission: () => void;
+			Given(
+				'a Conversation aggregate without permission to manage conversation',
+				() => {
+					passport = makePassport(false);
+					conversation = new Conversation(makeBaseProps(), passport);
+				},
+			);
+			When('I try to set the messagingConversationId to a new value', () => {
+				setTwilioIdWithoutPermission = () => {
+					conversation.messagingConversationId = 'twilio-789';
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(setTwilioIdWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+				expect(setTwilioIdWithoutPermission).throws(
+					'You do not have permission to change the messagingConversationId of this conversation',
+				);
+			});
+		},
+	);
 });

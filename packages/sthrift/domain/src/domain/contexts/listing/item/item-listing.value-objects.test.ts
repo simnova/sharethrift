@@ -22,11 +22,11 @@ test.for(feature, ({ Scenario }) => {
 		'Creating a ListingState with a valid predefined value',
 		({ When, Then }) => {
 			let listingState: ListingState;
-			When('I create a ListingState with "Published"', () => {
-				listingState = new ListingState('Published');
+			When('I create a ListingState with "Active"', () => {
+				listingState = new ListingState('Active');
 			});
-			Then('the value should be "Published"', () => {
-				expect(listingState.valueOf()).toBe('Published');
+			Then('the value should be "Active"', () => {
+				expect(listingState.valueOf()).toBe('Active');
 			});
 		},
 	);
@@ -52,8 +52,8 @@ test.for(feature, ({ Scenario }) => {
 	Scenario('Checking if a ListingState is active', ({ Given, When, Then }) => {
 		let listingState: ListingState;
 		let result: boolean;
-		Given('a ListingState with value "Published"', () => {
-			listingState = new ListingState('Published');
+		Given('a ListingState with value "Active"', () => {
+			listingState = new ListingState('Active');
 		});
 		When('I check isActive', () => {
 			result = listingState.isActive;
@@ -63,13 +63,91 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
+	Scenario('Using ListingState.Active static instance', ({ When, Then, And }) => {
+		let listingState: ListingState;
+		When('I use ListingState.Active', () => {
+			listingState = ListingState.Active;
+		});
+		Then('the value should be "Active"', () => {
+			expect(listingState.valueOf()).toBe('Active');
+		});
+		And('isActive should be true', () => {
+			expect(listingState.isActive).toBe(true);
+		});
+	});
+
+	Scenario('Using ListingState.Draft static instance', ({ When, Then, And }) => {
+		let listingState: ListingState;
+		When('I use ListingState.Draft', () => {
+			listingState = ListingState.Draft;
+		});
+		Then('the value should be "Draft"', () => {
+			expect(listingState.valueOf()).toBe('Draft');
+		});
+		And('isActive should be false', () => {
+			expect(listingState.isActive).toBe(false);
+		});
+	});
+
+	Scenario('Using ListingState.Paused static instance', ({ When, Then, And }) => {
+		let listingState: ListingState;
+		When('I use ListingState.Paused', () => {
+			listingState = ListingState.Paused;
+		});
+		Then('the value should be "Paused"', () => {
+			expect(listingState.valueOf()).toBe('Paused');
+		});
+		And('isActive should be false', () => {
+			expect(listingState.isActive).toBe(false);
+		});
+	});
+
+	Scenario('Using ListingState.Cancelled static instance', ({ When, Then, And }) => {
+		let listingState: ListingState;
+		When('I use ListingState.Cancelled', () => {
+			listingState = ListingState.Cancelled;
+		});
+		Then('the value should be "Cancelled"', () => {
+			expect(listingState.valueOf()).toBe('Cancelled');
+		});
+		And('isActive should be false', () => {
+			expect(listingState.isActive).toBe(false);
+		});
+	});
+
+	Scenario('Using ListingState.Expired static instance', ({ When, Then, And }) => {
+		let listingState: ListingState;
+		When('I use ListingState.Expired', () => {
+			listingState = ListingState.Expired;
+		});
+		Then('the value should be "Expired"', () => {
+			expect(listingState.valueOf()).toBe('Expired');
+		});
+		And('isActive should be false', () => {
+			expect(listingState.isActive).toBe(false);
+		});
+	});
+
+	Scenario('Using ListingState.Blocked static instance', ({ When, Then, And }) => {
+		let listingState: ListingState;
+		When('I use ListingState.Blocked', () => {
+			listingState = ListingState.Blocked;
+		});
+		Then('the value should be "Blocked"', () => {
+			expect(listingState.valueOf()).toBe('Blocked');
+		});
+		And('isActive should be false', () => {
+			expect(listingState.isActive).toBe(false);
+		});
+	});
+
 	Scenario(
 		'Checking if a ListingState is inactive',
 		({ Given, When, Then }) => {
 			let listingState: ListingState;
 			let result: boolean;
-			Given('a ListingState with value "Drafted"', () => {
-				listingState = new ListingState('Drafted');
+			Given('a ListingState with value "Draft"', () => {
+				listingState = new ListingState('Draft');
 			});
 			When('I check isActive', () => {
 				result = listingState.isActive;
@@ -110,6 +188,106 @@ test.for(feature, ({ Scenario }) => {
 		});
 		Then('the value should be "Electronics"', () => {
 			expect(category.valueOf()).toBe('Electronics');
+		});
+	});
+
+	Scenario('Using Category.Electronics static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.Electronics', () => {
+			category = Category.Electronics;
+		});
+		Then('the value should be "Electronics"', () => {
+			expect(category.valueOf()).toBe('Electronics');
+		});
+	});
+
+	Scenario('Using Category.ToolsEquipment static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.ToolsEquipment', () => {
+			category = Category.ToolsEquipment;
+		});
+		Then('the value should be "Tools & Equipment"', () => {
+			expect(category.valueOf()).toBe('Tools & Equipment');
+		});
+	});
+
+	Scenario('Using Category.SportsOutdoors static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.SportsOutdoors', () => {
+			category = Category.SportsOutdoors;
+		});
+		Then('the value should be "Sports & Outdoors"', () => {
+			expect(category.valueOf()).toBe('Sports & Outdoors');
+		});
+	});
+
+	Scenario('Using Category.HomeGarden static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.HomeGarden', () => {
+			category = Category.HomeGarden;
+		});
+		Then('the value should be "Home & Garden"', () => {
+			expect(category.valueOf()).toBe('Home & Garden');
+		});
+	});
+
+	Scenario('Using Category.PartyEvents static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.PartyEvents', () => {
+			category = Category.PartyEvents;
+		});
+		Then('the value should be "Party & Events"', () => {
+			expect(category.valueOf()).toBe('Party & Events');
+		});
+	});
+
+	Scenario('Using Category.VehiclesTransportation static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.VehiclesTransportation', () => {
+			category = Category.VehiclesTransportation;
+		});
+		Then('the value should be "Vehicles & Transportation"', () => {
+			expect(category.valueOf()).toBe('Vehicles & Transportation');
+		});
+	});
+
+	Scenario('Using Category.KidsBaby static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.KidsBaby', () => {
+			category = Category.KidsBaby;
+		});
+		Then('the value should be "Kids & Baby"', () => {
+			expect(category.valueOf()).toBe('Kids & Baby');
+		});
+	});
+
+	Scenario('Using Category.BooksMedia static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.BooksMedia', () => {
+			category = Category.BooksMedia;
+		});
+		Then('the value should be "Books & Media"', () => {
+			expect(category.valueOf()).toBe('Books & Media');
+		});
+	});
+
+	Scenario('Using Category.ClothingAccessories static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.ClothingAccessories', () => {
+			category = Category.ClothingAccessories;
+		});
+		Then('the value should be "Clothing & Accessories"', () => {
+			expect(category.valueOf()).toBe('Clothing & Accessories');
+		});
+	});
+
+	Scenario('Using Category.Miscellaneous static instance', ({ When, Then }) => {
+		let category: Category;
+		When('I use Category.Miscellaneous', () => {
+			category = Category.Miscellaneous;
+		});
+		Then('the value should be "Miscellaneous"', () => {
+			expect(category.valueOf()).toBe('Miscellaneous');
 		});
 	});
 
