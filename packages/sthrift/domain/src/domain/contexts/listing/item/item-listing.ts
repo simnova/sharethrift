@@ -242,6 +242,22 @@ export class ItemListing<props extends ItemListingProps>
 		);
 	}
 
+	get blockReason(): string | undefined {
+		return this.props.blockReason;
+	}
+
+	set blockReason(value: string | undefined) {
+		this.props.blockReason = value;
+	}
+
+	get blockDescription(): string | undefined {
+		return this.props.blockDescription;
+	}
+
+	set blockDescription(value: string | undefined) {
+		this.props.blockDescription = value;
+	}
+
 	/**
 	 * Determines if the current user can edit this listing
 	 */

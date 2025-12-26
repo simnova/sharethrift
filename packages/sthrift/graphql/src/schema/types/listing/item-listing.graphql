@@ -11,6 +11,8 @@ type ItemListing implements MongoBase {
 	reports: Int
 	images: [String!] # Array of image URLs
 	listingType: String!
+	blockReason: String # Reason for blocking (e.g., "Profanity")
+	blockDescription: String # Detailed description of why listing was blocked
 	id: ObjectID!
 	schemaVersion: String
 	createdAt: DateTime
@@ -74,11 +76,18 @@ type ItemListingMutationResult implements MutationResult {
   listing: ItemListing
 }
 
+input BlockListingInput {
+	id: ObjectID!
+	blockReason: String!
+	blockDescription: String!
+}
+
 extend type Mutation {
 	createItemListing(input: CreateItemListingInput!): ItemListing!
 	cancelItemListing(id: ObjectID!): ItemListingMutationResult!
 	deleteItemListing(id: ObjectID!): ItemListingMutationResult!
 	unblockListing(id: ObjectID!): Boolean!
+	blockListing(input: BlockListingInput!): ItemListingMutationResult!
 }
 
 extend type Query {

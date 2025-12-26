@@ -39,6 +39,7 @@ input GetAllListingAppealRequestsInput {
 
 extend type Query {
 	getListingAppealRequest(id: ObjectID!): ListingAppealRequest
+	getListingAppealRequestByListingId(listingId: ObjectID!): ListingAppealRequest
 	getAllListingAppealRequests(
 		input: GetAllListingAppealRequestsInput!
 	): ListingAppealRequestPageResult!
