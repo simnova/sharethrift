@@ -33,7 +33,12 @@ export const ProfileViewContainer: React.FC = () => {
 	};
 
 	const currentUser = userQueryData?.currentUser;
-	const { account, createdAt } = currentUser || {};
+	const account = currentUser?.account;
+	const createdAt = currentUser?.createdAt;
+	const isBlocked =
+		currentUser?.__typename === 'PersonalUser'
+			? currentUser.isBlocked
+			: false;
 
 	if (!currentUser) {
 		return null;
@@ -51,6 +56,7 @@ export const ProfileViewContainer: React.FC = () => {
 			state: account?.profile?.location?.state || '',
 		},
 		createdAt: createdAt || '',
+		isBlocked: isBlocked || false,
 	};
 
 	const listings = (listingsData?.myListingsAll?.items || []).map((listing) => ({
@@ -72,6 +78,9 @@ export const ProfileViewContainer: React.FC = () => {
 					user={profileUser}
 					listings={listings}
 					isOwnProfile={true}
+					isBlocked={false}
+					isAdminViewer={false}
+					canBlockUser={false}
 					onEditSettings={handleEditSettings}
 					onListingClick={handleListingClick}
 				/>
