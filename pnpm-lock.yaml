@@ -18,7 +18,6 @@ catalogs:
 
 overrides:
   node-forge@<1.3.2: '>=1.3.2'
-  jws@<3.2.3: '>=3.2.3'
 
 importers:
 

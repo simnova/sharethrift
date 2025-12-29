@@ -13,57 +13,6 @@ export class ReservationRequestNotificationService {
 		this.emailService = emailService;
 	}
 
-	/**
-	 * Centralized helper method to get user email from PersonalUser or AdminUser entity
-	 */
-	// biome-ignore lint/suspicious/noExplicitAny: User entity type is complex and varies
-	private getUserEmail(user: any): string | null {
-		// For PersonalUser: user.account.email
-		if (user?.account?.email) {
-			return user.account.email;
-		}
-		
-		// For AdminUser: user.profile.email  
-		if (user?.profile?.email) {
-			return user.profile.email;
-		}
-		
-		return null;
-	}
-
-	/**
-	 * Centralized helper method to get user display name from PersonalUser or AdminUser entity
-	 */
-	// biome-ignore lint/suspicious/noExplicitAny: User entity type is complex and varies
-	private getUserDisplayName(user: any, fallback: string = 'Someone'): string {
-		// For PersonalUser: user.profile.firstName (+ lastName if available)
-		if (user?.profile?.firstName) {
-			const lastName = user.profile.lastName ? ` ${user.profile.lastName}` : '';
-			return `${user.profile.firstName}${lastName}`;
-		}
-		
-		// For AdminUser: user.profile.name
-		if (user?.profile?.name) {
-			return user.profile.name;
-		}
-		
-		return fallback;
-	}
-
-	/**
-	 * Centralized helper method to get user contact info (email + name) from PersonalUser or AdminUser entity
-	 */
-	// biome-ignore lint/suspicious/noExplicitAny: User entity type is complex and varies
-	private getUserContactInfo(user: any, fallbackName: string = 'Someone'): { email: string; name: string } | null {
-		const email = this.getUserEmail(user);
-		if (!email) {
-			return null;
-		}
-		
-		const name = this.getUserDisplayName(user, fallbackName);
-		return { email, name };
-	}
-
 	async sendReservationRequestNotification(
 		reservationRequestId: string,
 		listingId: string,
@@ -162,22 +111,32 @@ export class ReservationRequestNotificationService {
 				return;
 			}
 
-			// Get sharer contact information using centralized helper
-			const sharerContactInfo = this.getUserContactInfo(sharer, 'User');
-			if (!sharerContactInfo) {
+			// Get sharer email - check both account (PersonalUser) and profile (AdminUser)
+			const sharerEmail = sharer?.account?.email ?? sharer?.profile?.email ?? null;
+			if (!sharerEmail) {
 				console.error(
 					`Sharer ${sharerId} has no email address`,
 				);
 				return;
 			}
 
+			// Get sharer display name - handle both PersonalUser and AdminUser structures
+			const sharerName = sharer?.profile?.firstName 
+				? `${sharer.profile.firstName}${sharer.profile.lastName ? ` ${sharer.profile.lastName}` : ''}`
+				: (sharer?.profile?.name || 'User');
+
+			// Get reserver display name - handle both PersonalUser and AdminUser structures
+			const reserverName = reserver?.profile?.firstName 
+				? `${reserver.profile.firstName}${reserver.profile.lastName ? ` ${reserver.profile.lastName}` : ''}`
+				: (reserver?.profile?.name || 'Someone');
+
 			// Send email to sharer notifying them of the reservation request
 			await this.emailService.sendTemplatedEmail(
 				'reservation-request-notification',
-				sharerContactInfo,
+				{ email: sharerEmail, name: sharerName },
 				{
-					sharerName: this.getUserDisplayName(sharer, 'User'),
-					reserverName: this.getUserDisplayName(reserver, 'Someone'),
+					sharerName: sharerName,
+					reserverName: reserverName,
 					listingTitle: listing.title || 'Unknown Listing',
 					reservationStart: new Date(reservationPeriodStart).toLocaleDateString(),
 					reservationEnd: new Date(reservationPeriodEnd).toLocaleDateString(),
@@ -186,7 +145,7 @@ export class ReservationRequestNotificationService {
 			);
 
 			console.log(
-				`Notification email sent to sharer ${sharerContactInfo.email} for reservation request ${reservationRequestId}`,
+				`Notification email sent to sharer ${sharerEmail} for reservation request ${reservationRequestId}`,
 			);
 		} catch (error) {
 			console.error(
