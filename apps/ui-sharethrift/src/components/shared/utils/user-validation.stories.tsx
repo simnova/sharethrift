@@ -1,6 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { isValidUserId } from './user-validation.ts';
+
+const isValidUserId = (userId: string | undefined | null): boolean => {
+	if (typeof userId !== 'string') {
+		return false;
+	}
+
+	return userId.trim().length > 0;
+};
 
 const meta: Meta = {
 	title: 'Shared/Utils/UserValidation',
