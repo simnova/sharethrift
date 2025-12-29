@@ -22,6 +22,7 @@ interface ListingRequestUiShape {
 	title: string;
 	image: string;
 	requestedBy: string;
+	requestedById: string | null;
 	requestedOn: string;
 	reservationPeriod: string;
 	status: string;
@@ -59,6 +60,7 @@ export function paginateAndFilterListingRequests(
 			requestedBy: r.reserver?.account?.username
 				? `@${r.reserver.account.username}`
 				: '@unknown',
+			requestedById: r.reserver?.id ?? null,
 			requestedOn:
 				r.createdAt instanceof Date
 					? r.createdAt.toISOString()
