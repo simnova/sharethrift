@@ -30,7 +30,9 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 		const newInstance = new UserAppealRequest(newProps, passport);
 
 		newInstance.props.user = { id: userId } as PersonalUserEntityReference;
-		newInstance.reason = reason;
+		// Set reason directly on props to avoid permission check during initialization
+		// Permission checks require full user entity which isn't populated yet
+		newInstance.props.reason = new ValueObjects.Reason(reason).valueOf();
 		newInstance.props.state = ValueObjects.AppealRequestState.REQUESTED;
 		newInstance.props.type = ValueObjects.AppealRequestType.USER;
 		newInstance.props.blocker = { id: blockerId } as PersonalUserEntityReference;
