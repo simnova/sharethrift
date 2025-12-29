@@ -34,6 +34,28 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
+	Scenario('Guest passport for admin user should deny access', ({ Given, When, Then }) => {
+		let passport: GuestUserPassport;
+		// biome-ignore lint/suspicious/noExplicitAny: Test mock
+		let visa: any;
+
+		Given('I have a guest user passport', () => {
+			passport = new GuestUserPassport();
+		});
+
+		When('I request access to an admin user', () => {
+			const mockAdminUser = { id: 'test-admin-user-id' } as import('../../../contexts/user/admin-user/index.ts').AdminUserEntityReference;
+			visa = passport.forAdminUser(mockAdminUser);
+		});
+
+		Then('access should be denied', () => {
+			expect(visa).toBeDefined();
+			expect(visa.determineIf).toBeDefined();
+			expect(typeof visa.determineIf).toBe('function');
+			expect(visa.determineIf()).toBe(false);
+		});
+	});
+
 	Scenario('Guest user passport should extend GuestPassportBase', ({ Given, When, Then }) => {
 		let passport: GuestUserPassport;
 

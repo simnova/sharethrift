@@ -5,12 +5,13 @@ import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
 import { update, type ItemListingUpdateCommand } from './update.ts';
 
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/update.feature'),
 );
 
-describeFeature(feature, (f) => {
+test.for(feature, ({ Background, Scenario }) => {
 	let mockListing: Record<string, unknown>;
 	let mockRepo: {
 		get: ReturnType<typeof vi.fn>;
@@ -23,7 +24,7 @@ describeFeature(feature, (f) => {
 	let thrownError: Error | null;
 	let updateFunction: (command: ItemListingUpdateCommand) => Promise<unknown>;
 
-	f.Background(({ Given }) => {
+	Background(({ Given }) => {
 		Given('the listing repository is available', () => {
 			mockListing = {
 				title: 'Old Title',
@@ -54,7 +55,7 @@ describeFeature(feature, (f) => {
 		});
 	});
 
-	f.Scenario('Successfully updating listing title', ({ Given, When, Then, And }) => {
+	Scenario('Successfully updating listing title', ({ Given, When, Then, And }) => {
 		Given('a listing with id {string} and title {string}', () => {
 			mockListing = { title: 'Old Title' };
 			mockRepo.get.mockResolvedValue(mockListing);
@@ -82,7 +83,7 @@ title: 'New Title',
 		});
 	});
 
-	f.Scenario('Successfully updating multiple fields', ({ Given, When, Then, And }) => {
+	Scenario('Successfully updating multiple fields', ({ Given, When, Then, And }) => {
 		Given('a listing with id {string} and multiple fields', () => {
 			mockListing = {
 				title: 'Old Title',
@@ -120,7 +121,7 @@ location: 'New Location',
 		});
 	});
 
-	f.Scenario('Successfully updating sharing period dates', ({ Given, When, Then, And }) => {
+	Scenario('Successfully updating sharing period dates', ({ Given, When, Then, And }) => {
 		Given('a listing with id {string} and no sharing period', () => {
 			mockListing = {
 				sharingPeriodStart: undefined,
@@ -154,7 +155,7 @@ sharingPeriodEnd: endDate,
 		});
 	});
 
-	f.Scenario('Converting string dates to Date objects', ({ Given, When, Then, And }) => {
+	Scenario('Converting string dates to Date objects', ({ Given, When, Then, And }) => {
 		Given('a listing with id {string} and no sharing period start', () => {
 			mockListing = {
 				sharingPeriodStart: undefined,
@@ -183,7 +184,7 @@ sharingPeriodStart: '2025-10-10',
 		});
 	});
 
-	f.Scenario('Failing to update with invalid date string', ({ When, Then }) => {
+	Scenario('Failing to update with invalid date string', ({ When, Then }) => {
 		When('I update a listing with invalid date string {string}', async () => {
 			thrownError = null;
 			try {
@@ -202,7 +203,7 @@ sharingPeriodStart: 'invalid-date',
 		});
 	});
 
-	f.Scenario('Failing to update when UnitOfWork is not available', ({ Given, When, Then }) => {
+	Scenario('Failing to update when UnitOfWork is not available', ({ Given, When, Then }) => {
 		Given('the ItemListingUnitOfWork is not available', () => {
 			mockDataSources = {
 				domainDataSource: {
@@ -234,7 +235,7 @@ title: 'New Title',
 		});
 	});
 
-	f.Scenario('Successfully updating images array', ({ Given, When, Then, And }) => {
+	Scenario('Successfully updating images array', ({ Given, When, Then, And }) => {
 		Given('a listing with id {string} and empty images array', () => {
 			mockListing = {
 				images: [] as string[],
@@ -263,7 +264,7 @@ images: ['img1.png', 'img2.png'],
 		});
 	});
 
-	f.Scenario('Successfully updating isBlocked status', ({ Given, When, Then, And }) => {
+	Scenario('Successfully updating isBlocked status', ({ Given, When, Then, And }) => {
 		Given('a listing with id {string}', () => {
 			mockListing = {
 				setBlocked: vi.fn(),
@@ -292,7 +293,7 @@ isBlocked: true,
 		});
 	});
 
-	f.Scenario('Update fails when save returns undefined', ({ Given, And, When, Then }) => {
+	Scenario('Update fails when save returns undefined', ({ Given, And, When, Then }) => {
 		Given('a listing with id {string}', () => {
 			mockListing = {
 				title: 'Old Title',

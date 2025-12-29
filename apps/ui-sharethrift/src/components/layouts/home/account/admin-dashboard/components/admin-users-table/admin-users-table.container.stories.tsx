@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent, fn } from 'storybook/test';
+import { expect, within, userEvent, fn, waitFor } from 'storybook/test';
 import { AdminUsersTableContainer } from './admin-users-table.container.tsx';
 import {
 	withMockApolloClient,
@@ -393,6 +393,345 @@ export const WithStatusFilter: Story = {
 		const filterDropdown = canvas.queryByText(/Status/i);
 		if (filterDropdown) {
 			await userEvent.click(filterDropdown);
+		}
+	},
+};
+
+export const ViewProfileAction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Find and click action dropdown
+		const actionBtns = canvas.queryAllByRole('button');
+		const moreBtn = actionBtns.find(
+			(btn) =>
+				btn.textContent?.includes('...') ||
+				btn.querySelector('[data-icon="ellipsis"]') ||
+				btn.querySelector('[data-icon="more"]'),
+		);
+		if (moreBtn) {
+			await userEvent.click(moreBtn);
+		}
+	},
+};
+
+export const ViewReportAction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Verify the table is rendered with action columns
+		expect(
+			canvas.queryAllByText(/Active/i).length > 0 ||
+				canvas.queryAllByText(/Blocked/i).length > 0,
+		).toBeTruthy();
+	},
+};
+
+export const ArrayFieldSort: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Click on a sortable column header to trigger sorting
+		const usernameHeader = canvas.queryByText(/Username/i);
+		if (usernameHeader) {
+			await userEvent.click(usernameHeader);
+		}
+	},
+};
+
+export const UserWithMissingData: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [
+									{
+										__typename: 'PersonalUser',
+										id: 'user-incomplete',
+										createdAt: null,
+										userType: null,
+										isBlocked: null,
+										account: {
+											__typename: 'PersonalUserAccount',
+											username: null,
+											email: null,
+											profile: {
+												__typename: 'PersonalUserAccountProfile',
+												firstName: null,
+												lastName: null,
+											},
+										},
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/N\/A/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+	},
+};
+
+export const BlockUserAction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: BlockUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							blockUser: {
+								__typename: 'MutationStatus',
+								success: true,
+								errorMessage: null,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Click on a "Block" button if visible
+		const blockBtn = canvas.queryByRole('button', { name: /^Block$/i });
+		if (blockBtn) {
+			await userEvent.click(blockBtn);
+		}
+	},
+};
+
+export const UnblockUserAction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [mockUsers[1]],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: UnblockUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							unblockUser: {
+								__typename: 'MutationStatus',
+								success: true,
+								errorMessage: null,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Jane/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Click on an "Unblock" button if visible
+		const unblockBtn = canvas.queryByRole('button', { name: /Unblock/i });
+		if (unblockBtn) {
+			await userEvent.click(unblockBtn);
+		}
+	},
+};
+
+export const SortAscending: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Click on column header twice for ascending sort
+		const firstNameHeader = canvas.queryByText(/First Name/i);
+		if (firstNameHeader) {
+			await userEvent.click(firstNameHeader);
+			await userEvent.click(firstNameHeader);
 		}
 	},
 };

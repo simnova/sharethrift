@@ -8,6 +8,7 @@ import { AdminUserUserPassport } from './admin-user.user.passport.ts';
 import { AdminUserListingPassport } from './contexts/admin-user.listing.passport.ts';
 import { AdminUserConversationPassport } from './contexts/admin-user.conversation.passport.ts';
 import { AdminUserReservationRequestPassport } from './contexts/admin-user.reservation-request.passport.ts';
+import { AdminUserAppealRequestPassport } from './contexts/admin-user.appeal-request.passport.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -113,6 +114,42 @@ test.for(feature, ({ Background, Scenario }) => {
 					);
 				},
 			);
+		},
+	);
+
+	Scenario('Accessing the appeal request passport', ({ When, And, Then }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let appealRequestPassport: any;
+
+		When('I create an AdminUserPassport with a valid admin user', () => {
+			passport = new AdminUserPassport(adminUser);
+		});
+
+		And('I access the appealRequest property', () => {
+			appealRequestPassport = passport.appealRequest;
+		});
+
+		Then('I should receive an AdminUserAppealRequestPassport instance', () => {
+			expect(appealRequestPassport).toBeInstanceOf(
+				AdminUserAppealRequestPassport,
+			);
+		});
+	});
+
+	Scenario(
+		'Accessing the account plan passport throws not implemented error',
+		({ When, And, Then }) => {
+			When('I create an AdminUserPassport with a valid admin user', () => {
+				passport = new AdminUserPassport(adminUser);
+			});
+
+			And('I access the accountPlan property', () => {
+				// Accessing property that throws error
+			});
+
+			Then('an error should be thrown with message "Method not implemented."', () => {
+				expect(() => passport.accountPlan).toThrow('Method not implemented.');
+			});
 		},
 	);
 });

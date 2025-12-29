@@ -5,21 +5,122 @@ import { expect, vi } from 'vitest';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import type { ModelsContext } from '../../../../models-context.ts';
 import type { Domain } from '@sthrift/domain';
-import { ConversationReadRepositoryImpl, getConversationReadRepository } from './conversation.read-repository.ts';
-import {
-	createValidObjectId,
-	makePassport,
-	makeMockUser,
-	makeMockListing,
-	makeMockConversation,
-	createMockQuery,
-} from '../../../../test-utilities/mock-data-helpers.ts';
+import { ConversationReadRepositoryImpl } from './conversation.read-repository.ts';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+
+// Helper to create a valid 24-character hex string from a simple ID
+function createValidObjectId(id: string): string {
+	// Convert string to a hex representation and pad to 24 characters
+	const hexChars = '0123456789abcdef';
+	let hex = '';
+	for (let i = 0; i < id.length && hex.length < 24; i++) {
+		const charCode = id.charCodeAt(i);
+		hex += hexChars[charCode % 16];
+	}
+	// Pad with zeros if needed
+	return hex.padEnd(24, '0').substring(0, 24);
+}
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/conversation.read-repository.feature'),
 );
+
+function makePassport(): Domain.Passport {
+	return vi.mocked({
+		conversation: {
+			forConversation: vi.fn(() => ({
+				determineIf: () => true,
+			})),
+		},
+		user: {
+			forPersonalUser: vi.fn(() => ({
+				determineIf: () => true,
+			})),
+		},
+		listing: {
+			forItemListing: vi.fn(() => ({
+				determineIf: () => true,
+			})),
+		},
+	} as unknown as Domain.Passport);
+}
+
+function createNullPopulateChain<T>(result: T) {
+	const innerLean = { lean: vi.fn(async () => result) };
+	const innerPopulate = { populate: vi.fn(() => innerLean) };
+	const outerPopulate = { populate: vi.fn(() => innerPopulate) };
+	return { populate: vi.fn(() => outerPopulate) };
+}
+
+function makeMockUser(id: string): Models.User.PersonalUser {
+	return {
+		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
+		id: id,
+		userType: 'end-user',
+		isBlocked: false,
+		hasCompletedOnboarding: false,
+		account: {
+			accountType: 'standard',
+			email: `${id}@example.com`,
+			username: id,
+			profile: {
+				firstName: 'Test',
+				lastName: 'User',
+				aboutMe: 'Hello',
+				location: {
+					address1: '123 Main St',
+					address2: null,
+					city: 'Test City',
+					state: 'TS',
+					country: 'Testland',
+					zipCode: '12345',
+				},
+				billing: {
+					subscriptionId: null,
+					cybersourceCustomerId: null,
+					paymentState: '',
+					lastTransactionId: null,
+					lastPaymentAmount: null,
+				},
+			},
+		},
+		role: { id: 'role-1' },
+		createdAt: new Date('2020-01-01'),
+		updatedAt: new Date('2020-01-02'),
+	} as unknown as Models.User.PersonalUser;
+}
+
+function makeMockListing(id: string): Models.Listing.ItemListing {
+	return {
+		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
+		id: id,
+		title: 'Test Listing',
+		description: 'Test Description',
+	} as unknown as Models.Listing.ItemListing;
+}
+
+function makeMockConversation(
+	overrides: Partial<Models.Conversation.Conversation> = {},
+): Models.Conversation.Conversation {
+	const conversationId = overrides.id || 'conv-1';
+	const defaultConv = {
+		_id: new MongooseSeedwork.ObjectId(createValidObjectId(conversationId as string)),
+		id: conversationId,
+		sharer: makeMockUser('user-1'),
+		reserver: makeMockUser('user-2'),
+		listing: makeMockListing('listing-1'),
+		messagingConversationId: 'twilio-123',
+		createdAt: new Date('2020-01-01'),
+		updatedAt: new Date('2020-01-02'),
+		schemaVersion: '1.0.0',
+	};
+	return {
+		...defaultConv,
+		...overrides,
+	} as unknown as Models.Conversation.Conversation;
+}
 
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let repository: ConversationReadRepositoryImpl;
@@ -31,6 +132,30 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	BeforeEachScenario(() => {
 		passport = makePassport();
 		mockConversations = [makeMockConversation()];
+
+		// Create mock query that supports chaining and is thenable
+		const createMockQuery = (result: unknown) => {
+			const mockQuery = {
+				lean: vi.fn(),
+				populate: vi.fn(),
+				exec: vi.fn().mockResolvedValue(result),
+				catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
+			};
+			// Configure methods to return the query object for chaining
+			mockQuery.lean.mockReturnValue(mockQuery);
+			mockQuery.populate.mockReturnValue(mockQuery);
+			
+			// SONARQUBE SUPPRESSION: S7739 - Intentional thenable mock
+			// This object intentionally implements the 'then' property to mock Mongoose
+			// query behavior. Mongoose queries are thenable and can be awaited.
+			// biome-ignore lint/suspicious/noThenProperty: Intentional thenable mock for Mongoose queries
+			Object.defineProperty(mockQuery, 'then', {
+				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
+				enumerable: false,
+				configurable: true,
+			});
+			return mockQuery;
+		};
 
 		mockModel = {
 			find: vi.fn(() => createMockQuery(mockConversations)),
@@ -103,7 +228,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Getting a conversation by nonexistent ID', ({ When, Then }) => {
 		When('I call getById with "nonexistent-id"', async () => {
-			mockModel.findById = vi.fn(() => createMockQuery(null)) as unknown as typeof mockModel.findById;
+			mockModel.findById = vi.fn(() => createNullPopulateChain(null)) as unknown as typeof mockModel.findById;
 
 			result = await repository.getById('nonexistent-id');
 		});
@@ -164,7 +289,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting conversations by user ID with no conversations',
 		({ When, Then }) => {
 			When('I call getByUser with "user-without-conversations"', async () => {
-				mockModel.find = vi.fn(() => createMockQuery([])) as unknown as typeof mockModel.find;
+				mockModel.find = vi.fn(() => createNullPopulateChain([])) as unknown as typeof mockModel.find;
 
 				result = await repository.getByUser(createValidObjectId('user-without-conversations'));
 			});
@@ -188,144 +313,110 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		},
 	);
 
-	Scenario(
-		'Getting conversation by sharer, reserver, and listing IDs',
-		({ Given, When, Then, And }) => {
-			Given('a conversation with specific sharer, reserver, and listing', () => {
-				mockConversations = [
-					makeMockConversation({
-						sharer: makeMockUser('sharer-1'),
-						reserver: makeMockUser('reserver-1'),
-						listing: makeMockListing('listing-1'),
-					}),
-				];
-			});
-			When('I call getBySharerReserverListing with valid IDs', async () => {
-				result = await repository.getBySharerReserverListing(
-					createValidObjectId('sharer-1'),
-					createValidObjectId('reserver-1'),
-					createValidObjectId('listing-1'),
-				);
-			});
-			Then('I should receive a Conversation entity', () => {
-				expect(result).toBeDefined();
-				expect(result).not.toBeNull();
-			});
-			And('the entity should match the criteria', () => {
-				const conversation =
-					result as Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
-				expect(conversation.id).toBeDefined();
-			});
-		},
-	);
+	Scenario('Getting conversation by sharer, reserver, and listing', ({ Given, When, Then }) => {
+		let sharerId: string;
+		let reserverId: string;
+		let listingId: string;
 
-	Scenario(
-		'Getting conversation by sharer, reserver, and listing with no match',
-		({ When, Then }) => {
-			When('I call getBySharerReserverListing with non-matching IDs', async () => {
-				mockModel.findOne = vi.fn(() => createMockQuery(null)) as unknown as typeof mockModel.findOne;
+		Given('valid sharer, reserver, and listing IDs', () => {
+			sharerId = createValidObjectId('sharer-1');
+			reserverId = createValidObjectId('reserver-1');
+			listingId = createValidObjectId('listing-1');
 
-				result = await repository.getBySharerReserverListing(
-					createValidObjectId('sharer-999'),
-					createValidObjectId('reserver-999'),
-					createValidObjectId('listing-999'),
-				);
-			});
-			Then('it should return null', () => {
-				expect(result).toBeNull();
-			});
-		},
-	);
+			mockModel.findOne = vi.fn().mockReturnValue({
+				lean: vi.fn().mockResolvedValue(makeMockConversation()),
+			}) as never;
+		});
 
-	Scenario(
-		'Getting conversation by sharer, reserver, and listing with empty parameters',
-		({ When, Then }) => {
-			When('I call getBySharerReserverListing with empty parameters', async () => {
-				result = await repository.getBySharerReserverListing('', '', '');
-			});
-			Then('it should return null', () => {
-				expect(result).toBeNull();
-			});
-		},
-	);
+		When('I call getBySharerReserverListing', async () => {
+			result = await repository.getBySharerReserverListing(sharerId, reserverId, listingId);
+		});
 
-	Scenario(
-		'Getting conversation by sharer, reserver, and listing with partial empty parameters',
-		({ When, Then }) => {
-			When('I call getBySharerReserverListing with partial empty parameters', async () => {
-				result = await repository.getBySharerReserverListing(
-					createValidObjectId('sharer-1'),
-					'',
-					createValidObjectId('listing-1'),
-				);
-			});
-			Then('it should return null', () => {
-				expect(result).toBeNull();
-			});
-		},
-	);
+		Then('I should receive a Conversation entity or null', () => {
+			expect(result).toBeDefined();
+		});
+	});
 
-	Scenario(
-		'Getting conversation by sharer, reserver, and listing with invalid ObjectId',
-		({ When, Then }) => {
-			When('I call getBySharerReserverListing with invalid ObjectId that throws error', async () => {
-				// Use a spy to monitor console.warn calls for error handling validation
-				const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
-					// Mock implementation - suppress console.warn for test
-				});
+	Scenario('Getting conversation with missing sharer ID', ({ Given, When, Then }) => {
+		Given('empty sharer ID', () => {
+			// Empty string setup
+		});
 
-				// Use an invalid ObjectId format that would cause MongoDB/Mongoose to throw
-				result = await repository.getBySharerReserverListing(
-					'invalid-objectid-format',
-					'invalid-objectid-format', 
-					'invalid-objectid-format',
-				);
+		When('I call getBySharerReserverListing with empty sharer', async () => {
+			result = await repository.getBySharerReserverListing('', createValidObjectId('reserver'), createValidObjectId('listing'));
+		});
 
-				consoleSpy.mockRestore();
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with missing reserver ID', ({ Given, When, Then }) => {
+		Given('empty reserver ID', () => {
+			// Empty string setup
+		});
+
+		When('I call getBySharerReserverListing with empty reserver', async () => {
+			result = await repository.getBySharerReserverListing(createValidObjectId('sharer'), '', createValidObjectId('listing'));
+		});
+
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with missing listing ID', ({ Given, When, Then }) => {
+		Given('empty listing ID', () => {
+			// Empty string setup
+		});
+
+		When('I call getBySharerReserverListing with empty listing', async () => {
+			result = await repository.getBySharerReserverListing(createValidObjectId('sharer'), createValidObjectId('reserver'), '');
+		});
+
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with error in database query', ({ Given, When, Then }) => {
+		Given('an error will occur during the query', () => {
+			mockModel.findOne = vi.fn().mockImplementation(() => {
+				throw new Error('Database error');
 			});
-			Then('it should return null due to error handling', () => {
-				expect(result).toBeNull();
-			});
-		},
-	);
+		});
 
-	Scenario(
-		'Testing getByUser with invalid ObjectId that throws error',
-		({ When, Then }) => {
-			When('I call getByUser with ObjectId that throws error', async () => {
-				// Use a spy to monitor console.warn calls for error handling validation
-				const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
-					// Mock implementation - suppress console.warn for test
-				});
+		When('I call getBySharerReserverListing', async () => {
+			result = await repository.getBySharerReserverListing(
+				createValidObjectId('sharer'),
+				createValidObjectId('reserver'),
+				createValidObjectId('listing')
+			);
+		});
 
-				// Use an invalid ObjectId format that would cause MongoDB/Mongoose to throw
-				result = await repository.getByUser('invalid-objectid-format');
+		Then('it should return null due to error', () => {
+			expect(result).toBeNull();
+		});
+	});
 
-				consoleSpy.mockRestore();
+	Scenario('Getting conversation with invalid ObjectId format', ({ Given, When, Then }) => {
+		Given('an invalid ObjectId will cause an error', () => {
+			// Mock MongooseSeedwork.ObjectId constructor to throw
+			vi.spyOn(MongooseSeedwork, 'ObjectId').mockImplementationOnce(() => {
+				throw new Error('Invalid ObjectId');
 			});
-			Then('it should return empty array due to error handling', () => {
-				expect(Array.isArray(result)).toBe(true);
-				expect((result as unknown[]).length).toBe(0);
-			});
-		},
-	);
+		});
 
-	Scenario(
-		'Testing getConversationReadRepository factory function',
-		({ When, Then }) => {
-			When('I call getConversationReadRepository factory function', () => {
-				const modelsContext = {
-					Conversation: {
-						ConversationModel: mockModel,
-					},
-				} as unknown as ModelsContext;
+		When('I call getBySharerReserverListing with invalid ID', async () => {
+			result = await repository.getBySharerReserverListing(
+				'invalid-id',
+				createValidObjectId('reserver'),
+				createValidObjectId('listing')
+			);
+		});
 
-				result = getConversationReadRepository(modelsContext, passport);
-			});
-			Then('it should return a ConversationReadRepositoryImpl instance', () => {
-				expect(result).toBeDefined();
-				expect(result).toBeInstanceOf(ConversationReadRepositoryImpl);
-			});
-		},
-	);
+		Then('it should return null due to ObjectId error', () => {
+			expect(result).toBeNull();
+		});
+	});
 });

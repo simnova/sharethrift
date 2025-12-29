@@ -9,35 +9,50 @@ import type { ReservationRequestEntityReference } from '../../../../contexts/res
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/personal-user.reservation-request.visa.feature'),
+	path.resolve(
+		__dirname,
+		'features/personal-user.reservation-request.visa.feature',
+	),
 );
 
 test.for(feature, ({ Scenario }) => {
-	Scenario('Reservation visa evaluates sharer permissions', ({ Given, When, Then }) => {
-		const mockUser = { id: 'user-123', isBlocked: false } as PersonalUserEntityReference;
-		const mockReservation = {
-			id: 'reservation-1',
-			listing: { sharer: { id: 'user-123' } },
-			reserver: { id: 'user-456' },
-		} as ReservationRequestEntityReference;
-		let visa: PersonalUserReservationRequestVisa<ReservationRequestEntityReference>;
-		let canAccept: boolean;
+	Scenario(
+		'Reservation visa evaluates sharer permissions',
+		({ Given, When, Then }) => {
+			const mockUser = {
+				id: 'user-123',
+				isBlocked: false,
+			} as PersonalUserEntityReference;
+			const mockReservation = {
+				id: 'reservation-1',
+				listing: { sharer: { id: 'user-123' } },
+				reserver: { id: 'user-456' },
+			} as ReservationRequestEntityReference;
+			let visa: PersonalUserReservationRequestVisa<ReservationRequestEntityReference>;
+			let canAccept: boolean;
 
-		Given('I have a reservation visa as sharer', () => {
-			visa = new PersonalUserReservationRequestVisa(mockReservation, mockUser);
-		});
+			Given('I have a reservation visa as sharer', () => {
+				visa = new PersonalUserReservationRequestVisa(
+					mockReservation,
+					mockUser,
+				);
+			});
 
-		When('I check accept permission', () => {
-			canAccept = visa.determineIf((p) => p.canAcceptRequest);
-		});
+			When('I check accept permission', () => {
+				canAccept = visa.determineIf((p) => p.canAcceptRequest);
+			});
 
-		Then('sharer can accept request', () => {
-			expect(canAccept).toBe(true);
-		});
-	});
+			Then('sharer can accept request', () => {
+				expect(canAccept).toBe(true);
+			});
+		},
+	);
 
 	Scenario('Reservation visa is created properly', ({ Given, When, Then }) => {
-		const mockUser = { id: 'user-123', isBlocked: false } as PersonalUserEntityReference;
+		const mockUser = {
+			id: 'user-123',
+			isBlocked: false,
+		} as PersonalUserEntityReference;
 		const mockReservation = {
 			id: 'reservation-1',
 			listing: { sharer: { id: 'user-123' } },
@@ -59,4 +74,37 @@ test.for(feature, ({ Scenario }) => {
 			expect(typeof visa.determineIf).toBe('function');
 		});
 	});
+
+	Scenario(
+		'Reservation visa evaluates reserver close permission',
+		({ Given, When, Then }) => {
+			// User is the reserver (user-456), NOT the sharer (user-123)
+			const mockUser = {
+				id: 'user-456',
+				isBlocked: false,
+			} as PersonalUserEntityReference;
+			const mockReservation = {
+				id: 'reservation-1',
+				listing: { sharer: { id: 'user-123' } },
+				reserver: { id: 'user-456' },
+			} as ReservationRequestEntityReference;
+			let visa: PersonalUserReservationRequestVisa<ReservationRequestEntityReference>;
+			let canClose: boolean;
+
+			Given('I have a reservation visa as reserver', () => {
+				visa = new PersonalUserReservationRequestVisa(
+					mockReservation,
+					mockUser,
+				);
+			});
+
+			When('I check close permission as reserver', () => {
+				canClose = visa.determineIf((p) => p.canCloseRequest);
+			});
+
+			Then('reserver can close request', () => {
+				expect(canClose).toBe(true);
+			});
+		},
+	);
 });

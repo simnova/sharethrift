@@ -69,3 +69,12 @@ And valid Conversation documents exist in the database
 	Scenario: Testing getConversationReadRepository factory function
 		When I call getConversationReadRepository factory function
 		Then it should return a ConversationReadRepositoryImpl instance
+	Scenario: Getting conversation with error in database query
+		Given an error will occur during the query
+		When I call getBySharerReserverListing
+		Then it should return null due to error
+
+	Scenario: Getting conversation with invalid ObjectId format
+		Given an invalid ObjectId will cause an error
+		When I call getBySharerReserverListing with invalid ID
+		Then it should return null due to ObjectId error
