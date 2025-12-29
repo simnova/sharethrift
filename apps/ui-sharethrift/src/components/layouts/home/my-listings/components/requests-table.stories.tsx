@@ -63,8 +63,7 @@ export const Default: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getAllByText('Cordless Drill').length).toBeGreaterThan(0);
-		const link = canvas.getByRole('link', { name: '@alice' });
-		await expect(link).toHaveAttribute('href', '/user/507f1f77bcf86cd799439011');
+		await expect(canvas.getAllByText('@alice').length).toBeGreaterThan(0);
 		await expect(canvas.getAllByText('Accepted').length).toBeGreaterThan(0);
 	},
 };

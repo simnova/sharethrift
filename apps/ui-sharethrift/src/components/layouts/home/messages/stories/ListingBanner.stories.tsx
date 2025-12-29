@@ -87,6 +87,6 @@ export const UnknownOwner: Story = {
     const canvas = within(canvasElement);
 
     // Test fallback for missing profile
-    await expect(canvas.getByText("Unknown's Listing")).toBeInTheDocument();
+    await expect(canvas.getByText("unknown_user's Listing")).toBeInTheDocument();
   },
 };

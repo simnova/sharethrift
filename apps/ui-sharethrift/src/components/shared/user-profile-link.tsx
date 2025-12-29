@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
  * @property style - Custom inline styles
  */
 interface UserProfileLinkProps {
-	userId: string;
+	userId?: string | null;
 	displayName: string;
 	className?: string;
 	style?: React.CSSProperties;
@@ -25,11 +25,26 @@ export const UserProfileLink: React.FC<UserProfileLinkProps> = ({
 	className = '',
 	style = {},
 }) => {
+	if (!userId?.trim()) {
+		return (
+			<span
+				className={className}
+				style={{
+					textDecoration: 'none',
+					color: 'inherit',
+					...style,
+				}}
+			>
+				{displayName}
+			</span>
+		);
+	}
+
 	return (
-		<Link 
-			to={`/user/${userId}`} 
+		<Link
+			to={`/user/${userId}`}
 			className={className}
-			style={{ 
+			style={{
 				textDecoration: 'none',
 				color: 'inherit',
 				...style,
