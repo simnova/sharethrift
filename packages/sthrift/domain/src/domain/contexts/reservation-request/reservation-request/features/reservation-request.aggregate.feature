@@ -22,21 +22,21 @@ Feature: Reservation Request Aggregate
     Given a reservation request in REQUESTED state
     When the reservation is cancelled
     Then the reservation request should be in the CANCELLED state
-    And close flags should remain false
+    And closeRequestedBy should remain null
 
   Scenario: Close a reservation request by sharer
     Given a reservation request in ACCEPTED state and close requested by sharer
     When the reservation is closed
     Then the reservation request should be in the CLOSED state
-    And closeRequestedBySharer should be true
+    And closeRequestedBy should be "SHARER"
 
   Scenario: Close a reservation request by reserver
     Given a reservation request in ACCEPTED state and close requested by reserver
     When the reservation is closed
     Then the reservation request should be in the CLOSED state
-    And closeRequestedByReserver should be true
+    And closeRequestedBy should be "RESERVER"
 
   Scenario: Request close by reserver
     Given a reservation request in ACCEPTED state
     When the reserver requests to close
-    Then closeRequestedByReserver should be true
+    Then closeRequestedBy should be "RESERVER"

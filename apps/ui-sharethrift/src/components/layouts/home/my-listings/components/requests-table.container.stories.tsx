@@ -7,35 +7,67 @@ import {
 } from '../../../../../test-utils/storybook-decorators.tsx';
 import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../generated.tsx';
 
-const mockRequests = {
-	items: [
-		{
-			__typename: 'MyListingRequest',
-			id: '1',
+const mockRequests = [
+	{
+		__typename: 'ReservationRequest',
+		id: '1',
+		state: 'Requested',
+		reservationPeriodStart: '2025-01-20T00:00:00.000Z',
+		reservationPeriodEnd: '2025-01-25T00:00:00.000Z',
+		createdAt: '2025-01-15T00:00:00.000Z',
+		listing: {
+			__typename: 'ItemListing',
+			id: 'listing-1',
 			title: 'Cordless Drill',
-			image: '/assets/item-images/projector.png',
-			requestedOn: '2025-01-15',
-			reservationPeriod: '2025-01-20 - 2025-01-25',
-			status: 'Pending',
-			requestedBy: 'John Doe',
+			images: ['/assets/item-images/projector.png'],
 		},
-		{
-			__typename: 'MyListingRequest',
-			id: '2',
+		reserver: {
+			__typename: 'PersonalUser',
+			id: 'user-1',
+			account: {
+				__typename: 'PersonalUserAccount',
+				profile: {
+					__typename: 'PersonalUserAccountProfile',
+					firstName: 'John',
+					lastName: 'Doe',
+				},
+			},
+		},
+	},
+	{
+		__typename: 'ReservationRequest',
+		id: '2',
+		state: 'Accepted',
+		reservationPeriodStart: '2025-02-10T00:00:00.000Z',
+		reservationPeriodEnd: '2025-02-15T00:00:00.000Z',
+		createdAt: '2025-02-01T00:00:00.000Z',
+		listing: {
+			__typename: 'ItemListing',
+			id: 'listing-2',
 			title: 'Electric Guitar',
-			image: '/assets/item-images/projector.png',
-			requestedOn: '2025-02-01',
-			reservationPeriod: '2025-02-10 - 2025-02-15',
-			status: 'Accepted',
-			requestedBy: 'Jane Smith',
+			images: ['/assets/item-images/projector.png'],
 		},
-	],
-	total: 2,
-};
+		reserver: {
+			__typename: 'PersonalUser',
+			id: 'user-2',
+			account: {
+				__typename: 'PersonalUserAccount',
+				profile: {
+					__typename: 'PersonalUserAccountProfile',
+					firstName: 'Jane',
+					lastName: 'Smith',
+				},
+			},
+		},
+	},
+];
 
 const meta: Meta<typeof RequestsTableContainer> = {
 	title: 'Containers/RequestsTableContainer',
 	component: RequestsTableContainer,
+	args: {
+		sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
+	},
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {
@@ -44,11 +76,6 @@ const meta: Meta<typeof RequestsTableContainer> = {
 					request: {
 						query: HomeRequestsTableContainerMyListingsRequestsDocument,
 						variables: {
-							page: 1,
-							pageSize: 6,
-							searchText: '',
-							statusFilters: [],
-							sorter: { field: '', order: '' },
 							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
 						},
 					},
@@ -97,17 +124,12 @@ export const Empty: Story = {
 					request: {
 						query: HomeRequestsTableContainerMyListingsRequestsDocument,
 						variables: {
-							page: 1,
-							pageSize: 6,
-							searchText: '',
-							statusFilters: [],
-							sorter: { field: '', order: '' },
 							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
 						},
 					},
 					result: {
 						data: {
-							myListingsRequests: { items: [], total: 0 },
+							myListingsRequests: [],
 						},
 					},
 				},
@@ -138,11 +160,6 @@ export const Loading: Story = {
 					request: {
 						query: HomeRequestsTableContainerMyListingsRequestsDocument,
 						variables: {
-							page: 1,
-							pageSize: 6,
-							searchText: '',
-							statusFilters: [],
-							sorter: { field: '', order: '' },
 							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
 						},
 					},
@@ -171,11 +188,6 @@ export const ErrorState: Story = {
 					request: {
 						query: HomeRequestsTableContainerMyListingsRequestsDocument,
 						variables: {
-							page: 1,
-							pageSize: 6,
-							searchText: '',
-							statusFilters: [],
-							sorter: { field: '', order: '' },
 							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
 						},
 					},
@@ -214,10 +226,7 @@ export const WithSearchFilter: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							myListingsRequests: {
-								items: [mockRequests.items[0]],
-								total: 1,
-							},
+							myListingsRequests: [mockRequests[0]],
 						},
 					},
 				},
@@ -258,10 +267,7 @@ export const WithStatusFilter: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							myListingsRequests: {
-								items: [mockRequests.items[1]],
-								total: 1,
-							},
+							myListingsRequests: [mockRequests[1]],
 						},
 					},
 				},
@@ -334,20 +340,12 @@ export const Pagination: Story = {
 					request: {
 						query: HomeRequestsTableContainerMyListingsRequestsDocument,
 						variables: {
-							page: 2,
-							pageSize: 6,
-							searchText: '',
-							statusFilters: [],
-							sorter: { field: '', order: '' },
 							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
 						},
 					},
 					result: {
 						data: {
-							myListingsRequests: {
-								items: [],
-								total: 12,
-							},
+							myListingsRequests: mockRequests,
 						},
 					},
 				},
@@ -378,17 +376,12 @@ export const NoData: Story = {
 					request: {
 						query: HomeRequestsTableContainerMyListingsRequestsDocument,
 						variables: {
-							page: 1,
-							pageSize: 6,
-							searchText: '',
-							statusFilters: [],
-							sorter: { field: '', order: '' },
 							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
 						},
 					},
 					result: {
 						data: {
-							myListingsRequests: null,
+							myListingsRequests: [],
 						},
 					},
 				},
