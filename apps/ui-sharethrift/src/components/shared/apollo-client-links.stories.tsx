@@ -264,3 +264,60 @@ export const CustomHeaderConditional: Story = {
 		expect(demo.textContent).toContain('Link With True Condition');
 	},
 };
+
+// Story demonstrating custom header with null value
+export const CustomHeaderWithNull: Story = {
+	name: 'Custom Header With Null',
+	render: () => {
+		const linkWithNull = ApolloLinkToAddCustomHeader('X-Test', null);
+		return (
+			<div data-testid="custom-header-null">
+				<p>Link With Null Value: {linkWithNull.constructor.name}</p>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		const demo = await canvas.findByTestId('custom-header-null');
+		expect(demo).toBeInTheDocument();
+		expect(demo.textContent).toContain('Link With Null Value');
+	},
+};
+
+// Story demonstrating custom header with undefined value
+export const CustomHeaderWithUndefined: Story = {
+	name: 'Custom Header With Undefined',
+	render: () => {
+		const linkWithUndefined = ApolloLinkToAddCustomHeader('X-Test', undefined);
+		return (
+			<div data-testid="custom-header-undefined">
+				<p>Link With Undefined Value: {linkWithUndefined.constructor.name}</p>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		const demo = await canvas.findByTestId('custom-header-undefined');
+		expect(demo).toBeInTheDocument();
+		expect(demo.textContent).toContain('Link With Undefined Value');
+	},
+};
+
+// Story demonstrating auth header with empty string token
+export const AuthHeaderWithEmptyToken: Story = {
+	name: 'Auth Header With Empty Token',
+	render: () => {
+		const linkWithEmptyToken = ApolloLinkToAddAuthHeaderIfAccessTokenAvailable('');
+		return (
+			<div data-testid="auth-empty-token">
+				<p>Link Created With Empty Token: {linkWithEmptyToken.constructor.name}</p>
+			</div>
+		);
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		const demo = await canvas.findByTestId('auth-empty-token');
+		expect(demo).toBeInTheDocument();
+		expect(demo.textContent).toContain('Link Created With Empty Token');
+	},
+};

@@ -44,3 +44,8 @@ Scenario: Profile allows setters when entity is new
 	Given I have a profile instance for a new entity
 	When I set the lastName property
 	Then the lastName should be updated without visa check
+
+Scenario: Profile aboutMe setter works with valid visa
+	Given I have a profile instance with a permissive visa and aboutMe
+	When I set the aboutMe property
+	Then the aboutMe should be updated

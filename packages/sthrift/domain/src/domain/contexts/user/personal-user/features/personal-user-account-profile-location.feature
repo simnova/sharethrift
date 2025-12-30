@@ -49,3 +49,28 @@ Scenario: Location allows setters when entity is new
 	Given I have a location instance for a new entity
 	When I set the city property
 	Then the city should be updated without visa check
+
+Scenario: Location address2 setter works with valid visa
+	Given I have a location instance with permissive visa for address2
+	When I set the address2 property
+	Then the address2 should be updated
+
+Scenario: Location city setter works with valid visa
+	Given I have a location instance with permissive visa for city
+	When I update the city property
+	Then the city should be updated
+
+Scenario: Location state setter works with valid visa
+	Given I have a location instance with permissive visa for state
+	When I set the state property
+	Then the state should be updated
+
+Scenario: Location country setter works with valid visa
+	Given I have a location instance with permissive visa for country
+	When I set the country property
+	Then the country should be updated
+
+Scenario: Location zipCode setter works with valid visa
+	Given I have a location instance with permissive visa for zipCode
+	When I set the zipCode property
+	Then the zipCode should be updated
