@@ -33,6 +33,8 @@ export const UserProfileViewContainer: React.FC = () => {
     navigate(`/listing/${listingId}`);
   }, [navigate]);
 
+	const handleEditSettings = useCallback(() => undefined, []);
+
   // Build profile user data from the query response - memoized for performance
   const profileUser = useMemo(() => {
     if (!viewedUser) return null;
@@ -61,20 +63,28 @@ export const UserProfileViewContainer: React.FC = () => {
   // This would require a backend query to fetch public listings by user ID.
   const listings: ItemListing[] = [];
 
+  const profileView = profileUser ? (
+    <ProfileView
+      user={profileUser}
+      listings={listings}
+      isOwnProfile={false}
+      onEditSettings={handleEditSettings}
+      onListingClick={handleListingClick}
+    />
+  ) : (
+    <></>
+  );
+
+	if (!userId) {
+		return <div>User ID is required</div>;
+	}
+
   return (
     <ComponentQueryLoader
       loading={userLoading}
       error={userError}
       hasData={profileUser}
-      hasDataComponent={
-        <ProfileView
-          user={profileUser!}
-          listings={listings}
-          isOwnProfile={false}
-          onEditSettings={() => {}}
-          onListingClick={handleListingClick}
-        />
-      }
+      hasDataComponent={profileView}
     />
   );
 };
