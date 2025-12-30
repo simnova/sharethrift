@@ -13,7 +13,7 @@ export interface UserAppealProps {
 	existingAppeal?: {
 		id: string;
 		reason: string;
-		state: 'REQUESTED' | 'ACCEPTED' | 'DENIED';
+		state: 'requested' | 'accepted' | 'denied';
 		createdAt: string;
 	} | null;
 	onSubmitAppeal: (reason: string) => void;
@@ -34,19 +34,19 @@ export const UserAppeal: React.FC<Readonly<UserAppealProps>> = ({
 
 	const getStateTag = (state: string) => {
 		switch (state) {
-			case 'REQUESTED':
+			case 'requested':
 				return (
 					<Tag icon={<ExclamationCircleOutlined />} color="warning">
 						Pending Review
 					</Tag>
 				);
-			case 'ACCEPTED':
+			case 'accepted':
 				return (
 					<Tag icon={<CheckCircleOutlined />} color="success">
 						Accepted
 					</Tag>
 				);
-			case 'DENIED':
+			case 'denied':
 				return (
 					<Tag icon={<CloseCircleOutlined />} color="error">
 						Denied
@@ -93,7 +93,7 @@ export const UserAppeal: React.FC<Readonly<UserAppealProps>> = ({
 							<Text strong>Your Appeal:</Text>
 							<Paragraph className="mt-2">{existingAppeal.reason}</Paragraph>
 						</div>
-						{existingAppeal.state === 'REQUESTED' && (
+						{existingAppeal.state === 'requested' && (
 							<Alert
 								message="Your appeal is under review"
 								description="An administrator will review your appeal within 3-5 business days. You will be notified of the decision."
@@ -101,7 +101,7 @@ export const UserAppeal: React.FC<Readonly<UserAppealProps>> = ({
 								showIcon
 							/>
 						)}
-						{existingAppeal.state === 'DENIED' && (
+						{existingAppeal.state === 'denied' && (
 							<Alert
 								message="Appeal Denied"
 								description="Your appeal has been reviewed and denied. If you believe this is an error, please contact support."
@@ -109,7 +109,7 @@ export const UserAppeal: React.FC<Readonly<UserAppealProps>> = ({
 								showIcon
 							/>
 						)}
-						{existingAppeal.state === 'ACCEPTED' && (
+						{existingAppeal.state === 'accepted' && (
 							<Alert
 								message="Appeal Accepted"
 								description="Your appeal has been accepted and your account will be unblocked shortly."

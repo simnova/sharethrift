@@ -37,7 +37,7 @@ export const AppealPending: Story = {
 			id: '1',
 			reason:
 				'I believe my account was blocked by mistake. I have always followed the community guidelines and treated other users with respect. I would appreciate a review of my case.',
-			state: 'REQUESTED',
+			state: 'requested',
 			createdAt: new Date().toISOString(),
 		},
 		onSubmitAppeal: () => {},
@@ -51,7 +51,7 @@ export const AppealAccepted: Story = {
 			id: '2',
 			reason:
 				'I apologize for the late return of the borrowed item. There was a family emergency that prevented me from returning it on time. I have since returned the item and would like to regain access to my account.',
-			state: 'ACCEPTED',
+			state: 'accepted',
 			createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
 		},
 		onSubmitAppeal: () => {},
@@ -65,7 +65,7 @@ export const AppealDenied: Story = {
 			id: '3',
 			reason:
 				'I disagree with the block decision. I did not violate any rules.',
-			state: 'DENIED',
+			state: 'denied',
 			createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
 		},
 		onSubmitAppeal: () => {},

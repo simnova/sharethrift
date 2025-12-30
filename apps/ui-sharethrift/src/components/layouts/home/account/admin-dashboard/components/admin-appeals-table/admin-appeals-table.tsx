@@ -17,9 +17,9 @@ import { useState } from 'react';
 const { Search } = Input;
 
 const STATUS_OPTIONS = [
-	{ label: 'Requested', value: 'REQUESTED' },
-	{ label: 'Accepted', value: 'ACCEPTED' },
-	{ label: 'Denied', value: 'DENIED' },
+	{ label: 'Requested', value: 'requested' },
+	{ label: 'Accepted', value: 'accepted' },
+	{ label: 'Denied', value: 'denied' },
 ];
 
 export const AdminAppealsTable: React.FC<
@@ -77,19 +77,19 @@ export const AdminAppealsTable: React.FC<
 
 	const getStateTag = (state: string) => {
 		switch (state) {
-			case 'REQUESTED':
+			case 'requested':
 				return (
 					<Tag icon={<ExclamationCircleOutlined />} color="warning">
 						Pending
 					</Tag>
 				);
-			case 'ACCEPTED':
+			case 'accepted':
 				return (
 					<Tag icon={<CheckCircleOutlined />} color="success">
 						Accepted
 					</Tag>
 				);
-			case 'DENIED':
+			case 'denied':
 				return (
 					<Tag icon={<CloseCircleOutlined />} color="error">
 						Denied
@@ -120,7 +120,7 @@ export const AdminAppealsTable: React.FC<
 			</Button>,
 		];
 
-		if (record.state === 'REQUESTED') {
+		if (record.state === 'requested') {
 			return [
 				...commonActions,
 				<Button

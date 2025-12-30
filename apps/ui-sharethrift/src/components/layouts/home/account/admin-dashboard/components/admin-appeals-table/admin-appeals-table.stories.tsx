@@ -23,7 +23,7 @@ const mockAppeals: AdminAppealData[] = [
 		userEmail: 'john.doe@example.com',
 		reason:
 			'I believe my account was blocked by mistake. I have always followed the community guidelines.',
-		state: 'REQUESTED',
+		state: 'requested',
 		type: 'USER',
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString(),
@@ -35,7 +35,7 @@ const mockAppeals: AdminAppealData[] = [
 		userEmail: 'jane.smith@example.com',
 		reason:
 			'I apologize for the late return. There was a family emergency.',
-		state: 'ACCEPTED',
+		state: 'accepted',
 		type: 'USER',
 		createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
 		updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
@@ -46,7 +46,7 @@ const mockAppeals: AdminAppealData[] = [
 		userName: 'Bob Johnson',
 		userEmail: 'bob.johnson@example.com',
 		reason: 'I disagree with the block decision.',
-		state: 'DENIED',
+		state: 'denied',
 		type: 'USER',
 		createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
 		updatedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
@@ -58,7 +58,7 @@ const mockAppeals: AdminAppealData[] = [
 		userEmail: 'alice.williams@example.com',
 		reason:
 			'My listing was blocked unfairly. I have updated it according to the guidelines.',
-		state: 'REQUESTED',
+		state: 'requested',
 		type: 'LISTING',
 		createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
 		updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
@@ -88,16 +88,16 @@ export const Default: Story = {
 export const WithPendingAppeals: Story = {
 	args: {
 		...Default.args,
-		data: mockAppeals.filter((a) => a.state === 'REQUESTED'),
-		statusFilters: ['REQUESTED'],
+		data: mockAppeals.filter((a) => a.state === 'requested'),
+		statusFilters: ['requested'],
 	},
 };
 
 export const WithAcceptedAppeals: Story = {
 	args: {
 		...Default.args,
-		data: mockAppeals.filter((a) => a.state === 'ACCEPTED'),
-		statusFilters: ['ACCEPTED'],
+		data: mockAppeals.filter((a) => a.state === 'accepted'),
+		statusFilters: ['accepted'],
 	},
 };
 

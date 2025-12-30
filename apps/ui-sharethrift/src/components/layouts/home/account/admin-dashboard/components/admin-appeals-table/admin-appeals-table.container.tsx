@@ -91,7 +91,7 @@ export const AdminAppealsTableContainer: React.FC = () => {
 
 		try {
 			const newState =
-				action === 'accept' ? ('ACCEPTED' as const) : ('DENIED' as const);
+				action === 'accept' ? ('accepted' as const) : ('denied' as const);
 
 			await updateAppealState({
 				variables: {
@@ -139,8 +139,8 @@ export const AdminAppealsTableContainer: React.FC = () => {
 		userName: `${appeal.user.account?.profile?.firstName || ''} ${appeal.user.account?.profile?.lastName || ''}`.trim(),
 		userEmail: appeal.user.account?.email || '',
 		reason: appeal.reason,
-		state: appeal.state as 'REQUESTED' | 'ACCEPTED' | 'DENIED',
-		type: appeal.type as 'USER' | 'LISTING',
+		state: appeal.state as 'requested' | 'accepted' | 'denied',
+		type: appeal.type as 'user' | 'listing',
 		createdAt: appeal.createdAt,
 		updatedAt: appeal.updatedAt,
 	}));

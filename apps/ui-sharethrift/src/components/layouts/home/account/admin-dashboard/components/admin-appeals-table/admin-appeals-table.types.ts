@@ -4,8 +4,8 @@ export interface AdminAppealData {
 	userName: string;
 	userEmail: string;
 	reason: string;
-	state: 'REQUESTED' | 'ACCEPTED' | 'DENIED';
-	type: 'USER' | 'LISTING';
+	state: 'requested' | 'accepted' | 'denied';
+	type: 'user' | 'listing';
 	createdAt: string;
 	updatedAt: string;
 }

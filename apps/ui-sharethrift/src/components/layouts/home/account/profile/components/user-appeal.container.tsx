@@ -10,7 +10,7 @@ export interface UserAppealContainerProps {
 	existingAppeal?: {
 		id: string;
 		reason: string;
-		state: 'REQUESTED' | 'ACCEPTED' | 'DENIED';
+		state: 'requested' | 'accepted' | 'denied';
 		createdAt: string;
 	} | null;
 }
