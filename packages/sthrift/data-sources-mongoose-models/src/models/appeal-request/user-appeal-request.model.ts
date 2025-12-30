@@ -69,7 +69,7 @@ export const UserAppealRequestSchema = new Schema<
 	appealRequestOptions,
 );
 
-export const UserAppealRequestModelName: string = 'user-appeal-request';
+export const UserAppealRequestModelName: string = 'user';
 
 /**
  * Factory function to create UserAppealRequest discriminator model.

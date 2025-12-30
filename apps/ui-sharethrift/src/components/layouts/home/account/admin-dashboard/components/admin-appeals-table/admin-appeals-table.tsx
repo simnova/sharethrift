@@ -320,7 +320,7 @@ export const AdminAppealsTable: React.FC<
 							<br />
 							<strong>Type:</strong>{' '}
 							<Tag
-								color={selectedAppeal.type === 'USER' ? 'blue' : 'purple'}
+								color={selectedAppeal.type === 'user' ? 'blue' : 'purple'}
 							>
 								{selectedAppeal.type}
 							</Tag>

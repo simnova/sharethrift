@@ -24,7 +24,7 @@ const mockAppeals: AdminAppealData[] = [
 		reason:
 			'I believe my account was blocked by mistake. I have always followed the community guidelines.',
 		state: 'requested',
-		type: 'USER',
+		type: 'user',
 		createdAt: new Date().toISOString(),
 		updatedAt: new Date().toISOString(),
 	},
@@ -36,7 +36,7 @@ const mockAppeals: AdminAppealData[] = [
 		reason:
 			'I apologize for the late return. There was a family emergency.',
 		state: 'accepted',
-		type: 'USER',
+		type: 'user',
 		createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(),
 		updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
 	},
@@ -47,7 +47,7 @@ const mockAppeals: AdminAppealData[] = [
 		userEmail: 'bob.johnson@example.com',
 		reason: 'I disagree with the block decision.',
 		state: 'denied',
-		type: 'USER',
+		type: 'user',
 		createdAt: new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString(),
 		updatedAt: new Date(Date.now() - 10 * 24 * 60 * 60 * 1000).toISOString(),
 	},
@@ -59,7 +59,7 @@ const mockAppeals: AdminAppealData[] = [
 		reason:
 			'My listing was blocked unfairly. I have updated it according to the guidelines.',
 		state: 'requested',
-		type: 'LISTING',
+		type: 'listing',
 		createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
 		updatedAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
 	},
