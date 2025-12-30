@@ -39,6 +39,6 @@ Scenario: Reservation request loadReserver should return a promise
 	When I call the loadReserver method
 	Then it should return a reserver reference
 
-Scenario: Reservation request close flags should be booleans
-	When I access the close request flags
-	Then they should be booleans
+Scenario: Reservation request closeRequestedBy should be nullable
+	When I access the close request field
+	Then it should be null by default

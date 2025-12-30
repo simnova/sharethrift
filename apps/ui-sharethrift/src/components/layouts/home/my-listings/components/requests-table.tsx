@@ -1,7 +1,7 @@
 import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-components';
 import type { TableProps } from 'antd';
-import { Button, Checkbox, Image, Input, Popconfirm, Tag } from 'antd';
+import { Button, Checkbox, Image, Input, Tag } from 'antd';
 import type { ListingRequestData } from './my-listings-dashboard.types.tsx';
 import { RequestsCard } from './requests-card.tsx';
 
@@ -35,6 +35,16 @@ const REQUEST_STATUS_OPTIONS = [
 	{ label: 'Expired', value: 'Expired' },
 ];
 
+const statusTagClassMap: Record<string, string> = {
+	Accepted: 'requestAcceptedTag',
+	Rejected: 'requestRejectedTag',
+	Closed: 'expiredTag',
+	Pending: 'pendingTag',
+	Requested: 'pendingTag',
+	Closing: 'closingTag',
+	Expired: 'expiredTag',
+};
+
 export const RequestsTable: React.FC<RequestsTableProps> = ({
 	data,
 	searchText,
@@ -49,10 +59,10 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 	onTableChange,
 	onPageChange,
 	onAccept,
-	onReject,
-	onClose,
-	onDelete,
-	onMessage,
+	onReject: _onReject,
+	onClose: _onClose,
+	onDelete: _onDelete,
+	onMessage: _onMessage,
 }) => {
 	const columns: TableProps<ListingRequestData>['columns'] = [
 		{
@@ -195,28 +205,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
 		),
 		render: (status: string) => {
-			let statusClass = '';
-			switch (status) {
-				case 'Accepted':
-					statusClass = 'requestAcceptedTag';
-					break;
-				case 'Rejected':
-					statusClass = 'requestRejectedTag';
-					break;
-				case 'Closed':
-					statusClass = 'expiredTag';
-					break;
-				case 'Pending':
-				case 'Requested':
-					statusClass = 'pendingTag';
-					break;
-				case 'Closing':
-					statusClass = 'closingTag';
-					break;
-				case 'Expired':
-					statusClass = 'expiredTag';
-					break;
-			}
+			const statusClass = statusTagClassMap[status] ?? '';
 			return <Tag className={statusClass}>{status}</Tag>;
 		},
 	},
@@ -229,18 +218,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			switch (record.status) {
 				case 'Pending':
 				case 'Requested':
-					actions = ['accept', 'reject'];
-					break;
-				case 'Accepted':
-					actions = ['close', 'message'];
-					break;
-				case 'Closed':
-					actions = ['message'];
-					break;
-				case 'Rejected':
-				case 'Expired':
-				case 'Cancelled':
-					actions = ['delete'];
+					actions = ['accept'];
 					break;
 			}
 
@@ -255,62 +233,6 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 						>
 							Accept
 						</Button>
-					);
-				}
-				if (action === 'reject') {
-					return (
-						<Button
-							key="reject"
-							type="link"
-							size="small"
-							onClick={() => onReject(record.id)}
-						>
-							Reject
-						</Button>
-					);
-				}
-				if (action === 'close') {
-					return (
-						<Popconfirm
-							key="close"
-							title="Close this request?"
-							description="Are you sure you want to close this request?"
-							onConfirm={() => onClose(record.id)}
-							okText="Yes"
-							cancelText="No"
-						>
-							<Button type="link" size="small">
-								Close
-							</Button>
-						</Popconfirm>
-					);
-				}
-				if (action === 'message') {
-					return (
-						<Button
-							key="message"
-							type="link"
-							size="small"
-							onClick={() => onMessage(record.id)}
-						>
-							Message
-						</Button>
-					);
-				}
-				if (action === 'delete') {
-					return (
-						<Popconfirm
-							key="delete"
-							title="Delete this request?"
-							description="Are you sure you want to delete this request? This action cannot be undone."
-							onConfirm={() => onDelete(record.id)}
-							okText="Yes"
-							cancelText="No"
-						>
-							<Button type="link" size="small" danger>
-								Delete
-							</Button>
-						</Popconfirm>
 					);
 				}
 				return null;
@@ -338,10 +260,10 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 				<RequestsCard
 					listing={listing}
 					onAccept={onAccept}
-					onReject={onReject}
-					onClose={onClose}
-					onDelete={onDelete}
-					onMessage={onMessage}
+					onReject={_onReject}
+					onClose={_onClose}
+					onDelete={_onDelete}
+					onMessage={_onMessage}
 				/>
 			)}
 		/>

@@ -32,8 +32,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		mockReservationRequest = {
 			id: 'req-123',
 			state: 'Requested',
-			closeRequestedBySharer: false,
-			closeRequestedByReserver: false,
+			closeRequestedBy: null,
 			reservationPeriodStart: new Date('2024-01-01'),
 			reservationPeriodEnd: new Date('2024-01-07'),
 			loadListing: vi.fn().mockResolvedValue({ id: 'listing-456' }),
@@ -119,7 +118,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Successfully updating closeRequestedBySharer flag',
+		'Successfully updating closeRequestedBy to SHARER',
 		({ Given, And, When, Then }) => {
 			Given('a reservation request ID "req-123"', () => {
 				// Already set in command
@@ -130,17 +129,17 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			When(
-				'the update command is executed with closeRequestedBySharer true',
+				'the update command is executed with closeRequestedBy "SHARER"',
 				async () => {
-					command.closeRequestedBySharer = true;
+					command.closeRequestedBy = 'SHARER';
 
 					const updateFn = update(mockDataSources);
 					result = await updateFn(command);
 				},
 			);
 
-			Then('the closeRequestedBySharer flag should be set to true', () => {
-				expect(mockReservationRequest.closeRequestedBySharer).toBe(true);
+			Then('closeRequestedBy should be "SHARER"', () => {
+				expect(mockReservationRequest.closeRequestedBy).toBe('SHARER');
 			});
 
 			And('the update operation should succeed', () => {
@@ -151,7 +150,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Successfully updating closeRequestedByReserver flag',
+		'Successfully updating closeRequestedBy to RESERVER',
 		({ Given, And, When, Then }) => {
 			Given('a reservation request ID "req-123"', () => {
 				// Already set in command
@@ -162,17 +161,17 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			When(
-				'the update command is executed with closeRequestedByReserver true',
+				'the update command is executed with closeRequestedBy "RESERVER"',
 				async () => {
-					command.closeRequestedByReserver = true;
+					command.closeRequestedBy = 'RESERVER';
 
 					const updateFn = update(mockDataSources);
 					result = await updateFn(command);
 				},
 			);
 
-			Then('the closeRequestedByReserver flag should be set to true', () => {
-				expect(mockReservationRequest.closeRequestedByReserver).toBe(true);
+			Then('closeRequestedBy should be "RESERVER"', () => {
+				expect(mockReservationRequest.closeRequestedBy).toBe('RESERVER');
 			});
 
 			And('the update operation should succeed', () => {
@@ -300,10 +299,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			When(
-				'the update command is executed with state "Accepted" and closeRequestedBySharer true',
+				'the update command is executed with state "Accepted" and closeRequestedBy "SHARER"',
 				async () => {
 					command.state = 'Accepted';
-					command.closeRequestedBySharer = true;
+					command.closeRequestedBy = 'SHARER';
 
 					(
 						// biome-ignore lint/suspicious/noExplicitAny: Test mock access
@@ -324,8 +323,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				},
 			);
 
-			And('the closeRequestedBySharer flag should be set to true', () => {
-				expect(mockReservationRequest.closeRequestedBySharer).toBe(true);
+			And('closeRequestedBy should be "SHARER"', () => {
+				expect(mockReservationRequest.closeRequestedBy).toBe('SHARER');
 			});
 
 			And('the update operation should succeed', () => {

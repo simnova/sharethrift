@@ -53,51 +53,8 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 
 	const allRequests = data?.myListingsRequests ?? [];
 
-	// Client-side filtering and sorting
-	let filteredRequests = allRequests;
-
-	// Apply search filter
-	if (searchText) {
-		const lowerSearch = searchText.toLowerCase();
-		filteredRequests = filteredRequests.filter(
-			(req) => {
-				const title = req.listing?.title?.toLowerCase() ?? '';
-				const reserver = req.reserver?.__typename === 'PersonalUser' ? req.reserver : null;
-				const firstName = reserver?.account?.profile?.firstName?.toLowerCase() ?? '';
-				const lastName = reserver?.account?.profile?.lastName?.toLowerCase() ?? '';
-				return title.includes(lowerSearch) || firstName.includes(lowerSearch) || lastName.includes(lowerSearch);
-			}
-		);
-	}
-
-	// Apply status filter
-	if (statusFilters.length > 0) {
-		filteredRequests = filteredRequests.filter((req) =>
-			statusFilters.includes(req.state ?? ''),
-		);
-	}
-
-	// Apply sorting
-	if (sorter.field && sorter.order) {
-		filteredRequests = [...filteredRequests].sort((a, b) => {
-			const aVal = a[sorter.field as keyof typeof a];
-			const bVal = b[sorter.field as keyof typeof b];
-			const comparison =
-				typeof aVal === 'string' && typeof bVal === 'string'
-					? aVal.localeCompare(bVal)
-					: 0;
-			return sorter.order === 'ascend' ? comparison : -comparison;
-		});
-	}
-
-	const total = filteredRequests.length;
-
-	// Apply pagination
-	const startIndex = (currentPage - 1) * pageSize;
-	const requests = filteredRequests.slice(startIndex, startIndex + pageSize);
-
-	// Transform domain fields to UI format
-	const transformedRequests = requests.map((request) => {
+	// Transform domain fields to UI format (no client-side search/status filtering in this container)
+	const transformedAllRequests = allRequests.map((request) => {
 		const reserver = request.reserver?.__typename === 'PersonalUser' ? request.reserver : null;
 		const firstName = reserver?.account?.profile?.firstName ?? '';
 		const lastName = reserver?.account?.profile?.lastName ?? '';
@@ -119,6 +76,27 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 			status: request.state ?? 'Unknown',
 		};
 	});
+
+	let displayRequests = transformedAllRequests;
+
+	// Apply sorting (keep existing behavior)
+	if (sorter.field && sorter.order) {
+		displayRequests = [...displayRequests].sort((a, b) => {
+			const aVal = a[sorter.field as keyof typeof a];
+			const bVal = b[sorter.field as keyof typeof b];
+			const comparison =
+				typeof aVal === 'string' && typeof bVal === 'string'
+					? aVal.localeCompare(bVal)
+					: 0;
+			return sorter.order === 'ascend' ? comparison : -comparison;
+		});
+	}
+
+	const total = displayRequests.length;
+
+	// Apply pagination
+	const startIndex = (currentPage - 1) * pageSize;
+	const pagedRequests = displayRequests.slice(startIndex, startIndex + pageSize);
 
 	const handleSearch = (value: string) => {
 		setSearchText(value);
@@ -146,6 +124,26 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		onPageChange(1);
 	};
 
+	const handleAccept = async (requestId: string) => {
+		await acceptRequest({ variables: { input: { id: requestId } } });
+	};
+
+	const handleReject = (_requestId: string) => {
+		message.info('Reject functionality coming soon');
+	};
+
+	const handleClose = (_requestId: string) => {
+		message.info('Close functionality coming soon');
+	};
+
+	const handleDelete = (_requestId: string) => {
+		message.info('Delete functionality coming soon');
+	};
+
+	const handleMessage = (_requestId: string) => {
+		message.info('Messaging functionality coming soon');
+	};
+
 	return (
 		<ComponentQueryLoader
 			loading={loading}
@@ -153,7 +151,7 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 			hasData={allRequests.length > 0 ? allRequests : null}
 			hasDataComponent={
 				<RequestsTable
-					data={transformedRequests}
+						data={pagedRequests}
 					searchText={searchText}
 					statusFilters={statusFilters}
 					sorter={sorter}
@@ -164,25 +162,11 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 					onStatusFilter={handleStatusFilter}
 					onTableChange={handleTableChange}
 					onPageChange={onPageChange}
-					onAccept={async (requestId: string) => {
-						await acceptRequest({ variables: { input: { id: requestId } } });
-					}}
-					onReject={(_requestId: string) => {
-						// TODO: Implement reject mutation when GraphQL schema is ready
-						message.info('Reject functionality coming soon');
-					}}
-					onClose={(_requestId: string) => {
-						// TODO: Implement close mutation when GraphQL schema is ready
-						message.info('Close functionality coming soon');
-					}}
-					onDelete={(_requestId: string) => {
-						// TODO: Implement delete mutation when GraphQL schema is ready
-						message.info('Delete functionality coming soon');
-					}}
-					onMessage={(_requestId: string) => {
-						// TODO: Implement navigation to messages view
-						message.info('Messaging functionality coming soon');
-					}}
+						onAccept={handleAccept}
+						onReject={handleReject}
+						onClose={handleClose}
+						onDelete={handleDelete}
+						onMessage={handleMessage}
 					loading={loading}
 				/>
 			}

@@ -33,18 +33,20 @@ export class ReservationRequestDomainAdapter
 		this.doc.state = value;
 	}
 
-	get closeRequestedBySharer() {
-		return this.doc.closeRequestedBySharer;
+	get closeRequestedBy(): Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestCloseRequestedBy | null {
+		if (this.doc.closeRequestedBySharer) {
+			return 'SHARER';
+		}
+		if (this.doc.closeRequestedByReserver) {
+			return 'RESERVER';
+		}
+		return null;
 	}
-	set closeRequestedBySharer(value: boolean) {
-		this.doc.closeRequestedBySharer = value;
-	}
-
-	get closeRequestedByReserver() {
-		return this.doc.closeRequestedByReserver;
-	}
-	set closeRequestedByReserver(value: boolean) {
-		this.doc.closeRequestedByReserver = value;
+	set closeRequestedBy(
+		value: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestCloseRequestedBy | null,
+	) {
+		this.doc.closeRequestedBySharer = value === 'SHARER';
+		this.doc.closeRequestedByReserver = value === 'RESERVER';
 	}
 
 	get reservationPeriodStart() {

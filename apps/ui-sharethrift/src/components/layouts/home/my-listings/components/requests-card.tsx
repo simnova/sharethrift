@@ -19,28 +19,17 @@ const RequestsCard: React.FC<RequestsCardProps> = ({
 	onDelete,
 	onMessage,
 }) => {
-	let statusClass = '';
-	switch (listing.status) {
-		case 'Accepted':
-			statusClass = 'requestAcceptedTag';
-			break;
-		case 'Rejected':
-			statusClass = 'requestRejectedTag';
-			break;
-		case 'Closed':
-			statusClass = 'expiredTag';
-			break;
-		case 'Pending':
-		case 'Requested':
-			statusClass = 'pendingTag';
-			break;
-		case 'Closing':
-			statusClass = 'closingTag';
-			break;
-		case 'Expired':
-			statusClass = 'expiredTag';
-			break;
-	}
+	const statusClassMap: Record<string, string> = {
+		Accepted: 'requestAcceptedTag',
+		Rejected: 'requestRejectedTag',
+		Closed: 'expiredTag',
+		Pending: 'pendingTag',
+		Requested: 'pendingTag',
+		Closing: 'closingTag',
+		Expired: 'expiredTag',
+	};
+
+	const statusClass = statusClassMap[listing.status] ?? '';
 
 	let actions: string[] = [];
 	switch (listing.status) {

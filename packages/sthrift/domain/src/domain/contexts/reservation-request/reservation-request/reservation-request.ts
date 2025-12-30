@@ -200,10 +200,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		this.props.reserver = value;
 	}
 
-	get closeRequestedBySharer(): boolean {
-		return this.props.closeRequestedBySharer;
+	get closeRequestedBy(): ValueObjects.ReservationRequestCloseRequestedBy | null {
+		return this.props.closeRequestedBy;
 	}
-	set closeRequestedBySharer(value: boolean) {
+	set closeRequestedBy(
+		value: ValueObjects.ReservationRequestCloseRequestedBy | null,
+	) {
 		if (
 			!this.visa.determineIf(
 				(domainPermissions) => domainPermissions.canCloseRequest,
@@ -218,28 +220,13 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			throw new Error('Cannot close reservation in current state');
 		}
 
-		this.props.closeRequestedBySharer = value;
-	}
-
-	get closeRequestedByReserver(): boolean {
-		return this.props.closeRequestedByReserver;
-	}
-	set closeRequestedByReserver(value: boolean) {
-		if (
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canCloseRequest,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to request close for this reservation request',
-			);
+		if (value === null) {
+			this.props.closeRequestedBy = null;
+			return;
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
-			throw new Error('Cannot close reservation in current state');
-		}
-
-		this.props.closeRequestedByReserver = value;
+		this.props.closeRequestedBy =
+			new ValueObjects.ReservationRequestCloseRequestedByValue(value).valueOf() as ValueObjects.ReservationRequestCloseRequestedBy;
 	}
 
 	//#endregion Properties
@@ -340,11 +327,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			throw new Error('Can only close accepted reservations');
 		}
 
-		if (
-			!(
-				this.props.closeRequestedBySharer || this.props.closeRequestedByReserver
-			)
-		) {
+		if (this.props.closeRequestedBy === null) {
 			throw new Error(
 				'Can only close reservation requests if at least one user requested it',
 			);

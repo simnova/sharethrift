@@ -56,10 +56,9 @@ Feature: <AggregateRoot> ReservationRequest
     When I try to set state to "CANCELLED"
     Then a PermissionError should be thrown	
         
-  Scenario: Closing an accepted reservation when both parties requested close
+  Scenario: Closing an accepted reservation when reserver requested close
     Given a ReservationRequest aggregate with state "ACCEPTED"
-    And closeRequestedBySharer is true
-    And closeRequestedByReserver is true
+    And closeRequestedBy is "RESERVER"
     When I set state to "CLOSED"
     Then the reservation request's state should be "CLOSED"	
         
@@ -70,12 +69,12 @@ Feature: <AggregateRoot> ReservationRequest
         
   Scenario: Requesting close without permission
     Given a ReservationRequest aggregate with state "ACCEPTED"
-    When I try to set closeRequestedBySharer to true
+    When I try to set closeRequestedBy to "SHARER"
     Then a PermissionError should be thrown
         
   Scenario: Requesting close in invalid state
     Given a ReservationRequest aggregate with state "REQUESTED"
-    When I try to set closeRequestedByReserver to true
+    When I try to set closeRequestedBy to "RESERVER"
     Then an error should be thrown indicating "Cannot close reservation in current state"	
         
   Scenario: Loading linked entities	
@@ -153,7 +152,7 @@ Feature: <AggregateRoot> ReservationRequest
 
   Scenario: Closing with only sharer request
     Given a ReservationRequest aggregate with state "ACCEPTED"
-    And closeRequestedBySharer is true
+    And closeRequestedBy is "SHARER"
     When I set state to "CLOSED"
     Then the reservation request's state should be "CLOSED"
 

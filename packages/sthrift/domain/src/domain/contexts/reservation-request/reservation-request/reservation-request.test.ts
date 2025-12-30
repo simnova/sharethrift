@@ -101,8 +101,7 @@ function makeBaseProps(
 		loadListing: async () => makeListing(),
 		reserver: makeUser(),
 		loadReserver: async () => makeUser(),
-		closeRequestedBySharer: false,
-		closeRequestedByReserver: false,
+		closeRequestedBy: null,
 		...overrides,
 	};
 }
@@ -436,7 +435,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Closing an accepted reservation when both parties requested close',
+		'Closing an accepted reservation when reserver requested close',
 		({ Given, And, When, Then }) => {
 			Given('a ReservationRequest aggregate with state "ACCEPTED"', () => {
 				aggregate = ReservationRequest.getNewInstance(
@@ -450,11 +449,8 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				);
 				aggregate.state = toStateEnum('ACCEPTED');
 			});
-			And('closeRequestedBySharer is true', () => {
-				aggregate.closeRequestedBySharer = true;
-			});
-			And('closeRequestedByReserver is true', () => {
-				aggregate.closeRequestedByReserver = true;
+			And('closeRequestedBy is "RESERVER"', () => {
+				aggregate.closeRequestedBy = 'RESERVER';
 			});
 			When('I set state to "CLOSED"', () => {
 				aggregate.state = toStateEnum('CLOSED');
@@ -511,9 +507,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			);
 			aggregate.state = toStateEnum('ACCEPTED');
 		});
-		When('I try to set closeRequestedBySharer to true', () => {
+		When('I try to set closeRequestedBy to "SHARER"', () => {
 			act = () => {
-				aggregate.closeRequestedBySharer = true;
+				aggregate.closeRequestedBy = 'SHARER';
 			};
 		});
 		Then('a PermissionError should be thrown', () => {
@@ -534,9 +530,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				makePassport({ canCloseRequest: true }),
 			);
 		});
-		When('I try to set closeRequestedByReserver to true', () => {
+		When('I try to set closeRequestedBy to "RESERVER"', () => {
 			act = () => {
-				aggregate.closeRequestedByReserver = true;
+				aggregate.closeRequestedBy = 'RESERVER';
 			};
 		});
 		Then(
@@ -974,8 +970,8 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				);
 				aggregate.state = toStateEnum('ACCEPTED');
 			});
-			And('closeRequestedBySharer is true', () => {
-				aggregate.closeRequestedBySharer = true;
+			And('closeRequestedBy is "SHARER"', () => {
+				aggregate.closeRequestedBy = 'SHARER';
 			});
 			When('I set state to "CLOSED"', () => {
 				aggregate.state = toStateEnum('CLOSED');

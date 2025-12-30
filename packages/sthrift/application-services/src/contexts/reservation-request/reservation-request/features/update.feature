@@ -7,18 +7,18 @@ Feature: Updating a reservation request
     Then the reservation request state should be updated to "Accepted"
     And the update operation should succeed
 
-  Scenario: Successfully updating closeRequestedBySharer flag
+  Scenario: Successfully updating closeRequestedBy to SHARER
     Given a reservation request ID "req-123"
     And the reservation request exists with state "Accepted"
-    When the update command is executed with closeRequestedBySharer true
-    Then the closeRequestedBySharer flag should be set to true
+    When the update command is executed with closeRequestedBy "SHARER"
+    Then closeRequestedBy should be "SHARER"
     And the update operation should succeed
 
-  Scenario: Successfully updating closeRequestedByReserver flag
+  Scenario: Successfully updating closeRequestedBy to RESERVER
     Given a reservation request ID "req-123"
     And the reservation request exists with state "Accepted"
-    When the update command is executed with closeRequestedByReserver true
-    Then the closeRequestedByReserver flag should be set to true
+    When the update command is executed with closeRequestedBy "RESERVER"
+    Then closeRequestedBy should be "RESERVER"
     And the update operation should succeed
 
   Scenario: Auto-rejecting overlapping requests when accepting a request
@@ -38,9 +38,9 @@ Feature: Updating a reservation request
   Scenario: Updating multiple fields at once
     Given a reservation request ID "req-123"
     And the reservation request exists with state "Requested"
-    When the update command is executed with state "Accepted" and closeRequestedBySharer true
+    When the update command is executed with state "Accepted" and closeRequestedBy "SHARER"
     Then the reservation request state should be updated to "Accepted"
-    And the closeRequestedBySharer flag should be set to true
+    And closeRequestedBy should be "SHARER"
     And the update operation should succeed
 
   Scenario: Auto-reject continues when individual rejection fails

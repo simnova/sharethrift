@@ -4,8 +4,14 @@ import type { DataSources } from '@sthrift/persistence';
 export interface ReservationRequestUpdateCommand {
 	id: string;
 	state?: string;
-	closeRequestedBySharer?: boolean;
-	closeRequestedByReserver?: boolean;
+	/**
+	 * Which party requested to close the reservation.
+	 * - undefined: do not change the current value
+	 * - 'SHARER': sharer requested to close
+	 * - 'RESERVER': reserver requested to close
+	 * - null: clear close request
+	 */
+	closeRequestedBy?: 'SHARER' | 'RESERVER' | null;
 }
 
 const ACCEPTED_STATE = 'Accepted';
@@ -35,14 +41,9 @@ export const update = (dataSources: DataSources) => {
 					reservationRequest.state = command.state;
 				}
 
-				if (command.closeRequestedBySharer !== undefined) {
-					reservationRequest.closeRequestedBySharer =
-						command.closeRequestedBySharer;
-				}
-
-				if (command.closeRequestedByReserver !== undefined) {
-					reservationRequest.closeRequestedByReserver =
-						command.closeRequestedByReserver;
+				// Single source of truth: 'SHARER' | 'RESERVER' | null
+				if (command.closeRequestedBy !== undefined) {
+					reservationRequest.closeRequestedBy = command.closeRequestedBy;
 				}
 
 				updatedReservationRequest = await repo.save(reservationRequest);
