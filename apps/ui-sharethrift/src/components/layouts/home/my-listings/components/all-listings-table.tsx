@@ -37,6 +37,290 @@ const STATUS_OPTIONS = [
 
 // getStatusTagClass moved to shared helper status-tag-class.ts
 
+function getActionButtons(
+  record: HomeAllListingsTableContainerListingFieldsFragment,
+  onAction: (action: string, listingId: string) => void,
+): React.ReactNode[] {
+  const buttons = [];
+
+  const status = record.state ?? "Unknown";
+
+  // Conditional actions based on status
+  if (status === "Active" || status === "Reserved") {
+    buttons.push(
+      <Button
+        key="pause"
+        type="link"
+        size="small"
+        onClick={() => onAction("pause", record.id)}
+      >
+        Pause
+      </Button>,
+    );
+  }
+
+  if (status === "Paused" || status === "Expired") {
+    buttons.push(
+      <Button
+        key="reinstate"
+        type="link"
+        size="small"
+        onClick={() => onAction("reinstate", record.id)}
+      >
+        Reinstate
+      </Button>,
+    );
+  }
+
+  if (status === "Blocked") {
+    buttons.push(
+      <Popconfirm
+        key="appeal"
+        title="Appeal this listing?"
+        description="Are you sure you want to appeal the block on this listing?"
+        onConfirm={() => onAction("appeal", record.id)}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button type="link" size="small">
+          Appeal
+        </Button>
+      </Popconfirm>,
+    );
+  }
+
+  if (status === "Draft") {
+    buttons.push(
+      <Button
+        key="publish"
+        type="link"
+        size="small"
+        onClick={() => onAction("publish", record.id)}
+      >
+        Publish
+      </Button>,
+    );
+  }
+
+  // Cancel button for active listings
+  if (status === "Active" || status === "Paused") {
+    buttons.push(
+      <Popconfirm
+        key="cancel"
+        title="Cancel this listing?"
+        description="Are you sure you want to cancel this listing? It will be removed from search results and marked as inactive."
+        onConfirm={() => onAction("cancel", record.id)}
+        okText="Yes"
+        cancelText="No"
+      >
+        <Button type="link" size="small" danger>
+          Cancel
+        </Button>
+      </Popconfirm>,
+    );
+  }
+
+  // Always available actions
+  buttons.push(
+    <Button
+      key="edit"
+      type="link"
+      size="small"
+      onClick={() => onAction("edit", record.id)}
+    >
+      Edit
+    </Button>,
+  );
+
+  buttons.push(
+    <Popconfirm
+      key="delete"
+      title="Delete this listing?"
+      description="Are you sure you want to delete this listing? This action cannot be undone."
+      onConfirm={() => onAction("delete", record.id)}
+      okText="Yes"
+      cancelText="No"
+    >
+      <Button type="link" size="small" danger>
+        Delete
+      </Button>
+    </Popconfirm>,
+  );
+
+  return buttons;
+}
+
+function ListingCell({
+  title,
+  imageSrc,
+}: {
+  title: string;
+  imageSrc: string;
+}): React.ReactNode {
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+      <Image
+        src={imageSrc}
+        alt={title}
+        width={72}
+        height={72}
+        style={{ objectFit: "cover", borderRadius: 4 }}
+        preview={false}
+      />
+      <span>{title}</span>
+    </div>
+  );
+}
+
+function PublishedAtCell({ date }: { date?: string }): React.ReactNode {
+  if (!date) {
+    return "N/A";
+  }
+  // Format as yyyy-mm-dd and align digits
+  const d = new Date(date);
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const formatted = `${yyyy}-${mm}-${dd}`;
+  return (
+    <span
+      style={{
+        fontVariantNumeric: "tabular-nums",
+        fontFamily: "inherit",
+        minWidth: 100,
+        display: "inline-block",
+        textAlign: "left",
+      }}
+    >
+      {formatted}
+    </span>
+  );
+}
+
+function ReservationPeriodCell({
+  startDate,
+  endDate,
+}: {
+  startDate: HomeAllListingsTableContainerListingFieldsFragment["sharingPeriodStart"];
+  endDate: HomeAllListingsTableContainerListingFieldsFragment["sharingPeriodEnd"];
+}): React.ReactNode {
+  if (!startDate || !endDate) {
+    return "N/A";
+  }
+
+  // Format dates as yyyy-mm-dd
+  const start =
+    typeof startDate === "string"
+      ? startDate.slice(0, 10)
+      : new Date(startDate).toISOString().slice(0, 10);
+  const end =
+    typeof endDate === "string"
+      ? endDate.slice(0, 10)
+      : new Date(endDate).toISOString().slice(0, 10);
+  const period = `${start} - ${end}`;
+
+  return (
+    <span
+      style={{
+        fontVariantNumeric: "tabular-nums",
+        fontFamily: "inherit",
+        minWidth: 200,
+        display: "inline-block",
+        textAlign: "left",
+      }}
+    >
+      {period}
+    </span>
+  );
+}
+
+function StatusTag({ status }: { status: string }): React.ReactNode {
+  return <Tag className={getStatusTagClass(status)}>{status}</Tag>;
+}
+
+function ActionsCell({
+  record,
+  onAction,
+}: {
+  record: HomeAllListingsTableContainerListingFieldsFragment;
+  onAction: (action: string, listingId: string) => void;
+}): React.ReactNode {
+  const actions = getActionButtons(record, onAction);
+  // Ensure at least 3 slots for alignment (first, middle, last)
+  const minActions = 3;
+  const paddedActions = [
+    ...actions,
+    ...Array(Math.max(0, minActions - actions.length)).fill(null),
+  ];
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        width: "100%",
+        minWidth: 220,
+        gap: 0,
+      }}
+    >
+      {paddedActions.map((btn, idx) => (
+        <div
+          key={(btn as { key?: React.Key } | null)?.key || idx}
+          style={{
+            flex: 1,
+            display: "flex",
+            justifyContent:
+              idx === 0
+                ? "flex-start"
+                : idx === paddedActions.length - 1
+                  ? "flex-end"
+                  : "center",
+            minWidth: 60,
+            maxWidth: 100,
+          }}
+        >
+          {btn}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function PendingRequestsCell({
+  count,
+  listingId,
+  onViewAllRequests,
+}: {
+  count: number;
+  listingId: string;
+  onViewAllRequests: (listingId: string) => void;
+}): React.ReactNode {
+  return (
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: 60,
+      }}
+    >
+      <Badge count={count} showZero />
+      {count > 0 && (
+        <Button
+          type="link"
+          size="small"
+          onClick={() => onViewAllRequests(listingId)}
+          style={{ marginTop: 4 }}
+        >
+          View All
+        </Button>
+      )}
+    </div>
+  );
+}
+
 export const AllListingsTable: React.FC<AllListingsTableProps> = ({
   data,
   searchText,
@@ -53,118 +337,6 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
   onAction,
   onViewAllRequests,
 }) => {
-  const getActionButtons = (
-    record: HomeAllListingsTableContainerListingFieldsFragment
-  ) => {
-    const buttons = [];
-
-    const status = record.state ?? "Unknown";
-
-    // Conditional actions based on status
-    if (status === "Active" || status === "Reserved") {
-      buttons.push(
-        <Button
-          key="pause"
-          type="link"
-          size="small"
-          onClick={() => onAction("pause", record.id)}
-        >
-          Pause
-        </Button>
-      );
-    }
-
-    if (status === "Paused" || status === "Expired") {
-      buttons.push(
-        <Button
-          key="reinstate"
-          type="link"
-          size="small"
-          onClick={() => onAction("reinstate", record.id)}
-        >
-          Reinstate
-        </Button>
-      );
-    }
-
-    if (status === "Blocked") {
-      buttons.push(
-        <Popconfirm
-          key="appeal"
-          title="Appeal this listing?"
-          description="Are you sure you want to appeal the block on this listing?"
-          onConfirm={() => onAction("appeal", record.id)}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Button type="link" size="small">
-            Appeal
-          </Button>
-        </Popconfirm>
-      );
-    }
-
-    if (status === "Draft") {
-      buttons.push(
-        <Button
-          key="publish"
-          type="link"
-          size="small"
-          onClick={() => onAction("publish", record.id)}
-        >
-          Publish
-        </Button>
-      );
-    }
-
-    // Cancel button for active listings
-    if (status === "Active" || status === "Paused") {
-      buttons.push(
-        <Popconfirm
-          key="cancel"
-          title="Cancel this listing?"
-          description="Are you sure you want to cancel this listing? It will be removed from search results and marked as inactive."
-          onConfirm={() => onAction("cancel", record.id)}
-          okText="Yes"
-          cancelText="No"
-        >
-          <Button type="link" size="small" danger>
-            Cancel
-          </Button>
-        </Popconfirm>
-      );
-    }
-
-    // Always available actions
-    buttons.push(
-      <Button
-        key="edit"
-        type="link"
-        size="small"
-        onClick={() => onAction("edit", record.id)}
-      >
-        Edit
-      </Button>
-    );
-
-    buttons.push(
-      <Popconfirm
-        key="delete"
-        title="Delete this listing?"
-        description="Are you sure you want to delete this listing? This action cannot be undone."
-        onConfirm={() => onAction("delete", record.id)}
-        okText="Yes"
-        cancelText="No"
-      >
-        <Button type="link" size="small" danger>
-          Delete
-        </Button>
-      </Popconfirm>
-    );
-
-    return buttons;
-  };
-
   const columns: TableProps<HomeAllListingsTableContainerListingFieldsFragment>["columns"] =
     [
       {
@@ -198,17 +370,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
           title: string,
           record: HomeAllListingsTableContainerListingFieldsFragment
         ) => (
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <Image
-              src={record.images?.[0] ?? ""}
-              alt={title}
-              width={72}
-              height={72}
-              style={{ objectFit: "cover", borderRadius: 4 }}
-              preview={false}
-            />
-            <span>{title}</span>
-          </div>
+          <ListingCell title={title} imageSrc={record.images?.[0] ?? ""} />
         ),
       },
       {
@@ -217,30 +379,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
         key: "createdAt",
         sorter: true,
         sortOrder: sorter.field === "createdAt" ? sorter.order : null,
-        render: (date?: string) => {
-          if (!date) {
-            return "N/A";
-          }
-          // Format as yyyy-mm-dd and align digits
-          const d = new Date(date);
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, "0");
-          const dd = String(d.getDate()).padStart(2, "0");
-          const formatted = `${yyyy}-${mm}-${dd}`;
-          return (
-            <span
-              style={{
-                fontVariantNumeric: "tabular-nums",
-                fontFamily: "inherit",
-                minWidth: 100,
-                display: "inline-block",
-                textAlign: "left",
-              }}
-            >
-              {formatted}
-            </span>
-          );
-        },
+        render: (date?: string) => <PublishedAtCell date={date} />,
       },
       {
         title: "Reservation Period",
@@ -250,39 +389,12 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
         render: (
           _: unknown,
           record: HomeAllListingsTableContainerListingFieldsFragment
-        ) => {
-          const startDate = record.sharingPeriodStart;
-          const endDate = record.sharingPeriodEnd;
-
-          if (!startDate || !endDate) {
-            return "N/A";
-          }
-
-          // Format dates as yyyy-mm-dd
-          const start =
-            typeof startDate === "string"
-              ? startDate.slice(0, 10)
-              : new Date(startDate).toISOString().slice(0, 10);
-          const end =
-            typeof endDate === "string"
-              ? endDate.slice(0, 10)
-              : new Date(endDate).toISOString().slice(0, 10);
-          const period = `${start} - ${end}`;
-
-          return (
-            <span
-              style={{
-                fontVariantNumeric: "tabular-nums",
-                fontFamily: "inherit",
-                minWidth: 200,
-                display: "inline-block",
-                textAlign: "left",
-              }}
-            >
-              {period}
-            </span>
-          );
-        },
+        ) => (
+			<ReservationPeriodCell
+				startDate={record.sharingPeriodStart}
+				endDate={record.sharingPeriodEnd}
+			/>
+		),
       },
       {
         title: "Status",
@@ -307,9 +419,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
         filterIcon: (filtered: boolean) => (
           <FilterOutlined style={{ color: filtered ? "#1890ff" : undefined }} />
         ),
-        render: (status: string) => (
-          <Tag className={getStatusTagClass(status)}>{status}</Tag>
-        ),
+        render: (status: string) => <StatusTag status={status} />,
       },
       {
         title: "Actions",
@@ -319,46 +429,7 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
           _: unknown,
           record: HomeAllListingsTableContainerListingFieldsFragment
         ) => {
-          const actions = getActionButtons(record);
-          // Ensure at least 3 slots for alignment (first, middle, last)
-          const minActions = 3;
-          const paddedActions = [
-            ...actions,
-            ...Array(Math.max(0, minActions - actions.length)).fill(null),
-          ];
-          return (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "space-between",
-                alignItems: "center",
-                width: "100%",
-                minWidth: 220,
-                gap: 0,
-              }}
-            >
-              {paddedActions.map((btn, idx) => (
-                <div
-                  key={btn?.key || idx}
-                  style={{
-                    flex: 1,
-                    display: "flex",
-                    justifyContent:
-                      idx === 0
-                        ? "flex-start"
-                        : idx === paddedActions.length - 1
-                        ? "flex-end"
-                        : "center",
-                    minWidth: 60,
-                    maxWidth: 100,
-                  }}
-                >
-                  {btn}
-                </div>
-              ))}
-            </div>
-          );
+          return <ActionsCell record={record} onAction={onAction} />;
         },
       },
       {
@@ -373,28 +444,12 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
         ) => {
           const count = 0; // TODO: implement in future
           return (
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                justifyContent: "center",
-                minHeight: 60,
-              }}
-            >
-              <Badge count={count} showZero />
-              {count > 0 && (
-                <Button
-                  type="link"
-                  size="small"
-                  onClick={() => onViewAllRequests(record.id)}
-                  style={{ marginTop: 4 }}
-                >
-                  View All
-                </Button>
-              )}
-            </div>
-          );
+			<PendingRequestsCell
+				count={count}
+				listingId={record.id}
+				onViewAllRequests={onViewAllRequests}
+			/>
+		);
         },
       },
     ];
