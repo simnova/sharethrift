@@ -71,7 +71,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		});
 
 		Then('the listing should be marked as unblocked', () => {
-			expect(mockListing.setBlocked).toHaveBeenCalledWith(false);
+			expect(mockListing.blocked).toBe(false);
 		});
 
 		And('the listing should be saved to the repository', () => {

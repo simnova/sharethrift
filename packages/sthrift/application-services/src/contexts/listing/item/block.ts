@@ -24,6 +24,7 @@ export const block = (dataSources: DataSources) => {
 				listing.setBlocked(true);
 				listing.blockReason = command.blockReason;
 				listing.blockDescription = command.blockDescription;
+				listing.blocked = true;
 				itemListingToReturn = await repo.save(listing);
 			},
 		);

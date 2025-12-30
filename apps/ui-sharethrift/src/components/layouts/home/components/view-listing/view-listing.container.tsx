@@ -42,23 +42,21 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		fetchPolicy: 'cache-first',
 	});
 
-	const {
-		data: currentUserData,
-		loading: currentUserLoading,
-	} = useQuery(ViewListingCurrentUserDocument, {
-		skip: !props.isAuthenticated, // Skip if not authenticated
-	});
+	const { data: currentUserData, loading: currentUserLoading } = useQuery(
+		ViewListingCurrentUserDocument,
+		{
+			skip: !props.isAuthenticated, // Skip if not authenticated
+		},
+	);
 
 	const reserverId = currentUserData?.currentUser?.id ?? '';
 
 	const skip = !reserverId || !listingId;
-	const {
-		data: userReservationData,
-		loading: userReservationLoading,
-	} = useQuery(ViewListingActiveReservationRequestForListingDocument, {
-		variables: { listingId: listingId ?? '', reserverId },
-		skip,
-	});
+	const { data: userReservationData, loading: userReservationLoading } =
+		useQuery(ViewListingActiveReservationRequestForListingDocument, {
+			variables: { listingId: listingId ?? '', reserverId },
+			skip,
+		});
 
 	// Fetch appeal request for blocked listing
 	const {
@@ -76,12 +74,33 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		: undefined;
 
 	const userIsSharer = false;
+	const isAdmin = currentUserData?.currentUser?.userIsAdmin ?? false;
+
+	// Check if listing is blocked and user is not admin
+	const isBlocked = listingData?.itemListing?.state === 'Blocked';
+	const cannotViewBlockedListing = isBlocked && !isAdmin;
+
 	return (
 		<ComponentQueryLoader
 			loading={userReservationLoading || listingLoading || currentUserLoading || appealRequestLoading}
 			error={listingError}
 			errorComponent={<div>Error loading listing.</div>}
-			hasData={listingData?.itemListing}
+			hasData={cannotViewBlockedListing ? null : listingData?.itemListing}
+			noDataComponent={
+				cannotViewBlockedListing ? (
+					<div
+						style={{
+							textAlign: 'center',
+							padding: '50px 20px',
+							maxWidth: '600px',
+							margin: '0 auto',
+						}}
+					>
+						<h2>Listing Not Available</h2>
+						<p>This listing is currently not available.</p>
+					</div>
+				) : undefined
+			}
 			hasDataComponent={
 				<ViewListing
 					listing={listingData?.itemListing as ItemListing}
@@ -94,6 +113,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 					}
 					appealRequest={appealRequestData?.getListingAppealRequestByListingId}
 					onAppealRequestSuccess={refetchAppealRequest}
+					isAdmin={isAdmin}
 				/>
 			}
 		/>

@@ -67,7 +67,7 @@ export const ItemListing = (
 		queryAll: queryAll(dataSources),
 		cancel: cancel(dataSources),
 		update: update(dataSources),
-	deleteListings: deleteListings(dataSources),
+		deleteListings: deleteListings(dataSources),
 		unblock: unblock(dataSources),
 		block: block(dataSources),
 		queryPaged: queryPaged(dataSources),
