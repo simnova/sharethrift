@@ -34,7 +34,7 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 		// Permission checks require full user entity which isn't populated yet
 		newInstance.props.reason = new ValueObjects.Reason(reason).valueOf();
 		newInstance.props.state = ValueObjects.AppealRequestState.REQUESTED;
-		newInstance.props.type = ValueObjects.AppealRequestType.USER;
+		// Note: 'type' is set automatically by Mongoose discriminator pattern, not manually set
 		newInstance.props.blocker = { id: blockerId } as PersonalUserEntityReference;
 
 		return newInstance;
