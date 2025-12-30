@@ -6,6 +6,7 @@ import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
 	BlockListingContainerUnblockListingDocument,
+    AdminListingsTableContainerUnblockListingDocument
 } from '../../../../../../../generated.tsx';
 
 const meta = {
