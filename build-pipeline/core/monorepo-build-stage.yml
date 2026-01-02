@@ -262,13 +262,14 @@ stages:
     # Generate Serenity BDD HTML reports from test results
     - task: Bash@3
       displayName: 'Generate Serenity BDD reports'
+      condition: eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true')
       inputs:
         targetType: 'inline'
         script: |
           set -euo pipefail
           echo "Generating Serenity BDD HTML reports..."
           pnpm run test:serenity:report
-        workingDirectory: ''
+        workingDirectory: '$(Build.SourcesDirectory)'
 
     # Audit unused dependencies with knip (after packages are built)
     - task: Bash@3
