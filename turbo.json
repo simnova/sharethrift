@@ -92,9 +92,7 @@
                 "test:serenity"
             ],
             "inputs": [
-                "src/**",
-                "tests/**",
-                "cucumber.yaml"
+                "target/site/serenity/cucumber-report.json"
             ],
             "outputs": [
                 "target/site/serenity/**"
