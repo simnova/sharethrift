@@ -15,9 +15,6 @@ import type {
 	ViewListingAppealRequestByListingIdQuery,
 } from '../../../../../generated.tsx';
 import { HomeListingInformationCreateListingAppealRequestDocument } from '../../../../../generated.tsx';
-import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
-import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
-import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 
 interface ViewListingProps {
 	listing: ItemListing;
@@ -69,12 +66,10 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 		},
 	);
 
-	// Mock sharer info (since ItemListing.sharer is just an ID)
-	const sharer = listing.sharer;
-
 	const { sharer } = listing;
 
 	const isBlocked = listing.state === 'Blocked';
+	const appealRequested = appealRequest?.state === 'REQUESTED';
 
 	const handleBack = () => {
 		window.location.href = '/';
@@ -111,8 +106,6 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 		});
 	};
 
-	const isBlocked = listing.state === 'Blocked';
-	const appealRequested = appealRequest?.state === 'REQUESTED';
 
 	return (
 		<>
@@ -292,8 +285,6 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 				onClose={() => setBlockInfoModalVisible(false)}
 				onEditListing={handleEditListing}
 				onAppealBlock={handleAppealBlock}
-				blockReason={listing.blockReason ?? undefined}
-				blockDescription={listing.blockDescription ?? undefined}
 				appealRequested={appealRequested}
 			/>
 			<AppealConfirmationModal

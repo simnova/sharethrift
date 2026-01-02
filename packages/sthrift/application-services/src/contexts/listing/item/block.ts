@@ -3,8 +3,6 @@ import type { DataSources } from '@sthrift/persistence';
 
 export interface ItemListingBlockCommand {
 	id: string;
-	blockReason: string;
-	blockDescription: string;
 }
 
 export const block = (dataSources: DataSources) => {
@@ -21,9 +19,6 @@ export const block = (dataSources: DataSources) => {
 					throw new Error('Listing not found');
 				}
 
-				listing.setBlocked(true);
-				listing.blockReason = command.blockReason;
-				listing.blockDescription = command.blockDescription;
 				listing.blocked = true;
 				itemListingToReturn = await repo.save(listing);
 			},

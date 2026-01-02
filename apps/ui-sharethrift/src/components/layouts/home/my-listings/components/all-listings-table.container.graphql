@@ -61,3 +61,13 @@ mutation HomeAllListingsTableContainerDeleteListing($id: ObjectID!) {
     }
   }
 }
+
+mutation HomeAllListingsTableContainerCreateListingAppealRequest(
+  $input: CreateListingAppealRequestInput!
+) {
+  createListingAppealRequest(input: $input) {
+    id
+    state
+    reason
+  }
+}
