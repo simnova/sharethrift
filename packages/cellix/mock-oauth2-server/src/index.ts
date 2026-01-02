@@ -187,17 +187,17 @@ async function main() {
 			}
 		}
 
-	// Use different credentials based on portal type
-	// TypeScript requires bracket notation for process.env index signature (TS4111)
-	const email = isAdminPortal
-		? process.env['Admin_Email'] || process.env['Email'] || ''
-		: process.env['Email'] || '';
-	const given_name = isAdminPortal
-		? process.env['Admin_Given_Name'] || process.env['Given_Name'] || ''
-		: process.env['Given_Name'] || '';
-	const family_name = isAdminPortal
-		? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
-		: process.env['Family_Name'] || '';
+		// Use different credentials based on portal type
+		// TypeScript requires bracket notation for process.env index signature (TS4111)
+		const email = isAdminPortal
+			? process.env['Admin_Email'] || process.env['Email'] || ''
+			: process.env['Email'] || '';
+		const given_name = isAdminPortal
+			? process.env['Admin_Given_Name'] || process.env['Given_Name'] || ''
+			: process.env['Given_Name'] || '';
+		const family_name = isAdminPortal
+			? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
+			: process.env['Family_Name'] || '';
 		const profile: TokenProfile = {
 			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),
