@@ -108,7 +108,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	private ensureCanEditReservationRequest(): void {
-		if (!this.isNew && !this.visa.determineIf(
+		if (!this.visa.determineIf(
 			(domainPermissions) => domainPermissions.canEditReservationRequest,
 		)) {
 			throw new DomainSeedwork.PermissionError(
