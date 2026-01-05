@@ -48,9 +48,6 @@
     "snyk:iac": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift",
     "snyk:iac:report": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --target-name=sharethrift-iac --report"
   },
-  "overrides": {
-    "qs": ">=6.14.1"
-  },
   "devDependencies": {
     "@amiceli/vitest-cucumber": "^5.1.2",
     "@biomejs/biome": "2.0.0",
