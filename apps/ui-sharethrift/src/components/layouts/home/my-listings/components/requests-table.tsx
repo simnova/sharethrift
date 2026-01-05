@@ -200,31 +200,29 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 						style={{ display: 'flex', flexDirection: 'column', gap: 8 }}
 					/>
 				</div>
-		),
-		filterIcon: (filtered: boolean) => (
-			<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
-		),
-		render: (status: string) => {
-			const statusClass = statusTagClassMap[status] ?? '';
-			return <Tag className={statusClass}>{status}</Tag>;
+			),
+			filterIcon: (filtered: boolean) => (
+				<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
+			),
+			render: (status: string) => {
+				const statusClass = statusTagClassMap[status] ?? '';
+				return <Tag className={statusClass}>{status}</Tag>;
+			},
 		},
-	},
-	{
-		title: 'Actions',
-		key: 'actions',
-		width: 200,
-		render: (_: unknown, record: ListingRequestData) => {
-			let actions: string[] = [];
-			switch (record.status) {
-				case 'Pending':
-				case 'Requested':
-					actions = ['accept'];
-					break;
-			}
+		{
+			title: 'Actions',
+			key: 'actions',
+			width: 200,
+			render: (_: unknown, record: ListingRequestData) => {
+				const canAccept =
+					record.status === 'Pending' || record.status === 'Requested';
 
-			const actionButtons = actions.map((action) => {
-				if (action === 'accept') {
-					return (
+				if (!canAccept) {
+					return null;
+				}
+
+				return (
+					<div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
 						<Button
 							key="accept"
 							type="link"
@@ -233,19 +231,13 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 						>
 							Accept
 						</Button>
-					);
-				}
-				return null;
-			});
-
-			return (
-				<div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-					{actionButtons}
-				</div>
-			);
+					</div>
+				);
+			},
 		},
-	},
-];	return (
+	];
+
+	return (
 		<Dashboard
 			data={data}
 			columns={columns}
