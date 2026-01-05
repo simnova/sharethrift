@@ -3,7 +3,7 @@ import { Checkbox, Input } from 'antd';
 
 const { Search } = Input;
 
-export const STATUS_OPTIONS = [
+const STATUS_OPTIONS = [
 	{ label: 'Active', value: 'Active' },
 	{ label: 'Paused', value: 'Paused' },
 	{ label: 'Reserved', value: 'Reserved' },
