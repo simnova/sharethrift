@@ -53,7 +53,7 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 	get reason(): string {
 		return this.props.reason;
 	}
-	
+
 	set reason(value: string) {
 		if (
 			!this.visa.determineIf(
