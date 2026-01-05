@@ -186,6 +186,9 @@ export class ItemListing<props extends ItemListingProps>
 		return this.props.state;
 	}
 
+	// Note: State is read-only after creation; the state setter only works during creation.
+	// Use domain methods (publish(), pause(), cancel(), reinstate()) to change state so that
+	// permission checks and state transition validations are always enforced.
 	set state(value: string) {
 		if (!this.isNew) {
 			throw new DomainSeedwork.PermissionError(
@@ -194,10 +197,6 @@ export class ItemListing<props extends ItemListingProps>
 		}
 		this.props.state = new ValueObjects.ListingState(value).valueOf();
 	}
-
-	// Note: State is read-only after creation; the state setter only works during creation.
-	// Use domain methods (publish(), pause(), cancel(), reinstate()) to change state so that
-	// permission checks and state transition validations are always enforced.
 
 	get updatedAt(): Date {
 		return this.props.updatedAt;
