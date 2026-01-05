@@ -31,7 +31,8 @@ const redirectUriToAudience = new Map([
 	['http://localhost:3000/auth-redirect-user', 'user-portal'],
 	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
 ]);
-// Deprecated: kept for backwards compatibility
+// Deprecated: kept for backwards compatibility. Uses process.env's index signature
+// (string | undefined) and falls back to a default redirect URI when not set.
 const allowedRedirectUri =
 	process.env['ALLOWED_REDIRECT_URI'] ||
 	'http://localhost:3000/auth-redirect-user';
