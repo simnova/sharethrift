@@ -72,13 +72,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		// Common guard for non-initial transitions
 		if (!this.isNew) {
 			this.ensureCanEditReservationRequest();
-
-			// Once created, a reservation request cannot be transitioned back to REQUESTED state.
-			if (stateValue === ReservationRequestStates.REQUESTED) {
-				throw new DomainSeedwork.PermissionError(
-					'Cannot change reservation request back to REQUESTED state once it has been created.',
-				);
-			}
 		}
 
 		switch (stateValue) {
