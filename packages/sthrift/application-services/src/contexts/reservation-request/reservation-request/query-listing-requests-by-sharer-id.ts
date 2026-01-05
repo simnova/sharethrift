@@ -11,22 +11,22 @@ export interface ReservationRequestQueryListingRequestsBySharerIdCommand {
     fields?: string[];
 }
 
-export interface ListingRequestPageItem {
-    id: string;
-    title: string;
-    image?: string | null;
-    requestedBy: string;
-    requestedOn: string;
-    reservationPeriod: string;
-    status: string;
-}
-
 export interface ListingRequestPage {
-    items: ListingRequestPageItem[];
+    items: Array<{
+        id: string;
+        title: string;
+        image?: string | null;
+        requestedBy: string;
+        requestedOn: string;
+        reservationPeriod: string;
+        status: string;
+    }>;
     total: number;
     page: number;
     pageSize: number;
 }
+
+type ListingRequestPageItem = ListingRequestPage['items'][number];
 
 // Temporary implementation backed by mock data in persistence read repository
 export const queryListingRequestsBySharerId = (
@@ -41,7 +41,7 @@ export const queryListingRequestsBySharerId = (
                 { fields: command.fields },
             );
 
-        const mapped: ListingRequestPageItem[] = requests.map((r) => {
+        const mapped: ListingRequestPage['items'] = requests.map((r) => {
             const start =
                 r.reservationPeriodStart instanceof Date
                     ? r.reservationPeriodStart
