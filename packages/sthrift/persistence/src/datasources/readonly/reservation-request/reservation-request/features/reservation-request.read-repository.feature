@@ -62,3 +62,4 @@ And valid ReservationRequest documents exist in the database
 		When I call getActiveByListingId with "listing-1"
 		Then I should receive an array of ReservationRequest entities
 		And the array should contain active reservation requests for the listing
+

@@ -237,4 +237,37 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(result).toBeNull();
 		});
 	});
+
+	Scenario('Converting a user with unknown userType', ({ When, Then }) => {
+		When('toDomain is called with an unknown userType', async () => {
+			// Create a new repository with a userModel that returns an unknown userType
+			const unknownUserId = new MongooseSeedwork.ObjectId().toHexString();
+			const unknownUserDoc = {
+				_id: new MongooseSeedwork.ObjectId(unknownUserId),
+				userType: 'unknown-type',
+				account: {
+					email: 'unknown@example.com',
+				},
+			} as unknown as Models.User.User;
+
+			const userModel = {
+				findById: vi.fn(() => createLeanQuery(unknownUserDoc)),
+				findOne: vi.fn(() => createLeanQuery(unknownUserDoc)),
+			} as unknown as Models.User.UserModelType;
+
+			const modelsContext = {
+				User: {
+					PersonalUser: personalUserModel,
+					AdminUser: adminUserModel,
+					User: userModel,
+				},
+			} as unknown as ModelsContext;
+
+			const testRepository = new UserReadRepositoryImpl(modelsContext, passport);
+			result = await testRepository.getById(unknownUserId);
+		});
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
 });
