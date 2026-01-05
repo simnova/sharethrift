@@ -1,0 +1,8 @@
+# Ignore all certificate files
+*
+
+# But keep this .gitignore
+!.gitignore
+
+# Keep the setup script
+!setup-certs.sh

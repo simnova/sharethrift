@@ -1,10 +1,14 @@
 import { setupEnvironment } from './setup-environment.js';
 import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
 import express from 'express';
+import https from 'node:https';
+import fs from 'node:fs';
+import path from 'node:path';
 import { exportJWK, generateKeyPair, SignJWT, type JWK } from 'jose';
 import { exportPKCS8 } from 'jose';
 
 setupEnvironment();
+
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
@@ -25,11 +29,15 @@ function normalizeUrl(urlString: string): string {
 const allowedRedirectUris = new Set([
 	'http://localhost:3000/auth-redirect-user',
 	'http://localhost:3000/auth-redirect-admin',
+	'https://sharethrift.localhost:3000/auth-redirect-user',
+	'https://sharethrift.localhost:3000/auth-redirect-admin',
 ]);
 // Map redirect URIs to their corresponding audience identifiers
 const redirectUriToAudience = new Map([
 	['http://localhost:3000/auth-redirect-user', 'user-portal'],
 	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
+	['https://sharethrift.localhost:3000/auth-redirect-user', 'user-portal'],
+	['https://sharethrift.localhost:3000/auth-redirect-admin', 'admin-portal'],
 ]);
 // Deprecated: kept for backwards compatibility
 const allowedRedirectUri =
@@ -273,11 +281,26 @@ async function main() {
 		return;
 	});
 
-	app.listen(port, () => {
+	// Load SSL certificates for HTTPS
+	// Find workspace root by going up from current package directory
+	// When run via turbo/pnpm, cwd is the package directory, so we go up 3 levels to reach project root
+	const workspaceRoot = path.join(process.cwd(), '../../..');
+	const httpsOptions = {
+		key: fs.readFileSync(
+			path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem'),
+		),
+		cert: fs.readFileSync(
+			path.join(workspaceRoot, '.certs/sharethrift.localhost.pem'),
+		),
+	};
+
+	https.createServer(httpsOptions, app).listen(port, 'auth.sharethrift.localhost', () => {
 		// eslint-disable-next-line no-console
-		console.log(`Mock OAuth2 server running on http://localhost:${port}`);
 		console.log(
-			`JWKS endpoint running on http://localhost:${port}/.well-known/jwks.json`,
+			`Mock OAuth2 server running on https://auth.sharethrift.localhost:${port}`,
+		);
+		console.log(
+			`JWKS endpoint running on https://auth.sharethrift.localhost:${port}/.well-known/jwks.json`,
 		);
 	});
 }
