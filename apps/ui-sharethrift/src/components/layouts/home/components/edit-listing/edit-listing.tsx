@@ -81,11 +81,7 @@ export const EditListing: React.FC<EditListingProps> = ({
 		[onImageAdd],
 	);
 
-	const formatDateOnly = (value?: {
-		format?: (pattern: string) => string;
-		toISOString?: () => string;
-	}) =>
-		value?.format?.('YYYY-MM-DD') ?? value?.toISOString?.().slice(0, 10) ?? '';
+	const formatDateOnly = (value: dayjs.Dayjs) => value.format('YYYY-MM-DD');
 
 	const handleFormSubmit = () => {
 		form
@@ -130,9 +126,8 @@ export const EditListing: React.FC<EditListingProps> = ({
 	};
 
 	const getModalOkText = () => {
-		if (activeModal === 'delete') return 'Delete';
-		if (activeModal === 'pause') return 'Pause';
-		return 'Cancel Listing';
+		if (!activeModal) return '';
+		return activeModal.charAt(0).toUpperCase() + activeModal.slice(1);
 	};
 
 	const getModalMessage = () => {

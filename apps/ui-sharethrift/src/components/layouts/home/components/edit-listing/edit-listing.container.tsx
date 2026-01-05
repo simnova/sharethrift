@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { message } from 'antd';
@@ -38,6 +38,20 @@ const myListingsTableDefaultVariables: HomeAllListingsTableContainerMyListingsAl
 		statusFilters: [],
 	};
 
+// TODO: Move categories to config file or database
+const LISTING_CATEGORIES = [
+	'Electronics',
+	'Clothing & Accessories',
+	'Home & Garden',
+	'Sports & Recreation',
+	'Books & Media',
+	'Tools & Equipment',
+	'Vehicles',
+	'Musical Instruments',
+	'Art & Collectibles',
+	'Other',
+];
+
 const toUtcMidnight = (value: string): Date => {
 	const date = dayjs(value).utc().startOf('day');
 	if (!date.isValid()) {
@@ -45,14 +59,6 @@ const toUtcMidnight = (value: string): Date => {
 	}
 	return date.toDate();
 };
-
-const REFRESH_MY_LISTINGS_QUERIES = [
-	{ query: ListingsPageContainerGetListingsDocument },
-	{
-		query: HomeAllListingsTableContainerMyListingsAllDocument,
-		variables: myListingsTableDefaultVariables,
-	},
-];
 
 /**
  * Container component for the Edit Listing page
@@ -70,23 +76,6 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 	const auth = useAuth();
 	const isUserAuthenticated = props.isAuthenticated ?? auth.isAuthenticated;
 	const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-
-	// Static list of available categories for item listings
-	const categories = useMemo(
-		() => [
-			'Electronics',
-			'Clothing & Accessories',
-			'Home & Garden',
-			'Sports & Recreation',
-			'Books & Media',
-			'Tools & Equipment',
-			'Vehicles',
-			'Musical Instruments',
-			'Art & Collectibles',
-			'Other',
-		],
-		[],
-	);
 
 	// Fetch listing data
 	const {
@@ -122,7 +111,13 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 			console.error('Error updating listing:', error);
 			message.error('Failed to update listing. Please try again.');
 		},
-		refetchQueries: REFRESH_MY_LISTINGS_QUERIES,
+		refetchQueries: [
+			{ query: ListingsPageContainerGetListingsDocument },
+			{
+				query: HomeAllListingsTableContainerMyListingsAllDocument,
+				variables: myListingsTableDefaultVariables,
+			},
+		],
 		awaitRefetchQueries: true,
 	});
 
@@ -139,7 +134,13 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 			console.error('Error pausing listing:', error);
 			message.error('Failed to pause listing. Please try again.');
 		},
-		refetchQueries: REFRESH_MY_LISTINGS_QUERIES,
+		refetchQueries: [
+			{ query: ListingsPageContainerGetListingsDocument },
+			{
+				query: HomeAllListingsTableContainerMyListingsAllDocument,
+				variables: myListingsTableDefaultVariables,
+			},
+		],
 		awaitRefetchQueries: true,
 	});
 
@@ -156,7 +157,13 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 			console.error('Error deleting listing:', error);
 			message.error('Failed to delete listing. Please try again.');
 		},
-		refetchQueries: REFRESH_MY_LISTINGS_QUERIES,
+		refetchQueries: [
+			{ query: ListingsPageContainerGetListingsDocument },
+			{
+				query: HomeAllListingsTableContainerMyListingsAllDocument,
+				variables: myListingsTableDefaultVariables,
+			},
+		],
 		awaitRefetchQueries: true,
 	});
 
@@ -173,7 +180,13 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 			console.error('Error cancelling listing:', error);
 			message.error('Failed to cancel listing. Please try again.');
 		},
-		refetchQueries: REFRESH_MY_LISTINGS_QUERIES,
+		refetchQueries: [
+			{ query: ListingsPageContainerGetListingsDocument },
+			{
+				query: HomeAllListingsTableContainerMyListingsAllDocument,
+				variables: myListingsTableDefaultVariables,
+			},
+		],
 		awaitRefetchQueries: true,
 	});
 
@@ -258,7 +271,7 @@ export const EditListingContainer: React.FC<EditListingContainerProps> = (
 				data?.itemListing ? (
 					<EditListing
 						listing={data.itemListing}
-						categories={categories}
+						categories={LISTING_CATEGORIES}
 						isLoading={isLoading}
 						onSubmit={handleSubmit}
 						onPause={handlePause}
