@@ -6,7 +6,7 @@
   "type": "module",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
+    "express": "^4.22.0",
     "jose": "^5.10.0",
     "jsonwebtoken": "^9.0.3",
     "@cellix/payment-service": "workspace:*"

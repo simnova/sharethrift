@@ -495,8 +495,8 @@ importers:
         specifier: workspace:*
         version: link:../payment-service
       express:
-        specifier: ^4.18.2
-        version: 4.21.2
+        specifier: ^4.22.0
+        version: 4.22.1
       jose:
         specifier: ^5.10.0
         version: 5.10.0
@@ -921,8 +921,8 @@ importers:
         specifier: ^16.6.1
         version: 16.6.1
       express:
-        specifier: ^4.18.2
-        version: 4.21.2
+        specifier: ^4.22.0
+        version: 4.22.1
       mongodb:
         specifier: 'catalog:'
         version: 6.18.0
