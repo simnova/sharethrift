@@ -101,7 +101,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 				this.transitionToRequested();
 				break;
 			default:
-				throw new DomainSeedwork.PermissionError(
+				throw new DomainSeedwork.ValidationError(
 					`Invalid reservation request state: "${stateValue}". Valid states are: ${Object.values(ReservationRequestStates).join(', ')}`,
 				);
 		}
