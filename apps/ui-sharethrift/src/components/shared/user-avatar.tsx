@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { Avatar as AntAvatar } from 'antd';
 import { Link } from 'react-router-dom';
+import { AuthContext } from 'react-oidc-context';
 import { ShareThriftLogo } from './sharethrift-logo.tsx';
 
 /**
@@ -38,6 +39,10 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 	style = {},
 	shape = 'circle',
 }) => {
+	const auth = useContext(AuthContext);
+	const isAuthenticated = auth?.isAuthenticated ?? false;
+	const profilePath = userId ? (isAuthenticated ? `/user/${userId}` : '/login') : undefined;
+
 	// Track if the avatar image failed to load
 	const [imageError, setImageError] = useState(false);
 	const showImageAvatar = !!avatarUrl && !imageError;
@@ -77,8 +82,12 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
 		</AntAvatar>
 	);
 
+	if (!profilePath) {
+		return avatarContent;
+	}
+
 	return (
-		<Link to={`/user/${userId}`} aria-label={`View ${userName}'s profile`}>
+		<Link to={profilePath} aria-label={`View ${userName}'s profile`}>
 			{avatarContent}
 		</Link>
 	);

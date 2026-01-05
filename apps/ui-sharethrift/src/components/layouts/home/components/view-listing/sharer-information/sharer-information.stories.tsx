@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent } from 'storybook/test';
 import { SharerInformation } from './sharer-information.tsx';
+import { withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
 
 const mockSharer = {
 	id: 'user-1',
@@ -14,6 +15,7 @@ const meta: Meta<typeof SharerInformation> = {
 	parameters: {
 		layout: 'padded',
 	},
+	decorators: [withMockRouter('/listing/1')],
 	args: {
 		sharer: mockSharer,
 		listingId: '1',

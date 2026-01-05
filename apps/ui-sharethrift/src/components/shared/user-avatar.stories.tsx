@@ -1,15 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { BrowserRouter } from 'react-router-dom';
 import { UserAvatar } from './user-avatar.tsx';
+import {
+	MockAuthWrapper,
+	MockUnauthWrapper,
+} from '../../test-utils/storybook-decorators.tsx';
 
 const meta: Meta<typeof UserAvatar> = {
 	title: 'Shared/UserAvatar',
 	component: UserAvatar,
 	decorators: [
 		(Story) => (
-			<BrowserRouter>
-				<Story />
-			</BrowserRouter>
+			<MockAuthWrapper>
+				<BrowserRouter>
+					<Story />
+				</BrowserRouter>
+			</MockAuthWrapper>
 		),
 	],
 	tags: ['autodocs'],
@@ -42,6 +48,21 @@ export default meta;
 type Story = StoryObj<typeof UserAvatar>;
 
 export const Default: Story = {
+	args: {
+		userId: '507f1f77bcf86cd799439011',
+		userName: 'John Doe',
+		size: 48,
+	},
+};
+
+export const UnauthenticatedRedirectToLogin: Story = {
+	decorators: [
+		(Story) => (
+			<MockUnauthWrapper>
+				<Story />
+			</MockUnauthWrapper>
+		),
+	],
 	args: {
 		userId: '507f1f77bcf86cd799439011',
 		userName: 'John Doe',
