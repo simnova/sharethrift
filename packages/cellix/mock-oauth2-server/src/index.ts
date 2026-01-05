@@ -1,8 +1,14 @@
-import { setupEnvironment } from './setup-environment.js';
 import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
 import express from 'express';
-import { exportJWK, generateKeyPair, SignJWT, type JWK } from 'jose';
-import { exportPKCS8 } from 'jose';
+import {
+	exportJWK,
+	exportPKCS8,
+	generateKeyPair,
+	type JWK,
+	SignJWT,
+} from 'jose';
+
+import { setupEnvironment } from './setup-environment.js';
 
 setupEnvironment();
 const app = express();
@@ -164,7 +170,10 @@ async function main() {
 		const { tid, code } = req.body;
 
 		if (typeof code !== 'string') {
-			res.status(400).json({ error: 'invalid_request', error_description: 'code must be a string' });
+			res.status(400).json({
+				error: 'invalid_request',
+				error_description: 'code must be a string',
+			});
 			return;
 		}
 
@@ -190,14 +199,14 @@ async function main() {
 
 		// Use different credentials based on portal type
 		const email = isAdminPortal
-			? process.env['Admin_Email'] || process.env['Email'] || ''
-			: process.env['Email'] || '';
+			? process.env.Admin_Email || process.env.Email || ''
+			: process.env.Email || '';
 		const given_name = isAdminPortal
-			? process.env['Admin_Given_Name'] || process.env['Given_Name'] || ''
-			: process.env['Given_Name'] || '';
+			? process.env.Admin_Given_Name || process.env.Given_Name || ''
+			: process.env.Given_Name || '';
 		const family_name = isAdminPortal
-			? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
-			: process.env['Family_Name'] || '';
+			? process.env.Admin_Family_Name || process.env.Family_Name || ''
+			: process.env.Family_Name || '';
 
 		const profile: TokenProfile = {
 			aud: aud, // Now using proper audience identifier
@@ -243,10 +252,11 @@ async function main() {
 		const requestedRedirectUri = redirect_uri as string;
 
 		const normalizedRequested = normalizeUrl(requestedRedirectUri);
-		
-		const isAllowed = Array.from(allowedRedirectUris).some(
-			allowedUri => normalizeUrl(allowedUri) === normalizedRequested
-		) || normalizeUrl(allowedRedirectUri) === normalizedRequested;
+
+		const isAllowed =
+			Array.from(allowedRedirectUris).some(
+				(allowedUri) => normalizeUrl(allowedUri) === normalizedRequested,
+			) || normalizeUrl(allowedRedirectUri) === normalizedRequested;
 
 		if (!isAllowed) {
 			res.status(400).send('Invalid redirect_uri');
@@ -255,14 +265,14 @@ async function main() {
 
 		// Generate authorization code
 		const code = `mock-auth-code-${Buffer.from(requestedRedirectUri).toString('base64')}`;
-		
+
 		try {
 			const redirectUrl = new URL(requestedRedirectUri);
 			redirectUrl.searchParams.set('code', code);
 			if (state) {
 				redirectUrl.searchParams.set('state', state as string);
 			}
-			
+
 			// Send 302 redirect with Location header explicitly set to allowlisted URL
 			const finalUrl = redirectUrl.toString();
 			res.setHeader('Location', finalUrl);
