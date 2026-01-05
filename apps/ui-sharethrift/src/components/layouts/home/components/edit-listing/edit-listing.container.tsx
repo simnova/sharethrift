@@ -3,6 +3,8 @@ import { useState, useMemo, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useQuery, useMutation } from '@apollo/client/react';
 import { message } from 'antd';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import { EditListing, type EditListingFormData } from './edit-listing.tsx';
 import {
 	HomeAllListingsTableContainerMyListingsAllDocument,
@@ -26,6 +28,8 @@ import {
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
 
+dayjs.extend(utc);
+
 const myListingsTableDefaultVariables: HomeAllListingsTableContainerMyListingsAllQueryVariables =
 	{
 		page: 1,
@@ -35,25 +39,11 @@ const myListingsTableDefaultVariables: HomeAllListingsTableContainerMyListingsAl
 	};
 
 const toUtcMidnight = (value: string): Date => {
-	const datePart = value?.split('T')[0];
-	if (datePart) {
-		const [yearPart, monthPart, dayPart] = datePart.split('-');
-		const year = Number.parseInt(yearPart ?? '', 10);
-		const month = Number.parseInt(monthPart ?? '', 10);
-		const day = Number.parseInt(dayPart ?? '', 10);
-		if (
-			Number.isFinite(year) &&
-			Number.isFinite(month) &&
-			Number.isFinite(day)
-		) {
-			return new Date(Date.UTC(year, month - 1, day));
-		}
-	}
-	const fallback = new Date(value);
-	if (Number.isNaN(fallback.getTime())) {
+	const date = dayjs(value).utc().startOf('day');
+	if (!date.isValid()) {
 		throw new TypeError('Invalid date string provided for reservation period');
 	}
-	return fallback;
+	return date.toDate();
 };
 
 const REFRESH_MY_LISTINGS_QUERIES = [
