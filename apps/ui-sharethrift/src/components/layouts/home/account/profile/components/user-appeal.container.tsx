@@ -1,62 +1,70 @@
-import { useMutation } from '@apollo/client/react';
+import { useMutation, useQuery } from '@apollo/client/react';
 import { UserAppeal } from './user-appeal.tsx';
 import { message } from 'antd';
-import { HomeAccountProfileUserAppealContainerCreateUserAppealRequestDocument } from '../../../../../../generated.tsx';
+import { HomeAccountProfileUserAppealContainerCreateUserAppealRequestDocument, HomeAccountProfileUserAppealContainerGetUserAppealRequestsDocument } from '../../../../../../generated.tsx';
+import { ComponentQueryLoader } from '@sthrift/ui-components';
 
 export interface UserAppealContainerProps {
-	userId: string;
-	isBlocked: boolean;
-	blockerId?: string;
-	existingAppeal?: {
-		id: string;
-		reason: string;
-		state: 'requested' | 'accepted' | 'denied';
-		createdAt: string;
-	} | null;
+    userId: string;
 }
 
 export const UserAppealContainer: React.FC<
-	Readonly<UserAppealContainerProps>
-> = ({ userId, isBlocked, blockerId, existingAppeal }) => {
-	const [createAppealMutation, { loading }] = useMutation(
-		HomeAccountProfileUserAppealContainerCreateUserAppealRequestDocument,
-	);
+    Readonly<UserAppealContainerProps>
+> = ({ userId }) => {
+    const [createAppealMutation, { loading }] = useMutation(
+        HomeAccountProfileUserAppealContainerCreateUserAppealRequestDocument,
+    );
 
-	const handleSubmitAppeal = async (reason: string) => {
-		try {
-			// TODO: SECURITY - Need to fetch the actual blockerId from the backend
-			// Currently using userId as a temporary fallback which is not correct
-			// The backend should provide the blocker information or allow null blockerId
-			// Issue: https://github.com/simnova/sharethrift/issues/XXX
-			const effectiveBlockerId = blockerId || userId;
+    const {
+        data: appealData,
+        loading: appealLoading,
+        error: appealError,
+    } = useQuery(HomeAccountProfileUserAppealContainerGetUserAppealRequestsDocument, {
+        variables: { userId },
+    })
 
-			await createAppealMutation({
-				variables: {
-					input: {
-						userId,
-						reason,
-						blockerId: effectiveBlockerId,
-					},
-				},
-			});
 
-			message.success(
-				'Your appeal has been submitted successfully. An administrator will review it within 3-5 business days.',
-			);
-		} catch (error) {
-			console.error('Failed to submit appeal:', error);
-			message.error(
-				'Failed to submit appeal. Please try again or contact support.',
-			);
-		}
-	};
+    const handleSubmitAppeal = async (reason: string) => {
+        try {
+            // TODO: SECURITY - Need to fetch the actual blockerId from the backend
+            // Currently using userId as a temporary fallback which is not correct
+            // The backend should provide the blocker information or allow null blockerId
+            // Issue: https://github.com/simnova/sharethrift/issues/XXX
+            const effectiveBlockerId = userId;
 
-	return (
-		<UserAppeal
-			isBlocked={isBlocked}
-			existingAppeal={existingAppeal}
-			onSubmitAppeal={handleSubmitAppeal}
-			loading={loading}
-		/>
-	);
+            await createAppealMutation({
+                variables: {
+                    input: {
+                        userId,
+                        reason,
+                        blockerId: effectiveBlockerId,
+                    },
+                },
+            });
+
+            message.success(
+                'Your appeal has been submitted successfully. An administrator will review it within 3-5 business days.',
+            );
+        } catch (error) {
+            console.error('Failed to submit appeal:', error);
+            message.error(
+                'Failed to submit appeal. Please try again or contact support.',
+            );
+        }
+    };
+
+    return (
+        <ComponentQueryLoader
+            loading={appealLoading}
+            error={appealError}
+            hasData={appealData}
+            hasDataComponent={
+                <UserAppeal
+                    existingAppeal={appealData}
+                    onSubmitAppeal={handleSubmitAppeal}
+                    loading={appealLoading || loading}
+                />
+            }
+        />
+    );
 };

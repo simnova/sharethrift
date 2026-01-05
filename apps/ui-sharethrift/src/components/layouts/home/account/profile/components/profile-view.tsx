@@ -61,10 +61,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
         <div className="max-w-4xl mx-auto p-6">
             {/* User Appeal Section - shown when user is blocked */}
             {isOwnProfile && user.isBlocked && (
-                <UserAppealContainer
-                    userId={user.id}
-                    isBlocked={user.isBlocked}
-                />
+                <UserAppealContainer userId={user.id} />
             )}
 
             {/* Profile Header */}

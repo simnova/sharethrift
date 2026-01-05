@@ -9,28 +9,18 @@ const { Text, Paragraph } = Typography;
 const { TextArea } = Input;
 
 export interface UserAppealProps {
-	isBlocked: boolean;
-	existingAppeal?: {
-		id: string;
-		reason: string;
-		state: 'requested' | 'accepted' | 'denied';
-		createdAt: string;
-	} | null;
+	existingAppeal:any
 	onSubmitAppeal: (reason: string) => void;
 	loading?: boolean;
 }
 
 export const UserAppeal: React.FC<Readonly<UserAppealProps>> = ({
-	isBlocked,
 	existingAppeal,
 	onSubmitAppeal,
 	loading = false,
 }) => {
 	const [form] = Form.useForm();
 
-	if (!isBlocked) {
-		return null;
-	}
 
 	const getStateTag = (state: string) => {
 		switch (state) {

@@ -15,14 +15,13 @@ type Story = StoryObj<typeof meta>;
 
 export const NotBlocked: Story = {
 	args: {
-		isBlocked: false,
+		existingAppeal: null,
 		onSubmitAppeal: () => {},
 	},
 };
 
 export const BlockedNoAppeal: Story = {
 	args: {
-		isBlocked: true,
 		existingAppeal: null,
 		onSubmitAppeal: (reason: string) => {
 			console.log('Submitted appeal:', reason);
@@ -32,7 +31,6 @@ export const BlockedNoAppeal: Story = {
 
 export const AppealPending: Story = {
 	args: {
-		isBlocked: true,
 		existingAppeal: {
 			id: '1',
 			reason:
@@ -46,7 +44,6 @@ export const AppealPending: Story = {
 
 export const AppealAccepted: Story = {
 	args: {
-		isBlocked: true,
 		existingAppeal: {
 			id: '2',
 			reason:
@@ -60,7 +57,6 @@ export const AppealAccepted: Story = {
 
 export const AppealDenied: Story = {
 	args: {
-		isBlocked: true,
 		existingAppeal: {
 			id: '3',
 			reason:
@@ -74,7 +70,6 @@ export const AppealDenied: Story = {
 
 export const Loading: Story = {
 	args: {
-		isBlocked: true,
 		existingAppeal: null,
 		onSubmitAppeal: () => {},
 		loading: true,
