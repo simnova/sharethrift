@@ -48,10 +48,12 @@
         "snyk:iac": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift",
         "snyk:iac:report": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --target-name=sharethrift-iac --report"
     },
-    "auditConfig": {
-        "ignoreGhsas": [
-            "GHSA-6rw7-vpxm-498p"
-        ]
+    "pnpm": {
+        "auditConfig": {
+            "ignoreGhsas": [
+                "GHSA-6rw7-vpxm-498p"
+            ]
+        }
     },
     "devDependencies": {
         "@amiceli/vitest-cucumber": "^5.1.2",
