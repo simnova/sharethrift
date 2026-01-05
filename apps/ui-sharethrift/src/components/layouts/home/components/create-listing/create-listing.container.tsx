@@ -3,10 +3,14 @@ import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client/react';
 import { message } from 'antd';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import {
 	CreateListing,
 	type CreateListingFormData,
 } from './create-listing.tsx';
+
+dayjs.extend(utc);
 import {
 	HomeCreateListingContainerCreateItemListingDocument,
 	type HomeCreateListingContainerCreateItemListingMutation,
@@ -67,25 +71,11 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 	});
 
 	const toUtcMidnight = (value: string): Date => {
-		const datePart = value?.split('T')[0];
-		if (datePart) {
-			const [yearPart, monthPart, dayPart] = datePart.split('-');
-			const year = Number.parseInt(yearPart ?? '', 10);
-			const month = Number.parseInt(monthPart ?? '', 10);
-			const day = Number.parseInt(dayPart ?? '', 10);
-			if (
-				Number.isFinite(year) &&
-				Number.isFinite(month) &&
-				Number.isFinite(day)
-			) {
-				return new Date(Date.UTC(year, month - 1, day));
-			}
-		}
-		const fallback = new Date(value);
-		if (Number.isNaN(fallback.getTime())) {
+		const date = dayjs(value).utc().startOf('day');
+		if (!date.isValid()) {
 			throw new TypeError('Invalid date string provided for reservation period');
 		}
-		return fallback;
+		return date.toDate();
 	};
 
 	const handleSubmit = async (
