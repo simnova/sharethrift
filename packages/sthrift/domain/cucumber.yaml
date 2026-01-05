@@ -6,8 +6,8 @@ default:
     - tests/acceptance/features/**/*.feature
 
   # Step definitions location - Serenity step definitions (not vitest-cucumber)
-  import:
-    - tests/acceptance/step-definitions/**/*.steps.ts
+  require:
+    - tests/acceptance/step-definitions/**/*.steps.js
 
   # Serenity reporters - generates JSON for Serenity BDD reports
   format:
