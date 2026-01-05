@@ -1,10 +1,10 @@
 enum AppealRequestState {
-	requested
-	denied
-	accepted
+    requested
+    denied
+    accepted
 }
 
 enum AppealRequestType {
-	user
-	listing
+    USER
+    LISTING
 }
