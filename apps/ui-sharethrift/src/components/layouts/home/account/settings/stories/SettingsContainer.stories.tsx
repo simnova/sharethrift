@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, within } from "storybook/test";
+import { expect, within, waitFor } from "storybook/test";
 import { SettingsViewContainer } from "../components/settings-view.container.tsx";
 import {
 	HomeAccountSettingsViewContainerCurrentUserDocument,
@@ -379,6 +379,304 @@ export const EmptyLocation: Story = {
 											country: null,
 											zipCode: null,
 										},
+									},
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ProfileSaveInteraction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: "PersonalUser",
+								id: mockPersonalUser.id,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		
+		// Wait for content to load
+		await waitFor(() => {
+			const profileHeader = canvas.queryByText(/Profile Information/i);
+			expect(profileHeader).toBeInTheDocument();
+		}, { timeout: 3000 });
+	},
+};
+
+export const LocationSaveInteraction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: "PersonalUser",
+								id: mockPersonalUser.id,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const BillingSaveInteraction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: "PersonalUser",
+								id: mockPersonalUser.id,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const PlanSaveInteraction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: {
+								__typename: "PersonalUser",
+								id: mockPersonalUser.id,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const AdminUserBillingAttempt: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockAdminUser,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const AdminUserPlanAttempt: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockAdminUser,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const UpdateFailedResponse: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockPersonalUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							personalUserUpdate: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const AdminUpdateFailedResponse: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockAdminUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerUpdateAdminUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminUserUpdate: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const NoBillingData: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: {
+								...mockPersonalUser,
+								account: {
+									...mockPersonalUser.account,
+									profile: {
+										...mockPersonalUser.account.profile,
+										billing: undefined,
 									},
 								},
 							},

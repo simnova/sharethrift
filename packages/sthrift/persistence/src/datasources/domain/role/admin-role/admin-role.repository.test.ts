@@ -48,6 +48,10 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
+function createNullExecChain<T>(result: T) {
+	return { exec: vi.fn(() => Promise.resolve(result)) };
+}
+
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let repository: AdminRoleRepository;
 	let mockDoc: AdminRoleDomainAdapter;
@@ -110,6 +114,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting an admin role by a nonexistent ID',
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
+				// Mock findById to return null
+				const mockModel = repository.model as unknown as {
+					findById: ReturnType<typeof vi.fn>;
+				};
+				mockModel.findById = vi.fn(() => createNullExecChain(null));
+
 				try {
 					result = await repository.getById('nonexistent-id');
 				} catch (error) {
@@ -120,7 +130,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Then(
 				'an error should be thrown indicating the admin role was not found',
 				() => {
-					expect(result).toBeDefined();
+					expect(result).toBeInstanceOf(Error);
+					expect((result as Error).message).toContain('not found');
 				},
 			);
 		},
@@ -138,5 +149,30 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		Then('I should receive a new AdminRole domain object', () => {
 			expect(result).toBeDefined();
 		});
+	});
+});
+
+// Additional non-BDD tests for edge cases
+import { describe, it } from 'vitest';
+
+describe('AdminRoleRepository - Additional Coverage', () => {
+	it('should throw error when role not found by id', async () => {
+		const mockPassport = {} as Domain.IAM.User.AdminUser.AdminUserPassport<'api-admin-user-context'>;
+		const mockModel = {
+			findById: vi.fn().mockReturnValue({
+				exec: vi.fn().mockResolvedValue(null),
+			}),
+		};
+		const mockConverter = {} as AdminRoleConverter;
+		const repository = new AdminRoleRepository(
+			mockPassport,
+			mockModel as never,
+			mockConverter,
+			{} as never,
+			{} as never,
+		);
+		await expect(repository.getById('nonexistent-id')).rejects.toThrow(
+			'AdminRole with id nonexistent-id not found',
+		);
 	});
 });

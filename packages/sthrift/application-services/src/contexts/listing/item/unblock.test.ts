@@ -5,12 +5,13 @@ import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
 import { unblock } from './unblock.ts';
 
+const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
 	path.resolve(__dirname, 'features/unblock.feature'),
 );
 
-describeFeature(feature, (f) => {
+test.for(feature, ({ Background, Scenario }) => {
 	let mockListing: { setBlocked: ReturnType<typeof vi.fn> };
 	let mockRepo: {
 		getById: ReturnType<typeof vi.fn>;
@@ -24,7 +25,7 @@ describeFeature(feature, (f) => {
 	let result: unknown;
 	let unblockFunction: (command: { id: string }) => Promise<unknown>;
 
-	f.Background(({ Given }) => {
+	Background(({ Given }) => {
 		Given('the listing repository is available', () => {
 			mockListing = {
 				setBlocked: vi.fn(),
@@ -55,7 +56,7 @@ describeFeature(feature, (f) => {
 		});
 	});
 
-	f.Scenario('Successfully unblocking a listing', ({ Given, When, Then, And }) => {
+	Scenario('Successfully unblocking a listing', ({ Given, When, Then, And }) => {
 		Given('a blocked listing with id {string}', () => {
 			mockRepo.getById.mockResolvedValue(mockListing);
 		});
@@ -82,7 +83,7 @@ describeFeature(feature, (f) => {
 		});
 	});
 
-	f.Scenario('Failing to unblock when listing is not found', ({ Given, When, Then }) => {
+	Scenario('Failing to unblock when listing is not found', ({ Given, When, Then }) => {
 		Given('the listing with id {string} does not exist', () => {
 			mockRepo.getById.mockResolvedValue(null);
 		});
@@ -102,7 +103,7 @@ describeFeature(feature, (f) => {
 		});
 	});
 
-	f.Scenario('Failing to unblock when save returns undefined', ({ Given, And, When, Then }) => {
+	Scenario('Failing to unblock when save returns undefined', ({ Given, And, When, Then }) => {
 		Given('a blocked listing with id {string}', () => {
 			mockRepo.getById.mockResolvedValue(mockListing);
 		});
