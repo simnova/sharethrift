@@ -7,22 +7,6 @@ interface ConversationBoxProps {
 	data: Conversation;
 }
 
-// Helper function to extract display name from User type
-// This is a module-level pure function that can be called directly.
-const getUserDisplayName = (
-	user: Conversation['sharer'] | Conversation['reserver'] | undefined,
-): string => {
-	if (!user) return 'Unknown';
-	// Handle both PersonalUser and AdminUser account structures
-	const account = 'account' in user ? user.account : undefined;
-	const firstName = account?.profile?.firstName;
-	const lastName = account?.profile?.lastName;
-	if (firstName || lastName) {
-		return [firstName, lastName].filter(Boolean).join(' ');
-	}
-	return account?.username || 'Unknown';
-};
-
 export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 	const [messageText, setMessageText] = useState('');
 
@@ -40,7 +24,7 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 	const sharerInfo = useMemo(
 		() => ({
 			id: props.data.sharer?.id || '',
-			displayName: getUserDisplayName(props.data.sharer),
+			displayName: props.data.sharer?.account?.profile?.firstName ?? 'Unknown',
 		}),
 		[props.data?.sharer],
 	);
@@ -48,7 +32,8 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 	const reserverInfo = useMemo(
 		() => ({
 			id: props.data.reserver?.id || '',
-			displayName: getUserDisplayName(props.data.reserver),
+			displayName:
+				props.data.reserver?.account?.profile?.firstName ?? 'Unknown',
 		}),
 		[props.data?.reserver],
 	);
