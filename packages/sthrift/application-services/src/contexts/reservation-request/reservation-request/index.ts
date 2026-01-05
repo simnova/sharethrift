@@ -7,7 +7,7 @@ import { type ReservationRequestQueryByIdCommand, queryById } from './query-by-i
 import { type ReservationRequestCreateCommand, create } from './create.ts';
 import { type ReservationRequestQueryOverlapByListingIdAndReservationPeriodCommand, queryOverlapByListingIdAndReservationPeriod } from './query-overlap-by-listing-id-and-reservation-period.ts';
 import { type ReservationRequestQueryActiveByListingIdCommand, queryActiveByListingId } from './query-active-by-listing-id.ts';
-import { type ReservationRequestQueryListingRequestsBySharerIdCommand, queryListingRequestsBySharerId } from './query-listing-requests-by-sharer-id.ts';
+import { type ListingRequestPage, type ReservationRequestQueryListingRequestsBySharerIdCommand, queryListingRequestsBySharerId } from './query-listing-requests-by-sharer-id.ts';
 
 export interface ReservationRequestApplicationService {
     queryById: (command: ReservationRequestQueryByIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null>,
@@ -16,7 +16,7 @@ export interface ReservationRequestApplicationService {
     queryActiveByReserverIdAndListingId: (command: ReservationRequestQueryActiveByReserverIdAndListingIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null>,
     queryOverlapByListingIdAndReservationPeriod: (command: ReservationRequestQueryOverlapByListingIdAndReservationPeriodCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>,
     queryActiveByListingId: (command: ReservationRequestQueryActiveByListingIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>,
-    queryListingRequestsBySharerId: (command: ReservationRequestQueryListingRequestsBySharerIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>,
+	queryListingRequestsBySharerId: (command: ReservationRequestQueryListingRequestsBySharerIdCommand) => Promise<ListingRequestPage>,
     create: (command: ReservationRequestCreateCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference>,
 }
 
@@ -30,7 +30,7 @@ export const ReservationRequest = (
         queryActiveByReserverIdAndListingId: queryActiveByReserverIdAndListingId(dataSources),
         queryOverlapByListingIdAndReservationPeriod: queryOverlapByListingIdAndReservationPeriod(dataSources),
         queryActiveByListingId: queryActiveByListingId(dataSources),
-    queryListingRequestsBySharerId: queryListingRequestsBySharerId(dataSources),
+		queryListingRequestsBySharerId: queryListingRequestsBySharerId(dataSources),
         create: create(dataSources),
     }
 }

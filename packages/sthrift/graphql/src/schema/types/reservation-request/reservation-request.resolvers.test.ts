@@ -281,90 +281,26 @@ test.for(feature, ({ Scenario }) => {
 				context = makeMockGraphContext();
 			});
 			And('valid pagination arguments (page, pageSize)', () => {
-				const mockRequests = [
-					createMockReservationRequest({
-						id: '1',
-						state: 'Requested',
-						createdAt: new Date('2024-01-01'),
-						reservationPeriodStart: new Date('2024-02-01'),
-						reservationPeriodEnd: new Date('2024-02-10'),
-						listing: { title: 'Test Item' } as ItemListingEntity,
-						reserver: {
-							account: { username: 'testuser' },
-						} as PersonalUserEntity,
-					}),
-				];
+				const mockRequests = {
+					items: [
+						{
+							id: '1',
+							title: 'Test Item',
+							image: '/assets/item-images/placeholder.png',
+							requestedBy: '@testuser',
+							requestedOn: new Date('2024-01-01').toISOString(),
+							reservationPeriod: '2024-02-01 - 2024-02-10',
+							status: 'Requested',
+						},
+					],
+					total: 1,
+					page: 1,
+					pageSize: 10,
+				};
 				vi.mocked(
 					context.applicationServices.ReservationRequest.ReservationRequest
 						.queryListingRequestsBySharerId,
 				).mockResolvedValue(mockRequests);
-			});
-			When('the myListingsRequests query is executed', async () => {
-				const resolver = reservationRequestResolvers.Query
-					?.myListingsRequests as TestResolver<{
-					sharerId: string;
-					page: number;
-					pageSize: number;
-				}>;
-				result = await resolver(
-					{},
-					{ sharerId, page: 1, pageSize: 10 },
-					context,
-					{} as never,
-				);
-			});
-			Then(
-				'it should call ReservationRequest.queryListingRequestsBySharerId with the provided sharerId',
-				() => {
-					expect(
-						context.applicationServices.ReservationRequest.ReservationRequest
-							.queryListingRequestsBySharerId,
-					).toHaveBeenCalledWith({ sharerId });
-				},
-			);
-			And(
-				'it should paginate and map the results using paginateAndFilterListingRequests',
-				() => {
-					expect(result).toBeDefined();
-				},
-			);
-			And('it should return items, total, page, and pageSize', () => {
-				expect(result).toHaveProperty('items');
-				expect(result).toHaveProperty('total');
-				expect(result).toHaveProperty('page');
-				expect(result).toHaveProperty('pageSize');
-			});
-		},
-	);
-
-	Scenario(
-		'Filtering myListingsRequests by search text',
-		({ Given, And, When, Then }) => {
-			Given('reservation requests for a sharer', () => {
-				context = makeMockGraphContext();
-				const mockRequests = [
-					createMockReservationRequest({
-						id: '1',
-						state: 'Requested',
-						createdAt: new Date(),
-						listing: { title: 'Camera' } as ItemListingEntity,
-						reserver: { account: { username: 'user1' } } as PersonalUserEntity,
-					}),
-					createMockReservationRequest({
-						id: '2',
-						state: 'Requested',
-						createdAt: new Date(),
-						listing: { title: 'Drone' } as ItemListingEntity,
-						reserver: { account: { username: 'user2' } } as PersonalUserEntity,
-					}),
-				];
-				vi.mocked(
-					context.applicationServices.ReservationRequest.ReservationRequest
-						.queryListingRequestsBySharerId,
-				).mockResolvedValue(mockRequests);
-			});
-			And('a searchText "camera"', () => {
-				// Searchtext will be used in the When step
 			});
 			When('the myListingsRequests query is executed', async () => {
 				const resolver = reservationRequestResolvers.Query
@@ -373,90 +309,44 @@ test.for(feature, ({ Scenario }) => {
 					page: number;
 					pageSize: number;
 					searchText: string;
+					statusFilters: string[];
+					sorter: { field: string; order: string };
 				}>;
 				result = await resolver(
 					{},
 					{
-						sharerId: 'sharer-123',
+						sharerId,
 						page: 1,
 						pageSize: 10,
-						searchText: 'camera',
+						searchText: '',
+						statusFilters: [],
+						sorter: { field: 'requestedOn', order: 'descend' },
 					},
 					context,
 					{} as never,
 				);
 			});
 			Then(
-				'only listings whose titles include "camera" should be returned',
+				'it should call ReservationRequest.queryListingRequestsBySharerId with the provided arguments',
 				() => {
-					const items = (result as { items: { title: string }[] }).items;
-					expect(items).toHaveLength(1);
-					expect(items[0]?.title).toBe('Camera');
-				},
-			);
-		},
-	);
-
-	Scenario(
-		'Filtering myListingsRequests by status',
-		({ Given, And, When, Then }) => {
-			Given(
-				'reservation requests with mixed statuses ["Pending", "Approved"]',
-				() => {
-					context = makeMockGraphContext();
-					const mockRequests = [
-						createMockReservationRequest({
-							id: '1',
-							state: 'Accepted',
-							createdAt: new Date(),
-							listing: { title: 'Item 1' } as ItemListingEntity,
-							reserver: {
-								account: { username: 'user1' },
-							} as PersonalUserEntity,
-						}),
-						createMockReservationRequest({
-							id: '2',
-							state: 'Requested',
-							createdAt: new Date(),
-							listing: { title: 'Item 2' } as ItemListingEntity,
-							reserver: {
-								account: { username: 'user2' },
-							} as PersonalUserEntity,
-						}),
-					];
-					vi.mocked(
+					expect(
 						context.applicationServices.ReservationRequest.ReservationRequest
 							.queryListingRequestsBySharerId,
-					).mockResolvedValue(mockRequests);
-				},
-			);
-			And('a statusFilters ["Approved"]', () => {
-				// Status filters will be used in the When step
-			});
-			When('the myListingsRequests query is executed', async () => {
-				const resolver = reservationRequestResolvers.Query
-					?.myListingsRequests as unknown as TestResolver<{
-					sharerId: string;
-					page: number;
-					pageSize: number;
-					statusFilters: string[];
-				}>;
-				result = await resolver(
-					{},
-					{
-						sharerId: 'sharer-123',
+					).toHaveBeenCalledWith({
+						sharerId,
 						page: 1,
 						pageSize: 10,
-						statusFilters: ['Accepted'],
-					},
-					context,
-					{} as never,
-				);
-			});
-			Then('only requests with status "Approved" should be included', () => {
-				const items = (result as { items: { status: string }[] }).items;
-				expect(items).toHaveLength(1);
-				expect(items[0]?.status).toBe('Accepted');
+						searchText: '',
+						statusFilters: [],
+						sorter: { field: 'requestedOn', order: 'descend' },
+					});
+				},
+			);
+			And('it should return items, total, page, and pageSize', () => {
+				expect(result).toHaveProperty('items');
+				expect(result).toHaveProperty('total');
+				expect(result).toHaveProperty('page');
+				expect(result).toHaveProperty('pageSize');
 			});
 		},
 	);
@@ -806,74 +696,6 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
-	Scenario(
-		'Sorting myListingsRequests by requestedOn descending',
-		({ Given, And, When, Then }) => {
-			Given('reservation requests with varying createdAt timestamps', () => {
-				context = makeMockGraphContext();
-				const mockRequests = [
-					createMockReservationRequest({
-						id: '1',
-						state: 'Requested',
-						createdAt: new Date('2024-01-01'),
-						listing: { title: 'Item 1' } as ItemListingEntity,
-						reserver: { account: { username: 'user1' } } as PersonalUserEntity,
-					}),
-					createMockReservationRequest({
-						id: '2',
-						state: 'Requested',
-						createdAt: new Date('2024-01-03'),
-						listing: { title: 'Item 2' } as ItemListingEntity,
-						reserver: { account: { username: 'user2' } } as PersonalUserEntity,
-					}),
-					createMockReservationRequest({
-						id: '3',
-						state: 'Requested',
-						createdAt: new Date('2024-01-02'),
-						listing: { title: 'Item 3' } as ItemListingEntity,
-						reserver: { account: { username: 'user3' } } as PersonalUserEntity,
-					}),
-				];
-				vi.mocked(
-					context.applicationServices.ReservationRequest.ReservationRequest
-						.queryListingRequestsBySharerId,
-				).mockResolvedValue(mockRequests);
-			});
-			And('sorter field "requestedOn" with order "descend"', () => {
-				// Sorter will be used in the When step
-			});
-			When('the myListingsRequests query is executed', async () => {
-				const resolver = reservationRequestResolvers.Query
-					?.myListingsRequests as TestResolver<{
-					sharerId: string;
-					page: number;
-					pageSize: number;
-					sorter?: { field: string; order: 'ascend' | 'descend' };
-				}>;
-				result = await resolver(
-					{},
-					{
-						sharerId: 'sharer-123',
-						page: 1,
-						pageSize: 10,
-						sorter: { field: 'requestedOn', order: 'descend' },
-					},
-					context,
-					{} as never,
-				);
-			});
-			Then(
-				'results should be sorted by requestedOn in descending order',
-				() => {
-					const items = (result as { items: { requestedOn: string }[] }).items;
-					expect(items.length).toBeGreaterThan(0);
-					// Just verify that sorting was applied (items are in expected order based on input)
-					// The actual sorting logic is tested by the implementation
-					expect(items.length).toBe(3);
-				},
-			);
-		},
-	);
 
 	Scenario(
 		'Error while querying myListingsRequests',
@@ -895,10 +717,20 @@ test.for(feature, ({ Scenario }) => {
 						sharerId: string;
 						page: number;
 						pageSize: number;
+						searchText: string;
+						statusFilters: string[];
+						sorter: { field: string; order: string };
 					}>;
 					await resolver(
 						{},
-						{ sharerId: 'sharer-123', page: 1, pageSize: 10 },
+						{
+							sharerId: 'sharer-123',
+							page: 1,
+							pageSize: 10,
+							searchText: '',
+							statusFilters: [],
+							sorter: { field: 'requestedOn', order: 'descend' },
+						},
 						context,
 						{} as never,
 					);
@@ -955,202 +787,4 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
-	Scenario('Mapping listing request fields', ({ Given, When, Then, And }) => {
-		// This is tested implicitly through other scenarios that use myListingsRequests
-		// as they all verify the mapping occurs correctly
-		Given(
-			'a ListingRequestDomainShape object with title, state, and reserver username',
-			() => {
-				context = makeMockGraphContext();
-				const mockRequests = [
-					createMockReservationRequest({
-						id: '1',
-						state: 'Requested',
-						createdAt: new Date('2024-01-01'),
-						reservationPeriodStart: new Date('2024-02-01'),
-						reservationPeriodEnd: new Date('2024-02-10'),
-						listing: { title: 'Test Item' } as ItemListingEntity,
-						reserver: {
-							account: { username: 'testuser' },
-						} as PersonalUserEntity,
-					}),
-				];
-				vi.mocked(
-					context.applicationServices.ReservationRequest.ReservationRequest
-						.queryListingRequestsBySharerId,
-				).mockResolvedValue(mockRequests);
-			},
-		);
-		When('paginateAndFilterListingRequests is called', async () => {
-			const resolver = reservationRequestResolvers.Query
-				?.myListingsRequests as TestResolver<{
-				sharerId: string;
-				page: number;
-				pageSize: number;
-			}>;
-			result = await resolver(
-				{},
-				{ sharerId: 'sharer-123', page: 1, pageSize: 10 },
-				context,
-				{} as never,
-			);
-		});
-		Then(
-			'it should map title, requestedBy, requestedOn, reservationPeriod, and status into ListingRequestUiShape',
-			() => {
-				const items = (
-					result as {
-						items: {
-							title: string;
-							requestedBy: string;
-							requestedOn: string;
-							reservationPeriod: string;
-							status: string;
-						}[];
-					}
-				).items;
-				expect(items[0]).toHaveProperty('title');
-				expect(items[0]).toHaveProperty('requestedBy');
-				expect(items[0]).toHaveProperty('requestedOn');
-				expect(items[0]).toHaveProperty('reservationPeriod');
-				expect(items[0]).toHaveProperty('status');
-			},
-		);
-		And(
-			"missing fields should default to 'Unknown', '@unknown', or 'Pending' as appropriate",
-			() => {
-				// Test with missing fields
-				const items = (
-					result as {
-						items: {
-							title: string;
-							requestedBy: string;
-							status: string;
-						}[];
-					}
-				).items;
-				expect(items[0]?.title).toBe('Test Item');
-				expect(items[0]?.requestedBy).toBe('@testuser');
-				expect(items[0]?.status).toBe('Requested');
-			},
-		);
-	});
-
-	Scenario('Paginating listing requests', ({ Given, When, Then }) => {
-		Given('25 listing requests and a pageSize of 10', () => {
-			context = makeMockGraphContext();
-			const mockRequests = Array.from({ length: 25 }, (_, i) =>
-				createMockReservationRequest({
-					id: `${i + 1}`,
-					state: 'Requested',
-					createdAt: new Date(),
-					listing: { title: `Item ${i + 1}` } as ItemListingEntity,
-					reserver: {
-						account: { username: `user${i + 1}` },
-					} as PersonalUserEntity,
-				}),
-			);
-			vi.mocked(
-				context.applicationServices.ReservationRequest.ReservationRequest
-					.queryListingRequestsBySharerId,
-			).mockResolvedValue(mockRequests);
-		});
-		When('paginateAndFilterListingRequests is called for page 2', async () => {
-			const resolver = reservationRequestResolvers.Query
-				?.myListingsRequests as TestResolver<{
-				sharerId: string;
-				page: number;
-				pageSize: number;
-			}>;
-			result = await resolver(
-				{},
-				{ sharerId: 'sharer-123', page: 2, pageSize: 10 },
-				context,
-				{} as never,
-			);
-		});
-		Then(
-			'it should return 10 items starting from index 10 and total 25',
-			() => {
-				const paginatedResult = result as {
-					items: unknown[];
-					total: number;
-					page: number;
-					pageSize: number;
-				};
-				expect(paginatedResult.items.length).toBe(10);
-				expect(paginatedResult.total).toBe(25);
-				expect(paginatedResult.page).toBe(2);
-				expect(paginatedResult.pageSize).toBe(10);
-			},
-		);
-	});
-
-	Scenario(
-		'Sorting listing requests by title ascending',
-		({ Given, And, When, Then }) => {
-			Given('multiple listing requests with varying titles', () => {
-				context = makeMockGraphContext();
-				const mockRequests = [
-					createMockReservationRequest({
-						id: '1',
-						state: 'Requested',
-						createdAt: new Date(),
-						listing: { title: 'Zebra Camera' } as ItemListingEntity,
-						reserver: { account: { username: 'user1' } } as PersonalUserEntity,
-					}),
-					createMockReservationRequest({
-						id: '2',
-						state: 'Requested',
-						createdAt: new Date(),
-						listing: { title: 'Apple Drone' } as ItemListingEntity,
-						reserver: { account: { username: 'user2' } } as PersonalUserEntity,
-					}),
-					createMockReservationRequest({
-						id: '3',
-						state: 'Requested',
-						createdAt: new Date(),
-						listing: { title: 'Microphone Beta' } as ItemListingEntity,
-						reserver: { account: { username: 'user3' } } as PersonalUserEntity,
-					}),
-				];
-				vi.mocked(
-					context.applicationServices.ReservationRequest.ReservationRequest
-						.queryListingRequestsBySharerId,
-				).mockResolvedValue(mockRequests);
-			});
-			And('sorter field "title" with order "ascend"', () => {
-				// Sorter will be used in the When step
-			});
-			When('paginateAndFilterListingRequests is called', async () => {
-				const resolver = reservationRequestResolvers.Query
-					?.myListingsRequests as TestResolver<{
-					sharerId: string;
-					page: number;
-					pageSize: number;
-					sorter?: { field: string; order: 'ascend' | 'descend' };
-				}>;
-				result = await resolver(
-					{},
-					{
-						sharerId: 'sharer-123',
-						page: 1,
-						pageSize: 10,
-						sorter: { field: 'title', order: 'ascend' },
-					},
-					context,
-					{} as never,
-				);
-			});
-			Then('the results should be sorted alphabetically by title', () => {
-				const items = (result as { items: { title: string }[] }).items;
-				expect(items.length).toBe(3);
-				// Just verify that the sorting was applied and items are present
-				const titles = items.map((item) => item.title);
-				expect(titles).toContain('Apple Drone');
-				expect(titles).toContain('Zebra Camera');
-				expect(titles).toContain('Microphone Beta');
-			});
-		},
-	);
 });

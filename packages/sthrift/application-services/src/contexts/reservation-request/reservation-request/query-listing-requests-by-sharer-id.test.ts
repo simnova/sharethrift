@@ -37,7 +37,14 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
-		command = { sharerId: 'user-123' };
+		command = {
+			sharerId: 'user-123',
+			page: 1,
+			pageSize: 10,
+			searchText: '',
+			statusFilters: [],
+			sorter: { field: 'requestedOn', order: 'descend' },
+		};
 		result = undefined;
 	});
 
@@ -45,7 +52,14 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		"Successfully retrieving reservation requests for sharer's listings",
 		({ Given, And, When, Then }) => {
 			Given('a valid sharer ID "user-123"', () => {
-				command = { sharerId: 'user-123' };
+				command = {
+					sharerId: 'user-123',
+					page: 1,
+					pageSize: 10,
+					searchText: '',
+					statusFilters: [],
+					sorter: { field: 'requestedOn', order: 'descend' },
+				};
 			});
 
 			And('the sharer has listings with 4 reservation requests', () => {
@@ -87,9 +101,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				},
 			);
 
-			Then('4 reservation requests should be returned', () => {
+			Then('4 listing requests should be returned in a page', () => {
 				expect(result).toBeDefined();
-				expect(result.length).toBe(4);
+				expect(result.items.length).toBe(4);
+				expect(result.total).toBe(4);
 			});
 		},
 	);
@@ -98,7 +113,14 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Retrieving requests for sharer with no listings or requests',
 		({ Given, And, When, Then }) => {
 			Given('a valid sharer ID "user-456"', () => {
-				command = { sharerId: 'user-456' };
+				command = {
+					sharerId: 'user-456',
+					page: 1,
+					pageSize: 10,
+					searchText: '',
+					statusFilters: [],
+					sorter: { field: 'requestedOn', order: 'descend' },
+				};
 			});
 
 			And('the sharer has no reservation requests', () => {
@@ -118,9 +140,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				},
 			);
 
-			Then('an empty array should be returned', () => {
+			Then('an empty page should be returned', () => {
 				expect(result).toBeDefined();
-				expect(result.length).toBe(0);
+				expect(result.items.length).toBe(0);
+				expect(result.total).toBe(0);
 			});
 		},
 	);
