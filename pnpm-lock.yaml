@@ -472,9 +472,6 @@ importers:
       jose:
         specifier: ^5.9.6
         version: 5.10.0
-      qs:
-        specifier: '>=6.14.1'
-        version: 6.14.1
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -506,9 +503,6 @@ importers:
       jsonwebtoken:
         specifier: ^9.0.3
         version: 9.0.3
-      qs:
-        specifier: '>=6.14.1'
-        version: 6.14.1
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
