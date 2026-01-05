@@ -85,7 +85,7 @@ export const ListingAppealRequestSchema = new Schema<
 	appealRequestOptions,
 );
 
-export const ListingAppealRequestModelName: string = 'listing';
+export const ListingAppealRequestModelName: string = 'listing-appeal-request';
 
 /**
  * Factory function to create ListingAppealRequest discriminator model.
