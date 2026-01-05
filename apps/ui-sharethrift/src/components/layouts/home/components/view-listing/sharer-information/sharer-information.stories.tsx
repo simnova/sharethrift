@@ -1,14 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent } from 'storybook/test';
 import { SharerInformation } from './sharer-information.tsx';
-import {
-	withMockApolloClient,
-	withMockRouter,
-} from '../../../../../../test-utils/storybook-decorators.tsx';
-import {
-	CreateConversationDocument,
-	HomeConversationListContainerConversationsByUserDocument,
-} from '../../../../../../generated.tsx';
 
 const mockSharer = {
 	id: 'user-1',
@@ -21,50 +13,16 @@ const meta: Meta<typeof SharerInformation> = {
 	component: SharerInformation,
 	parameters: {
 		layout: 'padded',
-		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: CreateConversationDocument,
-						variables: {
-							input: {
-								listingId: '1',
-								sharerId: 'user-1',
-								reserverId: 'user-2',
-							},
-						},
-					},
-					result: {
-						data: {
-							createConversation: {
-								__typename: 'ConversationMutationResult',
-								status: { success: true, errorMessage: null },
-								conversation: { __typename: 'Conversation', id: 'conv-1' },
-							},
-						},
-					},
-				},
-				{
-					request: {
-						query: HomeConversationListContainerConversationsByUserDocument,
-						variables: { userId: 'user-2' },
-					},
-					result: {
-						data: {
-							conversationsByUser: [],
-						},
-					},
-				},
-			],
-		},
 	},
-	decorators: [withMockApolloClient, withMockRouter('/listing/1')],
 	args: {
 		sharer: mockSharer,
 		listingId: '1',
 		isOwner: false,
 		sharedTimeAgo: '2 days ago',
 		currentUserId: 'user-2',
+		isCreating: false,
+		isMobile: false,
+		onMessageSharer: () => undefined,
 	},
 };
 
@@ -125,52 +83,10 @@ export const ClickMessageButton: Story = {
 	},
 };
 
-export const MessageButtonWithError: Story = {
-	parameters: {
-		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: CreateConversationDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							createConversation: {
-								__typename: 'ConversationMutationResult',
-								status: { success: false, errorMessage: 'Failed to create' },
-								conversation: null,
-							},
-						},
-					},
-				},
-				{
-					request: {
-						query: HomeConversationListContainerConversationsByUserDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							conversationsByUser: [],
-						},
-					},
-				},
-			],
-		},
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvasElement).toBeTruthy();
-		const messageButton = canvas.queryByRole('button', { name: /Message/i });
-		if (messageButton) {
-			await userEvent.click(messageButton);
-		}
-	},
-};
-
 export const MobileView: Story = {
+	args: {
+		isMobile: true,
+	},
 	parameters: {
 		viewport: {
 			defaultViewport: 'mobile1',
