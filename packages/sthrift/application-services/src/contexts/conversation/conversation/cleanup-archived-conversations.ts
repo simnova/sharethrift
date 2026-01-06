@@ -1,7 +1,13 @@
 import type { DataSources } from '@sthrift/persistence';
+import { Domain } from '@sthrift/domain';
 import { trace, SpanStatusCode } from '@opentelemetry/api';
 
 const tracer = trace.getTracer('conversation:cleanup');
+
+const ARCHIVED_LISTING_STATES = [
+	Domain.Contexts.Listing.ItemListing.ValueObjects.ListingStateEnum.Expired,
+	Domain.Contexts.Listing.ItemListing.ValueObjects.ListingStateEnum.Cancelled,
+] as const;
 
 export interface CleanupResult {
 	processedCount: number;
@@ -27,7 +33,7 @@ export const processConversationsForArchivedListings = (
 				try {
 					const archivedListings =
 						await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getByStates(
-							['Expired', 'Cancelled'],
+							ARCHIVED_LISTING_STATES,
 						);
 
 					span.setAttribute('archivedListingsCount', archivedListings.length);
