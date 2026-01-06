@@ -7,11 +7,6 @@ import {
 	queryByUser,
 } from './query-by-user.ts';
 import {
-	type ScheduleDeletionByListingCommand,
-	type ScheduleDeletionResult,
-	scheduleDeletionByListing,
-} from './schedule-deletion-by-listing.ts';
-import {
 	type CleanupResult,
 	processConversationsForArchivedListings,
 } from './cleanup-archived-conversations.ts';
@@ -28,9 +23,6 @@ export interface ConversationApplicationService {
 	) => Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	>;
-	scheduleDeletionByListing: (
-		command: ScheduleDeletionByListingCommand,
-	) => Promise<ScheduleDeletionResult>;
 	processConversationsForArchivedListings: () => Promise<CleanupResult>;
 }
 
@@ -41,7 +33,6 @@ export const Conversation = (
 		create: create(dataSources),
 		queryById: queryById(dataSources),
 		queryByUser: queryByUser(dataSources),
-		scheduleDeletionByListing: scheduleDeletionByListing(dataSources),
 		processConversationsForArchivedListings:
 			processConversationsForArchivedListings(dataSources),
 	};
