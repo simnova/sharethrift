@@ -113,8 +113,8 @@ Although Shared Key authorization requires access to the storage account key, th
 - After upload, notifies the backend to trigger malware scanning and persist upload metadata.
 
 **Backend Services:**
-- Server-signed request headers generation:
-    - The backend handles server-signed request headers generation and validation for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage using carefully permissioned, server-signed request headers. 
+- Server-signed request header generation:
+    - The backend handles generation and validation of server-signed request headers for Azure Blob Storage uploads, ensuring secure and controlled access for file uploads. There are different mutations for PDF and image files. The backend service encapsulates all business logic enforcing file upload restrictions and security requirements before enabling clients to upload files directly to Azure Blob Storage using carefully permissioned, server-signed request headers. 
 - Post-Upload Malware Handling:
     - The backend polls the blob for the Microsoft Defender for Storage scan result tag: `No threats found` or `Malicious`.
         - `No threats found` → retain the blob.
