@@ -8,9 +8,6 @@ export default mergeConfig(
 		test: {
 			include: ['src/**/*.test.ts'],
 			retry: 0,
-			coverage: {
-				exclude: ['**/index.ts'],
-			},
 		},
 	}),
 );
