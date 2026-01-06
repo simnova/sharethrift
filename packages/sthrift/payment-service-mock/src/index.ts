@@ -29,7 +29,7 @@ export class PaymentServiceMock
 
 	constructor(mockBaseUrl?: string) {
 		this.mockBaseUrl =
-			mockBaseUrl ?? process.env['PAYMENT_MOCK_URL'] ?? 'http://localhost:3001';
+			mockBaseUrl ?? process.env['PAYMENT_MOCK_URL'] ?? 'https://mock-payment.sharethrift.localhost:3001';
 	}
 
 	public startUp(): Promise<
