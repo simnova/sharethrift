@@ -5,13 +5,14 @@ default:
   paths:
     - tests/acceptance/features/**/*.feature
 
-  # Step definitions location - Serenity step definitions (not vitest-cucumber)
+  # Step definitions location - Cucumber step definitions 
+  # Note: Serenity.js integration requires implementing Screenplay pattern with actors/tasks
+  # For now using standard Cucumber with plans to add full Serenity integration later
   require:
     - tests/acceptance/step-definitions/**/*.steps.ts
 
-  # Serenity reporters - generates JSON for Serenity BDD reports
+  # Standard Cucumber reporters
   format:
-    - '@serenity-js/cucumber'
     - '@cucumber/pretty-formatter'
     - json:target/site/serenity/cucumber-report.json
     - html:target/site/serenity/cucumber-report.html
