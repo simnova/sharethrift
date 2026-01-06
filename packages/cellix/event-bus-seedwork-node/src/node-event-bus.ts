@@ -16,23 +16,31 @@ class BroadCaster {
 		this.eventEmitter = new EventEmitter();
 	}
 
-	public broadcast(event: string, data: unknown): void {
+	public async broadcast(event: string, data: unknown): Promise<void> {
 		// Collect all listeners for the event
 		const listeners = this.eventEmitter.listeners(event) as Array<
 			(data: unknown) => Promise<void> | void
 		>;
-		// Fire and forget for each listener
+		// Execute each listener sequentially
 		for (const listener of listeners) {
-			void listener(data);
+			try {
+				await listener(data);
+			} catch (err) {
+				console.error('Listener error:', err);
+			}
 		}
 	}
 	public on(
 		event: string,
 		listener: (rawPayload: unknown) => Promise<void> | void,
 	) {
-		this.eventEmitter.on(event, (data) => {
-			// Call the listener and ignore any returned Promise
-			void listener(data);
+		this.eventEmitter.on(event, async (data) => {
+			// Call the listener and handle any errors
+			try {
+				await listener(data);
+			} catch (err) {
+				console.error('Listener error:', err);
+			}
 		});
 	}
 
@@ -60,7 +68,7 @@ class NodeEventBusImpl implements DomainSeedwork.EventBus {
 	}
 
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
-	async dispatch<T extends DomainSeedwork.DomainEvent>(
+	dispatch<T extends DomainSeedwork.DomainEvent>(
 		event: new (aggregateId: string) => T,
 		data: unknown,
 	): Promise<void> {
@@ -72,31 +80,34 @@ class NodeEventBusImpl implements DomainSeedwork.EventBus {
 		api.propagation.inject(api.context.active(), contextObject);
 
 		const tracer = trace.getTracer('PG:data-access');
-		await tracer.startActiveSpan('node-event-bus.publish', async (span) => {
-			span.setAttribute('message.system', 'node-event-bus');
-			span.setAttribute('messaging.operation', 'publish');
-			span.setAttribute('messaging.destination.name', event.name);
-			span.addEvent(
-				'dispatching node event',
-				{ name: event.name, data: JSON.stringify(data) },
-				new Date(),
-			);
+		return new Promise<void>((resolve) => {
+			tracer.startActiveSpan('node-event-bus.publish', async (span) => {
+				span.setAttribute('message.system', 'node-event-bus');
+				span.setAttribute('messaging.operation', 'publish');
+				span.setAttribute('messaging.destination.name', event.name);
+				span.addEvent(
+					'dispatching node event',
+					{ name: event.name, data: JSON.stringify(data) },
+					new Date(),
+				);
 
-			try {
-				await this.broadcaster.broadcast(event.name, {
-					data: JSON.stringify(data),
-					context: contextObject,
-				});
-				span.setStatus({
-					code: SpanStatusCode.OK,
-					message: `NodeEventBus: Executed ${event.name}`,
-				});
-			} catch (err) {
-				span.setStatus({ code: SpanStatusCode.ERROR });
-				span.recordException(err as Error);
-			} finally {
-				span.end();
-			}
+				try {
+					await this.broadcaster.broadcast(event.name, {
+						data: JSON.stringify(data),
+						context: contextObject,
+					});
+					span.setStatus({
+						code: SpanStatusCode.OK,
+						message: `NodeEventBus: Executed ${event.name}`,
+					});
+				} catch (err) {
+					span.setStatus({ code: SpanStatusCode.ERROR });
+					span.recordException(err as Error);
+				} finally {
+					span.end();
+					resolve();
+				}
+			});
 		});
 	}
 

@@ -25,7 +25,11 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		Given('a valid passport with appeal request permissions', () => {
 			// Mock passport with appeal request visa
 			visa = {
-				determineIf: (check: (permissions: { canUpdateAppealRequestState: boolean }) => boolean) => {
+				determineIf: (
+					check: (permissions: {
+						canUpdateAppealRequestState: boolean;
+					}) => boolean,
+				) => {
 					return check({ canUpdateAppealRequestState: hasPermission });
 				},
 			} as AppealRequestVisa;
@@ -46,66 +50,69 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		hasPermission = true;
 	});
 
-	Scenario('Creating a new UserAppealRequest instance', ({ When, Then, And }) => {
-		let userId: string;
-		let reason: string;
-		let blockerId: string;
+	Scenario(
+		'Creating a new UserAppealRequest instance',
+		({ When, Then, And }) => {
+			let userId: string;
+			let reason: string;
+			let blockerId: string;
 
-		When(
-			'I create a new UserAppealRequest with userId "user123", reason "This user was incorrectly blocked", and blockerId "blocker789"',
-			() => {
-				userId = 'user123';
-				reason = 'This user was incorrectly blocked';
-				blockerId = 'blocker789';
+			When(
+				'I create a new UserAppealRequest with userId "user123", reason "This user was incorrectly blocked", and blockerId "blocker789"',
+				() => {
+					userId = 'user123';
+					reason = 'This user was incorrectly blocked';
+					blockerId = 'blocker789';
 
-				const props: UserAppealRequestProps = {
-					id: 'appeal1',
-     // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-					user: { id: userId } as any,
-					reason: '',
-					state: '',
-					type: '',
-     // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-					blocker: { id: blockerId } as any,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					schemaVersion: '1.0',
-     // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-					loadUser: async () => ({ id: userId } as any),
-     // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-					loadBlocker: async () => ({ id: blockerId } as any),
-				};
+					const props: UserAppealRequestProps = {
+						id: 'appeal1',
+						// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+						user: { id: userId } as any,
+						reason: '',
+						state: '',
+						type: '',
+						// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+						blocker: { id: blockerId } as any,
+						createdAt: new Date(),
+						updatedAt: new Date(),
+						schemaVersion: '1.0',
+						// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+						loadUser: async () => ({ id: userId }) as any,
+						// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+						loadBlocker: async () => ({ id: blockerId }) as any,
+					};
 
-				appealRequest = UserAppealRequest.getNewInstance(
-					props,
-					passport,
-					userId,
-					reason,
-					blockerId,
-				);
-			},
-		);
+					appealRequest = UserAppealRequest.getNewInstance(
+						props,
+						passport,
+						userId,
+						reason,
+						blockerId,
+					);
+				},
+			);
 
-		Then('the user id should be "user123"', () => {
-			expect(appealRequest.user.id).toBe('user123');
-		});
+			Then('the user id should be "user123"', () => {
+				expect(appealRequest.user.id).toBe('user123');
+			});
 
-		And('the reason should be "This user was incorrectly blocked"', () => {
-			expect(appealRequest.reason).toBe('This user was incorrectly blocked');
-		});
+			And('the reason should be "This user was incorrectly blocked"', () => {
+				expect(appealRequest.reason).toBe('This user was incorrectly blocked');
+			});
 
-		And('the state should be "requested"', () => {
-			expect(appealRequest.state).toBe('requested');
-		});
+			And('the state should be "requested"', () => {
+				expect(appealRequest.state).toBe('requested');
+			});
 
-		And('the type should be "user"', () => {
-			expect(appealRequest.type).toBe('user');
-		});
+			And('the type should be "user"', () => {
+				expect(appealRequest.type).toBe('user');
+			});
 
-		And('the blocker id should be "blocker789"', () => {
-			expect(appealRequest.blocker.id).toBe('blocker789');
-		});
-	});
+			And('the blocker id should be "blocker789"', () => {
+				expect(appealRequest.blocker.id).toBe('blocker789');
+			});
+		},
+	);
 
 	Scenario('Getting the reason', ({ When, Then }) => {
 		let reasonValue: string;
@@ -113,20 +120,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I get the reason from the appeal request', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason for user appeal',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -146,20 +153,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I set the reason to "Updated reason for user appeal"', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Original reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -174,27 +181,30 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 	Scenario('Setting the reason without permission', ({ Given, When, Then }) => {
 		let setReasonError: () => void;
 
-		Given('the passport does not have permission to update appeal request state', () => {
-			hasPermission = false;
-		});
+		Given(
+			'the passport does not have permission to update appeal request state',
+			() => {
+				hasPermission = false;
+			},
+		);
 
 		When('I try to set the reason to "Unauthorized change"', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Original reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -207,7 +217,9 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 			'a permission error should be thrown with message "You do not have permission to update the reason"',
 			() => {
 				expect(setReasonError).toThrow(DomainSeedwork.PermissionError);
-				expect(setReasonError).toThrow('You do not have permission to update the reason');
+				expect(setReasonError).toThrow(
+					'You do not have permission to update the reason',
+				);
 			},
 		);
 	});
@@ -218,20 +230,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I get the state from the appeal request', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -251,20 +263,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I set the state to "accepted"', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -279,27 +291,30 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 	Scenario('Setting the state without permission', ({ Given, When, Then }) => {
 		let setStateError: () => void;
 
-		Given('the passport does not have permission to update appeal request state', () => {
-			hasPermission = false;
-		});
+		Given(
+			'the passport does not have permission to update appeal request state',
+			() => {
+				hasPermission = false;
+			},
+		);
 
 		When('I try to set the state to "accepted"', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -312,7 +327,9 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 			'a permission error should be thrown with message "You do not have permission to update the state"',
 			() => {
 				expect(setStateError).toThrow(DomainSeedwork.PermissionError);
-				expect(setStateError).toThrow('You do not have permission to update the state');
+				expect(setStateError).toThrow(
+					'You do not have permission to update the state',
+				);
 			},
 		);
 	});
@@ -324,20 +341,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I get the user from the appeal request', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -357,20 +374,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I get the blocker from the appeal request', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -389,20 +406,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I get the type from the appeal request', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -420,20 +437,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I get the createdAt from the appeal request', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -451,20 +468,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I get the updatedAt from the appeal request', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -482,20 +499,20 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 		When('I get the schemaVersion from the appeal request', () => {
 			const props: UserAppealRequestProps = {
 				id: 'appeal1',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				user: { id: 'user1' } as any,
 				reason: 'Test reason',
 				state: 'requested',
 				type: 'user',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
 				blocker: { id: 'blocker1' } as any,
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				schemaVersion: '1.0',
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadUser: async () => ({ id: 'user1' } as any),
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock data
-				loadBlocker: async () => ({ id: 'blocker1' } as any),
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
 			};
 
 			appealRequest = new UserAppealRequest(props, passport);
@@ -506,6 +523,74 @@ test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
 			expect(schemaVersionValue).toBe('1.0');
 			expect(typeof schemaVersionValue).toBe('string');
 			expect(schemaVersionValue.length).toBeGreaterThan(0);
+		});
+	});
+
+	Scenario('Loading the user asynchronously', ({ When, Then }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let loadedUser: any;
+
+		When('I call loadUser on the user appeal request', async () => {
+			const props: UserAppealRequestProps = {
+				id: 'appeal1',
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				user: { id: 'user1' } as any,
+				reason: 'Test reason',
+				state: 'requested',
+				type: 'user',
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				blocker: { id: 'blocker1' } as any,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				schemaVersion: '1.0',
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1', firstName: 'John' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1' }) as any,
+			};
+
+			appealRequest = new UserAppealRequest(props, passport);
+			loadedUser = await appealRequest.loadUser();
+		});
+
+		Then('the loaded user should be a PersonalUser entity', () => {
+			expect(loadedUser).toBeDefined();
+			expect(loadedUser.id).toBe('user1');
+			expect(loadedUser.firstName).toBe('John');
+		});
+	});
+
+	Scenario('Loading the blocker asynchronously', ({ When, Then }) => {
+		// biome-ignore lint/suspicious/noExplicitAny: Test variable
+		let loadedBlocker: any;
+
+		When('I call loadBlocker on the user appeal request', async () => {
+			const props: UserAppealRequestProps = {
+				id: 'appeal1',
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				user: { id: 'user1' } as any,
+				reason: 'Test reason',
+				state: 'requested',
+				type: 'user',
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				blocker: { id: 'blocker1' } as any,
+				createdAt: new Date(),
+				updatedAt: new Date(),
+				schemaVersion: '1.0',
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadUser: async () => ({ id: 'user1' }) as any,
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock data
+				loadBlocker: async () => ({ id: 'blocker1', firstName: 'Jane' }) as any,
+			};
+
+			appealRequest = new UserAppealRequest(props, passport);
+			loadedBlocker = await appealRequest.loadBlocker();
+		});
+
+		Then('the loaded blocker should be a PersonalUser entity', () => {
+			expect(loadedBlocker).toBeDefined();
+			expect(loadedBlocker.id).toBe('blocker1');
+			expect(loadedBlocker.firstName).toBe('Jane');
 		});
 	});
 });

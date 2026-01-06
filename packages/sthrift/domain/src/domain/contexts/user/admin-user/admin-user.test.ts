@@ -152,7 +152,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Creating a new admin user instance', ({ When, Then, And }) => {
-		When('I create a new AdminUser aggregate using getNewInstance', () => {
+		const createNewUser = () => {
 			newUser = AdminUser.getNewInstance(
 				makeBaseProps(),
 				passport,
@@ -161,44 +161,55 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'Admin',
 				'User',
 			);
-		});
-		Then('it should have correct email "admin@example.com"', () => {
+		};
+		const checkEmail = () =>
 			expect(newUser.account.email).toBe('admin@example.com');
-		});
-		And('username should be "adminuser"', () => {
+		const checkUsername = () =>
 			expect(newUser.account.username).toBe('adminuser');
-		});
-		And('firstName should be "Admin"', () => {
+		const checkFirstName = () =>
 			expect(newUser.account.profile.firstName).toBe('Admin');
-		});
-		And('lastName should be "User"', () => {
+		const checkLastName = () =>
 			expect(newUser.account.profile.lastName).toBe('User');
-		});
-		And('isNew should be false after creation', () => {
-			expect(newUser.isNew).toBe(false);
-		});
-		And('it should expose a valid AdminUserAccount instance', () => {
+		const checkIsNew = () => expect(newUser.isNew).toBe(false);
+		const checkAccountInstance = () => {
 			expect(newUser.account).toBeDefined();
 			expect(newUser.account.email).toBe('admin@example.com');
-		});
+		};
+
+		When(
+			'I create a new AdminUser aggregate using getNewInstance',
+			createNewUser,
+		);
+		Then('it should have correct email "admin@example.com"', checkEmail);
+		And('username should be "adminuser"', checkUsername);
+		And('firstName should be "Admin"', checkFirstName);
+		And('lastName should be "User"', checkLastName);
+		And('isNew should be false after creation', checkIsNew);
+		And(
+			'it should expose a valid AdminUserAccount instance',
+			checkAccountInstance,
+		);
 	});
 
 	Scenario(
 		'Updating userType with valid permission',
 		({ Given, And, When, Then }) => {
-			Given('an existing AdminUser aggregate', () => {
+			const setupUser = () => {
 				passport = makePassport(true, true);
 				user = new AdminUser(makeBaseProps(), passport);
-			});
-			And('the user has permission to edit their account', () => {
+			};
+			const checkPermission = () => {
 				// Already handled in makePassport with isEditingOwnAccount: true
-			});
-			When('I set userType to "SuperAdmin"', () => {
+			};
+			const updateUserType = () => {
 				user.userType = 'SuperAdmin';
-			});
-			Then('userType should update successfully', () => {
-				expect(user.userType).toBe('SuperAdmin');
-			});
+			};
+			const verifyUpdate = () => expect(user.userType).toBe('SuperAdmin');
+
+			Given('an existing AdminUser aggregate', setupUser);
+			And('the user has permission to edit their account', checkPermission);
+			When('I set userType to "SuperAdmin"', updateUserType);
+			Then('userType should update successfully', verifyUpdate);
 		},
 	);
 
@@ -206,47 +217,60 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Blocking an admin user without permission',
 		({ Given, And, When, Then }) => {
 			let blockUserWithoutPermission: () => void;
-			Given('an existing AdminUser aggregate', () => {
+			const setupUserWithoutPermission = () => {
 				// Create user with no block permission
 				passport = makePassport(false, false);
 				user = new AdminUser(makeBaseProps(), passport);
-			});
-			And('the user lacks permission to block users', () => {
+			};
+			const checkLackOfPermission = () => {
 				// Already handled above with canBlockUsers: false
-			});
-			When('I attempt to set isBlocked to true', () => {
+			};
+			const attemptBlock = () => {
 				blockUserWithoutPermission = () => {
 					user.isBlocked = true;
 				};
-			});
-			Then('it should throw a PermissionError', () => {
+			};
+			const verifyPermissionError = () => {
 				expect(blockUserWithoutPermission).toThrow(
 					DomainSeedwork.PermissionError,
 				);
 				expect(blockUserWithoutPermission).throws(
 					'Unauthorized: Only admins with canBlockUsers permission can block/unblock admin users',
 				);
-			});
+			};
+
+			Given('an existing AdminUser aggregate', setupUserWithoutPermission);
+			And('the user lacks permission to block users', checkLackOfPermission);
+			When('I attempt to set isBlocked to true', attemptBlock);
+			Then('it should throw a PermissionError', verifyPermissionError);
 		},
 	);
 
 	Scenario(
 		'Changing admin user role with permission',
 		({ Given, And, When, Then }) => {
-			Given('an existing AdminUser aggregate', () => {
+			const setupUserWithRole = () => {
 				passport = makePassport(true, true);
 				user = new AdminUser(makeBaseProps(), passport);
-			});
-			And('the user has permission to manage user roles', () => {
+			};
+			const checkManageRolePermission = () => {
 				// Already handled in makePassport with canManageUserRoles: true
-			});
-			When('I access the role property', () => {
+			};
+			const accessRoleProperty = () => {
 				// Just accessing the property
-			});
-			Then('it should return the current role', () => {
+			};
+			const verifyRole = () => {
 				expect(user.role).toBeDefined();
 				expect(user.role.id).toBe('role-1');
-			});
+			};
+
+			Given('an existing AdminUser aggregate', setupUserWithRole);
+			And(
+				'the user has permission to manage user roles',
+				checkManageRolePermission,
+			);
+			When('I access the role property', accessRoleProperty);
+			Then('it should return the current role', verifyRole);
 		},
 	);
 
@@ -254,88 +278,109 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Attempting to change role without permission',
 		({ Given, And, When, Then }) => {
 			let changeRoleWithoutPermission: () => void;
-			Given('an existing AdminUser aggregate', () => {
+			const setupUserNoRolePermission = () => {
 				// Create user with no role management permission
 				passport = makePassport(false, false);
 				baseProps = makeBaseProps();
 				user = new AdminUser(baseProps, passport);
-			});
-			And('the user lacks permission to manage user roles', () => {
+			};
+			const checkLackOfRolePermission = () => {
 				// Already handled above with canManageUserRoles: false
-			});
-			When('I attempt to change the role property', () => {
+			};
+			const attemptRoleChange = () => {
 				changeRoleWithoutPermission = () => {
 					// Access private setter through type assertion
 					(user as { role: unknown }).role = makeRole();
 				};
-			});
-			Then('it should throw a PermissionError', () => {
+			};
+			const verifyRolePermissionError = () => {
 				expect(changeRoleWithoutPermission).toThrow(
 					DomainSeedwork.PermissionError,
 				);
 				expect(changeRoleWithoutPermission).throws(
 					'Unauthorized: Only admins with canManageUserRoles permission can change user roles',
 				);
-			});
+			};
+
+			Given('an existing AdminUser aggregate', setupUserNoRolePermission);
+			And(
+				'the user lacks permission to manage user roles',
+				checkLackOfRolePermission,
+			);
+			When('I attempt to change the role property', attemptRoleChange);
+			Then('it should throw a PermissionError', verifyRolePermissionError);
 		},
 	);
 
 	Scenario(
 		'Blocking an admin user with permission',
 		({ Given, And, When, Then }) => {
-			Given('an existing AdminUser aggregate', () => {
+			const setupUserWithBlockPermission = () => {
 				passport = makePassport(true, true);
 				user = new AdminUser(makeBaseProps(), passport);
-			});
-			And('the user has permission to block users', () => {
+			};
+			const checkBlockPermission = () => {
 				// Already handled in makePassport with canBlockUsers: true
-			});
-			When('I set isBlocked to true', () => {
+			};
+			const blockUser = () => {
 				user.isBlocked = true;
-			});
-			Then('isBlocked should be true', () => {
-				expect(user.isBlocked).toBe(true);
-			});
+			};
+			const verifyBlocked = () => expect(user.isBlocked).toBe(true);
+
+			Given('an existing AdminUser aggregate', setupUserWithBlockPermission);
+			And('the user has permission to block users', checkBlockPermission);
+			When('I set isBlocked to true', blockUser);
+			Then('isBlocked should be true', verifyBlocked);
 		},
 	);
 
 	Scenario(
 		'Unblocking an admin user with permission',
 		({ Given, And, When, Then }) => {
-			Given('an existing AdminUser aggregate that is blocked', () => {
+			const setupBlockedUser = () => {
 				passport = makePassport(true, true);
 				user = new AdminUser(makeBaseProps({ isBlocked: true }), passport);
-			});
-			And('the user has permission to block users', () => {
+			};
+			const checkUnblockPermission = () => {
 				// Already handled in makePassport with canBlockUsers: true
-			});
-			When('I set isBlocked to false', () => {
+			};
+			const unblockUser = () => {
 				user.isBlocked = false;
-			});
-			Then('isBlocked should be false', () => {
-				expect(user.isBlocked).toBe(false);
-			});
+			};
+			const verifyUnblocked = () => expect(user.isBlocked).toBe(false);
+
+			Given(
+				'an existing AdminUser aggregate that is blocked',
+				setupBlockedUser,
+			);
+			And('the user has permission to block users', checkUnblockPermission);
+			When('I set isBlocked to false', unblockUser);
+			Then('isBlocked should be false', verifyUnblocked);
 		},
 	);
 
 	Scenario('Loading role asynchronously', ({ Given, When, Then }) => {
 		let loadedRole: unknown;
-		Given('an existing AdminUser aggregate', () => {
+		const setupUserForRoleLoad = () => {
 			passport = makePassport(true, true);
 			user = new AdminUser(makeBaseProps(), passport);
-		});
-		When('I call loadRole', async () => {
+		};
+		const callLoadRole = async () => {
 			loadedRole = await user.loadRole();
-		});
-		Then('it should return the role asynchronously', () => {
+		};
+		const verifyLoadedRole = () => {
 			expect(loadedRole).toBeDefined();
 			expect((loadedRole as { id: string }).id).toBe('role-1');
-		});
+		};
+
+		Given('an existing AdminUser aggregate', setupUserForRoleLoad);
+		When('I call loadRole', callLoadRole);
+		Then('it should return the role asynchronously', verifyLoadedRole);
 	});
 
 	Scenario('Attempting to set role to null', ({ Given, When, Then }) => {
 		let setRoleToNull: () => void;
-		Given('a new AdminUser aggregate', () => {
+		const createNewAdminUser = () => {
 			passport = makePassport(true, true);
 			user = AdminUser.getNewInstance(
 				makeBaseProps(),
@@ -345,24 +390,28 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'Admin',
 				'User',
 			);
-		});
-		When('I attempt to set role to null', () => {
+		};
+		const attemptSetRoleNull = () => {
 			setRoleToNull = () => {
 				(user as { role: unknown }).role = null;
 			};
-		});
+		};
+		const verifyNullRoleError = () => {
+			expect(setRoleToNull).toThrow(DomainSeedwork.PermissionError);
+			expect(setRoleToNull).throws('role cannot be null or undefined');
+		};
+
+		Given('a new AdminUser aggregate', createNewAdminUser);
+		When('I attempt to set role to null', attemptSetRoleNull);
 		Then(
 			'it should throw a PermissionError with message "role cannot be null or undefined"',
-			() => {
-				expect(setRoleToNull).toThrow(DomainSeedwork.PermissionError);
-				expect(setRoleToNull).throws('role cannot be null or undefined');
-			},
+			verifyNullRoleError,
 		);
 	});
 
 	Scenario('Attempting to set role to undefined', ({ Given, When, Then }) => {
 		let setRoleToUndefined: () => void;
-		Given('a new AdminUser aggregate', () => {
+		const createNewAdminUserForUndefined = () => {
 			passport = makePassport(true, true);
 			user = AdminUser.getNewInstance(
 				makeBaseProps(),
@@ -372,46 +421,107 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'Admin',
 				'User',
 			);
-		});
-		When('I attempt to set role to undefined', () => {
+		};
+		const attemptSetRoleUndefined = () => {
 			setRoleToUndefined = () => {
 				(user as { role: unknown }).role = undefined;
 			};
-		});
+		};
+		const verifyUndefinedRoleError = () => {
+			expect(setRoleToUndefined).toThrow(DomainSeedwork.PermissionError);
+			expect(setRoleToUndefined).throws('role cannot be null or undefined');
+		};
+
+		Given('a new AdminUser aggregate', createNewAdminUserForUndefined);
+		When('I attempt to set role to undefined', attemptSetRoleUndefined);
 		Then(
 			'it should throw a PermissionError with message "role cannot be null or undefined"',
-			() => {
-				expect(setRoleToUndefined).toThrow(DomainSeedwork.PermissionError);
-				expect(setRoleToUndefined).throws('role cannot be null or undefined');
-			},
+			verifyUndefinedRoleError,
 		);
 	});
 
 	Scenario('Getting createdAt from admin user', ({ Given, When, Then }) => {
-		Given('an existing AdminUser aggregate', () => {
+		const setupUserForCreatedAt = () => {
 			passport = makePassport(true, true);
 			user = new AdminUser(makeBaseProps(), passport);
-		});
-		When('I access the createdAt property', () => {
+		};
+		const accessCreatedAt = () => {
 			// Access happens in Then
-		});
-		Then('it should return a valid date', () => {
+		};
+		const verifyCreatedAt = () => {
 			expect(user.createdAt).toBeInstanceOf(Date);
 			expect(user.createdAt.getTime()).toBeGreaterThan(0);
-		});
+		};
+
+		Given('an existing AdminUser aggregate', setupUserForCreatedAt);
+		When('I access the createdAt property', accessCreatedAt);
+		Then('it should return a valid date', verifyCreatedAt);
 	});
 
 	Scenario('Getting updatedAt from admin user', ({ Given, When, Then }) => {
-		Given('an existing AdminUser aggregate', () => {
+		const setupUserForUpdatedAt = () => {
 			passport = makePassport(true, true);
 			user = new AdminUser(makeBaseProps(), passport);
-		});
-		When('I access the updatedAt property', () => {
+		};
+		const accessUpdatedAt = () => {
 			// Access happens in Then
-		});
-		Then('it should return a valid date', () => {
+		};
+		const verifyUpdatedAt = () => {
 			expect(user.updatedAt).toBeInstanceOf(Date);
 			expect(user.updatedAt.getTime()).toBeGreaterThan(0);
-		});
+		};
+
+		Given('an existing AdminUser aggregate', setupUserForUpdatedAt);
+		When('I access the updatedAt property', accessUpdatedAt);
+		Then('it should return a valid date', verifyUpdatedAt);
+	});
+
+	Scenario('Updating userType without permission', ({ Given, When, Then }) => {
+		let updateUserTypeWithoutPermission: () => void;
+		const setupUserNoEditPermission = () => {
+			// Create a passport where isEditingOwnAccount is false
+			passport = vi.mocked({
+				user: {
+					forAdminUser: vi.fn(() => ({
+						determineIf: (
+							fn: (p: {
+								isEditingOwnAccount: boolean;
+								canManageUserRoles: boolean;
+								canBlockUsers: boolean;
+							}) => boolean,
+						) =>
+							fn({
+								isEditingOwnAccount: false,
+								canManageUserRoles: false,
+								canBlockUsers: false,
+							}),
+					})),
+				},
+			} as unknown as Passport);
+			user = new AdminUser(makeBaseProps(), passport);
+		};
+		const attemptUserTypeUpdate = () => {
+			updateUserTypeWithoutPermission = () => {
+				user.userType = 'SuperAdmin';
+			};
+		};
+		const verifyUnauthorizedError = () => {
+			expect(updateUserTypeWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
+			);
+			expect(updateUserTypeWithoutPermission).toThrow(
+				'Unauthorized to modify user',
+			);
+		};
+
+		Given(
+			'an existing AdminUser aggregate without editing permission',
+			setupUserNoEditPermission,
+		);
+		When('I attempt to set userType to "SuperAdmin"', attemptUserTypeUpdate);
+		Then(
+			'it should throw a PermissionError with message "Unauthorized to modify user"',
+			verifyUnauthorizedError,
+		);
 	});
 });

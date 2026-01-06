@@ -47,3 +47,10 @@ And a valid ItemListing document exists in the database
 		Then I should receive a paginated result containing items, total, page, and pageSize
 		And the returned items should match the applied filters and sorting order
 		And each item should include a reservationPeriod field representing the sharing period
+
+	Scenario: Retrieve item listings with default sorting when no sorter provided
+		Given a valid sharer ID
+		And pagination options without a sorter
+		When I call getBySharerIDWithPagination with the sharer ID and options without sorter
+		Then I should receive a paginated result sorted by createdAt descending
+		And the model sort method should be called with default sort

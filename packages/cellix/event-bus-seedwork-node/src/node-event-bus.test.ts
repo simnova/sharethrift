@@ -153,7 +153,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
   Scenario('Handler throws during dispatch', ({ Given, When, Then, And }) => {
     let otel: typeof import('@opentelemetry/api');
     let errorEvent: typeof TestEvent;
-    let spanMock: {
+    let dispatchSpanMock: {
+      setAttribute: ReturnType<typeof vi.fn>;
+      addEvent: ReturnType<typeof vi.fn>;
+      setStatus: ReturnType<typeof vi.fn>;
+      end: ReturnType<typeof vi.fn>;
+      recordException: ReturnType<typeof vi.fn>;
+    };
+    let processSpanMock: {
       setAttribute: ReturnType<typeof vi.fn>;
       addEvent: ReturnType<typeof vi.fn>;
       setStatus: ReturnType<typeof vi.fn>;
@@ -168,19 +175,29 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
       // Patch OpenTelemetry span
       otel = await import('@opentelemetry/api');
-      spanMock = {
+      dispatchSpanMock = {
         setAttribute: vi.fn(),
         addEvent: vi.fn(),
         setStatus: vi.fn(),
         end: vi.fn(),
         recordException: vi.fn(),
       };
+      processSpanMock = {
+        setAttribute: vi.fn(),
+        addEvent: vi.fn(),
+        setStatus: vi.fn(),
+        end: vi.fn(),
+        recordException: vi.fn(),
+      };
+      let spanCallCount = 0;
       vi.spyOn(otel.trace, 'getTracer').mockImplementation((_name?: string, ..._args: unknown[]) => ({
         startActiveSpan: ((_name: string, ...rest: unknown[]) => {
           // Find the function argument (could be 2nd, 3rd, or 4th param)
           // biome-ignore lint:noBannedTypes
           const fn = rest.find(arg => typeof arg === 'function') as Function;
-          return fn(spanMock);
+          // First call is dispatch span, second is process span
+          spanCallCount++;
+          return fn(spanCallCount === 1 ? dispatchSpanMock : processSpanMock);
         }),
         startSpan: vi.fn(),
       }));
@@ -188,14 +205,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
     When('the event is dispatched', async () => {
       await expect(NodeEventBusInstance.dispatch(errorEvent, { test: 'fail' })).resolves.not.toThrow();
     });
-    Then('span.setStatus should be called with ERROR', () => {
-      expect(spanMock.setStatus).toHaveBeenCalledWith(expect.objectContaining({ code: 2 }));
+    Then('span.setStatus should be called with OK', () => {
+      // Since handler errors are caught in broadcast loop, dispatch succeeds
+      expect(dispatchSpanMock.setStatus).toHaveBeenCalledWith(expect.objectContaining({ code: 1 }));
     });
-    And('recordException should be called', () => {
-      expect(spanMock.recordException).toHaveBeenCalled();
+    And('recordException should NOT be called on dispatch span', () => {
+      // Handler errors are logged but not recorded on dispatch span
+      expect(dispatchSpanMock.recordException).not.toHaveBeenCalled();
     });
     And('the span should be ended', () => {
-      expect(spanMock.end).toHaveBeenCalled();
+      expect(dispatchSpanMock.end).toHaveBeenCalled();
     });
     And('the error should NOT be propagated', () => {
       // Already checked by .resolves.not.toThrow()
@@ -340,15 +359,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       NodeEventBusInstance.register(TestEvent, asyncHandler);
     });
     And('the event is dispatched', async () => {
-      const dispatchPromise = NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
-      await Promise.resolve(); // allow microtasks to run
+      await NodeEventBusInstance.dispatch(TestEvent, { test: 'data' });
       expect(handlerStarted).toBe(true);
-      await dispatchPromise;
-      expect(handlerCompleted).toBe(false);
-      await new Promise((resolve) => setTimeout(resolve, 60));
       expect(handlerCompleted).toBe(true);
     });
-    Then('dispatch should resolve before the handler completes', () => {
+    Then('dispatch should wait for the handler to complete', () => {
       // Checked in the And step above
     });
   });
