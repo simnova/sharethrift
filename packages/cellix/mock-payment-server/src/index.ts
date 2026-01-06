@@ -1,4 +1,7 @@
 import express from 'express';
+import https from 'node:https';
+import fs from 'node:fs';
+import path from 'node:path';
 import crypto from 'node:crypto';
 import { generateKeyPair } from 'jose';
 import { exportPKCS8 } from 'jose';
@@ -23,17 +26,17 @@ import type {
 	SubscriptionsListResponse,
 	PaymentInstrumentInfo,
 } from '@cellix/payment-service';
-import path from 'path';
-import { fileURLToPath } from 'url';
+import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.disable('x-powered-by');
-const port = 3001;
+const DEFAULT_PORT = Number(process.env['PORT'] ?? 3001);
+const HOST = 'mock-payment.sharethrift.localhost';
 
-// Enable CORS for all origins (or restrict to 'http://localhost:3000' if needed)
+// Enable CORS for all origins (or restrict to 'https://sharethrift.localhost:3000' if needed)
 app.use((req, res, next) => {
-	res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+	res.header('Access-Control-Allow-Origin', 'https://sharethrift.localhost:3000');
 	res.header(
 		'Access-Control-Allow-Methods',
 		'GET,POST,PUT,PATCH,DELETE,OPTIONS',
@@ -1336,6 +1339,36 @@ app.post(
 	},
 );
 
-app.listen(port, () => {
-	console.log(`Payment Mock Server listening on port ${port}`);
-});
+const startServer = (portToTry: number, attempt = 0): void => {
+	// From dist/src/index.js, go up 5 levels to workspace root
+	// dist/src -> dist -> mock-payment-server -> cellix -> packages -> workspace root
+	const workspaceRoot = path.join(__dirname, '../../../../..');
+	
+	const httpsOptions = {
+		key: fs.readFileSync(
+			path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem'),
+		),
+		cert: fs.readFileSync(
+			path.join(workspaceRoot, '.certs/sharethrift.localhost.pem'),
+		),
+	};
+	
+	const server = https.createServer(httpsOptions, app).listen(portToTry, HOST, () => {
+		console.log(` Mock Payment Server listening on https://${HOST}:${portToTry}`);
+	});
+
+	server.on('error', (error: NodeJS.ErrnoException) => {
+		if (error.code === 'EADDRINUSE' && attempt < 5) {
+			const nextPort = portToTry + 1;
+			console.warn(
+				`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
+			);
+			startServer(nextPort, attempt + 1);
+			return;
+		}
+
+		console.error('Failed to start mock-payment-server', error);
+	});
+};
+
+startServer(DEFAULT_PORT);

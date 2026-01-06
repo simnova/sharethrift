@@ -18,7 +18,7 @@ const __dirname = path.dirname(__filename);
 
 const HTTPS_PORT = 7443;
 const FUNCTIONS_PORT = 7071;
-const HOST = 'api.sharethrift.localhost';
+const HOST = 'data-access.sharethrift.localhost';
 
 const options = {
 	key: fs.readFileSync(path.join(__dirname, '.certs/sharethrift.localhost-key.pem')),
