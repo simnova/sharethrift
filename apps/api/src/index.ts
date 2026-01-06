@@ -110,12 +110,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		{ route: '{communityId}/{role}/{memberId}/{*rest}' },
 		restHandlerCreator,
 	)
-	// Schedule conversation cleanup timer to run daily at 2:00 AM UTC
-	// This ensures conversations for archived listings get scheduled for deletion
-	// even if event-driven scheduling fails
 	.registerAzureFunctionTimerHandler(
 		'conversationCleanup',
-		'0 0 2 * * *', // NCRONTAB: second, minute, hour, day of month, month, day of week
+		'0 0 2 * * *',
 		conversationCleanupHandlerCreator,
 	)
 	.startUp();

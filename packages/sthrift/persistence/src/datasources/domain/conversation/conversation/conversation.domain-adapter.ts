@@ -227,20 +227,10 @@ export class ConversationDomainAdapter
 		return Promise.resolve(this._messages);
 	}
 
-	/**
-	 * Gets the expiration date for this conversation.
-	 * When set, the conversation will be automatically deleted by MongoDB TTL index
-	 * after this date passes.
-	 */
 	get expiresAt(): Date | undefined {
 		return this.doc.expiresAt;
 	}
 
-	/**
-	 * Sets the expiration date for this conversation.
-	 * Should be set to 6 months after the associated listing expires, is cancelled,
-	 * or the related reservation request is completed/closed.
-	 */
 	set expiresAt(value: Date | undefined) {
 		this.doc.expiresAt = value;
 	}

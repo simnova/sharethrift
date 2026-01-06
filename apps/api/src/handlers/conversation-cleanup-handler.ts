@@ -4,18 +4,6 @@ import { trace, SpanStatusCode } from '@opentelemetry/api';
 
 const tracer = trace.getTracer('handler:conversation-cleanup');
 
-/**
- * Timer handler for scheduled conversation cleanup.
- *
- * This handler runs on a schedule to ensure all conversations associated with
- * archived listings (expired, cancelled) have proper expiration dates set.
- * MongoDB TTL indexes will automatically delete the documents when their
- * expiresAt date is reached.
- *
- * Per the data retention strategy:
- * - Conversations are deleted 6 months after the associated listing reaches a terminal state
- * - This handler acts as a fallback mechanism in case event-driven scheduling fails
- */
 export const conversationCleanupHandlerCreator = (
 	applicationServicesFactory: ApplicationServicesFactory,
 ): TimerHandler => {
@@ -40,10 +28,8 @@ export const conversationCleanupHandlerCreator = (
 						);
 					}
 
-					// Get application services with system passport (no auth header needed for timer)
 					const appServices = await applicationServicesFactory.forRequest();
 
-					// Run the cleanup process
 					const result =
 						await appServices.Conversation.Conversation.processConversationsForArchivedListings();
 

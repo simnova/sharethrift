@@ -28,19 +28,9 @@ export interface ConversationApplicationService {
 	) => Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	>;
-	/**
-	 * Schedules all conversations associated with a listing for deletion.
-	 * Per the data retention strategy, conversations are deleted 6 months after
-	 * the associated listing or reservation request reaches a terminal state.
-	 */
 	scheduleDeletionByListing: (
 		command: ScheduleDeletionByListingCommand,
 	) => Promise<ScheduleDeletionResult>;
-	/**
-	 * Processes archived listings to ensure all their conversations have
-	 * proper expiration dates set. This is a fallback mechanism to ensure
-	 * conversations get scheduled for deletion even if event-driven scheduling fails.
-	 */
 	processConversationsForArchivedListings: () => Promise<CleanupResult>;
 }
 

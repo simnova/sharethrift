@@ -41,12 +41,6 @@ export interface ItemListingReadRepository {
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
 
-	/**
-	 * Gets all listings matching the specified states.
-	 * Used for batch processing like scheduling conversation deletion for archived listings.
-	 * @param states - Array of listing state values (e.g., ['Expired', 'Cancelled'])
-	 * @param options - Optional find options (limit, skip, sort)
-	 */
 	getByStates: (
 		states: string[],
 		options?: FindOptions,

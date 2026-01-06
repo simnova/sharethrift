@@ -193,21 +193,10 @@ export class Conversation<props extends ConversationProps>
 		return this.props.schemaVersion;
 	}
 
-	/**
-	 * Gets the expiration date for this conversation.
-	 * When set, the conversation will be automatically deleted by the TTL mechanism
-	 * after this date passes.
-	 */
 	get expiresAt(): Date | undefined {
 		return this.props.expiresAt;
 	}
 
-	/**
-	 * Sets the expiration date for this conversation.
-	 * Should be set to 6 months after the associated listing expires, is cancelled,
-	 * or the related reservation request is completed/closed.
-	 * @param value - The expiration date, or undefined to remove expiration
-	 */
 	set expiresAt(value: Date | undefined) {
 		if (
 			!this.isNew &&
@@ -222,12 +211,6 @@ export class Conversation<props extends ConversationProps>
 		this.props.expiresAt = value;
 	}
 
-	/**
-	 * Schedules this conversation for deletion after the retention period.
-	 * Per the data retention strategy, conversations are deleted 6 months after
-	 * the associated listing or reservation request reaches a terminal state.
-	 * @param archivalDate - The date when the associated listing/reservation became archived
-	 */
 	public scheduleForDeletion(archivalDate: Date): void {
 		if (
 			!this.visa.determineIf(
@@ -238,7 +221,7 @@ export class Conversation<props extends ConversationProps>
 				'You do not have permission to schedule this conversation for deletion',
 			);
 		}
-		const SIX_MONTHS_MS = 6 * 30 * 24 * 60 * 60 * 1000; // Approximately 6 months in milliseconds
+		const SIX_MONTHS_MS = 6 * 30 * 24 * 60 * 60 * 1000;
 		this.props.expiresAt = new Date(archivalDate.getTime() + SIX_MONTHS_MS);
 	}
 }

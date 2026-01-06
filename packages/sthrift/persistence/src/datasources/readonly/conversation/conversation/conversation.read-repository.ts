@@ -35,13 +35,6 @@ export interface ConversationReadRepository {
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
 
-	/**
-	 * Finds all conversations associated with a specific listing.
-	 * Used for scheduling conversation deletion when a listing expires or is archived.
-	 * @param listingId - The ID of the listing to find conversations for
-	 * @param options - Optional find options
-	 * @returns Array of conversations associated with the listing
-	 */
 	getByListingId: (
 		listingId: string,
 		options?: FindOptions,
@@ -153,13 +146,6 @@ export class ConversationReadRepositoryImpl
 		}
 	}
 
-	/**
-	 * Finds all conversations associated with a specific listing.
-	 * Used for scheduling conversation deletion when a listing expires or is archived.
-	 * @param listingId - The ID of the listing to find conversations for
-	 * @param options - Optional find options
-	 * @returns Array of conversations associated with the listing
-	 */
 	async getByListingId(
 		listingId: string,
 		options?: FindOptions,
