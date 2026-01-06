@@ -75,7 +75,7 @@ app.get('/pts/v2/public-key', async (_req, res) => {
 		flx: {
 			path: '/flex/v2/tokens',
 			data: 'qTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
-			origin: 'http://localhost:3001',
+			origin: 'https://mock-payment.sharethrift.localhost:3001',
 			jwk: mockJwk,
 		},
 		ctx: [
@@ -84,8 +84,8 @@ app.get('/pts/v2/public-key', async (_req, res) => {
 				data: {
 					clientLibrary:
 						'https://testflex.cybersource.com/microform/bundle/v2/flex-microform.min.js',
-					targetOrigins: ['http://localhost:3000'],
-					mfOrigin: 'http://localhost:3001',
+					targetOrigins: ['https://sharethrift.localhost:3000'],
+					mfOrigin: 'https://mock-payment.sharethrift.localhost:3001',
 				},
 			},
 		],
