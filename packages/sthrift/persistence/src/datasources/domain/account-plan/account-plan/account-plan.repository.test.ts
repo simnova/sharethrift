@@ -44,6 +44,15 @@ function makeEventBus(): DomainSeedwork.EventBus {
 	} as DomainSeedwork.EventBus);
 }
 
+function makeNewableMock<TArgs extends unknown[], TResult>(
+	impl: (...args: TArgs) => TResult,
+) {
+	// biome-ignore lint/complexity/useArrowFunction: Needs to be a regular function to be constructable (Vitest 4 ctor mocking)
+	return vi.fn(function (...args: TArgs) {
+		return impl(...args);
+	});
+}
+
 function makeAccountPlanDoc(
 	id = 'plan-1',
 	name = 'Basic Plan',
@@ -277,10 +286,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				};
 
 				repository = setupAccountPlanRepo(mockDoc, {
-						// Use a real constructor function for the model mock
-						// Use a proper constructor function for Vitest 4.x compatibility
-						// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
-						modelCtor: vi.fn(function() { return mockNewDoc; }) as unknown as Models.AccountPlan.AccountPlanModelType,
+					modelCtor: makeNewableMock(() => mockNewDoc) as unknown as Models.AccountPlan.AccountPlanModelType,
 				});
 
 				result = await repository.getNewInstance(planInfo);

@@ -3,6 +3,15 @@ import { ServiceMessagingTwilio } from './index';
 
 // Mock the Twilio module
 vi.mock('twilio', () => {
+	const makeNewableMock = <TArgs extends unknown[], TResult>(
+		impl: (...args: TArgs) => TResult,
+	) => {
+		// biome-ignore lint/complexity/useArrowFunction: Needs to be a regular function to be constructable (Vitest 4 ctor mocking)
+		return vi.fn(function (...args: TArgs) {
+			return impl(...args);
+		});
+	};
+
 	// Mock data must be inside the factory
 	const mockConversationData = {
 		sid: 'CHtest123',
@@ -43,20 +52,14 @@ vi.mock('twilio', () => {
 		conversations: {
 			v1: {
 				conversations: Object.assign(
-					// biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
-					vi.fn(function () {
-						return mockConversationInstance;
-					}),
+					makeNewableMock(() => mockConversationInstance),
 					mockConversationsApi,
 				),
 			},
 		},
 	};
 
-	// biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
-	const TwilioConstructor = vi.fn(function () {
-		return mockClient;
-	});
+	const TwilioConstructor = makeNewableMock(() => mockClient);
 
 	return {
 		default: {
@@ -91,9 +94,8 @@ describe('ServiceMessagingTwilio', () => {
 		});
 
 		it('should create instance with empty credentials and warn', () => {
-			// biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
-			const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(function () {
-				// Mock implementation
+			const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+				// empty implementation
 			});
 			service = new ServiceMessagingTwilio('', '');
 			expect(service).toBeDefined();

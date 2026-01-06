@@ -32,6 +32,15 @@ function makeEventBus(): DomainSeedwork.EventBus {
 	} as DomainSeedwork.EventBus);
 }
 
+function makeNewableMock<TArgs extends unknown[], TResult>(
+	impl: (...args: TArgs) => TResult,
+) {
+	// biome-ignore lint/complexity/useArrowFunction: Needs to be a regular function to be constructable (Vitest 4 ctor mocking)
+	return vi.fn(function (...args: TArgs) {
+		return impl(...args);
+	});
+}
+
 function makeSession(): mongoose.ClientSession {
 	return vi.mocked({} as mongoose.ClientSession);
 }
@@ -168,22 +177,19 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'I call getNewInstance with email "newadmin@example.com", username "newadmin", firstName "New", and lastName "Admin"',
 			async () => {
 				const newDoc = { ...mockDoc };
-					// Create a proper constructor function mock
-					// Use a proper constructor function for Vitest 4.x compatibility
-					// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
-					const ModelConstructor = vi.fn(function() { return newDoc; });
-				   Object.assign(ModelConstructor, {
-					   findOne: mockModel.findOne,
-					   findById: mockModel.findById,
-				   });
+				const ModelConstructor = makeNewableMock(() => newDoc);
+				Object.assign(ModelConstructor, {
+					findOne: mockModel.findOne,
+					findById: mockModel.findById,
+				});
 
-				   repository = new AdminUserRepository(
-					   passport,
-					   ModelConstructor as unknown as Models.User.AdminUserModelType,
-					   new AdminUserConverter(),
-					   eventBus,
-					   session,
-				   );
+				repository = new AdminUserRepository(
+					passport,
+					ModelConstructor as unknown as Models.User.AdminUserModelType,
+					new AdminUserConverter(),
+					eventBus,
+					session,
+				);
 				result = await repository.getNewInstance(
 					'newadmin@example.com',
 					'newadmin',

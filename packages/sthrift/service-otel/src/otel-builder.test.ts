@@ -37,12 +37,24 @@ vi.mock('@azure/monitor-opentelemetry-exporter', () => {
     }
   }
 
-  // biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
-  const AzureMonitorTraceExporter = vi.fn(function (args: Record<string, unknown>) {return  new MockExporter(args)});
-  // biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
-  const AzureMonitorMetricExporter = vi.fn(function (args: Record<string, unknown>) {return  new MockExporter(args)});
-  // biome-ignore lint/complexity/useArrowFunction: Vitest 4.x requires constructor function pattern
-  const AzureMonitorLogExporter = vi.fn(function (args: Record<string, unknown>) {return  new MockExporter(args)});
+  const makeNewableMock = <TArgs extends unknown[], TResult>(
+    impl: (...args: TArgs) => TResult,
+  ) => {
+    // biome-ignore lint/complexity/useArrowFunction: Needs to be a regular function to be constructable (Vitest 4 ctor mocking)
+    return vi.fn(function (...args: TArgs) {
+      return impl(...args);
+    });
+  };
+
+  const AzureMonitorTraceExporter = makeNewableMock(
+    (args: Record<string, unknown>) => new MockExporter(args),
+  );
+  const AzureMonitorMetricExporter = makeNewableMock(
+    (args: Record<string, unknown>) => new MockExporter(args),
+  );
+  const AzureMonitorLogExporter = makeNewableMock(
+    (args: Record<string, unknown>) => new MockExporter(args),
+  );
 
   return {
     AzureMonitorTraceExporter,

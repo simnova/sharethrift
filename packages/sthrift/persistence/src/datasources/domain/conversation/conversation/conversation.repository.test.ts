@@ -39,6 +39,15 @@ function makeEventBus(): DomainSeedwork.EventBus {
 	return vi.mocked({ dispatch: vi.fn(), register: vi.fn() } as DomainSeedwork.EventBus);
 }
 
+function makeNewableMock<TArgs extends unknown[], TResult>(
+	impl: (...args: TArgs) => TResult,
+) {
+	// biome-ignore lint/complexity/useArrowFunction: Needs to be a regular function to be constructable (Vitest 4 ctor mocking)
+	return vi.fn(function (...args: TArgs) {
+		return impl(...args);
+	});
+}
+
 function makeUserDoc(id: string): Models.User.PersonalUser {
 	const validId = createValidObjectId(id);
 	return {
@@ -352,10 +361,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					});
 					
 					// Setup repository with constructor mock
-						repository = setupConversationRepo(mockDoc, {
-							// Use a proper constructor function for Vitest 4.x compatibility
-							// biome-ignore lint/complexity/useArrowFunction: Constructor function must be a regular function
-							modelCtor: vi.fn(function() { return mockNewDoc; }) as unknown as Models.Conversation.ConversationModelType
+					repository = setupConversationRepo(mockDoc, {
+						modelCtor: makeNewableMock(() => mockNewDoc) as unknown as Models.Conversation.ConversationModelType,
 					});
 					
 					result = await repository.getNewInstance(sharer, reserver, listing);
