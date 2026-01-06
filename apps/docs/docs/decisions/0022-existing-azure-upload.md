@@ -23,11 +23,13 @@ informed:
 
 ## Terminology
 
-- **Server-signed request headers**: The mechanism where the backend signs specific HTTP headers for a client upload request using the Azure Storage Shared Key. This is sometimes called the "Valet Key" pattern.
-- **Shared Key authorization**: Azure’s primary authentication method for Blob Storage, using the account key to sign requests. In this ADR, it refers to the backend signing upload requests on behalf of the client.
-- **Valet Key**: An informal term for the pattern where the server signs upload requests for clients, granting scoped, time-limited access. In this document, we use "server-signed request headers" as the primary term, with "Valet Key" and "Shared Key authorization" as synonyms.
+- **Valet Key architectural pattern**: A Microsoft-defined architectural pattern in which a backend service acts as a gatekeeper and grants a client narrowly scoped, limited permission to access a storage resource directly. The backend validates intent and issues temporary or constrained access, while the client performs the data transfer directly to the storage service. The Valet Key pattern is independent of the specific authorization mechanism used.
 
-For clarity, this ADR will use **server-signed request headers** as the main term, with the others in parentheses as needed.
+- **Shared Key authorization**: An Azure Blob Storage authentication mechanism where requests are authenticated by signing a canonical representation of the HTTP request using the storage account access key. This mechanism allows the backend to cryptographically bind authorization to exact request details such as HTTP method, resource path, headers, metadata, and index tags.
+
+- **Server-signed request headers**: The specific implementation used in this system to apply the Valet Key pattern. The backend generates and signs the required HTTP request headers using Shared Key authorization and provides those headers to the client, which must send them unmodified when uploading directly to Azure Blob Storage.
+
+For clarity, this ADR uses **Valet Key architectural pattern** to describe the overall design approach and **server-signed request headers (Shared Key authorization)** to describe the specific authorization mechanism chosen for direct client uploads.
 
 ## Context and Problem Statement
 
