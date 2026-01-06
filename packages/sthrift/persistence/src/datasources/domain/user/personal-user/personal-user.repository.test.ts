@@ -6,6 +6,7 @@ import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { Domain } from '@sthrift/domain';
 import type mongoose from 'mongoose';
 import { expect, vi } from 'vitest';
+import { makeNewableMock } from '@cellix/test-utils';
 import { PersonalUserConverter } from './personal-user.domain-adapter.ts';
 import { PersonalUserRepository } from './personal-user.repository.ts';
 
@@ -32,14 +33,7 @@ function makeEventBus(): DomainSeedwork.EventBus {
 	} as DomainSeedwork.EventBus);
 }
 
-function makeNewableMock<TArgs extends unknown[], TResult>(
-	impl: (...args: TArgs) => TResult,
-) {
-	// biome-ignore lint/complexity/useArrowFunction: Needs to be a regular function to be constructable (Vitest 4 ctor mocking)
-	return vi.fn(function (...args: TArgs) {
-		return impl(...args);
-	});
-}
+// use shared makeNewableMock from test-utils
 
 function makeSession(): mongoose.ClientSession {
 	return vi.mocked({} as mongoose.ClientSession);

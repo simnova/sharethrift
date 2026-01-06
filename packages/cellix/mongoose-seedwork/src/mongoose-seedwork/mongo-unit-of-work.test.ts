@@ -82,7 +82,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
   class TestRepoClass extends RepoMock {}
   let domainOperation: RepoOpMock;
 
-  function setupMockModelReturningAggregate() {
+  const setupMockModelReturningAggregate = () => {
     (mockModel.findById as ReturnType<typeof vi.fn>).mockReturnValue({
       exec: vi.fn().mockResolvedValue({
         _id: 'agg-1',
@@ -91,7 +91,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
     });
   }
 
-  function setupRepoNoEvents() {
+  const setupRepoNoEvents = () => {
     repoInstance.getIntegrationEvents = vi.fn(() => []) as typeof repoInstance.getIntegrationEvents;
     repoInstance.get = vi.fn().mockResolvedValue(
       new AggregateRootMock(

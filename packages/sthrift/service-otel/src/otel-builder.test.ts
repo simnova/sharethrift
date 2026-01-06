@@ -15,7 +15,6 @@ import { MongooseInstrumentation } from '@opentelemetry/instrumentation-mongoose
 import { expect, vi } from 'vitest';
 import { OtelBuilder } from './otel-builder.ts';
 
-
 /**
  * Type for mock exporter class used in tests.
  * The actual class is defined inside vi.mock() to avoid hoisting issues.
@@ -37,24 +36,16 @@ vi.mock('@azure/monitor-opentelemetry-exporter', () => {
     }
   }
 
-  const makeNewableMock = <TArgs extends unknown[], TResult>(
-    impl: (...args: TArgs) => TResult,
-  ) => {
+  const makeNewableMock = <TArgs extends unknown[], TResult>(impl: (...args: TArgs) => TResult) => {
     // biome-ignore lint/complexity/useArrowFunction: Needs to be a regular function to be constructable (Vitest 4 ctor mocking)
     return vi.fn(function (...args: TArgs) {
       return impl(...args);
     });
   };
 
-  const AzureMonitorTraceExporter = makeNewableMock(
-    (args: Record<string, unknown>) => new MockExporter(args),
-  );
-  const AzureMonitorMetricExporter = makeNewableMock(
-    (args: Record<string, unknown>) => new MockExporter(args),
-  );
-  const AzureMonitorLogExporter = makeNewableMock(
-    (args: Record<string, unknown>) => new MockExporter(args),
-  );
+  const AzureMonitorTraceExporter = makeNewableMock((args: Record<string, unknown>) => new MockExporter(args));
+  const AzureMonitorMetricExporter = makeNewableMock((args: Record<string, unknown>) => new MockExporter(args));
+  const AzureMonitorLogExporter = makeNewableMock((args: Record<string, unknown>) => new MockExporter(args));
 
   return {
     AzureMonitorTraceExporter,

@@ -9,6 +9,7 @@ import type mongoose from 'mongoose';
 import { expect, vi } from 'vitest';
 import { AccountPlanConverter } from './account-plan.domain-adapter.ts';
 import { AccountPlanRepository } from './account-plan.repository.ts';
+import { makeNewableMock } from '@cellix/test-utils';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,14 +45,7 @@ function makeEventBus(): DomainSeedwork.EventBus {
 	} as DomainSeedwork.EventBus);
 }
 
-function makeNewableMock<TArgs extends unknown[], TResult>(
-	impl: (...args: TArgs) => TResult,
-) {
-	// biome-ignore lint/complexity/useArrowFunction: Needs to be a regular function to be constructable (Vitest 4 ctor mocking)
-	return vi.fn(function (...args: TArgs) {
-		return impl(...args);
-	});
-}
+// use shared makeNewableMock from test-utils
 
 function makeAccountPlanDoc(
 	id = 'plan-1',

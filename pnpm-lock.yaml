@@ -573,6 +573,27 @@ importers:
         specifier: workspace:*
         version: link:../typescript-config
 
+  packages/cellix/test-utils:
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@eslint/js':
+        specifier: ^9.29.0
+        version: 9.38.0
+      eslint:
+        specifier: ^9.29.0
+        version: 9.38.0(jiti@2.6.1)
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+      typescript-eslint:
+        specifier: ^8.34.0
+        version: 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.8.3)
+
   packages/cellix/typescript-config: {}
 
   packages/cellix/ui-core:
@@ -1065,6 +1086,9 @@ importers:
       '@cellix/payment-service':
         specifier: workspace:*
         version: link:../../cellix/payment-service
+      '@cellix/test-utils':
+        specifier: workspace:*
+        version: link:../../cellix/test-utils
       '@sthrift/data-sources-mongoose-models':
         specifier: workspace:*
         version: link:../data-sources-mongoose-models
@@ -1198,6 +1222,9 @@ importers:
       '@opentelemetry/semantic-conventions':
         specifier: 1.28.0
         version: 1.28.0
+      '@cellix/test-utils':
+        specifier: workspace:*
+        version: link:../../cellix/test-utils
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -10182,6 +10209,7 @@ packages:
 
   scmp@2.1.0:
     resolution: {integrity: sha512-o/mRQGk9Rcer/jEEw/yw4mwo3EU/NvYvp577/Btqrym9Qy5/MdWGBqipbALgd2lrdWTJ5/gqDusxfnQBxOxT2Q==}
+    deprecated: Just use Node.js's crypto.timingSafeEqual()
 
   scroll-into-view-if-needed@3.1.0:
     resolution: {integrity: sha512-49oNpRjWRvnU8NyGVmUaYG4jtTkNonFZI86MmGRDqBphEK2EXT9gdEUoQPZhuBM8yWHxCWbobltqYO5M4XrUvQ==}
@@ -11468,6 +11496,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}

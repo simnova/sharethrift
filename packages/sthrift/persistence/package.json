@@ -31,7 +31,9 @@
 		"@sthrift/data-sources-mongoose-models": "workspace:*",
 		"@sthrift/domain": "workspace:*",
 		"mongodb": "catalog:",
-		"mongoose": "catalog:"
+		"mongoose": "catalog:",
+    "@cellix/test-utils": "workspace:*"
+
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

@@ -1,0 +1,31 @@
+{
+	"name": "@cellix/test-utils",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		}
+	},
+	"scripts": {
+		"prebuild": "biome lint",
+		"build": "tsc --build",
+		"watch": "tsc --watch",
+		"lint": "biome lint",
+		"clean": "rimraf dist"
+	},
+	"devDependencies": {
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3",
+		"eslint": "^9.29.0",
+		"@eslint/js": "^9.29.0",
+		"typescript-eslint": "^8.34.0",
+		"@cellix/typescript-config": "workspace:*"
+	},
+	"license": "MIT"
+}
