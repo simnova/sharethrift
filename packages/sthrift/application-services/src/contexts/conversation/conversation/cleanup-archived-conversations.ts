@@ -5,9 +5,11 @@ import { trace, SpanStatusCode } from '@opentelemetry/api';
 const tracer = trace.getTracer('conversation:cleanup');
 
 const ARCHIVED_LISTING_STATES = [
-	Domain.Contexts.Listing.ItemListing.ValueObjects.ListingStateEnum.Expired,
-	Domain.Contexts.Listing.ItemListing.ValueObjects.ListingStateEnum.Cancelled,
-] as const;
+	Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.ListingStateEnum
+		.Expired,
+	Domain.Contexts.Listing.ItemListing.ItemListingValueObjects.ListingStateEnum
+		.Cancelled,
+];
 
 export interface CleanupResult {
 	processedCount: number;
