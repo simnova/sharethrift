@@ -1,8 +1,8 @@
 import type { AccountPlanEntityReference } from '../../../contexts/account-plan/account-plan/account-plan.entity.ts';
-import type { AccountPlanPassport } from '../../../contexts/account-plan/account-plan.passport.ts';
-import { SystemPassportBase } from '../system.passport-base.ts';
-import type { AccountPlanVisa } from '../../../contexts/account-plan/account-plan.visa.ts';
 import type { AccountPlanDomainPermissions } from '../../../contexts/account-plan/account-plan.domain-permissions.ts';
+import type { AccountPlanPassport } from '../../../contexts/account-plan/account-plan.passport.ts';
+import type { AccountPlanVisa } from '../../../contexts/account-plan/account-plan.visa.ts';
+import { SystemPassportBase } from '../system.passport-base.ts';
 export class SystemAccountPlanPassport
 	extends SystemPassportBase
 	implements AccountPlanPassport

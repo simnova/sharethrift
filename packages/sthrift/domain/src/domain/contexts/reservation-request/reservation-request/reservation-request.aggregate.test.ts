@@ -2,15 +2,20 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
-import { ReservationRequest } from './reservation-request.ts';
-import type { ReservationRequestProps } from './reservation-request.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
-import { ReservationRequestStates, ReservationRequestStateValue } from './reservation-request.value-objects.ts';
 import type { Passport } from '../../passport.ts';
+import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { ReservationRequestProps } from './reservation-request.entity.ts';
+import { ReservationRequest } from './reservation-request.ts';
+import {
+	ReservationRequestStates,
+	ReservationRequestStateValue,
+} from './reservation-request.value-objects.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const feature = await loadFeature(path.resolve(__dirname, 'features/reservation-request.aggregate.feature'));
+const feature = await loadFeature(
+	path.resolve(__dirname, 'features/reservation-request.aggregate.feature'),
+);
 const test = { for: describeFeature };
 
 test.for(feature, ({ Scenario, BeforeEachScenario }) => {
@@ -23,7 +28,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 	let endDate: Date;
 
 	BeforeEachScenario(() => {
-		reservation = undefined as unknown as ReservationRequest<ReservationRequestProps>;
+		reservation =
+			undefined as unknown as ReservationRequest<ReservationRequestProps>;
 		props = undefined as unknown as ReservationRequestProps;
 		error = undefined;
 		listing = undefined as unknown as ItemListingEntityReference;
@@ -60,7 +66,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		},
 	} as Passport;
 
-	const createMockPersonalUser = (id = 'user-1'): PersonalUserEntityReference => ({
+	const createMockPersonalUser = (
+		id = 'user-1',
+	): PersonalUserEntityReference => ({
 		id,
 		userType: 'personal-user',
 		isBlocked: false,
@@ -126,18 +134,26 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		loadSharer: async () => sharer,
 	});
 
-	const createMockProps = (overrides: Partial<ReservationRequestProps> = {}): ReservationRequestProps => {
+	const createMockProps = (
+		overrides: Partial<ReservationRequestProps> = {},
+	): ReservationRequestProps => {
 		const listing = overrides.listing || createMockListing();
 		const reserver = overrides.reserver || createMockPersonalUser();
 		const now = new Date();
-		const startDate = overrides.reservationPeriodStart || new Date(now.getTime() + 24 * 60 * 60 * 1000);
-		const endDate = overrides.reservationPeriodEnd || new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+		const startDate =
+			overrides.reservationPeriodStart ||
+			new Date(now.getTime() + 24 * 60 * 60 * 1000);
+		const endDate =
+			overrides.reservationPeriodEnd ||
+			new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 		return {
 			id: 'test-id',
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			schemaVersion: '1',
-			state: new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf(),
+			state: new ReservationRequestStateValue(
+				ReservationRequestStates.REQUESTED,
+			).valueOf(),
 			listing,
 			reserver,
 			reservationPeriodStart: startDate,
@@ -164,7 +180,12 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			({ startDate, endDate } = getFutureDates());
 		});
 		When('a reservation request is created with valid dates', () => {
-			props = createMockProps({ listing, reserver, reservationPeriodStart: startDate, reservationPeriodEnd: endDate });
+			props = createMockProps({
+				listing,
+				reserver,
+				reservationPeriodStart: startDate,
+				reservationPeriodEnd: endDate,
+			});
 			reservation = ReservationRequest.getNewInstance(
 				props,
 				props.state,
@@ -177,7 +198,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		});
 		Then('the reservation request should be in the REQUESTED state', () => {
 			expect(reservation.state.valueOf()).toBe(
-				new ReservationRequestStateValue(ReservationRequestStates.REQUESTED).valueOf()
+				new ReservationRequestStateValue(
+					ReservationRequestStates.REQUESTED,
+				).valueOf(),
 			);
 		});
 		And('the listing and reserver references should be set', () => {
@@ -192,22 +215,30 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			reserver = createMockPersonalUser();
 			({ startDate, endDate } = getFutureDates());
 		});
-		When('a reservation request is created with the start date after the end date', () => {
-			try {
-				props = createMockProps({ listing, reserver, reservationPeriodStart: endDate, reservationPeriodEnd: startDate });
-				reservation = ReservationRequest.getNewInstance(
-					props,
-					props.state,
-					listing,
-					reserver,
-					endDate,
-					startDate,
-					mockPassport,
-				);
-			} catch (e) {
-				error = e;
-			}
-		});
+		When(
+			'a reservation request is created with the start date after the end date',
+			() => {
+				try {
+					props = createMockProps({
+						listing,
+						reserver,
+						reservationPeriodStart: endDate,
+						reservationPeriodEnd: startDate,
+					});
+					reservation = ReservationRequest.getNewInstance(
+						props,
+						props.state,
+						listing,
+						reserver,
+						endDate,
+						startDate,
+						mockPassport,
+					);
+				} catch (e) {
+					error = e;
+				}
+			},
+		);
 		Then('an error should be thrown', () => {
 			expect(error).toBeDefined();
 		});
@@ -218,7 +249,12 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			listing = createMockListing();
 			reserver = createMockPersonalUser();
 			({ startDate, endDate } = getFutureDates());
-			props = createMockProps({ listing, reserver, reservationPeriodStart: startDate, reservationPeriodEnd: endDate });
+			props = createMockProps({
+				listing,
+				reserver,
+				reservationPeriodStart: startDate,
+				reservationPeriodEnd: endDate,
+			});
 			reservation = ReservationRequest.getNewInstance(
 				props,
 				props.state,
@@ -234,13 +270,18 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		});
 		Then('the reservation request should be in the ACCEPTED state', () => {
 			expect(reservation.state.valueOf()).toBe(
-				new ReservationRequestStateValue(ReservationRequestStates.ACCEPTED).valueOf()
+				new ReservationRequestStateValue(
+					ReservationRequestStates.ACCEPTED,
+				).valueOf(),
 			);
 		});
-		And('the request remains associated to the same listing and reserver', () => {
-			expect(reservation.listing?.id).toBe(listing.id);
-			expect(reservation.reserver?.id).toBe(reserver.id);
-		});
+		And(
+			'the request remains associated to the same listing and reserver',
+			() => {
+				expect(reservation.listing?.id).toBe(listing.id);
+				expect(reservation.reserver?.id).toBe(reserver.id);
+			},
+		);
 	});
 
 	Scenario('Cancel a reservation request', ({ Given, When, Then, And }) => {
@@ -248,7 +289,12 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			listing = createMockListing();
 			reserver = createMockPersonalUser();
 			({ startDate, endDate } = getFutureDates());
-			props = createMockProps({ listing, reserver, reservationPeriodStart: startDate, reservationPeriodEnd: endDate });
+			props = createMockProps({
+				listing,
+				reserver,
+				reservationPeriodStart: startDate,
+				reservationPeriodEnd: endDate,
+			});
 			reservation = ReservationRequest.getNewInstance(
 				props,
 				props.state,
@@ -264,7 +310,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		});
 		Then('the reservation request should be in the CANCELLED state', () => {
 			expect(reservation.state.valueOf()).toBe(
-				new ReservationRequestStateValue(ReservationRequestStates.CANCELLED).valueOf()
+				new ReservationRequestStateValue(
+					ReservationRequestStates.CANCELLED,
+				).valueOf(),
 			);
 		});
 		And('close flags should remain false', () => {
@@ -273,72 +321,105 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Close a reservation request by sharer', ({ Given, When, Then, And }) => {
-		Given('a reservation request in ACCEPTED state and close requested by sharer', () => {
-			listing = createMockListing();
-			reserver = createMockPersonalUser();
-			({ startDate, endDate } = getFutureDates());
-			props = createMockProps({ listing, reserver, reservationPeriodStart: startDate, reservationPeriodEnd: endDate, closeRequestedBySharer: true });
-			reservation = ReservationRequest.getNewInstance(
-				props,
-				props.state,
-				listing,
-				reserver,
-				startDate,
-				endDate,
-				mockPassport,
+	Scenario(
+		'Close a reservation request by sharer',
+		({ Given, When, Then, And }) => {
+			Given(
+				'a reservation request in ACCEPTED state and close requested by sharer',
+				() => {
+					listing = createMockListing();
+					reserver = createMockPersonalUser();
+					({ startDate, endDate } = getFutureDates());
+					props = createMockProps({
+						listing,
+						reserver,
+						reservationPeriodStart: startDate,
+						reservationPeriodEnd: endDate,
+						closeRequestedBySharer: true,
+					});
+					reservation = ReservationRequest.getNewInstance(
+						props,
+						props.state,
+						listing,
+						reserver,
+						startDate,
+						endDate,
+						mockPassport,
+					);
+					reservation.state = ReservationRequestStates.ACCEPTED;
+				},
 			);
-			reservation.state = ReservationRequestStates.ACCEPTED;
-		});
-		When('the reservation is closed', () => {
-			reservation.state = ReservationRequestStates.CLOSED;
-		});
-		Then('the reservation request should be in the CLOSED state', () => {
-			expect(reservation.state.valueOf()).toBe(
-				new ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf()
-			);
-		});
-		And('closeRequestedBySharer should be true', () => {
-			expect(reservation.closeRequestedBySharer).toBe(true);
-		});
-	});
+			When('the reservation is closed', () => {
+				reservation.state = ReservationRequestStates.CLOSED;
+			});
+			Then('the reservation request should be in the CLOSED state', () => {
+				expect(reservation.state.valueOf()).toBe(
+					new ReservationRequestStateValue(
+						ReservationRequestStates.CLOSED,
+					).valueOf(),
+				);
+			});
+			And('closeRequestedBySharer should be true', () => {
+				expect(reservation.closeRequestedBySharer).toBe(true);
+			});
+		},
+	);
 
-	Scenario('Close a reservation request by reserver', ({ Given, When, Then, And }) => {
-		Given('a reservation request in ACCEPTED state and close requested by reserver', () => {
-			listing = createMockListing();
-			reserver = createMockPersonalUser();
-			({ startDate, endDate } = getFutureDates());
-			props = createMockProps({ listing, reserver, reservationPeriodStart: startDate, reservationPeriodEnd: endDate, closeRequestedByReserver: true });
-			reservation = ReservationRequest.getNewInstance(
-				props,
-				props.state,
-				listing,
-				reserver,
-				startDate,
-				endDate,
-				mockPassport,
+	Scenario(
+		'Close a reservation request by reserver',
+		({ Given, When, Then, And }) => {
+			Given(
+				'a reservation request in ACCEPTED state and close requested by reserver',
+				() => {
+					listing = createMockListing();
+					reserver = createMockPersonalUser();
+					({ startDate, endDate } = getFutureDates());
+					props = createMockProps({
+						listing,
+						reserver,
+						reservationPeriodStart: startDate,
+						reservationPeriodEnd: endDate,
+						closeRequestedByReserver: true,
+					});
+					reservation = ReservationRequest.getNewInstance(
+						props,
+						props.state,
+						listing,
+						reserver,
+						startDate,
+						endDate,
+						mockPassport,
+					);
+					reservation.state = ReservationRequestStates.ACCEPTED;
+				},
 			);
-			reservation.state = ReservationRequestStates.ACCEPTED;
-		});
-		When('the reservation is closed', () => {
-			reservation.state = ReservationRequestStates.CLOSED;
-		});
-		Then('the reservation request should be in the CLOSED state', () => {
-			expect(reservation.state.valueOf()).toBe(
-				new ReservationRequestStateValue(ReservationRequestStates.CLOSED).valueOf()
-			);
-		});
-		And('closeRequestedByReserver should be true', () => {
-			expect(reservation.closeRequestedByReserver).toBe(true);
-		});
-	});
+			When('the reservation is closed', () => {
+				reservation.state = ReservationRequestStates.CLOSED;
+			});
+			Then('the reservation request should be in the CLOSED state', () => {
+				expect(reservation.state.valueOf()).toBe(
+					new ReservationRequestStateValue(
+						ReservationRequestStates.CLOSED,
+					).valueOf(),
+				);
+			});
+			And('closeRequestedByReserver should be true', () => {
+				expect(reservation.closeRequestedByReserver).toBe(true);
+			});
+		},
+	);
 
 	Scenario('Request close by reserver', ({ Given, When, Then }) => {
 		Given('a reservation request in ACCEPTED state', () => {
 			listing = createMockListing();
 			reserver = createMockPersonalUser();
 			({ startDate, endDate } = getFutureDates());
-			props = createMockProps({ listing, reserver, reservationPeriodStart: startDate, reservationPeriodEnd: endDate });
+			props = createMockProps({
+				listing,
+				reserver,
+				reservationPeriodStart: startDate,
+				reservationPeriodEnd: endDate,
+			});
 			reservation = ReservationRequest.getNewInstance(
 				props,
 				props.state,

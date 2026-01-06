@@ -1,14 +1,14 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.ts';
-import type { ReservationRequestVisa } from '../reservation-request.visa.ts';
-import { ReservationRequestStates } from './reservation-request.value-objects.ts';
-import * as ValueObjects from './reservation-request.value-objects.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
+import type { Passport } from '../../passport.ts';
 import type { UserEntityReference } from '../../user/index.ts';
+import type { ReservationRequestVisa } from '../reservation-request.visa.ts';
 import type {
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
 } from './reservation-request.entity.ts';
+import * as ValueObjects from './reservation-request.value-objects.ts';
+import { ReservationRequestStates } from './reservation-request.value-objects.ts';
 
 export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -361,4 +361,30 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			ReservationRequestStates.REQUESTED,
 		).valueOf();
 	}
+
+	/**
+	 * Marks this reservation request for deletion.
+	 * Per SRD data retention policy, expired reservation requests (CLOSED state for 6+ months)
+	 * should be deleted from the operational database.
+	 *
+	 * @remarks
+	 * This method can only be called by system-level operations for data retention.
+	 * The repository will detect `isDeleted=true` and perform a hard delete.
+	 */
+	public requestDelete(): void {
+		if (
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canDeleteRequest,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to delete this reservation request',
+			);
+		}
+
+		// Mark as deleted - repository will handle actual deletion
+		this.isDeleted = true;
+	}
+
+	//#endregion Methods
 }

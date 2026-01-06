@@ -4,8 +4,8 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import type { DataSources } from '@sthrift/persistence';
 import { expect, vi } from 'vitest';
 import {
-	type ReservationRequestQueryOverlapByListingIdAndReservationPeriodCommand,
 	queryOverlapByListingIdAndReservationPeriod,
+	type ReservationRequestQueryOverlapByListingIdAndReservationPeriodCommand,
 } from './query-overlap-by-listing-id-and-reservation-period.ts';
 
 const test = { for: describeFeature };
@@ -31,7 +31,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				},
 			},
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
 		command = {
@@ -71,8 +71,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 						reservationPeriodEnd: new Date('2024-01-15'),
 					},
 				];
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getOverlapActiveReservationRequestsForListing.mockResolvedValue(
 					overlappingRequests,
@@ -108,8 +109,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('there are no active requests that overlap this period', () => {
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getOverlapActiveReservationRequestsForListing.mockResolvedValue(
 					[],

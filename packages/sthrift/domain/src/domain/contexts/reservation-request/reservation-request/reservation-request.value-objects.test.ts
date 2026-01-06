@@ -17,11 +17,14 @@ test.for(feature, ({ Scenario }) => {
 		'Creating a ReservationPeriodStart with a valid value',
 		({ When, Then }) => {
 			let value: string;
-			When('I create a ReservationPeriodStart with "2025-10-15T10:00:00Z"', () => {
-				value = new ValueObjects.ReservationPeriodStart(
-					'2025-10-15T10:00:00Z',
-				).valueOf();
-			});
+			When(
+				'I create a ReservationPeriodStart with "2025-10-15T10:00:00Z"',
+				() => {
+					value = new ValueObjects.ReservationPeriodStart(
+						'2025-10-15T10:00:00Z',
+					).valueOf();
+				},
+			);
 			Then('the value should be "2025-10-15T10:00:00Z"', () => {
 				expect(value).toBe('2025-10-15T10:00:00Z');
 			});
@@ -46,11 +49,14 @@ test.for(feature, ({ Scenario }) => {
 		'Creating a ReservationPeriodEnd with a valid value',
 		({ When, Then }) => {
 			let value: string;
-			When('I create a ReservationPeriodEnd with "2025-10-20T10:00:00Z"', () => {
-				value = new ValueObjects.ReservationPeriodEnd(
-					'2025-10-20T10:00:00Z',
-				).valueOf();
-			});
+			When(
+				'I create a ReservationPeriodEnd with "2025-10-20T10:00:00Z"',
+				() => {
+					value = new ValueObjects.ReservationPeriodEnd(
+						'2025-10-20T10:00:00Z',
+					).valueOf();
+				},
+			);
 			Then('the value should be "2025-10-20T10:00:00Z"', () => {
 				expect(value).toBe('2025-10-20T10:00:00Z');
 			});
@@ -113,12 +119,9 @@ test.for(feature, ({ Scenario }) => {
 					};
 				},
 			);
-			Then(
-				'an error should be thrown indicating the state is invalid',
-				() => {
-					expect(createInvalid).toThrow(/Invalid state/i);
-				},
-			);
+			Then('an error should be thrown indicating the state is invalid', () => {
+				expect(createInvalid).toThrow(/Invalid state/i);
+			});
 		},
 	);
 

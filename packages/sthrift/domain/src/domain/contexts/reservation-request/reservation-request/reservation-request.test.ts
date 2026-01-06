@@ -1,14 +1,14 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import { ReservationRequest } from './reservation-request.ts';
-import { ReservationRequestStates } from './reservation-request.value-objects.ts';
-import type { ReservationRequestProps } from './reservation-request.entity.ts';
+import { expect, vi } from 'vitest';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import type { Passport } from '../../passport.ts';
 import type { UserEntityReference } from '../../user/index.ts';
+import type { ReservationRequestProps } from './reservation-request.entity.ts';
+import { ReservationRequest } from './reservation-request.ts';
+import { ReservationRequestStates } from './reservation-request.value-objects.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -959,40 +959,40 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		},
 	);
 
-	Scenario(
-		'Closing with only sharer request',
-		({ Given, And, When, Then }) => {
-			Given('a ReservationRequest aggregate with state "ACCEPTED"', () => {
-				aggregate = ReservationRequest.getNewInstance(
-					baseProps,
-					toStateEnum('REQUESTED'),
-					listing,
-					reserver,
-					baseProps.reservationPeriodStart,
-					baseProps.reservationPeriodEnd,
-					makePassport({ canCloseRequest: true, canAcceptRequest: true }),
-				);
-				aggregate.state = toStateEnum('ACCEPTED');
-			});
-			And('closeRequestedBySharer is true', () => {
-				aggregate.closeRequestedBySharer = true;
-			});
-			When('I set state to "CLOSED"', () => {
-				aggregate.state = toStateEnum('CLOSED');
-			});
-			Then('the reservation request\'s state should be "CLOSED"', () => {
-				expect(aggregate.state).toBe(ReservationRequestStates.CLOSED);
-			});
-		},
-	);
+	Scenario('Closing with only sharer request', ({ Given, And, When, Then }) => {
+		Given('a ReservationRequest aggregate with state "ACCEPTED"', () => {
+			aggregate = ReservationRequest.getNewInstance(
+				baseProps,
+				toStateEnum('REQUESTED'),
+				listing,
+				reserver,
+				baseProps.reservationPeriodStart,
+				baseProps.reservationPeriodEnd,
+				makePassport({ canCloseRequest: true, canAcceptRequest: true }),
+			);
+			aggregate.state = toStateEnum('ACCEPTED');
+		});
+		And('closeRequestedBySharer is true', () => {
+			aggregate.closeRequestedBySharer = true;
+		});
+		When('I set state to "CLOSED"', () => {
+			aggregate.state = toStateEnum('CLOSED');
+		});
+		Then('the reservation request\'s state should be "CLOSED"', () => {
+			expect(aggregate.state).toBe(ReservationRequestStates.CLOSED);
+		});
+	});
 
 	Scenario(
 		'Setting reservation period start after end should fail',
 		({ Given, When, Then }) => {
 			let localError: unknown;
-			Given('a new ReservationRequest aggregate being created with end date set', () => {
-				// Set up props with a valid end date in future
-			});
+			Given(
+				'a new ReservationRequest aggregate being created with end date set',
+				() => {
+					// Set up props with a valid end date in future
+				},
+			);
 			When(
 				'I try to set reservationPeriodStart to a date after the end date',
 				() => {
@@ -1032,9 +1032,12 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		'Setting reservation period end at or before start should fail',
 		({ Given, When, Then }) => {
 			let localError: unknown;
-			Given('a new ReservationRequest aggregate being created with start date set', () => {
-				// Set up props with a valid start date
-			});
+			Given(
+				'a new ReservationRequest aggregate being created with start date set',
+				() => {
+					// Set up props with a valid start date
+				},
+			);
 			When(
 				'I try to set reservationPeriodEnd to a date before or equal to the start date',
 				() => {
@@ -1087,7 +1090,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 			When('I try to update the reservation period start date', () => {
 				act = () => {
-					aggregate.reservationPeriodStart = new Date(Date.now() + 86_400_000 * 10);
+					aggregate.reservationPeriodStart = new Date(
+						Date.now() + 86_400_000 * 10,
+					);
 				};
 			});
 			Then(
@@ -1119,7 +1124,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 			When('I try to update the reservation period end date', () => {
 				act = () => {
-					aggregate.reservationPeriodEnd = new Date(Date.now() + 86_400_000 * 60);
+					aggregate.reservationPeriodEnd = new Date(
+						Date.now() + 86_400_000 * 60,
+					);
 				};
 			});
 			Then(

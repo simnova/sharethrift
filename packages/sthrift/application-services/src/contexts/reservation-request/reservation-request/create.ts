@@ -21,9 +21,10 @@ export const create = (dataSources: DataSources) => {
 			throw new Error('Listing not found');
 		}
 
-		const reserver = await dataSources.readonlyDataSource.User.User.UserReadRepo.getByEmail(
-			command.reserverEmail,
-		);
+		const reserver =
+			await dataSources.readonlyDataSource.User.User.UserReadRepo.getByEmail(
+				command.reserverEmail,
+			);
 		if (!reserver) {
 			throw new Error('Reserver not found. Ensure that you are logged in.');
 		}
