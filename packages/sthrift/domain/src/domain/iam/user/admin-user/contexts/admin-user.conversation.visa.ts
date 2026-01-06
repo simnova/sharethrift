@@ -21,15 +21,17 @@ export class AdminUserConversationVisa<root extends ConversationEntityReference>
 		const rolePermissions = this.admin.role?.permissions;
 
 		const permissions: ConversationDomainPermissions = {
-			// Admins can create conversations if they have user management permissions
+			// Admins can create conversations if they have conversation edit permissions
 			canCreateConversation:
-				rolePermissions?.userPermissions?.canEditUsers ?? false,
+				rolePermissions?.conversationPermissions?.canEditConversations ?? false,
 			// Admins can manage conversations if they have moderation permissions
 			canManageConversation:
-				rolePermissions?.listingPermissions?.canModerateListings ?? false,
-			// Admins can view all conversations for moderation purposes
+				rolePermissions?.conversationPermissions?.canModerateConversations ??
+				false,
+			// Admins can view all conversations if they have the view permission
 			canViewConversation:
-				rolePermissions?.userPermissions?.canViewAllUsers ?? false,
+				rolePermissions?.conversationPermissions?.canViewAllConversations ??
+				false,
 		};
 
 		return func(permissions);

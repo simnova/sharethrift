@@ -48,7 +48,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				},
 			},
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
 		result = undefined;
