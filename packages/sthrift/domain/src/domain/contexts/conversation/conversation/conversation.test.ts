@@ -993,8 +993,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				() => {
 					expect(conversation.expiresAt).toBeDefined();
 					// 6 months from archival date
-					const SIX_MONTHS_MS = 6 * 30 * 24 * 60 * 60 * 1000;
-					const expectedTime = archivalDate.getTime() + SIX_MONTHS_MS;
+					const expectedTime =
+						archivalDate.getTime() + Conversation.RETENTION_PERIOD_MS;
 					const actualTime = conversation.expiresAt?.getTime() ?? 0;
 					expect(actualTime).toBe(expectedTime);
 				},

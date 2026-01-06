@@ -19,6 +19,7 @@ export class Conversation<props extends ConversationProps>
 	implements ConversationEntityReference
 {
 	private isNew: boolean = false;
+	public static readonly RETENTION_PERIOD_MS = 180 * 24 * 60 * 60 * 1000;
 	private readonly visa: ConversationVisa;
 
 	//#region Constructor
@@ -221,7 +222,8 @@ export class Conversation<props extends ConversationProps>
 				'You do not have permission to schedule this conversation for deletion',
 			);
 		}
-		const SIX_MONTHS_MS = 6 * 30 * 24 * 60 * 60 * 1000;
-		this.props.expiresAt = new Date(archivalDate.getTime() + SIX_MONTHS_MS);
+		this.props.expiresAt = new Date(
+			archivalDate.getTime() + Conversation.RETENTION_PERIOD_MS,
+		);
 	}
 }
