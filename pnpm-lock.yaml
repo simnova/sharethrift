@@ -578,21 +578,12 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@eslint/js':
-        specifier: ^9.29.0
-        version: 9.38.0
-      eslint:
-        specifier: ^9.29.0
-        version: 9.38.0(jiti@2.6.1)
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-      typescript-eslint:
-        specifier: ^8.34.0
-        version: 8.46.2(eslint@9.38.0(jiti@2.6.1))(typescript@5.8.3)
 
   packages/cellix/typescript-config: {}
 
