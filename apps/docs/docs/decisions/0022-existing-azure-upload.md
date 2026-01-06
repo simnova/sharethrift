@@ -40,7 +40,7 @@ Users need to upload various file types (PDFs, images) along with metadata and t
 - **Scalability**: The system must efficiently handle large file uploads and multiple concurrent requests without overloading backend services.
 - **Performance**: Direct client-to-Azure Blob uploads reduce backend latency and improve user upload speed.
 - **Cost Optimization**: Offloading upload bandwidth from backend servers to Azure Blob Storage minimizes infrastructure and data transfer costs.
-- **Security**: Uploads must be secure and authenticated. The Valet Key pattern provides controlled, time-bound access to the storage account.
+- **Security**: Uploads must be secure and authenticated. The Valet Key pattern enables the backend to grant narrowly scoped upload permissions with strong server-side control over the blob path, headers, metadata, and index tags, preventing clients from altering or escalating the approved upload intent.
 - **Malware Scanning**: Uploaded files must undergo malware scanning. Any malicious files must be identified, quarantined, and deleted immediately to maintain data integrity and user safety.
 
 ## Considered Architectural Upload Options
