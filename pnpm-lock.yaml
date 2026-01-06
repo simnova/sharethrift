@@ -1222,9 +1222,6 @@ importers:
       '@opentelemetry/semantic-conventions':
         specifier: 1.28.0
         version: 1.28.0
-      '@cellix/test-utils':
-        specifier: workspace:*
-        version: link:../../cellix/test-utils
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
