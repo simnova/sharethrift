@@ -303,9 +303,10 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// Calculate the date 6 months ago
-		const sixMonthsAgo = new Date();
-		sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+		// Calculate the date 6 months ago using milliseconds to avoid date arithmetic issues
+		// 6 months ≈ 182.5 days (average) ≈ 15,768,000,000 milliseconds
+		const sixMonthsInMs = 182.5 * 24 * 60 * 60 * 1000;
+		const sixMonthsAgo = new Date(Date.now() - sixMonthsInMs);
 
 		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
 			state: 'Closed',

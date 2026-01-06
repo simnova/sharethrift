@@ -138,6 +138,7 @@ interface AzureFunctionHandlerRegistry<
 	 * ```ts
 	 * registerAzureFunctionTimerHandler('cleanup-expired', { schedule: '0 0 2 * * *' }, (host) => {
 	 *   return async (timer, ctx) => {
+	 *     // System passport is used when forRequest() called without auth header
 	 *     const app = await host.forRequest();
 	 *     await app.CleanupExpired.execute();
 	 *   };

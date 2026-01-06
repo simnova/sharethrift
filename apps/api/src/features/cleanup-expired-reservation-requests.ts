@@ -37,7 +37,8 @@ export const cleanupExpiredReservationRequestsHandlerCreator = (
 					);
 
 					// Get application services with system-level permissions
-					// System passport has canDeleteRequest permission
+					// When forRequest() is called without an auth header, the application services
+					// factory creates a SystemPassport which has canDeleteRequest=true permission
 					const app = await applicationServicesHost.forRequest();
 
 					// Execute deletion of expired reservation requests

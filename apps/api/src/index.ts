@@ -106,7 +106,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	.registerAzureFunctionTimerHandler(
 		'cleanup-expired-reservation-requests',
 		{
-			schedule: '0 0 2 * * *', // Daily at 2 AM UTC
+			schedule: '0 0 2 * * *', // Daily at 2 AM UTC (NCRONTAB format)
 			runOnStartup: false,
 		},
 		cleanupExpiredReservationRequestsHandlerCreator,
