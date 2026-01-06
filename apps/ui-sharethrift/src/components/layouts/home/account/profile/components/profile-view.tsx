@@ -34,6 +34,34 @@ interface ProfileViewProps {
     adminControls?: React.ReactNode;
 }
 
+const adaptProfileListing = (l: ItemListing) => ({
+    ...l,
+    id: l.id,
+    sharingPeriodStart: new Date(l.sharingPeriodStart),
+    sharingPeriodEnd: new Date(l.sharingPeriodEnd),
+    state: [
+        'Active',
+        'Paused',
+        'Cancelled',
+        'Draft',
+        'Expired',
+        'Blocked',
+    ].includes(l.state ?? '')
+        ? (l.state as
+            | 'Active'
+            | 'Paused'
+            | 'Cancelled'
+            | 'Draft'
+            | 'Expired'
+            | 'Blocked'
+            | undefined)
+        : undefined,
+    createdAt: l.createdAt ? new Date(l.createdAt) : undefined,
+    sharingHistory: [], 
+    reports: 0,
+    images: l.images ? [...l.images] : []
+});
+
 export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
     user,
     listings,
@@ -150,33 +178,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                 }}
             >
                 <ListingsGrid
-                    listings={listings.map((l) => ({
-                        ...l,
-                        id: l.id,
-                        sharingPeriodStart: new Date(l.sharingPeriodStart),
-                        sharingPeriodEnd: new Date(l.sharingPeriodEnd),
-                        state: [
-                            'Active',
-                            'Paused',
-                            'Cancelled',
-                            'Draft',
-                            'Expired',
-                            'Blocked',
-                        ].includes(l.state ?? '')
-                            ? (l.state as
-                                | 'Active'
-                                | 'Paused'
-                                | 'Cancelled'
-                                | 'Draft'
-                                | 'Expired'
-                                | 'Blocked'
-                                | undefined)
-                            : undefined,
-                        createdAt: l.createdAt ? new Date(l.createdAt) : undefined,
-                        sharingHistory: [], // Placeholder
-                        reports: 0, // Placeholder
-                        images: l.images ? [...l.images] : [], // Placeholder
-                    }))}
+                    listings={listings.map(adaptProfileListing)}
                     onListingClick={(listing) => onListingClick(listing.id)}
                     currentPage={1}
                     pageSize={20}
