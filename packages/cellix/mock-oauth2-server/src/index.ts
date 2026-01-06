@@ -12,6 +12,7 @@ setupEnvironment();
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
+const BASE_URL = 'https://auth.sharethrift.localhost:4000';
 
 function normalizeUrl(urlString: string): string {
 	try {
@@ -69,7 +70,7 @@ async function buildTokenResponse(
 
 	// Manually sign the id_token as a JWT with all claims using jose
 	const idTokenPayload = {
-		iss: `http://localhost:${port}}`,
+		iss: BASE_URL,
 		sub: profile.sub,
 		aud: profile.aud,
 		email: profile.email,
@@ -89,7 +90,7 @@ async function buildTokenResponse(
 
 	// Manually sign the access_token as a JWT with all claims using jose
 	const accessTokenPayload = {
-		iss: `http://localhost:${port}`,
+		iss: BASE_URL,
 		sub: profile.sub,
 		aud: profile.aud,
 		email: profile.email,
@@ -118,7 +119,7 @@ async function buildTokenResponse(
 		profile: {
 			exp,
 			ver: '1.0',
-			iss: `http://localhost:${port}`,
+			iss: BASE_URL,
 			sub: profile.sub,
 			aud: profile.aud,
 			iat: now,
@@ -210,7 +211,7 @@ async function main() {
 		const profile: TokenProfile = {
 			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),
-			iss: `http://localhost:${port}`,
+			iss: BASE_URL,
 			email,
 			given_name,
 			family_name,
@@ -226,11 +227,11 @@ async function main() {
 
 	app.get('/.well-known/openid-configuration', (_req, res) => {
 		res.json({
-			issuer: 'http://localhost:4000',
-			authorization_endpoint: 'http://localhost:4000/authorize',
-			token_endpoint: 'http://localhost:4000/token',
-			userinfo_endpoint: 'http://localhost:4000/userinfo',
-			jwks_uri: 'http://localhost:4000/.well-known/jwks.json',
+			issuer: BASE_URL,
+			authorization_endpoint: `${BASE_URL}/authorize`,
+			token_endpoint: `${BASE_URL}/token`,
+			userinfo_endpoint: `${BASE_URL}/userinfo`,
+			jwks_uri: `${BASE_URL}/.well-known/jwks.json`,
 			response_types_supported: ['code', 'token'],
 			subject_types_supported: ['public'],
 			id_token_signing_alg_values_supported: ['RS256'],
