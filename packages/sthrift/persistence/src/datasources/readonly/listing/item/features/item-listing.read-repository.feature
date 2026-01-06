@@ -84,7 +84,7 @@ Given an ItemListingReadRepository instance with models and passport
 
 	Scenario: Getting listings by states with error
 		When I call getByStates and database error occurs
-		Then I should receive empty array due to error
+		Then the error should be thrown
 
 	Scenario: Getting paged listings when count query returns null
 		When I call getPaged and count query returns null

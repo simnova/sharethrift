@@ -200,19 +200,17 @@ class ItemListingReadRepositoryImpl implements ItemListingReadRepository {
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
 		if (!states || states.length === 0) return [];
-		try {
-			const result = await this.mongoDataSource.find(
-				{ state: { $in: states } },
-				{
-					...options,
-				},
-			);
-			if (!result || result.length === 0) return [];
-			return result.map((doc) => this.converter.toDomain(doc, this.passport));
-		} catch (error) {
-			console.warn('Error fetching listings by states:', error);
-			return [];
-		}
+
+		const result = await this.mongoDataSource.find(
+			{ state: { $in: states } },
+			{
+				...options,
+			},
+		);
+
+		if (!result || result.length === 0) return [];
+
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
 

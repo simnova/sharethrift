@@ -567,7 +567,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Getting listings by states with error', ({ When, Then }) => {
-		let result: unknown;
+		let thrownError: Error | undefined;
 
 		When('I call getByStates and database error occurs', async () => {
 			const mockModel = {
@@ -580,12 +580,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			const mockPassport = createMockPassport();
 
 			repository = getItemListingReadRepository(mockModels, mockPassport);
-			result = await repository.getByStates(['active']);
+			try {
+				await repository.getByStates(['active']);
+			} catch (error) {
+				thrownError = error as Error;
+			}
 		});
 
-		Then('I should receive empty array due to error', () => {
-			expect(Array.isArray(result)).toBe(true);
-			expect((result as unknown[]).length).toBe(0);
+		Then('the error should be thrown', () => {
+			expect(thrownError).toBeDefined();
+			expect(thrownError?.message).toBe('Database error');
 		});
 	});
 

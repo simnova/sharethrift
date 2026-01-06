@@ -25,9 +25,7 @@ export const conversationCleanupHandlerCreator = (
 		);
 
 		if (result.errors.length > 0) {
-			context.warn(
-				`[ConversationCleanup] Errors: ${result.errors.join('; ')}`,
-			);
+			context.log(`[ConversationCleanup] Errors: ${result.errors.join('; ')}`);
 		}
 	};
 };
