@@ -45,24 +45,32 @@ export const processConversationsForArchivedListings = (
 									listing.id,
 								);
 
-							for (const conversationRef of conversations) {
-								result.processedCount++;
+							// Filter out conversations that already have expiresAt set
+							const conversationsToSchedule = conversations.filter(
+								(c) => !c.expiresAt,
+							);
 
-								if (conversationRef.expiresAt) {
-									continue;
-								}
+							if (conversationsToSchedule.length === 0) {
+								result.processedCount += conversations.length;
+								continue;
+							}
 
-								await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
-									async (repo) => {
+							// Batch all conversations for this listing in a single transaction
+							await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
+								async (repo) => {
+									for (const conversationRef of conversationsToSchedule) {
 										const conversation = await repo.get(conversationRef.id);
 										if (conversation && !conversation.expiresAt) {
 											conversation.scheduleForDeletion(listing.updatedAt);
 											await repo.save(conversation);
 											result.scheduledCount++;
 										}
-									},
-								);
-							}
+										result.processedCount++;
+									}
+								},
+							);
+
+							result.processedCount += conversations.length - conversationsToSchedule.length;
 						} catch (error) {
 							const errorMsg = `Failed to process conversations for listing ${listing.id}: ${error instanceof Error ? error.message : String(error)}`;
 							result.errors.push(errorMsg);
