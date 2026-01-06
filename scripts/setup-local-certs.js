@@ -128,7 +128,7 @@ function main() {
 	console.log('   • https://mock-auth.sharethrift.localhost:4000 (Auth)');
 	console.log('   • https://mock-payment.sharethrift.localhost:3001 (Payment)');
 	console.log('   • https://mock-messaging.sharethrift.localhost:10000 (Messaging)');
-	console.log('   • mongodb://localhost:50000 (MongoDB - no HTTPS)\n');
+	console.log('   • mongodb://mongodb.sharethrift.localhost:50000 (MongoDB)\n');
 	console.log(' Setup complete! Run: pnpm run dev\n');
 }
 
