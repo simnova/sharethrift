@@ -13,6 +13,12 @@ export interface ConversationProps extends DomainSeedwork.DomainEntityProps {
 	messagingConversationId: string;
 	messages: Readonly<MessageEntityReference[]>;
 	loadMessages: () => Promise<Readonly<MessageEntityReference[]>>;
+	/**
+	 * TTL field for automatic expiration.
+	 * Set to 6 months after the associated listing expires, is cancelled,
+	 * or the related reservation request is completed/closed.
+	 */
+	expiresAt?: Date | undefined;
 
 	get createdAt(): Date;
 	get updatedAt(): Date;
@@ -24,4 +30,5 @@ export interface ConversationEntityReference
 	readonly sharer: UserEntityReference;
 	readonly reserver: UserEntityReference;
 	readonly listing: ItemListingEntityReference;
+	readonly expiresAt?: Date | undefined;
 }

@@ -24,17 +24,17 @@ import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 
-import type {PaymentService} from '@cellix/payment-service';
+import { conversationCleanupHandlerCreator } from './handlers/conversation-cleanup-handler.ts';
+
+import type { PaymentService } from '@cellix/payment-service';
 import { PaymentServiceMock } from '@sthrift/payment-service-mock';
 import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
-
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
-		
 		serviceRegistry
 			.registerInfrastructureService(
 				new ServiceMongoose(
@@ -47,11 +47,15 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(
-				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
+				isDevelopment
+					? new ServiceMessagingMock()
+					: new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(
-        isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource()
-      );
+				isDevelopment
+					? new PaymentServiceMock()
+					: new PaymentServiceCybersource(),
+			);
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -62,12 +66,20 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		);
 
 		const messagingService = isDevelopment
-			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
-			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
-    
-    const paymentService = isDevelopment
-      ? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
-      : serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
+			? serviceRegistry.getInfrastructureService<MessagingService>(
+					ServiceMessagingMock,
+				)
+			: serviceRegistry.getInfrastructureService<MessagingService>(
+					ServiceMessagingTwilio,
+				);
+
+		const paymentService = isDevelopment
+			? serviceRegistry.getInfrastructureService<PaymentService>(
+					PaymentServiceMock,
+				)
+			: serviceRegistry.getInfrastructureService<PaymentService>(
+					PaymentServiceCybersource,
+				);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);
@@ -79,7 +91,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 					ServiceTokenValidation,
 				),
 			paymentService,
-      messagingService,
+			messagingService,
 		};
 	})
 	.initializeApplicationServices((context) =>
@@ -97,5 +109,13 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		'rest',
 		{ route: '{communityId}/{role}/{memberId}/{*rest}' },
 		restHandlerCreator,
+	)
+	// Schedule conversation cleanup timer to run daily at 2:00 AM UTC
+	// This ensures conversations for archived listings get scheduled for deletion
+	// even if event-driven scheduling fails
+	.registerAzureFunctionTimerHandler(
+		'conversationCleanup',
+		'0 0 2 * * *', // NCRONTAB: second, minute, hour, day of month, month, day of week
+		conversationCleanupHandlerCreator,
 	)
 	.startUp();

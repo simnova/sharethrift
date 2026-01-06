@@ -657,6 +657,9 @@ importers:
       '@cellix/payment-service':
         specifier: workspace:*
         version: link:../../cellix/payment-service
+      '@opentelemetry/api':
+        specifier: ^1.9.0
+        version: 1.9.0
       '@sthrift/context-spec':
         specifier: workspace:*
         version: link:../context-spec

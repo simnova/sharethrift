@@ -11,6 +11,13 @@ export interface Conversation extends MongooseSeedwork.Base {
 	schemaVersion: string;
 	createdAt: Date;
 	updatedAt: Date;
+	/**
+	 * TTL field for automatic expiration.
+	 * Set to 6 months after the associated listing expires, is cancelled,
+	 * or the related reservation request is completed/closed.
+	 * MongoDB TTL index will automatically delete documents when this date passes.
+	 */
+	expiresAt?: Date | undefined;
 }
 
 const ConversationSchema = new Schema<
@@ -26,6 +33,7 @@ const ConversationSchema = new Schema<
 		schemaVersion: { type: String, required: true, default: '1.0.0' },
 		createdAt: { type: Date, required: true, default: Date.now },
 		updatedAt: { type: Date, required: true, default: Date.now },
+		expiresAt: { type: Date, required: false, expires: 0 }, // TTL index: document expires when expiresAt is reached
 	},
 	{ timestamps: true },
 );

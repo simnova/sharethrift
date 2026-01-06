@@ -30,8 +30,8 @@ export class ConversationDomainAdapter
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
 			return {
-        id: this.doc.sharer.toString(),
-      } as Domain.Contexts.User.UserEntityReference;
+				id: this.doc.sharer.toString(),
+			} as Domain.Contexts.User.UserEntityReference;
 		}
 		// Check userType discriminator to determine which adapter to use
 		const sharerDoc = this.doc.sharer as
@@ -165,8 +165,8 @@ export class ConversationDomainAdapter
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
 			return {
-        id: this.doc.listing.toString(),
-      } as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
@@ -225,5 +225,23 @@ export class ConversationDomainAdapter
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
 		return Promise.resolve(this._messages);
+	}
+
+	/**
+	 * Gets the expiration date for this conversation.
+	 * When set, the conversation will be automatically deleted by MongoDB TTL index
+	 * after this date passes.
+	 */
+	get expiresAt(): Date | undefined {
+		return this.doc.expiresAt;
+	}
+
+	/**
+	 * Sets the expiration date for this conversation.
+	 * Should be set to 6 months after the associated listing expires, is cancelled,
+	 * or the related reservation request is completed/closed.
+	 */
+	set expiresAt(value: Date | undefined) {
+		this.doc.expiresAt = value;
 	}
 }

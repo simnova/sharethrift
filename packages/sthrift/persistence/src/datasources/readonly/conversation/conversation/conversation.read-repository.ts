@@ -34,6 +34,20 @@ export interface ConversationReadRepository {
 		listingId: string,
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
+
+	/**
+	 * Finds all conversations associated with a specific listing.
+	 * Used for scheduling conversation deletion when a listing expires or is archived.
+	 * @param listingId - The ID of the listing to find conversations for
+	 * @param options - Optional find options
+	 * @returns Array of conversations associated with the listing
+	 */
+	getByListingId: (
+		listingId: string,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
+	>;
 }
 
 export class ConversationReadRepositoryImpl
@@ -136,6 +150,40 @@ export class ConversationReadRepositoryImpl
 		} catch (error) {
 			console.warn('Error with ObjectId in getBySharerReserverListing:', error);
 			return null;
+		}
+	}
+
+	/**
+	 * Finds all conversations associated with a specific listing.
+	 * Used for scheduling conversation deletion when a listing expires or is archived.
+	 * @param listingId - The ID of the listing to find conversations for
+	 * @param options - Optional find options
+	 * @returns Array of conversations associated with the listing
+	 */
+	async getByListingId(
+		listingId: string,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
+	> {
+		if (!listingId || listingId.trim() === '') {
+			return [];
+		}
+
+		try {
+			const result = await this.mongoDataSource.find(
+				{
+					listing: new MongooseSeedwork.ObjectId(listingId),
+				},
+				{
+					...options,
+					populateFields: populateFields,
+				},
+			);
+			return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		} catch (error) {
+			console.warn('Error with ObjectId in getByListingId:', error);
+			return [];
 		}
 	}
 }
