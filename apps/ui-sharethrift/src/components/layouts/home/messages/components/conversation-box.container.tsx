@@ -33,37 +33,46 @@ export const ConversationBoxContainer: React.FC<
 		ConversationBoxContainerSendMessageDocument,
 		{
 			update: (cache, { data }, { variables }) => {
-				// Guard against missing or invalid sendMessage payload
-				if (!data?.sendMessage?.status?.success || !data.sendMessage.message) {
-					return;
-				}
+				try {
+					// Guard against missing or invalid sendMessage payload
+					if (!data?.sendMessage?.status?.success || !data.sendMessage.message) {
+						return;
+					}
 
-				// Use variables from mutation call instead of props closure to avoid stale reference
-				const conversationId = variables?.input?.conversationId;
-				if (!conversationId) return;
+					// Use variables from mutation call instead of props closure to avoid stale reference
+					const conversationId = variables?.input?.conversationId;
+					if (!conversationId) return;
 
-				// Update Apollo cache instead of refetch to avoid unnecessary network round-trip
-				const existingConversation = cache.readQuery({
-					query: ConversationBoxContainerConversationDocument,
-					variables: { conversationId },
-				});
-
-				if (existingConversation?.conversation) {
-					// Spread the entire existing result to preserve query shape and avoid field drift
-					cache.writeQuery({
+					// Update Apollo cache instead of refetch to avoid unnecessary network round-trip
+					const existingConversation = cache.readQuery({
 						query: ConversationBoxContainerConversationDocument,
 						variables: { conversationId },
-						data: {
-							...existingConversation,
-							conversation: {
-								...existingConversation.conversation,
-								messages: [
-									...(existingConversation.conversation.messages || []),
-									data.sendMessage.message,
-								],
-							},
-						},
 					});
+
+					if (existingConversation?.conversation) {
+						// Spread the entire existing result to preserve query shape and avoid field drift
+						cache.writeQuery({
+							query: ConversationBoxContainerConversationDocument,
+							variables: { conversationId },
+							data: {
+								...existingConversation,
+								conversation: {
+									...existingConversation.conversation,
+									messages: [
+										...(existingConversation.conversation.messages || []),
+										data.sendMessage.message,
+									],
+								},
+							},
+						});
+					}
+				} catch (error) {
+					// Cache update errors should not block the mutation from succeeding
+					// Log for debugging but don't show error to user - message was sent successfully
+					console.warn(
+						'[ConversationBoxContainer] Apollo cache update failed, message sent but UI may need refresh',
+						error,
+					);
 				}
 			},
 			onCompleted: (data) => {

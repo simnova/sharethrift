@@ -33,7 +33,8 @@ export const sendMessage = (dataSources: DataSources) => {
 		}
 
 		// Send via messaging repository
-		// Authorization is handled at the GraphQL resolver layer via passport
+		// NOTE: Authorization is intentionally not enforced at this service layer.
+		// Callers (currently GraphQL resolvers using Passport)
 		return await dataSources.messagingDataSource.Conversation.Conversation.MessagingConversationRepo.sendMessage(
 			conversation,
 			messageContents.valueOf(),
