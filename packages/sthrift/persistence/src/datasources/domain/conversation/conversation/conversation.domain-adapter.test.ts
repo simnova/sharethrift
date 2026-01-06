@@ -611,4 +611,46 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect(error?.message).toBe('listing is not populated');
 		});
 	});
+
+	Scenario('Getting expiresAt when not set', ({ When, Then }) => {
+		When('I get the expiresAt property when it is undefined', () => {
+			const doc = makeConversationDoc({ expiresAt: undefined });
+			adapter = new ConversationDomainAdapter(doc);
+			result = adapter.expiresAt;
+		});
+
+		Then('it should return undefined', () => {
+			expect(result).toBeUndefined();
+		});
+	});
+
+	Scenario('Getting expiresAt when set', ({ When, Then }) => {
+		let testDate: Date;
+
+		When('I get the expiresAt property when it is set', () => {
+			testDate = new Date('2026-07-01T00:00:00.000Z');
+			const doc = makeConversationDoc({ expiresAt: testDate });
+			adapter = new ConversationDomainAdapter(doc);
+			result = adapter.expiresAt;
+		});
+
+		Then('it should return the correct date', () => {
+			expect(result).toBe(testDate);
+		});
+	});
+
+	Scenario('Setting expiresAt property', ({ When, Then }) => {
+		let testDate: Date;
+
+		When('I set the expiresAt property to a date', () => {
+			testDate = new Date('2026-07-01T00:00:00.000Z');
+			const doc = makeConversationDoc();
+			adapter = new ConversationDomainAdapter(doc);
+			adapter.expiresAt = testDate;
+		});
+
+		Then("the document's expiresAt should be set correctly", () => {
+			expect(doc.expiresAt).toBe(testDate);
+		});
+	});
 });

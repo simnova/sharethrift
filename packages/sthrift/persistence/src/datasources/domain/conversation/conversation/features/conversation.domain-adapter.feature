@@ -147,3 +147,15 @@ Feature: ConversationDomainAdapter
   Scenario: Loading listing when not populated
     When I call loadListing on an adapter with no listing
     Then an error should be thrown indicating listing is not populated in load
+
+  Scenario: Getting expiresAt when not set
+    When I get the expiresAt property when it is undefined
+    Then it should return undefined
+
+  Scenario: Getting expiresAt when set
+    When I get the expiresAt property when it is set
+    Then it should return the correct date
+
+  Scenario: Setting expiresAt property
+    When I set the expiresAt property to a date
+    Then the document's expiresAt should be set correctly
