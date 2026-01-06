@@ -210,7 +210,7 @@ class ItemListingReadRepositoryImpl implements ItemListingReadRepository {
 			if (!result || result.length === 0) return [];
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
 		} catch (error) {
-			console.error('Error fetching listings by states:', error);
+			console.warn('Error fetching listings by states:', error);
 			return [];
 		}
 	}
