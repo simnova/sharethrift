@@ -10,6 +10,10 @@ import {
 	type CleanupResult,
 	processConversationsForArchivedListings,
 } from './cleanup-archived-conversations.ts';
+import {
+	type ConversationSendMessageCommand,
+	sendMessage,
+} from './send-message.ts';
 
 export interface ConversationApplicationService {
 	create: (
@@ -24,6 +28,9 @@ export interface ConversationApplicationService {
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	>;
 	processConversationsForArchivedListings: () => Promise<CleanupResult>;
+	sendMessage: (
+		command: ConversationSendMessageCommand,
+	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference>;
 }
 
 export const Conversation = (
@@ -35,5 +42,6 @@ export const Conversation = (
 		queryByUser: queryByUser(dataSources),
 		processConversationsForArchivedListings:
 			processConversationsForArchivedListings(dataSources),
+		sendMessage: sendMessage(dataSources),
 	};
 };

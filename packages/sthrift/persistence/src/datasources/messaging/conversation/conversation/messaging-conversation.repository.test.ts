@@ -6,7 +6,6 @@ import { MessagingConversationRepositoryImpl } from './messaging-conversation.re
 describe('MessagingConversationRepository', () => {
 	let repository: MessagingConversationRepositoryImpl;
 	let mockMessagingService: MessagingService;
-	let mockPassport: Domain.Passport;
 
 	beforeEach(() => {
 		mockMessagingService = {
@@ -16,12 +15,7 @@ describe('MessagingConversationRepository', () => {
 			createConversation: vi.fn(),
 		} as unknown as MessagingService;
 
-		mockPassport = {} as Domain.Passport;
-
-		repository = new MessagingConversationRepositoryImpl(
-			mockMessagingService,
-			mockPassport,
-		);
+		repository = new MessagingConversationRepositoryImpl(mockMessagingService);
 	});
 
 	describe('getMessages', () => {
@@ -54,7 +48,7 @@ describe('MessagingConversationRepository', () => {
 			);
 		});
 
-		it('should handle messages without author', async () => {
+		it('should return empty array when message has no author (author required)', async () => {
 			const mockMessages = [
 				{
 					id: 'msg-1',
@@ -69,8 +63,8 @@ describe('MessagingConversationRepository', () => {
 
 			const result = await repository.getMessages('conversation-123');
 
-			expect(result).toBeDefined();
-			expect(result.length).toBe(1);
+			// Messages without authors are not valid - error is caught and empty array returned
+			expect(result).toEqual([]);
 		});
 
 		it('should return empty array on error', async () => {
@@ -93,32 +87,73 @@ describe('MessagingConversationRepository', () => {
 				author: validAuthorId,
 				createdAt: new Date(),
 			};
+			const mockConversation = {
+				id: 'conv-123',
+				messagingConversationId: 'messaging-conv-123',
+			} as Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
+
 			vi.mocked(mockMessagingService.sendMessage).mockResolvedValue(
 				mockMessage,
 			);
 
 			const result = await repository.sendMessage(
-				'conversation-123',
-				'Test message',
+				mockConversation,
+				['Test message'],
 				validAuthorId,
 			);
 
 			expect(result).toBeDefined();
 			expect(mockMessagingService.sendMessage).toHaveBeenCalledWith(
-				'conversation-123',
+				'messaging-conv-123',
 				'Test message',
+				validAuthorId,
+			);
+		});
+
+		it('should join multiple content items with double newlines', async () => {
+			const validAuthorId = '507f1f77bcf86cd799439011';
+			const mockMessage = {
+				id: 'msg-123',
+				body: 'First part\n\nSecond part',
+				author: validAuthorId,
+				createdAt: new Date(),
+			};
+			const mockConversation = {
+				id: 'conv-123',
+				messagingConversationId: 'messaging-conv-123',
+			} as Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
+
+			vi.mocked(mockMessagingService.sendMessage).mockResolvedValue(
+				mockMessage,
+			);
+
+			const result = await repository.sendMessage(
+				mockConversation,
+				['First part', 'Second part'],
+				validAuthorId,
+			);
+
+			expect(result).toBeDefined();
+			expect(mockMessagingService.sendMessage).toHaveBeenCalledWith(
+				'messaging-conv-123',
+				'First part\n\nSecond part',
 				validAuthorId,
 			);
 		});
 
 		it('should throw error on send failure', async () => {
 			const validAuthorId = '507f1f77bcf86cd799439011';
+			const mockConversation = {
+				id: 'conv-123',
+				messagingConversationId: 'messaging-conv-123',
+			} as Domain.Contexts.Conversation.Conversation.ConversationEntityReference;
+
 			vi.mocked(mockMessagingService.sendMessage).mockRejectedValue(
 				new Error('Failed to send'),
 			);
 
 			await expect(
-				repository.sendMessage('conversation-123', 'Test', validAuthorId),
+				repository.sendMessage(mockConversation, ['Test'], validAuthorId),
 			).rejects.toThrow('Failed to send');
 		});
 	});

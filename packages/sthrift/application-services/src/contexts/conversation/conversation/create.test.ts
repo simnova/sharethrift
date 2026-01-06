@@ -37,35 +37,36 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			getBySharerReserverListing: vi.fn(),
 		};
 
-	mockUserReadRepo = {
-		getById: vi.fn(),
-	};
+		mockUserReadRepo = {
+			getById: vi.fn(),
+		};
 
-	// Create wrapper functions that delegate to getById
-	const getUserByIdSpy = vi.fn((id: string) => {
-		return mockUserReadRepo.getById(id);
-	});
-	const getUserByEmailSpy = vi.fn();
+		// Create wrapper functions that delegate to getById
+		const getUserByIdSpy = vi.fn((id: string) => {
+			return mockUserReadRepo.getById(id);
+		});
+		const getUserByEmailSpy = vi.fn();
 
-	mockListingReadRepo = {
-		getById: vi.fn(),
-	};
+		mockListingReadRepo = {
+			getById: vi.fn(),
+		};
 
-	mockMessagingRepo = {
-		createConversation: vi.fn(),
-	};
+		mockMessagingRepo = {
+			createConversation: vi.fn(),
+		};
 
-	mockRepo = {
-		getNewInstance: vi.fn(),
-		save: vi.fn(),
-	};
+		mockRepo = {
+			getNewInstance: vi.fn(),
+			save: vi.fn(),
+		};
 
-	mockUnitOfWork = {
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
-		withScopedTransaction: vi.fn(async (callback: any) => {
-			return await callback(mockRepo);
-		}),
-	};		mockDataSources = {
+		mockUnitOfWork = {
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			withScopedTransaction: vi.fn(async (callback: any) => {
+				return await callback(mockRepo);
+			}),
+		};
+		mockDataSources = {
 			domainDataSource: {
 				Conversation: {
 					Conversation: {
@@ -79,17 +80,17 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 						ConversationReadRepo: mockReadRepo,
 					},
 				},
-			User: {
-				PersonalUser: {
-					PersonalUserReadRepo: mockUserReadRepo,
-				},
 				User: {
-          UserReadRepo: {
-            getById: getUserByIdSpy,
-            getByEmail: getUserByEmailSpy,
-          }
-        }
-			},
+					PersonalUser: {
+						PersonalUserReadRepo: mockUserReadRepo,
+					},
+					User: {
+						UserReadRepo: {
+							getById: getUserByIdSpy,
+							getByEmail: getUserByEmailSpy,
+						},
+					},
+				},
 				Listing: {
 					ItemListing: {
 						ItemListingReadRepo: mockListingReadRepo,
@@ -103,7 +104,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				},
 			},
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
 		result = undefined;
