@@ -578,6 +578,9 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
       rimraf:
         specifier: ^6.0.1
         version: 6.0.1

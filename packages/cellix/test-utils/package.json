@@ -17,12 +17,15 @@
 		"build": "tsc --build",
 		"watch": "tsc --watch",
 		"lint": "biome lint",
-		"clean": "rimraf dist"
+		"clean": "rimraf dist",
+		"test": "vitest run",
+		"test:watch": "vitest"
 	},
 	"devDependencies": {
 		"rimraf": "^6.0.1",
 		"typescript": "^5.8.3",
-		"@cellix/typescript-config": "workspace:*"
+		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*"
 	},
 	"license": "MIT"
 }
