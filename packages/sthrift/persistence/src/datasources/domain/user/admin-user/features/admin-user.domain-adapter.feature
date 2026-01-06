@@ -46,3 +46,5 @@ Feature: AdminUser Domain Adapter Property Access
   Scenario: Accessing nested profile location properties
     When I access profile location properties
     Then all location properties should be accessible
+
+

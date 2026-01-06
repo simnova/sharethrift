@@ -24,6 +24,24 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
+function createMockModelWithNullFindById(baseModel: Models.User.PersonalUserModelType): Models.User.PersonalUserModelType {
+	return {
+		...baseModel,
+		findById: vi.fn(() => ({ exec: vi.fn(async () => null) })),
+	} as unknown as Models.User.PersonalUserModelType;
+}
+
+function createMockModelWithNullFindOne(baseModel: Models.User.PersonalUserModelType): Models.User.PersonalUserModelType {
+	return {
+		...baseModel,
+		findOne: vi.fn(() => ({ lean: vi.fn(() => null) })),
+	} as unknown as Models.User.PersonalUserModelType;
+}
+
+function createModelsContext(personalUserModel: Models.User.PersonalUserModelType): ModelsContext {
+	return { User: { PersonalUser: personalUserModel } } as unknown as ModelsContext;
+}
+
 function makeMockUser(
 	overrides: Partial<Models.User.PersonalUser> = {},
 ): Models.User.PersonalUser {
@@ -127,6 +145,23 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect((result as unknown[])[0]).toBeInstanceOf(
 				Domain.Contexts.User.PersonalUser.PersonalUser,
 			);
+		});
+	});
+
+	Scenario('Getting all personal users with no results', ({ Given, When, Then }) => {
+		Given('no PersonalUser documents exist in the database', () => {
+			const mockDataSource = repository['mongoDataSource'] as unknown as {
+				find: ReturnType<typeof vi.fn>;
+			};
+			mockDataSource.find = vi.fn(() => Promise.resolve([]));
+		});
+
+		When('I call getAll', async () => {
+			result = await repository.getAll();
+		});
+
+		Then('I should receive an empty array', () => {
+			expect(result).toEqual([]);
 		});
 	});
 
@@ -258,23 +293,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		"Getting a personal user by ID that doesn't exist",
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
-				mockModel = {
-					...mockModel,
-					findById: vi.fn(() => ({
-						exec: vi.fn(async () => null),
-					})),
-				} as unknown as Models.User.PersonalUserModelType;
-
-				const modelsContext = {
-					User: {
-						PersonalUser: mockModel,
-					},
-				} as unknown as ModelsContext;
-
-				repository = new PersonalUserReadRepositoryImpl(
-					modelsContext,
-					passport,
-				);
+				mockModel = createMockModelWithNullFindById(mockModel);
+				const modelsContext = createModelsContext(mockModel);
+				repository = new PersonalUserReadRepositoryImpl(modelsContext, passport);
 				result = await repository.getById('nonexistent-id');
 			});
 			Then('I should receive null', () => {
@@ -311,23 +332,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		"Getting a personal user by email that doesn't exist",
 		({ When, Then }) => {
 			When('I call getByEmail with "nonexistent@example.com"', async () => {
-				mockModel = {
-					...mockModel,
-					findOne: vi.fn(() => ({
-						lean: vi.fn(() => null),
-					})),
-				} as unknown as Models.User.PersonalUserModelType;
-
-				const modelsContext = {
-					User: {
-						PersonalUser: mockModel,
-					},
-				} as unknown as ModelsContext;
-
-				repository = new PersonalUserReadRepositoryImpl(
-					modelsContext,
-					passport,
-				);
+				mockModel = createMockModelWithNullFindOne(mockModel);
+				const modelsContext = createModelsContext(mockModel);
+				repository = new PersonalUserReadRepositoryImpl(modelsContext, passport);
 				result = await repository.getByEmail('nonexistent@example.com');
 			});
 			Then('I should receive null', () => {
