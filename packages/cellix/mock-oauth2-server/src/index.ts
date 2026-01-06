@@ -12,7 +12,7 @@ setupEnvironment();
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
-const BASE_URL = 'https://auth.sharethrift.localhost:4000';
+const BASE_URL = 'https://mock-auth.sharethrift.localhost:4000';
 
 function normalizeUrl(urlString: string): string {
 	try {
@@ -295,13 +295,13 @@ async function main() {
 		),
 	};
 
-	https.createServer(httpsOptions, app).listen(port, 'auth.sharethrift.localhost', () => {
+	https.createServer(httpsOptions, app).listen(port, 'mock-auth.sharethrift.localhost', () => {
 		// eslint-disable-next-line no-console
 		console.log(
-			`Mock OAuth2 server running on https://auth.sharethrift.localhost:${port}`,
+			`Mock OAuth2 server running on https://mock-auth.sharethrift.localhost:${port}`,
 		);
 		console.log(
-			`JWKS endpoint running on https://auth.sharethrift.localhost:${port}/.well-known/jwks.json`,
+			`JWKS endpoint running on https://mock-auth.sharethrift.localhost:${port}/.well-known/jwks.json`,
 		);
 	});
 }

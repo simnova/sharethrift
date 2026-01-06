@@ -44,7 +44,7 @@ function main() {
 		return;
 	}
 
-	console.log('📦 Setting up local HTTPS certificates...\n');
+	console.log(' Setting up local HTTPS certificates...\n');
 
 	// Check if mkcert is installed
 	if (!checkCommand('mkcert')) {
@@ -123,9 +123,12 @@ function main() {
 	console.log(`   ${CERT_DIR}\n`);
 	console.log(' Your local domains are now trusted for HTTPS:');
 	console.log('   • https://sharethrift.localhost:3000 (UI)');
-	console.log('   • https://api.sharethrift.localhost:7443 (API)');
-	console.log('   • https://developers.sharethrift.localhost:3002 (Docs)');
-	console.log('   • https://auth.sharethrift.localhost:4000 (Auth)\n');
+	console.log('   • https://data-access.sharethrift.localhost:7443 (API)');
+	console.log('   • https://docs.sharethrift.localhost:3002 (Docs)');
+	console.log('   • https://mock-auth.sharethrift.localhost:4000 (Auth)');
+	console.log('   • https://mock-payment.sharethrift.localhost:3001 (Payment)');
+	console.log('   • https://mock-messaging.sharethrift.localhost:10000 (Messaging)');
+	console.log('   • mongodb://localhost:50000 (MongoDB - no HTTPS)\n');
 	console.log(' Setup complete! Run: pnpm run dev\n');
 }
 

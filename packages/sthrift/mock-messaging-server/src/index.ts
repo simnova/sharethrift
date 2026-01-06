@@ -1,4 +1,7 @@
 import express from 'express';
+import https from 'node:https';
+import fs from 'node:fs';
+import path from 'node:path';
 import type { Request, Response, Application } from 'express';
 import type { Server } from 'node:http';
 import { config } from 'dotenv';
@@ -69,8 +72,22 @@ export function createApp(): Application {
 export function startServer(port = 10000, seedData = false): Promise<Server> {
 	return new Promise((resolve) => {
 		const app = createApp();
-		const server = app.listen(port, () => {
-			console.log(`Mock Twilio Server listening on port ${port}`);
+		
+		// From package directory, go up 3 levels to workspace root
+		// packages/sthrift/mock-messaging-server -> ../../..
+		const workspaceRoot = path.join(process.cwd(), '../../../');
+		
+		const httpsOptions = {
+			key: fs.readFileSync(
+				path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem'),
+			),
+			cert: fs.readFileSync(
+				path.join(workspaceRoot, '.certs/sharethrift.localhost.pem'),
+			),
+		};
+		
+		const server = https.createServer(httpsOptions, app).listen(port, 'mock-messaging.sharethrift.localhost', () => {
+			console.log(`✅ Mock Messaging Server listening on https://mock-messaging.sharethrift.localhost:${port}`);
 			
 			if (seedData) {
 				seedMockData();
