@@ -132,7 +132,7 @@ Although Shared Key authorization requires access to the storage account key, th
 **Frontend Components:**
 - Handles client-side file validation (type, size, dimensions).
 - Requests authorization from the backend to upload a specific file.
-- Uses the server-provided server-signed request headers to upload the file directly to Azure Blob Storage.
+- Uses the server-signed request headers to upload the file directly to Azure Blob Storage.
 - After upload, notifies the backend to trigger malware scanning and persist upload metadata.
 
 **Backend Services:**
