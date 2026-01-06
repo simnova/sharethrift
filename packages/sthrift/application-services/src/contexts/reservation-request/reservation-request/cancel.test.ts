@@ -15,12 +15,14 @@ function buildReservation({
 	id,
 	state,
 	reserverId,
+	callerId,
 }: {
 	id: string;
 	state: 'Requested' | 'Rejected' | 'Accepted';
 	reserverId: string;
+	callerId?: string;
 }) {
-	let currentState = state;
+	let currentState: string = state;
 	return {
 		id,
 		get state() {
@@ -29,6 +31,12 @@ function buildReservation({
 		set state(value: string) {
 			// Simulate domain entity state validation
 			if (value === 'Cancelled') {
+				// Simulate visa permission check: only reserver can cancel
+				if (callerId && callerId !== reserverId) {
+					throw new Error(
+						'You do not have permission to cancel this reservation request',
+					);
+				}
 				if (currentState !== 'Requested' && currentState !== 'Rejected') {
 					throw new Error('Cannot cancel reservation in current state');
 				}
@@ -49,11 +57,13 @@ function mockTransaction({
 	saveReturn?: unknown;
 }) {
 	(
-        // biome-ignore lint/suspicious/noExplicitAny: Test mock access
+        // biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		dataSources.domainDataSource as any
 	).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
-		async (callback: any) => {
+		async (
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			callback: any,
+		) => {
 			const mockRepo = {
 				getById: vi.fn().mockResolvedValue(getByIdReturn),
 				save: vi.fn().mockResolvedValue(saveReturn),
@@ -121,6 +131,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: command.id,
 					state: 'Requested',
 					reserverId: command.callerId,
+					callerId: command.callerId,
 				});
 
 				mockTransaction({
@@ -156,6 +167,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: command.id,
 					state: 'Rejected',
 					reserverId: command.callerId,
+					callerId: command.callerId,
 				});
 
 				mockTransaction({
@@ -223,6 +235,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: command.id,
 					state: 'Requested',
 					reserverId: command.callerId,
+					callerId: command.callerId,
 				});
 
 				mockTransaction({
@@ -260,6 +273,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: command.id,
 					state: 'Accepted',
 					reserverId: command.callerId,
+					callerId: command.callerId,
 				});
 
 				mockTransaction({
@@ -299,6 +313,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: command.id,
 					state: 'Requested',
 					reserverId: 'user-123', // Different from command.callerId
+					callerId: command.callerId,
 				});
 
 				mockTransaction({
@@ -319,7 +334,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				() => {
 					expect(error).toBeDefined();
 					expect(error.message).toBe(
-						'Only the reserver can cancel their reservation request',
+						'You do not have permission to cancel this reservation request',
 					);
 				},
 			);

@@ -20,15 +20,8 @@ export const cancel = (dataSources: DataSources) => {
 					throw new Error('Reservation request not found');
 				}
 
-				const reserver = await reservationRequest.loadReserver();
-				if (reserver.id !== command.callerId) {
-					throw new Error(
-						'Only the reserver can cancel their reservation request',
-					);
-				}
-
 				// State setter delegates to domain entity's private cancel() method
-				// which handles state validation and permission checks
+				// which handles state validation and permission checks via visa
 				reservationRequest.state = 'Cancelled';
 				reservationRequestToReturn = await repo.save(reservationRequest);
 			},
