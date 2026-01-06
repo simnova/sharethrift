@@ -1094,7 +1094,7 @@ describe('ReservationRequestNotificationService', () => {
 			consoleSpy.mockRestore();
 		});
 
-		it('handles sharer with no email address returning null from getUserContactInfo', async () => {
+		it('handles sharer with no email address', async () => {
 			const consoleSpy = vi.spyOn(console, 'error');
 
 			const sharerWithoutEmail = {
