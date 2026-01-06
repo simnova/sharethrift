@@ -181,6 +181,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
 				'You do not have permission to request close for this reservation request',
 			);
 		}
+
+		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
+			throw new DomainSeedwork.PermissionError('Cannot close reservation in current state');
+		}
 	}
 
 	get reservationPeriodStart(): Date {
