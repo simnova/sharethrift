@@ -81,11 +81,16 @@ We considered placing a proxy in front of uploads (client → Function App → B
 
 ### Why we have not switched to Entra ID (Azure AD)
 
-- **Control model mismatch**: Entra ID enables RBAC and token-based auth for storage, and can mint user delegation SAS, but it does not provide the same mechanism to cryptographically bind uploads to exact header values, metadata, and tags for a single pre-authorized request. Our design relies on signing the canonical request (including headers) so the client cannot alter approved parameters.
-- **Managed Identity does not expose account keys**: Shared Key authorization requires the storage account key to sign the canonical request. Managed Identity (MI) authenticates the Function App to Azure but does not grant access to the raw account key value. Without the account key, we cannot perform Shared Key authorization as implemented.
-- **User delegation SAS still inherits SAS limitations**: Even with Entra ID, user delegation SAS remains a SAS model—time/permission scoped, but not bound to specific header values or content—and therefore lacks our required fine-grained constraints.
+We evaluated Entra ID–based authorization patterns (including Managed Identity and user delegation SAS) as part of the design. While Entra ID is our preferred approach for service-to-service authentication in many areas of the platform, it does not meet the specific requirements of this upload flow.
 
-We prefer Entra ID for service-to-service auth wherever possible and continue to revisit it. For uploads requiring per-request binding to exact headers/metadata/tags, Shared Key authorization remains the only option that satisfies our constraints.
+- **Header-binding requirement**: Our design relies on cryptographically binding the upload authorization to the exact canonical request, including HTTP method, blob path, headers, metadata, index tags, and timing constraints. Entra ID–based RBAC and OAuth tokens authorize *who* can access storage, but they do not provide a mechanism to bind authorization to exact per-request header values in the way Shared Key request signing does.
+
+- **Managed Identity design choice**: Although Managed Identity can authenticate the backend to Azure Resource Manager and the storage data plane, it intentionally does not expose raw storage account keys to workloads. We deliberately chose not to retrieve or manage account keys via the control plane or alternative mechanisms, as doing so would undermine our narrowly scoped, request-level signing model.
+
+- **User delegation SAS limitations**: Entra ID can mint user delegation SAS tokens, but these still follow the SAS model—time- and permission-scoped access that is reusable within its validity window. User delegation SAS does not bind uploads to exact server-approved headers, metadata, or tags, which is a core requirement of this system.
+
+For uploads requiring strict, per-request binding to exact headers, metadata, and tags, Shared Key–based request signing remains the only mechanism that satisfies our constraints. We continue to prefer Entra ID where applicable and periodically re-evaluate whether future platform capabilities can meet these requirements without compromising security or control.
+
 
 ### Mitigations for storage account key exposure
 
