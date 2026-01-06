@@ -76,10 +76,8 @@ export class ConversationRepository
 			.populate('reserver')
 			.populate('listing')
 			.exec();
-		return Promise.all(
-			mongoConversations.map((doc) =>
-				this.typeConverter.toDomain(doc, this.passport),
-			),
+		return mongoConversations.map((doc) =>
+			this.typeConverter.toDomain(doc, this.passport),
 		);
 	}
 
@@ -97,10 +95,8 @@ export class ConversationRepository
 			.populate('reserver')
 			.populate('listing')
 			.exec();
-		return Promise.all(
-			mongoConversations.map((doc) =>
-				this.typeConverter.toDomain(doc, this.passport),
-			),
+		return mongoConversations.map((doc) =>
+			this.typeConverter.toDomain(doc, this.passport),
 		);
 	}
 
