@@ -29,14 +29,19 @@ function createValidObjectId(id: string): string {
 
 function makePassport(): Domain.Passport {
 	return vi.mocked({
-		conversation: { forConversation: vi.fn(() => ({ determineIf: () => true })) },
+		conversation: {
+			forConversation: vi.fn(() => ({ determineIf: () => true })),
+		},
 		user: { forPersonalUser: vi.fn(() => ({ determineIf: () => true })) },
 		listing: { forItemListing: vi.fn(() => ({ determineIf: () => true })) },
 	} as unknown as Domain.Passport);
 }
 
 function makeEventBus(): DomainSeedwork.EventBus {
-	return vi.mocked({ dispatch: vi.fn(), register: vi.fn() } as DomainSeedwork.EventBus);
+	return vi.mocked({
+		dispatch: vi.fn(),
+		register: vi.fn(),
+	} as DomainSeedwork.EventBus);
 }
 
 function makeUserDoc(id: string): Models.User.PersonalUser {
@@ -84,26 +89,39 @@ function makeConversationDoc(id = 'conv-1'): Models.Conversation.Conversation {
 }
 
 function createChainableQuery<T>(result: T) {
-	const query = { populate: vi.fn(), exec: vi.fn().mockResolvedValue(result) };
+	const query = {
+		populate: vi.fn(),
+		limit: vi.fn(),
+		exec: vi.fn().mockResolvedValue(result),
+	};
 	query.populate.mockReturnValue(query);
+	query.limit.mockReturnValue(query);
 	return query;
 }
 
 function setupConversationRepo(
 	mockDoc: Models.Conversation.Conversation,
-	overrides?: { findById?: () => unknown, findOne?: () => unknown, modelCtor?: Models.Conversation.ConversationModelType }
+	overrides?: {
+		findById?: () => unknown;
+		findOne?: () => unknown;
+		find?: () => unknown;
+		modelCtor?: Models.Conversation.ConversationModelType;
+	},
 ): ConversationRepository {
-	const modelType = overrides?.modelCtor ?? ({
-		findById: overrides?.findById ?? (() => createChainableQuery(mockDoc)),
-		findOne: overrides?.findOne ?? (() => createChainableQuery(mockDoc))
-	} as unknown as Models.Conversation.ConversationModelType);
-	
+	const modelType =
+		overrides?.modelCtor ??
+		({
+			findById: overrides?.findById ?? (() => createChainableQuery(mockDoc)),
+			findOne: overrides?.findOne ?? (() => createChainableQuery(mockDoc)),
+			find: overrides?.find ?? (() => createChainableQuery([mockDoc])),
+		} as unknown as Models.Conversation.ConversationModelType);
+
 	return new ConversationRepository(
-		makePassport(), 
-		modelType, 
-		new ConversationConverter(), 
-		makeEventBus(), 
-		vi.mocked({} as mongoose.ClientSession)
+		makePassport(),
+		modelType,
+		new ConversationConverter(),
+		makeEventBus(),
+		vi.mocked({} as mongoose.ClientSession),
 	);
 }
 
@@ -149,54 +167,45 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 			And("the domain object's sharer should be populated", () => {
 				const conversation =
-					result as Domain.Contexts.Conversation.Conversation.Conversation<
-						Domain.Contexts.Conversation.Conversation.ConversationProps
-					>;
+					result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>;
 				expect(conversation.sharer.id).toBeDefined();
 			});
 			And("the domain object's reserver should be populated", () => {
 				const conversation =
-					result as Domain.Contexts.Conversation.Conversation.Conversation<
-						Domain.Contexts.Conversation.Conversation.ConversationProps
-					>;
+					result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>;
 				expect(conversation.reserver.id).toBeDefined();
 			});
 			And("the domain object's listing should be populated", () => {
 				const conversation =
-					result as Domain.Contexts.Conversation.Conversation.Conversation<
-						Domain.Contexts.Conversation.Conversation.ConversationProps
-					>;
+					result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>;
 				expect(conversation.listing.id).toBeDefined();
 			});
 		},
 	);
 
-	Scenario(
-		'Getting a conversation by nonexistent ID',
-		({ When, Then }) => {
-			When('I call getByIdWithReferences with "nonexistent-id"', async () => {
-				// Setup repository with null result for this scenario
-				repository = setupConversationRepo(mockDoc, {
-					findById: () => createChainableQuery(null)
-				});
-
-				try {
-					result = await repository.getByIdWithReferences('nonexistent-id');
-				} catch (error) {
-					result = error;
-				}
+	Scenario('Getting a conversation by nonexistent ID', ({ When, Then }) => {
+		When('I call getByIdWithReferences with "nonexistent-id"', async () => {
+			// Setup repository with null result for this scenario
+			repository = setupConversationRepo(mockDoc, {
+				findById: () => createChainableQuery(null),
 			});
-			Then(
-				'an error should be thrown indicating "Conversation with id nonexistent-id not found"',
-				() => {
-					expect(result).toBeInstanceOf(Error);
-					expect((result as Error).message).toContain(
-						'Conversation with id nonexistent-id not found',
-					);
-				},
-			);
-		},
-	);
+
+			try {
+				result = await repository.getByIdWithReferences('nonexistent-id');
+			} catch (error) {
+				result = error;
+			}
+		});
+		Then(
+			'an error should be thrown indicating "Conversation with id nonexistent-id not found"',
+			() => {
+				expect(result).toBeInstanceOf(Error);
+				expect((result as Error).message).toContain(
+					'Conversation with id nonexistent-id not found',
+				);
+			},
+		);
+	});
 
 	Scenario(
 		'Getting a conversation by messaging ID',
@@ -219,9 +228,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'the domain object\'s messagingConversationId should be "twilio-123"',
 				() => {
 					const conversation =
-						result as Domain.Contexts.Conversation.Conversation.Conversation<
-							Domain.Contexts.Conversation.Conversation.ConversationProps
-						>;
+						result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>;
 					expect(conversation.messagingConversationId).toBe('twilio-123');
 				},
 			);
@@ -234,7 +241,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When('I call getByMessagingId with "nonexistent-twilio-id"', async () => {
 				// Setup repository with null result for this scenario
 				repository = setupConversationRepo(mockDoc, {
-					findOne: () => createChainableQuery(null)
+					findOne: () => createChainableQuery(null),
 				});
 
 				result = await repository.getByMessagingId('nonexistent-twilio-id');
@@ -270,16 +277,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 			And('the domain object\'s sharer id should be "user-1"', () => {
 				const conversation =
-					result as Domain.Contexts.Conversation.Conversation.Conversation<
-						Domain.Contexts.Conversation.Conversation.ConversationProps
-					>;
+					result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>;
 				expect(conversation.sharer.id).toBe('user-1');
 			});
 			And('the domain object\'s reserver id should be "user-2"', () => {
 				const conversation =
-					result as Domain.Contexts.Conversation.Conversation.Conversation<
-						Domain.Contexts.Conversation.Conversation.ConversationProps
-					>;
+					result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>;
 				expect(conversation.reserver.id).toBe('user-2');
 			});
 		},
@@ -293,7 +296,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				async () => {
 					// Setup repository with null result for this scenario
 					repository = setupConversationRepo(mockDoc, {
-						findOne: () => createChainableQuery(null)
+						findOne: () => createChainableQuery(null),
 					});
 
 					result = await repository.getByIdWithSharerReserver(
@@ -342,20 +345,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						schemaVersion: '1.0.0',
 						set: vi.fn(),
 					};
-					
+
 					// Allow dynamic property assignment (like a real Mongoose document)
 					Object.defineProperty(mockNewDoc, 'messagingConversationId', {
 						writable: true,
 						configurable: true,
 						enumerable: true,
-						value: ''
+						value: '',
 					});
-					
+
 					// Setup repository with constructor mock
 					repository = setupConversationRepo(mockDoc, {
-						modelCtor: vi.fn(() => mockNewDoc) as unknown as Models.Conversation.ConversationModelType
+						modelCtor: vi.fn(
+							() => mockNewDoc,
+						) as unknown as Models.Conversation.ConversationModelType,
 					});
-					
+
 					result = await repository.getNewInstance(sharer, reserver, listing);
 				},
 			);
@@ -366,17 +371,134 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 			And('the domain object should have a messagingConversationId', () => {
 				const conversation =
-					result as Domain.Contexts.Conversation.Conversation.Conversation<
-						Domain.Contexts.Conversation.Conversation.ConversationProps
-					>;
+					result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>;
 				expect(conversation.messagingConversationId).toBeDefined();
 			});
 			And("the domain object's messages should be empty", () => {
 				const conversation =
-					result as Domain.Contexts.Conversation.Conversation.Conversation<
-						Domain.Contexts.Conversation.Conversation.ConversationProps
-					>;
+					result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>;
 				expect(conversation.messages).toEqual([]);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting conversations by listing ID',
+		({ Given, When, Then, And }) => {
+			Given('Conversation documents exist with listing "listing-1"', () => {
+				// Set up mock with listing
+				mockDoc = {
+					...makeConversationDoc('conv-1'),
+					listing: { id: 'listing-1' },
+				} as unknown as Models.Conversation.Conversation;
+				repository = setupConversationRepo(mockDoc, {
+					find: () => createChainableQuery([mockDoc]),
+				});
+			});
+			When('I call getByListingId with "listing-1"', async () => {
+				result = await repository.getByListingId(
+					createValidObjectId('listing-1'),
+				);
+			});
+			Then('I should receive an array of Conversation domain objects', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBeGreaterThan(0);
+			});
+			And('each domain object should have the listing id "listing-1"', () => {
+				const conversations =
+					result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>[];
+				for (const conversation of conversations) {
+					expect(conversation.listing.id).toBe('listing-1');
+				}
+			});
+		},
+	);
+
+	Scenario(
+		'Getting conversations by nonexistent listing ID',
+		({ When, Then }) => {
+			When('I call getByListingId with "nonexistent-listing"', async () => {
+				repository = setupConversationRepo(mockDoc, {
+					find: () => createChainableQuery([]),
+				});
+				result = await repository.getByListingId(
+					createValidObjectId('nonexistent-listing'),
+				);
+			});
+			Then('I should receive an empty array', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBe(0);
+			});
+		},
+	);
+
+	Scenario('Getting expired conversations', ({ Given, When, Then }) => {
+		Given('Conversation documents exist with expiresAt in the past', () => {
+			const expiredDoc = {
+				...makeConversationDoc('expired-conv'),
+				expiresAt: new Date('2020-01-01'),
+			} as unknown as Models.Conversation.Conversation;
+			repository = setupConversationRepo(mockDoc, {
+				find: () => createChainableQuery([expiredDoc]),
+			});
+		});
+		When('I call getExpired', async () => {
+			result = await repository.getExpired();
+		});
+		Then(
+			'I should receive an array of expired Conversation domain objects',
+			() => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBeGreaterThan(0);
+			},
+		);
+	});
+
+	Scenario(
+		'Getting expired conversations when none exist',
+		({ Given, When, Then }) => {
+			Given('no Conversation documents have expiresAt in the past', () => {
+				repository = setupConversationRepo(mockDoc, {
+					find: () => createChainableQuery([]),
+				});
+			});
+			When('I call getExpired', async () => {
+				result = await repository.getExpired();
+			});
+			Then('I should receive an empty array', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBe(0);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting expired conversations with limit',
+		({ Given, When, Then }) => {
+			Given(
+				'multiple Conversation documents exist with expiresAt in the past',
+				() => {
+					const expiredDocs = [
+						{
+							...makeConversationDoc('expired-1'),
+							expiresAt: new Date('2020-01-01'),
+						},
+						{
+							...makeConversationDoc('expired-2'),
+							expiresAt: new Date('2020-01-02'),
+						},
+					] as unknown as Models.Conversation.Conversation[];
+					repository = setupConversationRepo(mockDoc, {
+						find: () => createChainableQuery(expiredDocs),
+					});
+				},
+			);
+			When('I call getExpired with limit 2', async () => {
+				result = await repository.getExpired(2);
+			});
+			Then('I should receive at most 2 Conversation domain objects', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBeLessThanOrEqual(2);
 			});
 		},
 	);

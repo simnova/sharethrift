@@ -69,3 +69,22 @@ And valid Conversation documents exist in the database
 		Given an invalid ObjectId will cause an error
 		When I call getBySharerReserverListing with invalid ID
 		Then it should return null due to ObjectId error
+
+	Scenario: Getting conversations by listing ID
+		Given Conversation documents exist with listing "listing-1"
+		When I call getByListingId with "listing-1"
+		Then I should receive an array of Conversation entities
+		And each entity should have the listing id "listing-1"
+
+	Scenario: Getting conversations by nonexistent listing ID
+		When I call getByListingId with "nonexistent-listing"
+		Then I should receive an empty array
+
+	Scenario: Getting conversations by empty listing ID
+		When I call getByListingId with an empty string
+		Then I should receive an empty array
+
+	Scenario: Getting conversations by listing ID with database error
+		Given an error will occur during the listing query
+		When I call getByListingId with "listing-1"
+		Then I should receive an empty array

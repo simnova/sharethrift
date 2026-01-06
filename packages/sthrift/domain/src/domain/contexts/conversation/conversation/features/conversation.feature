@@ -127,3 +127,28 @@ Feature: Conversation aggregate
     When I call loadReserver()
     Then it should return the reserver asynchronously
 
+  Scenario: Getting expiresAt when not set
+    Given a Conversation aggregate without an expiration date
+    When I access the expiresAt property
+    Then it should return undefined
+
+  Scenario: Setting expiresAt with permission
+    Given a Conversation aggregate with permission to manage conversation
+    When I set the expiresAt to a future date
+    Then the expiresAt should be updated to that date
+
+  Scenario: Setting expiresAt without permission
+    Given a Conversation aggregate without permission to manage conversation
+    When I try to set the expiresAt to a future date
+    Then a PermissionError should be thrown
+
+  Scenario: Scheduling a conversation for deletion with permission
+    Given a Conversation aggregate with permission to manage conversation
+    When I call scheduleForDeletion with a retention period
+    Then the expiresAt should be set to current date plus retention period
+
+  Scenario: Scheduling a conversation for deletion without permission
+    Given a Conversation aggregate without permission to manage conversation
+    When I try to call scheduleForDeletion
+    Then a PermissionError should be thrown
+
