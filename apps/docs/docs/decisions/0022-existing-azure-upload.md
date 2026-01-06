@@ -11,6 +11,24 @@ informed:
 
 # Existing Azure Upload Implementation
 
+# tl;dr (Summary)
+
+**Decision:** Use Azure Blob Storage uploads with Shared Key authorization and server-signed request headers (sometimes called "Valet Key").
+
+**Key reasons:**
+- Enables secure, time-limited, and permission-scoped uploads without exposing storage account keys to clients.
+- Avoids the complexity and risks of SAS tokens and direct key distribution.
+- Aligns with our DDD security model and allows for future domain-driven permission checks.
+
+
+## Terminology
+
+- **Server-signed request headers**: The mechanism where the backend signs specific HTTP headers for a client upload request using the Azure Storage Shared Key. This is sometimes called the "Valet Key" pattern.
+- **Shared Key authorization**: Azure’s primary authentication method for Blob Storage, using the account key to sign requests. In this ADR, it refers to the backend signing upload requests on behalf of the client.
+- **Valet Key**: An informal term for the pattern where the server signs upload requests for clients, granting scoped, time-limited access. In this document, we use "server-signed request headers" as the primary term, with "Valet Key" and "Shared Key authorization" as synonyms.
+
+For clarity, this ADR will use **server-signed request headers** as the main term, with the others in parentheses as needed.
+
 ## Context and Problem Statement
 
 Our application requires a secure and scalable mechanism for handling file uploads. From the start, the design approach was to leverage Azure Blob Storage as the primary file storage service due to its reliability, scalability, and seamless integration with the Azure ecosystem.
@@ -163,4 +181,4 @@ Frontend-->>User: Show success / preview / error if malicious
 
 - Malware scanning occurs after upload using Azure Blob Storage’s capabilities. Files flagged as malicious are deleted or reverted to ensure data integrity. The system uses Microsoft Defender for Storage to automatically scan uploaded blobs for malware. Defender checks for known malware signatures, embedded scripts, and other suspicious file patterns. This introduces a small window where a malicious file may exist in storage before removal.
 - At present, backend permission enforcement for blob upload is minimal. The frontend restricts upload actions according to application state, but users could potentially bypass this if they possess valid credentials.
-- Future improvements will focus on implementing domain-driven permission checks before upload authorizations/server-signed request headers are issued.
+Future improvements will focus on implementing domain-driven permission checks before server-signed request headers (upload authorizations) are issued and exploring pre-upload scanning alternatives to further reduce risk.
