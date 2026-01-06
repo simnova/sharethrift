@@ -73,6 +73,19 @@ Given an ItemListingReadRepository instance with models and passport
 		When I call getBySharer with invalid ObjectId
 		Then I should receive empty array due to error
 
+	Scenario: Getting listings by states
+		Given ItemListing documents with different states
+		When I call getByStates with specific states
+		Then I should receive listings filtered by states
+
+	Scenario: Getting listings by empty states array
+		When I call getByStates with empty array
+		Then I should receive empty array
+
+	Scenario: Getting listings by states with error
+		When I call getByStates and database error occurs
+		Then I should receive empty array due to error
+
 	Scenario: Getting paged listings when count query returns null
 		When I call getPaged and count query returns null
 		Then I should receive result with total 0

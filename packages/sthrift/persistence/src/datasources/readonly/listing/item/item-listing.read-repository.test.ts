@@ -515,6 +515,80 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
+	Scenario('Getting listings by states', ({ Given, When, Then }) => {
+		let result: unknown;
+
+		Given('ItemListing documents with different states', () => {
+			// Mock data set up in When
+		});
+
+		When('I call getByStates with specific states', async () => {
+			const mockListings = [
+				{ id: '1', title: 'Item 1', state: 'active' },
+				{ id: '2', title: 'Item 2', state: 'archived' },
+			];
+
+			const mockModel = {
+				find: vi.fn(() => createQueryChain(mockListings)),
+			};
+
+			const mockModels = createMockModelsContext(mockModel);
+			const mockPassport = createMockPassport();
+
+			repository = getItemListingReadRepository(mockModels, mockPassport);
+			result = await repository.getByStates(['active', 'archived']);
+		});
+
+		Then('I should receive listings filtered by states', () => {
+			expect(Array.isArray(result)).toBe(true);
+			expect((result as unknown[]).length).toBeGreaterThan(0);
+		});
+	});
+
+	Scenario('Getting listings by empty states array', ({ When, Then }) => {
+		let result: unknown;
+
+		When('I call getByStates with empty array', async () => {
+			const mockModel = {
+				find: vi.fn(() => createQueryChain([])),
+			};
+
+			const mockModels = createMockModelsContext(mockModel);
+			const mockPassport = createMockPassport();
+
+			repository = getItemListingReadRepository(mockModels, mockPassport);
+			result = await repository.getByStates([]);
+		});
+
+		Then('I should receive empty array', () => {
+			expect(Array.isArray(result)).toBe(true);
+			expect((result as unknown[]).length).toBe(0);
+		});
+	});
+
+	Scenario('Getting listings by states with error', ({ When, Then }) => {
+		let result: unknown;
+
+		When('I call getByStates and database error occurs', async () => {
+			const mockModel = {
+				find: vi.fn(() => {
+					throw new Error('Database error');
+				}),
+			};
+
+			const mockModels = createMockModelsContext(mockModel);
+			const mockPassport = createMockPassport();
+
+			repository = getItemListingReadRepository(mockModels, mockPassport);
+			result = await repository.getByStates(['active']);
+		});
+
+		Then('I should receive empty array due to error', () => {
+			expect(Array.isArray(result)).toBe(true);
+			expect((result as unknown[]).length).toBe(0);
+		});
+	});
+
 	Scenario(
 		'Getting paged listings when count query returns null',
 		({ When, Then }) => {
