@@ -55,7 +55,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		instance.isNew = false;
 		return instance;
 	}
-	}
 
 	private markAsNew(): void {
 		this.isNew = true;
@@ -94,7 +93,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 				this.transitionToRequested();
 				break;
 			default:
-				throw new DomainSeedwork.ValidationError(
+				throw new DomainSeedwork.PermissionError(
 					`Invalid reservation request state: "${stateValue}". Valid states are: ${Object.values(ReservationRequestStates).join(', ')}`,
 				);
 		}
