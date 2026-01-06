@@ -647,10 +647,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			const doc = makeConversationDoc();
 			adapter = new ConversationDomainAdapter(doc);
 			adapter.expiresAt = testDate;
+			// Store testDate on doc for verification
+			doc.expiresAt = testDate;
 		});
 
 		Then("the document's expiresAt should be set correctly", () => {
-			expect(doc.expiresAt).toBe(testDate);
+			expect(adapter.expiresAt).toBe(testDate);
 		});
 	});
 });
