@@ -128,12 +128,7 @@ export const ViewUserProfileContainer: React.FC = () => {
 
     const isAdmin = Boolean(currentUser?.userIsAdmin);
 
-    // Derive permissions using fine-grained role permissions when available.
-    // Fall back to userIsAdmin for now so behavior remains compatible while
-    // the schema is being wired through more broadly.
-    const canBlockUsersFromRole =
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (currentUser as any)?.role?.permissions?.userPermissions?.canBlockUsers;
+    const canBlockUsersFromRole = (currentUser as any)?.role?.permissions?.userPermissions?.canBlockUsers;
 
     const canBlockUsers = Boolean(
         typeof canBlockUsersFromRole === "boolean"
@@ -164,14 +159,14 @@ export const ViewUserProfileContainer: React.FC = () => {
     ): Promise<unknown> => {
         // TODO: wire _blockUserFormValues's values through to the backend when supported
         if (!userId) {
-            return Promise.reject(new Error("Missing userId for blockUser"));
+            throw new Error("Missing userId for blockUser");
         }
         return blockUser({ variables: { userId } });
     };
 
     const handleUnblockUser = async (): Promise<unknown> => {
         if (!userId) {
-            return Promise.reject(new Error("Missing userId for unblockUser"));
+            throw new Error("Missing userId for unblockUser");
         }
         return unblockUser({ variables: { userId } });
     };
