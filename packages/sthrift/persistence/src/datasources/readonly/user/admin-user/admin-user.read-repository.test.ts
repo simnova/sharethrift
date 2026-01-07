@@ -160,7 +160,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Getting all admin users with no results', ({ Given, When, Then }) => {
 		Given('no AdminUser documents exist in the database', () => {
-			const mockDataSource = repository['mongoDataSource'] as unknown as {
+			const mockDataSource = repository.mongoDataSource as unknown as {
 				find: ReturnType<typeof vi.fn>;
 			};
 			mockDataSource.find = vi.fn(() => Promise.resolve([]));
