@@ -23,7 +23,6 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 }
 
 export interface ItemListingEntityReference
-	extends Readonly<Omit<ItemListingProps, 'sharer' | 'loadSharer'>> {
+	extends Readonly<Omit<ItemListingProps, 'sharer'>> {
 	readonly sharer: UserEntityReference;
-	loadSharer(): Promise<UserEntityReference>;
 }
