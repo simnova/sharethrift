@@ -74,9 +74,10 @@ export const ViewUserProfileContainer: React.FC = () => {
     const viewedUser = userQueryData?.userById;
     const currentUser = currentUserData?.currentUser;
 
-    const isAdminViewer =
-        currentUser?.__typename === "AdminUser" &&
-        currentUser?.userIsAdmin;
+    const isAdmin = Boolean(currentUser?.userIsAdmin);
+
+    const isAdminViewer = isAdmin;
+    const canBlockUsers = isAdmin;
 
     useEffect(() => {
         if (viewedUser?.isBlocked && !isAdminViewer) {
@@ -102,10 +103,6 @@ export const ViewUserProfileContainer: React.FC = () => {
     const handleUnblockUser = () => {
         unblockUser({ variables: { userId: userId! } });
     };
-
-    const canBlockUsers =
-        currentUser?.__typename === "AdminUser" &&
-        currentUser?.userIsAdmin;
 
     const isOwnProfile = currentUser?.id === viewedUser?.id;
 
