@@ -37,7 +37,7 @@
 		"copy-css": "cpx \"src/**/*.{css,svg,png,jpg,jpeg,gif}\" dist/src",
 		"watch": "tsc --watch",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
+		"test:coverage:ui": "vitest run --coverage",
 		"test:watch": "vitest",
 		"lint": "biome lint",
 		"clean": "rimraf dist",

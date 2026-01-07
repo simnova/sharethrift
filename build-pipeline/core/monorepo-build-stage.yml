@@ -245,9 +245,9 @@ stages:
             echo "Testing affected packages only (PR/branch build)..."
             export TURBO_SCM_BASE="origin/$(System.PullRequest.TargetBranch)"
             echo "Running Node unit tests with coverage..."
-            pnpm run test:coverage:node:affected
+            pnpm run test:coverage:node --affected
             echo "Running Storybook/Playwright tests with coverage..."
-            pnpm run test:coverage:ui:affected
+            pnpm run test:coverage:ui --affected
             pnpm run merge-lcov-reports
           else
             echo "Testing all packages (main branch build)..."

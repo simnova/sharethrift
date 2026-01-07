@@ -10,7 +10,12 @@
 			"dependsOn": ["^build", "@cellix/vitest-config#build"],
 			"inputs": ["src/**", "tests/**", "vitest*.config.*"]
 		},
-		"test:coverage": {
+		"test:coverage:node": {
+			"dependsOn": ["build", "^build", "@cellix/vitest-config#build"],
+			"inputs": ["src/**", "tests/**", "vitest*.config.*"],
+			"outputs": ["coverage/lcov.info"]
+		},
+		"test:coverage:ui": {
 			"dependsOn": ["build", "^build", "@cellix/vitest-config#build"],
 			"inputs": ["src/**", "tests/**", "vitest*.config.*"],
 			"outputs": ["coverage/lcov.info"]
