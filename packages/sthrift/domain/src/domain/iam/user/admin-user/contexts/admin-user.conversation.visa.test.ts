@@ -13,21 +13,19 @@ const feature = await loadFeature(
 );
 
 function makeAdminUser(
-	canEditUsers = false,
-	canModerateListings = false,
-	canViewAllUsers = false,
+	canEditConversations = false,
+	canModerateConversations = false,
+	canViewAllConversations = false,
 ): AdminUserEntityReference {
 	return vi.mocked({
 		id: 'admin-1',
 		isBlocked: false,
 		role: {
 			permissions: {
-				userPermissions: {
-					canEditUsers,
-					canViewAllUsers,
-				},
-				listingPermissions: {
-					canModerateListings,
+				conversationPermissions: {
+					canEditConversations,
+					canModerateConversations,
+					canViewAllConversations,
 				},
 			},
 		},
@@ -63,9 +61,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario(
-		'Admin can create conversation with user edit permissions',
+		'Admin can create conversation with conversation edit permissions',
 		({ Given, When, Then }) => {
-			Given('the admin has canEditUsers permission', () => {
+			Given('the admin has canEditConversations permission', () => {
 				admin = makeAdminUser(true, false, false);
 				visa = new AdminUserConversationVisa(conversationRoot, admin);
 			});
@@ -81,9 +79,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Admin cannot create conversation without user edit permissions',
+		'Admin cannot create conversation without conversation edit permissions',
 		({ Given, When, Then }) => {
-			Given('the admin does not have canEditUsers permission', () => {
+			Given('the admin does not have canEditConversations permission', () => {
 				admin = makeAdminUser(false, false, false);
 				visa = new AdminUserConversationVisa(conversationRoot, admin);
 			});
@@ -101,7 +99,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	Scenario(
 		'Admin can manage conversation with moderation permissions',
 		({ Given, When, Then }) => {
-			Given('the admin has canModerateListings permission', () => {
+			Given('the admin has canModerateConversations permission', () => {
 				admin = makeAdminUser(false, true, false);
 				visa = new AdminUserConversationVisa(conversationRoot, admin);
 			});
@@ -117,9 +115,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Admin can view conversation with view all users permission',
+		'Admin can view conversation with view all conversations permission',
 		({ Given, When, Then }) => {
-			Given('the admin has canViewAllUsers permission', () => {
+			Given('the admin has canViewAllConversations permission', () => {
 				admin = makeAdminUser(false, false, true);
 				visa = new AdminUserConversationVisa(conversationRoot, admin);
 			});
