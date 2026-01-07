@@ -401,7 +401,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Getting conversation with invalid ObjectId format', ({ Given, When, Then }) => {
 		Given('an invalid ObjectId will cause an error', () => {
-			// Mock MongooseSeedwork.ObjectId constructor to throw
+			// Mock MongooseSeedwork.ObjectId constructor to throw once, then restore
 			vi.spyOn(MongooseSeedwork, 'ObjectId').mockImplementationOnce(() => {
 				throw new Error('Invalid ObjectId');
 			});
@@ -413,10 +413,99 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				createValidObjectId('reserver'),
 				createValidObjectId('listing')
 			);
+			// Restore all mocks after test to prevent interference with subsequent tests
+			vi.restoreAllMocks();
 		});
 
 		Then('it should return null due to ObjectId error', () => {
 			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversations by listing ID', ({ Given, When, Then, And }) => {
+		Given('a Conversation document with listing "listing-1"', () => {
+			mockConversations = [
+				makeMockConversation({
+					listing: makeMockListing('listing-1'),
+				}),
+			];
+			// Update mock model to return new conversations
+			const createMockQuery = (queryResult: unknown) => {
+				const mockQuery = {
+					lean: vi.fn(),
+					populate: vi.fn(),
+					exec: vi.fn().mockResolvedValue(queryResult),
+					catch: vi.fn((onReject) => Promise.resolve(queryResult).catch(onReject)),
+				};
+				mockQuery.lean.mockReturnValue(mockQuery);
+				mockQuery.populate.mockReturnValue(mockQuery);
+				// biome-ignore lint/suspicious/noThenProperty: Intentional thenable mock for Mongoose queries
+				Object.defineProperty(mockQuery, 'then', {
+					value: vi.fn((onResolve) => Promise.resolve(queryResult).then(onResolve)),
+					enumerable: false,
+					configurable: true,
+				});
+				return mockQuery;
+			};
+			mockModel.find = vi.fn(() => createMockQuery(mockConversations)) as unknown as typeof mockModel.find;
+		});
+
+		When('I call getByListingId with "listing-1"', async () => {
+			result = await repository.getByListingId(createValidObjectId('listing-1'));
+		});
+
+		Then('I should receive an array of Conversation entities', () => {
+			expect(Array.isArray(result)).toBe(true);
+		});
+
+		And('the array should contain conversations for that listing', () => {
+			const conversations =
+				result as Domain.Contexts.Conversation.Conversation.ConversationEntityReference[];
+			expect(conversations.length).toBeGreaterThan(0);
+		});
+	});
+
+	Scenario('Getting conversations by listing ID with no conversations', ({ When, Then }) => {
+		When('I call getByListingId with "listing-without-conversations"', async () => {
+			mockModel.find = vi.fn(() => createNullPopulateChain([])) as unknown as typeof mockModel.find;
+
+			result = await repository.getByListingId(createValidObjectId('listing-without-conversations'));
+		});
+
+		Then('I should receive an empty array for listing', () => {
+			expect(Array.isArray(result)).toBe(true);
+			expect((result as unknown[]).length).toBe(0);
+		});
+	});
+
+	Scenario('Getting conversations by listing ID with empty string', ({ When, Then }) => {
+		When('I call getByListingId with empty string', async () => {
+			result = await repository.getByListingId('');
+		});
+
+		Then('I should receive an empty array for listing', () => {
+			expect(Array.isArray(result)).toBe(true);
+			expect((result as unknown[]).length).toBe(0);
+		});
+	});
+
+	Scenario('Getting conversations by listing ID with invalid ObjectId', ({ Given, When, Then }) => {
+		Given('an invalid ObjectId will cause an error', () => {
+			// Mock MongooseSeedwork.ObjectId constructor to throw
+			vi.spyOn(MongooseSeedwork, 'ObjectId').mockImplementationOnce(() => {
+				throw new Error('Invalid ObjectId');
+			});
+		});
+
+		When('I call getByListingId with invalid ID', async () => {
+			result = await repository.getByListingId('invalid-id');
+			// Restore all mocks after test to prevent interference with subsequent tests
+			vi.restoreAllMocks();
+		});
+
+		Then('I should receive an empty array for listing', () => {
+			expect(Array.isArray(result)).toBe(true);
+			expect((result as unknown[]).length).toBe(0);
 		});
 	});
 });

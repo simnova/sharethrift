@@ -12,6 +12,10 @@ import { type ItemListingDeleteCommand, deleteListings } from './delete.ts';
 import { type ItemListingUpdateCommand, update } from './update.ts';
 import { type ItemListingUnblockCommand, unblock } from './unblock.ts';
 import { queryPaged } from './query-paged.ts';
+import {
+	type ProcessExpiredDeletionsResult,
+	processExpiredDeletions,
+} from './process-expired-deletions.ts';
 
 export interface ItemListingApplicationService {
 	create: (
@@ -51,11 +55,20 @@ export interface ItemListingApplicationService {
 		page: number;
 		pageSize: number;
 	}>;
+	processExpiredDeletions: () => Promise<ProcessExpiredDeletionsResult>;
+}
+
+export interface ItemListingDependencies {
+	dataSources: DataSources;
+	blobStorage?: Domain.Services['BlobStorage'];
 }
 
 export const ItemListing = (
-	dataSources: DataSources,
+	deps: DataSources | ItemListingDependencies,
 ): ItemListingApplicationService => {
+	const dataSources = 'dataSources' in deps ? deps.dataSources : deps;
+	const blobStorage = 'blobStorage' in deps ? deps.blobStorage : undefined;
+
 	return {
 		create: create(dataSources),
 		queryById: queryById(dataSources),
@@ -63,8 +76,9 @@ export const ItemListing = (
 		queryAll: queryAll(dataSources),
 		cancel: cancel(dataSources),
 		update: update(dataSources),
-	deleteListings: deleteListings(dataSources),
+		deleteListings: deleteListings(dataSources),
 		unblock: unblock(dataSources),
 		queryPaged: queryPaged(dataSources),
+		processExpiredDeletions: processExpiredDeletions(dataSources, blobStorage),
 	};
 };

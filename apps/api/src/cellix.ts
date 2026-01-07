@@ -1,4 +1,4 @@
-import { app, type HttpFunctionOptions, type HttpHandler } from '@azure/functions';
+import { app, type HttpFunctionOptions, type HttpHandler, type TimerHandler } from '@azure/functions';
 import type { ServiceBase } from '@cellix/api-services-spec';
 import api, { SpanStatusCode, type Tracer, trace } from '@opentelemetry/api';
 
@@ -104,6 +104,28 @@ interface AzureFunctionHandlerRegistry<ContextType = unknown, AppServices = unkn
 		) => HttpHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices>;
     /**
+     * Registers an Azure Function Timer endpoint.
+     *
+     * @remarks
+     * The `handlerCreator` is invoked when the timer fires and receives the application services host.
+     * Use it to create a handler for scheduled tasks like cleanup, maintenance, etc.
+     * Registration is allowed in phases `'app-services'` and `'handlers'`.
+     *
+     * @param name - Function name to bind in Azure Functions.
+     * @param schedule - NCRONTAB expression for the timer schedule.
+     * @param handlerCreator - Factory that, given the app services host, returns a `TimerHandler`.
+     * @returns The registry (for chaining).
+     *
+     * @throws Error - If called before application services are initialized.
+     */
+	registerAzureFunctionTimerHandler(
+		name: string,
+		schedule: string,
+		handlerCreator: (
+			applicationServicesHost: AppHost<AppServices>,
+		) => TimerHandler,
+	): AzureFunctionHandlerRegistry<ContextType, AppServices>;
+    /**
      * Finalizes configuration and starts the application.
      *
      * @remarks
@@ -167,6 +189,12 @@ interface PendingHandler<AppServices> {
 	handlerCreator: (applicationServicesHost: AppHost<AppServices>) => HttpHandler;
 }
 
+interface PendingTimerHandler<AppServices> {
+	name: string;
+	schedule: string;
+	handlerCreator: (applicationServicesHost: AppHost<AppServices>) => TimerHandler;
+}
+
 type Phase = 'infrastructure' | 'context' | 'app-services' | 'handlers' | 'started';
 
 /**
@@ -192,6 +220,7 @@ export class Cellix<ContextType, AppServices = unknown>
 	private readonly tracer: Tracer;
 	private readonly servicesInternal: Map<ServiceKey<ServiceBase>, ServiceBase> = new Map();
 	private readonly pendingHandlers: Array<PendingHandler<AppServices>> = [];
+	private readonly pendingTimerHandlers: Array<PendingTimerHandler<AppServices>> = [];
 	private serviceInitializedInternal = false;
 	private phase: Phase = 'infrastructure';
 
@@ -283,6 +312,19 @@ export class Cellix<ContextType, AppServices = unknown>
 		return this;
 	}
 
+	public registerAzureFunctionTimerHandler(
+		name: string,
+		schedule: string,
+		handlerCreator: (
+			applicationServicesHost: RequestScopedHost<AppServices, unknown>,
+		) => TimerHandler,
+	): AzureFunctionHandlerRegistry<ContextType, AppServices> {
+		this.ensurePhase('app-services', 'handlers');
+		this.pendingTimerHandlers.push({ name, schedule, handlerCreator });
+		this.phase = 'handlers';
+		return this;
+	}
+
 	public startUp(): Promise<StartedApplication<ContextType>> {
 		this.ensurePhase('handlers', 'app-services');
 		if (!this.contextCreatorInternal) {
@@ -303,6 +345,19 @@ export class Cellix<ContextType, AppServices = unknown>
 						throw new Error('Application not started yet');
 					}
 					return h.handlerCreator(this.appServicesHostInternal)(request, context);
+				},
+			});
+		}
+
+		// Register timer handlers
+		for (const t of this.pendingTimerHandlers) {
+			app.timer(t.name, {
+				schedule: t.schedule,
+				handler: (timer, context) => {
+					if (!this.appServicesHostInternal) {
+						throw new Error('Application not started yet');
+					}
+					return t.handlerCreator(this.appServicesHostInternal)(timer, context);
 				},
 			});
 		}

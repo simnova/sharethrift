@@ -20,6 +20,7 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
+		"@azure/storage-blob": "^12.29.1",
 		"@cellix/api-services-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*"
 	},

@@ -23,6 +23,7 @@ import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
+import { expiredListingDeletionHandlerCreator } from './timers/expired-listing-deletion-handler.ts';
 
 import type {PaymentService} from '@cellix/payment-service';
 import { PaymentServiceMock } from '@sthrift/payment-service-mock';
@@ -69,6 +70,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
       ? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
       : serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
+		const blobStorageService = serviceRegistry.getInfrastructureService<ServiceBlobStorage>(
+			ServiceBlobStorage,
+		);
+
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);
 
@@ -80,6 +85,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				),
 			paymentService,
       messagingService,
+			blobStorageService,
 		};
 	})
 	.initializeApplicationServices((context) =>
@@ -97,5 +103,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		'rest',
 		{ route: '{communityId}/{role}/{memberId}/{*rest}' },
 		restHandlerCreator,
+	)
+	.registerAzureFunctionTimerHandler(
+		'processExpiredListingDeletions',
+		'0 0 2 * * *',
+		expiredListingDeletionHandlerCreator,
 	)
 	.startUp();
