@@ -41,6 +41,12 @@ query HomeAllListingsTableContainerMyListingsAll(
   }
 }
 
+query HomeAllListingsTableContainerCurrentUser {
+  currentPersonalUserAndCreateIfNotExists {
+    ...HomeAllListingsTableContainerUserFields
+  }
+}
+
 mutation HomeAllListingsTableContainerCancelItemListing($id: ObjectID!) {
   cancelItemListing(id: $id) {
     status {
@@ -60,4 +66,8 @@ mutation HomeAllListingsTableContainerDeleteListing($id: ObjectID!) {
       errorMessage
     }
   }
+}
+
+fragment HomeAllListingsTableContainerUserFields on PersonalUser {
+  id
 }

@@ -29,7 +29,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.disable('x-powered-by');
-const port = 3001;
+const DEFAULT_PORT = Number(process.env['PORT'] ?? 3001);
 
 // Enable CORS for all origins (or restrict to 'http://localhost:3000' if needed)
 app.use((req, res, next) => {
@@ -1336,6 +1336,23 @@ app.post(
 	},
 );
 
-app.listen(port, () => {
-	console.log(`Payment Mock Server listening on port ${port}`);
-});
+const startServer = (portToTry: number, attempt = 0): void => {
+	const server = app.listen(portToTry, () => {
+		console.log(`Payment Mock Server listening on port ${portToTry}`);
+	});
+
+	server.on('error', (error: NodeJS.ErrnoException) => {
+		if (error.code === 'EADDRINUSE' && attempt < 5) {
+			const nextPort = portToTry + 1;
+			console.warn(
+				`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
+			);
+			startServer(nextPort, attempt + 1);
+			return;
+		}
+
+		console.error('Failed to start mock-payment-server', error);
+	});
+};
+
+startServer(DEFAULT_PORT);

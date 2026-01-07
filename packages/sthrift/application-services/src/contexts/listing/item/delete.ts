@@ -15,9 +15,9 @@ export const deleteListings = (dataSources: DataSources) => {
 			);
 		}
 
-		// Get the current user
+		// Get the current user (PersonalUser or AdminUser)
 		const user =
-			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getByEmail(
+			await dataSources.readonlyDataSource.User.User.UserReadRepo.getByEmail(
 				command.userEmail,
 			);
 

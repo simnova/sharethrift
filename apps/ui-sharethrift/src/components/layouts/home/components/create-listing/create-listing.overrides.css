@@ -8,7 +8,7 @@
 	}
 	.create-listing-main-responsive {
 		flex-direction: column !important;
-		gap: 16px !important;
+		gap: 0 !important;
 		align-items: center !important;
 		margin-bottom: 0 !important;
 		padding-bottom: 24px !important;
@@ -17,6 +17,7 @@
 		display: block !important;
 		justify-content: flex-start !important;
 		align-items: stretch !important;
+		margin-bottom: 32px !important;
 	}
 	.create-listing-images-responsive,
 	.create-listing-form-responsive {
@@ -31,20 +32,32 @@
 		aspect-ratio: auto !important;
 		height: auto !important;
 		min-height: 300px !important;
-		margin-bottom: 16px !important;
+		margin-bottom: 0 !important;
 		margin-top: 24px !important;
-		padding-bottom: 32px !important;
+		padding-bottom: 16px !important;
 	}
 	.create-listing-form-responsive {
 		width: 100% !important;
 		max-width: none !important;
 		margin-left: auto !important;
 		margin-right: auto !important;
-		margin-top: 0 !important;
+		margin-top: 24px !important;
 		position: relative !important;
 		z-index: 1 !important;
-		padding-top: 40px !important;
+		padding-top: 0 !important;
 		margin-bottom: 32px !important;
+	}
+	/* Ensure form labels and inputs are properly spaced */
+	.create-listing-form-responsive .ant-form-item {
+		margin-bottom: 20px !important;
+	}
+	.create-listing-form-responsive .ant-form-item-label {
+		padding-bottom: 4px !important;
+	}
+	.create-listing-form-responsive .ant-input,
+	.create-listing-form-responsive .ant-select,
+	.create-listing-form-responsive .ant-picker {
+		font-size: 16px !important; /* Prevent zoom on iOS */
 	}
 	.listing-gallery-responsive .slick-arrow {
 		color: var(--color-secondary, #3f8176) !important;
@@ -83,16 +96,47 @@
 }
 
 /* Add vertical spacing between buttons when they wrap */
-.create-listing-buttons .ant-col {
-	margin-bottom: 8px !important;
-}
-.create-listing-buttons .ant-col:last-child {
-	margin-bottom: 0 !important;
+.create-listing-buttons {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	gap: 12px !important;
 }
 
+.create-listing-buttons .ant-col {
+	margin-bottom: 0 !important;
+	padding: 0 !important;
+}
+
+/* Mobile button stacking */
+@media (max-width: 768px) {
+	.create-listing-buttons {
+		flex-direction: column !important;
+		gap: 12px !important;
+	}
+	.create-listing-buttons .ant-col {
+		width: 100% !important;
+		max-width: 100% !important;
+	}
+	.create-listing-buttons .ant-col .ant-btn {
+		width: 100% !important;
+	}
+}
+
+/* Tablet layout - wrap buttons */
+@media (min-width: 769px) and (max-width: 1024px) {
+	.create-listing-buttons {
+		gap: 8px !important;
+	}
+	.create-listing-buttons .ant-col .ant-btn {
+		padding-left: 12px !important;
+		padding-right: 12px !important;
+		font-size: 14px !important;
+	}
+}
+
+.listing-gallery-responsive label,
 .listing-gallery-responsive .slick-slide img,
-.listing-gallery-responsive .slick-slide label,
-.listing-gallery-responsive label {
+.listing-gallery-responsive .slick-slide label {
 	max-width: none !important;
 	max-height: none !important;
 	width: 100% !important;
@@ -134,18 +178,41 @@
 	transform: scale(1.1) !important;
 }
 
+/* Desktop layout - add padding between columns */
+@media (min-width: 769px) {
+	.image-col {
+		padding-right: 32px !important;
+	}
+	.form-col {
+		padding-left: 32px !important;
+	}
+}
+
+/* Tablet layout - add spacing */
+@media (min-width: 601px) and (max-width: 768px) {
+	.image-col {
+		padding-right: 24px !important;
+		margin-bottom: 24px !important;
+	}
+	.form-col {
+		padding-left: 24px !important;
+	}
+}
+
+/* Mobile layout */
 @media (max-width: 600px) {
 	.image-col {
 		margin-left: -16px !important;
 		margin-right: -16px !important;
 		width: calc(100% + 32px) !important;
+		margin-bottom: 32px !important;
+		padding-bottom: 0 !important;
 	}
-}
-
-@media (max-width: 600px) {
 	.form-col {
-		margin-left: -16px !important;
-		margin-right: -16px !important;
-		width: calc(100% + 32px) !important;
+		margin-left: 0 !important;
+		margin-right: 0 !important;
+		width: 100% !important;
+		padding-left: 0 !important;
+		padding-right: 0 !important;
 	}
 }

@@ -31,6 +31,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 	props,
 ) => {
 	const { listingId } = useParams();
+	
 	const {
 		data: listingData,
 		loading: listingLoading,
@@ -70,6 +71,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 			error={listingError}
 			errorComponent={<div>Error loading listing.</div>}
 			hasData={listingData?.itemListing}
+			noDataComponent={<div>Listing not found</div>}
 			hasDataComponent={
 				<ViewListing
 					listing={listingData?.itemListing as ItemListing}

@@ -11,6 +11,7 @@ export interface ItemListingUpdateCommand {
 	sharingPeriodEnd?: Date | string;
 	images?: string[];
 	isBlocked?: boolean;
+	isDeleted?: boolean;
 }
 
 const ensureDate = (value?: Date | string): Date | undefined => {
@@ -24,12 +25,12 @@ const ensureDate = (value?: Date | string): Date | undefined => {
 	return date;
 };
 
-export const update = (datasources: DataSources) => {
+export const update = (dataSources: DataSources) => {
 	return async (
 		command: ItemListingUpdateCommand,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> => {
 		const uow =
-			datasources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
+			dataSources.domainDataSource.Listing.ItemListing.ItemListingUnitOfWork;
 		if (!uow) {
 			throw new Error(
 				'ItemListingUnitOfWork not available on dataSources.domainDataSource.Listing.ItemListing',
@@ -57,10 +58,10 @@ export const update = (datasources: DataSources) => {
 			if (command.location !== undefined) {
 				listing.location = command.location;
 			}
-			if (sharingPeriodStart) {
+			if (sharingPeriodStart !== undefined) {
 				listing.sharingPeriodStart = sharingPeriodStart;
 			}
-			if (sharingPeriodEnd) {
+			if (sharingPeriodEnd !== undefined) {
 				listing.sharingPeriodEnd = sharingPeriodEnd;
 			}
 			if (command.images !== undefined) {
@@ -68,6 +69,9 @@ export const update = (datasources: DataSources) => {
 			}
 			if (command.isBlocked !== undefined) {
 				listing.setBlocked(command.isBlocked);
+			}
+			if (command.isDeleted === true) {
+				listing.requestDelete();
 			}
 
 			updatedListing = await repo.save(listing);

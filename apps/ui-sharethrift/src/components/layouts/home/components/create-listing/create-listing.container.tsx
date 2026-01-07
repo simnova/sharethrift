@@ -1,16 +1,21 @@
 import type React from 'react';
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from "@apollo/client/react";
+import { useMutation } from '@apollo/client/react';
 import { message } from 'antd';
+import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import {
 	CreateListing,
 	type CreateListingFormData,
 } from './create-listing.tsx';
+
+dayjs.extend(utc);
 import {
 	HomeCreateListingContainerCreateItemListingDocument,
 	type HomeCreateListingContainerCreateItemListingMutation,
 	type HomeCreateListingContainerCreateItemListingMutationVariables,
+	ListingsPageContainerGetListingsDocument,
 } from '../../../../../generated.tsx';
 
 interface CreateListingContainerProps {
@@ -55,16 +60,23 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 						: 'Listing published successfully!',
 				);
 
-				// Don't navigate automatically - let user choose from modal
-			},
-			onError: (error) => {
-				console.error('Error creating listing:', error);
-				message.error('Failed to create listing. Please try again.');
-			},
-			// Refetch listings to update the cache
-			refetchQueries: ['GetListings'],
+			// Don't navigate automatically - let user choose from modal
 		},
-	);
+		onError: (error) => {
+			console.error('Error creating listing:', error);
+			message.error('Failed to create listing. Please try again.');
+		},
+		// Refetch listings to update the cache
+		refetchQueries: [{ query: ListingsPageContainerGetListingsDocument }],
+	});
+
+	const toUtcMidnight = (value: string): Date => {
+		const date = dayjs(value).utc().startOf('day');
+		if (!date.isValid()) {
+			throw new TypeError('Invalid date string provided for reservation period');
+		}
+		return date.toDate();
+	};
 
 	const handleSubmit = async (
 		formData: CreateListingFormData,
@@ -82,8 +94,8 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 			description: formData.description,
 			category: formData.category,
 			location: formData.location,
-			sharingPeriodStart: new Date(formData.sharingPeriod[0]),
-			sharingPeriodEnd: new Date(formData.sharingPeriod[1]),
+			sharingPeriodStart: toUtcMidnight(formData.sharingPeriod[0]),
+			sharingPeriodEnd: toUtcMidnight(formData.sharingPeriod[1]),
 			images: formData.images,
 			isDraft,
 		};

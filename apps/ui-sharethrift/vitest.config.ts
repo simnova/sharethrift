@@ -9,19 +9,29 @@ const dirname =
 		: __dirname;
 
 // Storybook+Vitest config for ui-sharethrift app
-export default defineConfig(
-	createStorybookVitestConfig(dirname, {
-		additionalCoverageExclude: [
-			'**/index.ts',
-			'**/index.tsx',
+const storybookConfig = createStorybookVitestConfig(dirname, {
+	additionalCoverageExclude: [
+		'**/index.ts',
+		'**/index.tsx',
             '**/Index.tsx',
-			'src/main.tsx',
-			'src/test-utils/**',
+		'src/main.tsx',
+		'src/test-utils/**',
             'src/config/**',
             'src/test/**',
-			'**/*.d.ts',
-			'src/generated/**',
+		'**/*.d.ts',
+		'src/generated/**',
             'eslint.config.js'
-		],
-	}),
-);
+	],
+});
+
+const disableStorybook =
+	process.env.VITEST_DISABLE_STORYBOOK?.toLowerCase() === 'true' ||
+	process.env.VITEST_DISABLE_STORYBOOK === '1';
+
+if (disableStorybook && storybookConfig.test) {
+	const testConfig = storybookConfig.test as Record<string, unknown>;
+	delete testConfig.projects;
+	delete testConfig.browser;
+}
+
+export default defineConfig(storybookConfig);

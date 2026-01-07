@@ -142,6 +142,23 @@ test.for(feature, ({ Scenario }) => {
 	});
 
 	Scenario(
+		'Checking if an Active ListingState is considered active',
+		({ Given, When, Then }) => {
+			let listingState: ListingState;
+			let result: boolean;
+			Given('a ListingState with value "Active"', () => {
+				listingState = new ListingState('Active');
+			});
+			When('I check isActive', () => {
+				result = listingState.isActive;
+			});
+			Then('the result should be true', () => {
+				expect(result).toBe(true);
+			});
+		},
+	);
+
+	Scenario(
 		'Checking if a ListingState is inactive',
 		({ Given, When, Then }) => {
 			let listingState: ListingState;
@@ -157,6 +174,8 @@ test.for(feature, ({ Scenario }) => {
 			});
 		},
 	);
+
+
 
 	Scenario(
 		'Creating a ListingState with too long a string',
@@ -327,8 +346,21 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
+
+
 	Scenario('Creating a Location with too long a value', ({ When, Then }) => {
 		let error: Error | undefined;
+		When(
+			'I try to create a Location with a string longer than 255 characters',
+			() => {
+				try {
+					new Location('a'.repeat(256));
+					error = undefined;
+				} catch (e) {
+					error = e as Error;
+				}
+			},
+		);
 		When(
 			'I try to create a Location with a string longer than 255 characters',
 			() => {
@@ -370,6 +402,17 @@ test.for(feature, ({ Scenario }) => {
 				}
 			},
 		);
+		When(
+			'I try to create a Title with a string longer than 200 characters',
+			() => {
+				try {
+					new Title('a'.repeat(201));
+					error = undefined;
+				} catch (e) {
+					error = e as Error;
+				}
+			},
+		);
 		Then('an error should be thrown indicating the value is too long', () => {
 			expect(error).toBeDefined();
 			expect(error?.message).toContain('long');
@@ -397,8 +440,21 @@ test.for(feature, ({ Scenario }) => {
 		);
 	});
 
+
+
 	Scenario('Creating a Description with too long a value', ({ When, Then }) => {
 		let error: Error | undefined;
+		When(
+			'I try to create a Description with a string longer than 2000 characters',
+			() => {
+				try {
+					new Description('a'.repeat(2001));
+					error = undefined;
+				} catch (e) {
+					error = e as Error;
+				}
+			},
+		);
 		When(
 			'I try to create a Description with a string longer than 2000 characters',
 			() => {

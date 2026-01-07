@@ -75,7 +75,10 @@
 		"**/coverage/**",
 		"**/__tests__/**",
 		"**/tests/**",
-		"vitest.shims.d.ts"
+		"vitest.shims.d.ts",
+		"**/generated.ts",
+		"**/generated.tsx",
+		"**/generated.js"
 	],
 	"ignoreDependencies": [
 		"@types/*",
