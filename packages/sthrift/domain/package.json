@@ -13,7 +13,7 @@
 		}
 	},
 	"scripts": {
-		"prebuild": "npm run clean && biome lint",
+		"prebuild": "biome lint",
 		"build": "tsc --build",
 		"watch": "tsc --watch",
 		"test": "vitest run",
