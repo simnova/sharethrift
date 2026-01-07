@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ProfileView } from "./profile-view.tsx";
 import { useQuery, useMutation } from "@apollo/client/react";
@@ -12,13 +12,10 @@ import {
 import { message } from "antd";
 import type { ItemListing } from "../../../../../../generated.tsx";
 import type { BlockUserFormValues } from "../../../../../shared/user-modals/block-user-modal.tsx";
-import { BlockUserModal, UnblockUserModal } from "../../../../../shared/user-modals";
 
 export const ViewUserProfileContainer: React.FC = () => {
     const navigate = useNavigate();
     const { userId } = useParams<{ userId: string }>();
-    const [blockModalVisible, setBlockModalVisible] = useState(false);
-    const [unblockModalVisible, setUnblockModalVisible] = useState(false);
 
     const {
         data: currentUserData,
@@ -41,7 +38,6 @@ export const ViewUserProfileContainer: React.FC = () => {
         {
             onCompleted: () => {
                 message.success("User blocked successfully");
-                setBlockModalVisible(false);
                 refetchUser();
             },
             onError: (err) => {
@@ -55,7 +51,6 @@ export const ViewUserProfileContainer: React.FC = () => {
         {
             onCompleted: () => {
                 message.success("User unblocked successfully");
-                setUnblockModalVisible(false);
                 refetchUser();
             },
             onError: (err) => {
@@ -124,18 +119,6 @@ export const ViewUserProfileContainer: React.FC = () => {
 
     const listings: ItemListing[] = [];
 
-    const getDisplayName = (user?: {
-        firstName?: string;
-        lastName?: string;
-        username?: string;
-    } | null) => {
-        if (!user) return "";
-        const nameParts = [user.firstName, user.lastName].filter(
-            (p) => Boolean(p) && p !== "N/A",
-        ) as string[];
-        return nameParts.length > 0 ? nameParts.join(" ") : user.username || "Listing User";
-    };
-
     return (
         <ComponentQueryLoader
             loading={userLoading || currentUserLoading}
@@ -151,28 +134,10 @@ export const ViewUserProfileContainer: React.FC = () => {
                     canBlockUser={canBlockUsers ?? false}
                     onEditSettings={handleEditSettings}
                     onListingClick={handleListingClick}
-                    onBlockUser={() => setBlockModalVisible(true)}
-                    onUnblockUser={() => setUnblockModalVisible(true)}
-                    adminControls={
-                        (canBlockUsers ?? false) && (
-                            <>
-                                <BlockUserModal
-                                    visible={blockModalVisible}
-                                    userName={getDisplayName(profileUser)}
-                                    onConfirm={handleBlockUser}
-                                    onCancel={() => setBlockModalVisible(false)}
-                                    loading={blockLoading}
-                                />
-                                <UnblockUserModal
-                                    visible={unblockModalVisible}
-                                    userName={getDisplayName(profileUser)}
-                                    onConfirm={handleUnblockUser}
-                                    onCancel={() => setUnblockModalVisible(false)}
-                                    loading={unblockLoading}
-                                />
-                            </>
-                        )
-                    }
+                    onBlockUser={handleBlockUser}
+                    onUnblockUser={handleUnblockUser}
+                    blockUserLoading={blockLoading}
+                    unblockUserLoading={unblockLoading}
                 />
             }
         />
