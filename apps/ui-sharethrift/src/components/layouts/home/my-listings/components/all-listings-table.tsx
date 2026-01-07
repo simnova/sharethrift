@@ -4,12 +4,10 @@ import type React from 'react';
 
 import type { HomeAllListingsTableContainerListingFieldsFragment } from '../../../../../generated.tsx';
 import { AllListingsTableActions } from './AllListingsTableActions.tsx';
-import {
-	ListingTitleFilterDropdown,
-	ListingTitleFilterIcon,
-	StatusFilterDropdown,
-	StatusFilterIcon,
-} from './AllListingsTableHeader.tsx';
+import { ListingTitleFilterDropdown } from './all-listings-table-header';
+import { ListingTitleFilterIcon } from './listing-title-filter-icon';
+import { StatusFilterDropdown } from './status-filter-dropdown';
+import { StatusFilterIcon } from './status-filter-icon';
 import {
 	AllListingsTableListingCell,
 	AllListingsTablePendingRequestsCell,

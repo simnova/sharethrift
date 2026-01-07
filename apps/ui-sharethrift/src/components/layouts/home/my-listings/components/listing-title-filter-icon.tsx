@@ -1,5 +1,5 @@
-import { SearchOutlined } from '@ant-design/icons';
 
+interface ListingTitleFilterIconProps {
 	readonly filtered: boolean;
 }
 
