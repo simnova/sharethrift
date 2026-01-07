@@ -1,13 +1,12 @@
 default:
-  # Feature files location - Serenity acceptance tests for domain logic
-  # These tests use Serenity.js Screenplay Pattern to test domain behavior
-  # without violating architectural boundaries (no GraphQL/API dependencies)
+  # Feature files location - BDD acceptance tests for domain logic
+  # Currently uses standard Cucumber. Future enhancement: Serenity.js Screenplay Pattern
+  # Tests domain behavior without violating architectural boundaries (no GraphQL/API dependencies)
   paths:
     - tests/acceptance/features/**/*.feature
 
-  # Step definitions location - Cucumber step definitions 
-  # Note: Serenity.js integration requires implementing Screenplay pattern with actors/tasks
-  # For now using standard Cucumber with plans to add full Serenity integration later
+  # Step definitions location - TypeScript Cucumber step definitions
+  # Note: Full Serenity.js Screenplay pattern (actors/tasks/abilities) planned for future PR
   require:
     - tests/acceptance/step-definitions/**/*.steps.ts
 
