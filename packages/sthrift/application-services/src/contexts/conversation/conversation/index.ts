@@ -40,7 +40,7 @@ export const Conversation = (
 		create: create(dataSources),
 		queryById: queryById(dataSources),
 		queryByUser: queryByUser(dataSources),
-		processConversationsForArchivedListings:
+		processConversationsForArchivedListings: () =>
 			processConversationsForArchivedListings(dataSources),
 		sendMessage: sendMessage(dataSources),
 	};

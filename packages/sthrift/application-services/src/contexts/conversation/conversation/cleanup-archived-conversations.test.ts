@@ -131,9 +131,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			When(
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
-					const processFn =
-						processConversationsForArchivedListings(mockDataSources);
-					result = await processFn();
+					result = await processConversationsForArchivedListings(mockDataSources);
 				},
 			);
 
@@ -165,9 +163,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			When(
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
-					const processFn =
-						processConversationsForArchivedListings(mockDataSources);
-					result = await processFn();
+					result = await processConversationsForArchivedListings(mockDataSources);
 				},
 			);
 
@@ -228,9 +224,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			When(
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
-					const processFn =
-						processConversationsForArchivedListings(mockDataSources);
-					result = await processFn();
+					result = await processConversationsForArchivedListings(mockDataSources);
 				},
 			);
 
@@ -299,9 +293,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			When(
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
-					const processFn =
-						processConversationsForArchivedListings(mockDataSources);
-					result = await processFn();
+					result = await processConversationsForArchivedListings(mockDataSources);
 				},
 			);
 
@@ -328,10 +320,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			When(
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
-					const processFn =
-						processConversationsForArchivedListings(mockDataSources);
 					try {
-						result = await processFn();
+						result = await processConversationsForArchivedListings(mockDataSources);
 					} catch (error) {
 						thrownError = error as Error;
 					}
