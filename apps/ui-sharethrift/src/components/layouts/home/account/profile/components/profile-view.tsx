@@ -17,6 +17,7 @@ import type { ProfileUser } from './profile-view.types';
 import { ProfileActions } from './profile-actions.tsx';
 import { BlockUserModal, UnblockUserModal } from '../../../../../shared/user-modals';
 import type { BlockUserFormValues } from '../../../../../shared/user-modals/block-user-modal.tsx';
+import { getUserDisplayName } from "../../../../../shared/user-display-name.ts";
 
 const { Text } = Typography;
 
@@ -89,15 +90,6 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
             year: 'numeric',
             month: 'long',
         });
-    };
-
-    const getDisplayName = (profileUser: ProfileUser) => {
-        const nameParts = [profileUser.firstName, profileUser.lastName].filter(
-            (p) => Boolean(p) && p !== 'N/A',
-        );
-        return nameParts.length > 0
-            ? nameParts.join(' ')
-            : profileUser.username || 'Listing User';
     };
 
     const ownerLabel = user.firstName || user.username || 'User';
@@ -228,14 +220,14 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                 <>
                     <BlockUserModal
                         visible={blocking.blockModalVisible}
-                        userName={getDisplayName(user)}
+                        userName={getUserDisplayName(user)}
                         onConfirm={blocking.handleConfirmBlockUser}
                         onCancel={blocking.closeBlockModal}
                         loading={blockUserLoading}
                     />
                     <UnblockUserModal
                         visible={blocking.unblockModalVisible}
-                        userName={getDisplayName(user)}
+                        userName={getUserDisplayName(user)}
                         onConfirm={blocking.handleConfirmUnblockUser}
                         onCancel={blocking.closeUnblockModal}
                         loading={unblockUserLoading}

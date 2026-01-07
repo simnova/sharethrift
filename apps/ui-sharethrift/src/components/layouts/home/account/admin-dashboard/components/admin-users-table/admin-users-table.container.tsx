@@ -159,7 +159,7 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
 
     return (
         <ComponentQueryLoader
-            loading={loading}
+            loading={isLoading}
             hasData={data?.allUsers}
             error={error}
             hasDataComponent={

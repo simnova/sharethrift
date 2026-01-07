@@ -11,6 +11,7 @@ import { useState } from "react";
 import { type BlockUserFormValues,
     BlockUserModal } from "../../../../../../shared/user-modals/block-user-modal.tsx";
 import { UnblockUserModal } from "../../../../../../shared/user-modals/unblock-user-modal.tsx";
+import { getUserDisplayName } from "../../../../../../shared/user-display-name.ts";
 
 const { Search } = Input;
 
@@ -228,18 +229,6 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
         },
     ];
 
-    const getDisplayName = (user?: AdminUserData | null) => {
-        if (!user) return "";
-
-        const nameParts = [user.firstName, user.lastName].filter(
-            (p) => Boolean(p) && p !== "N/A",
-        ) as string[];
-
-        return nameParts.length > 0
-            ? nameParts.join(" ")
-            : user.username || "Listing User";
-    };
-
     return (
         <>
             <Dashboard
@@ -271,7 +260,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
             {/* Block User Modal */}
             <BlockUserModal
                 visible={blockModalVisible}
-                userName={getDisplayName(selectedUser)}
+                userName={selectedUser ? getUserDisplayName(selectedUser) : ""}
                 onConfirm={handleBlockConfirm}
                 onCancel={() => setBlockModalVisible(false)}
                 loading={loading}
@@ -280,7 +269,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
             {/* Unblock User Modal */}
             <UnblockUserModal
                 visible={unblockModalVisible}
-                userName={getDisplayName(selectedUser)}
+                userName={selectedUser ? getUserDisplayName(selectedUser) : ""}
                 onConfirm={handleUnblockConfirm}
                 onCancel={() => setUnblockModalVisible(false)}
                 loading={loading}
