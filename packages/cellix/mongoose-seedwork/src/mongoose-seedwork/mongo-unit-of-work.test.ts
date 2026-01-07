@@ -45,22 +45,11 @@ vi.mock('mongoose', async () => {
 test.for(feature, ({ Scenario, BeforeEachScenario }) => {
   let unitOfWork: MongoUnitOfWork<MongoType, PropType, unknown, AggregateRootMock, RepoMock>;
   let eventBus: DomainSeedwork.EventBus;
-  type IntegrationDispatchMock = Mock<(event: unknown, data: unknown) => Promise<void>>;
-  type IntegrationEventBusMock = {
-    dispatch: IntegrationDispatchMock;
-    register: Mock<(handler: unknown) => void>;
-  };
-
-  let integrationEventBus: IntegrationEventBusMock;
+  let integrationEventBus: DomainSeedwork.EventBus;
   let mockModel: Model<MongoType>;
   let typeConverter: DomainSeedwork.TypeConverter<MongoType, PropType, unknown, AggregateRootMock>;
 
   const Passport = {};
-  const TestRepoClass = RepoMock;
-
-  let domainOperation: Mock<(repo: RepoMock) => Promise<void>>;
-
-  const getIntegrationDispatchMock = (): IntegrationDispatchMock => integrationEventBus.dispatch;
 
   const makeDomainOperation = (options?: {
     events?: Array<{ ctor: typeof TestEvent; payload: { foo: string } }>;
@@ -105,19 +94,17 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       dispatch: vi.fn(),
       register: vi.fn(),
     }) as DomainSeedwork.EventBus;
-    integrationEventBus = {
+    integrationEventBus = vi.mocked({
       dispatch: vi.fn(),
       register: vi.fn(),
-    };
+    }) as DomainSeedwork.EventBus;
     unitOfWork = new MongoUnitOfWork(
       eventBus,
-      integrationEventBus as unknown as DomainSeedwork.EventBus,
+      integrationEventBus,
       mockModel,
       typeConverter,
-      TestRepoClass,
+      RepoMock,
     );
-    domainOperation = makeDomainOperation();
-    vi.clearAllMocks();
     vi.spyOn(mongoose.connection, 'transaction').mockImplementation(
       async (cb: (session: ClientSession) => Promise<unknown>) => {
         return await cb({} as ClientSession);
@@ -137,31 +124,30 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       expect(unitOfWork.typeConverter).toBe(typeConverter);
       expect(unitOfWork.bus).toBe(eventBus);
       expect(unitOfWork.integrationEventBus).toBe(integrationEventBus);
-      expect(unitOfWork.repoClass).toBe(TestRepoClass);
+      expect(unitOfWork.repoClass).toBe(RepoMock);
     });
   });
 
   Scenario('Domain operation with no events, completes successfully', ({ Given, When, Then }) => {
+    let domainOperation: Mock<(repo: RepoMock) => Promise<void>>;
+
     Given('a domain operation that emits no domain or integration events', () => {
       domainOperation = makeDomainOperation();
     });
     When('the operation completes successfully', async () => {
-      const dispatchMock = getIntegrationDispatchMock();
-      domainOperation.mockClear();
-      dispatchMock.mockClear();
       await unitOfWork.withTransaction(Passport, domainOperation);
     });
     Then('the transaction is committed and no events are dispatched', () => {
-      const dispatchMock = getIntegrationDispatchMock();
-      expect(domainOperation).toHaveBeenCalledWith(expect.any(TestRepoClass));
+      const dispatchMock = integrationEventBus.dispatch as Mock;
+      expect(domainOperation).toHaveBeenCalledWith(expect.any(RepoMock));
       expect(dispatchMock).not.toHaveBeenCalled();
     });
   });
 
   Scenario('Domain operation with no events, throws error', ({ Given, When, Then }) => {
     let domainError: Error;
+
     Given('a domain operation that emits no domain or integration events', () => {
-      domainOperation = makeDomainOperation();
       domainError = new Error('Domain failure');
     });
     When('the operation throws an error', async () => {
@@ -173,7 +159,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       ).rejects.toThrow(domainError);
     });
     Then('the transaction is rolled back and no events are dispatched', () => {
-      const dispatchMock = getIntegrationDispatchMock();
+      const dispatchMock = integrationEventBus.dispatch as Mock;
       expect(dispatchMock).not.toHaveBeenCalled();
     });
   });
@@ -181,13 +167,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
   Scenario('Domain operation emits integration events, all dispatch succeed', ({ Given, When, Then }) => {
     let event1: TestEvent;
     let event2: TestEvent;
-    let customDomainOp: Mock<(repo: RepoMock) => Promise<void>>;
+    let domainOperation: Mock<(repo: RepoMock) => Promise<void>>;
     Given('integration events are emitted during the domain operation', () => {
       event1 = new TestEvent('id');
       event1.payload = { foo: 'bar1' };
       event2 = new TestEvent('id');
       event2.payload = { foo: 'bar2' };
-      customDomainOp = makeDomainOperation({
+      domainOperation = makeDomainOperation({
         events: [
           { ctor: TestEvent, payload: event1.payload },
           { ctor: TestEvent, payload: event2.payload },
@@ -195,14 +181,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       });
     });
     When('the transaction completes successfully', async () => {
-      const dispatchMock = getIntegrationDispatchMock();
-      dispatchMock.mockClear();
+      const dispatchMock = integrationEventBus.dispatch as Mock;
       dispatchMock.mockResolvedValueOnce(undefined);
       dispatchMock.mockResolvedValueOnce(undefined);
-      await unitOfWork.withTransaction(Passport, customDomainOp);
+      await unitOfWork.withTransaction(Passport, domainOperation);
     });
     Then('all integration events are dispatched after the transaction commits', () => {
-      const dispatchMock = getIntegrationDispatchMock();
+      const dispatchMock = integrationEventBus.dispatch as Mock;
       expect(dispatchMock).toHaveBeenCalledTimes(2);
       expect(dispatchMock).toHaveBeenNthCalledWith(1, event1.constructor, event1.payload);
       expect(dispatchMock).toHaveBeenNthCalledWith(2, event2.constructor, event2.payload);
@@ -212,13 +197,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
   Scenario('Integration event dispatch fails', ({ Given, When, Then }) => {
     let event1: TestEvent;
     let event2: TestEvent;
-    let customDomainOp: Mock<(repo: RepoMock) => Promise<void>>;
+    let domainOperation: Mock<(repo: RepoMock) => Promise<void>>;
     Given('integration events are emitted during the domain operation', () => {
       event1 = new TestEvent('id');
       event1.payload = { foo: 'bar1' };
       event2 = new TestEvent('id');
       event2.payload = { foo: 'bar2' };
-      customDomainOp = makeDomainOperation({
+      domainOperation = makeDomainOperation({
         events: [
           { ctor: TestEvent, payload: event1.payload },
           { ctor: TestEvent, payload: event2.payload },
@@ -226,13 +211,12 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       });
     });
     When('integration event dispatch fails', async () => {
-      const dispatchMock = getIntegrationDispatchMock();
-      dispatchMock.mockClear();
+      const dispatchMock = integrationEventBus.dispatch as Mock;
       dispatchMock.mockRejectedValueOnce(new Error('rejected promise'));
-      await expect(unitOfWork.withTransaction(Passport, customDomainOp)).rejects.toThrow('rejected promise');
+      await expect(unitOfWork.withTransaction(Passport, domainOperation)).rejects.toThrow('rejected promise');
     });
     Then('the error from dispatch is propagated and the transaction is not rolled back by the unit of work', () => {
-      const dispatchMock = getIntegrationDispatchMock();
+      const dispatchMock = integrationEventBus.dispatch as Mock;
       expect(dispatchMock).toHaveBeenCalledTimes(1);
     });
   });
@@ -240,13 +224,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
   Scenario('Multiple integration events are emitted and all succeed', ({ Given, When, Then }) => {
     let event1: TestEvent;
     let event2: TestEvent;
-    let customDomainOp: Mock<(repo: RepoMock) => Promise<void>>;
+    let domainOperation: Mock<(repo: RepoMock) => Promise<void>>;
     Given('integration events are emitted during the domain operation', () => {
       event1 = new TestEvent('id');
       event1.payload = { foo: 'bar1' };
       event2 = new TestEvent('id');
       event2.payload = { foo: 'bar2' };
-      customDomainOp = makeDomainOperation({
+      domainOperation = makeDomainOperation({
         events: [
           { ctor: TestEvent, payload: event1.payload },
           { ctor: TestEvent, payload: event2.payload },
@@ -254,14 +238,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       });
     });
     When('multiple integration events are emitted and all succeed', async () => {
-      const dispatchMock = getIntegrationDispatchMock();
-      dispatchMock.mockClear();
+      const dispatchMock = integrationEventBus.dispatch as Mock;
       dispatchMock.mockResolvedValueOnce(undefined);
       dispatchMock.mockResolvedValueOnce(undefined);
-      await unitOfWork.withTransaction(Passport, customDomainOp);
+      await unitOfWork.withTransaction(Passport, domainOperation);
     });
     Then('all are dispatched after the transaction', () => {
-      const dispatchMock = getIntegrationDispatchMock();
+      const dispatchMock = integrationEventBus.dispatch as Mock;
       expect(dispatchMock).toHaveBeenCalledTimes(2);
     });
   });
