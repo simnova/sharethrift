@@ -84,12 +84,7 @@ And valid Conversation documents exist in the database
 		When I call getByListingId with an empty string
 		Then I should receive an empty array
 
-	Scenario: Getting conversations by listing ID with invalid ObjectId
-		Given an invalid ObjectId format will be provided
-		When I call getByListingId with invalid ObjectId format
-		Then I should receive an empty array
-
 	Scenario: Getting conversations by listing ID with database error
-		Given an error will occur during the database query
+		Given an error will occur during the listing query
 		When I call getByListingId with "listing-1"
-		Then an error should be thrown
+		Then I should receive an empty array

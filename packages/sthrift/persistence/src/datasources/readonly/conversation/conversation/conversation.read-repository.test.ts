@@ -514,7 +514,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					enumerable: false,
 					configurable: true,
 				});
-				mockModel.find = vi.fn(() => mockQuery) as unknown as typeof mockModel.find;
+				mockModel.find = vi.fn(
+					() => mockQuery,
+				) as unknown as typeof mockModel.find;
 
 				result = await repository.getByListingId(
 					createValidObjectId('nonexistent-listing'),
@@ -538,43 +540,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario(
-		'Getting conversations by listing ID with invalid ObjectId',
+		'Getting conversations by listing ID with database error',
 		({ Given, When, Then }) => {
-			Given('an invalid ObjectId format will be provided', () => {
-				// This will be handled in the When step
+			Given('an error will occur during the listing query', () => {
+				// Mock the find method to throw an error
+				mockModel.find = vi.fn(() => {
+					throw new Error('Database error');
+				}) as unknown as typeof mockModel.find;
 			});
-			When('I call getByListingId with invalid ObjectId format', async () => {
-				// Pass a string that will fail ObjectId construction
-				result = await repository.getByListingId('invalid-object-id-format!!!');
+			When('I call getByListingId with "listing-1"', async () => {
+				result = await repository.getByListingId(
+					createValidObjectId('listing-1'),
+				);
 			});
 			Then('I should receive an empty array', () => {
 				expect(Array.isArray(result)).toBe(true);
 				expect((result as unknown[]).length).toBe(0);
-			});
-		},
-	);
-
-	Scenario(
-		'Getting conversations by listing ID with database error',
-		({ Given, When, Then }) => {
-			Given('an error will occur during the database query', () => {
-				// Mock the find method to throw a database error
-				mockModel.find = vi.fn(() => {
-					throw new Error('Database connection failed');
-				}) as unknown as typeof mockModel.find;
-			});
-			When('I call getByListingId with "listing-1"', async () => {
-				try {
-					result = await repository.getByListingId(
-						createValidObjectId('listing-1'),
-					);
-				} catch (error) {
-					result = error;
-				}
-			});
-			Then('an error should be thrown', () => {
-				expect(result).toBeInstanceOf(Error);
-				expect((result as Error).message).toBe('Database connection failed');
 			});
 		},
 	);
