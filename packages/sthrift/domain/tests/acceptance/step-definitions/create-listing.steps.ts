@@ -1,61 +1,42 @@
 import { type DataTable, Given, Then, When } from '@cucumber/cucumber';
-import type { Domain } from '@sthrift/domain';
+import { actorCalled, actorInTheSpotlight } from '@serenity-js/core';
+import { Ensure, isTrue } from '@serenity-js/assertions';
+import { CreateListingAbility } from '../screenplay/abilities/index.ts';
+import { ListingWasCreated, ListingIsDraft } from '../screenplay/questions/index.ts';
+import '../support/setup.ts'; // Import setup to configure Serenity
 
-// World context to store test data
-interface TestWorld {
-	createdListing?: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
-	listingParams?: {
-		title: string;
-		description: string;
-		category: string;
-		location: string;
-	};
-}
-
-// Store the world context
-let world: TestWorld = {};
-
-Given('I am a personal user', () => {
-	// TODO: Set up actor with CreateListingAbility
-	// This will be implemented with proper test setup (MongoDB memory server, etc.)
-	// For now, we're validating the test structure compiles correctly
-	world = {};
+Given('I am a personal user', function () {
+	// Set up actor with abilities (configured in setup.ts)
+	actorCalled('PersonalUser');
 });
 
 When(
 	'I create a draft listing with the following details:',
-	(dataTable: DataTable) => {
+	async function (dataTable: DataTable) {
 		const rows = dataTable.rowsHash();
 
-		world.listingParams = {
+		const params = {
 			title: rows.title,
 			description: rows.description,
 			category: rows.category,
 			location: rows.location,
 		};
 
-		// TODO: Use actor's CreateListingAbility to create listing
-		// Example (to be implemented with proper setup):
-		// const actor = actorInTheSpotlight();
-		// world.createdListing = await CreateListingAbility.as(actor).createListing({
-		//   ...world.listingParams,
-		//   sharingPeriodStart: new Date(),
-		//   sharingPeriodEnd: new Date(Date.now() + 86400000),
-		//   isDraft: true
-		// });
+		// Use the ability directly for now (simplified approach)
+		const actor = actorInTheSpotlight();
+		const ability = CreateListingAbility.as(actor);
+		await ability.createDraftListing(params);
 	},
 );
 
-Then('the listing should be created successfully', () => {
-	// TODO: Verify listing was created
-	// await actorInTheSpotlight().attemptsTo(
-	//   Ensure.that(world.createdListing, isDefined())
-	// );
+Then('the listing should be created successfully', async function () {
+	// Verify listing was created using Serenity assertions
+	await actorInTheSpotlight().attemptsTo(
+		Ensure.that(ListingWasCreated(), isTrue()),
+	);
 });
 
-Then('the listing should be in draft state', () => {
-	// TODO: Verify listing state
-	// await actorInTheSpotlight().attemptsTo(
-	//   Ensure.that(world.createdListing?.state, equals('DRAFT'))
-	// );
+Then('the listing should be in draft state', async function () {
+	// Verify listing is in draft state
+	await actorInTheSpotlight().attemptsTo(Ensure.that(ListingIsDraft(), isTrue()));
 });
