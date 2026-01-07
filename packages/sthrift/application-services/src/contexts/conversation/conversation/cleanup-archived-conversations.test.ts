@@ -113,11 +113,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				mockUnitOfWork.withScopedTransaction.mockImplementation(
 					async (
 						callback: (repo: {
+							getByListingId: typeof vi.fn;
 							get: typeof vi.fn;
 							save: typeof vi.fn;
 						}) => Promise<void>,
 					) => {
 						const mockRepo = {
+							getByListingId: vi.fn(() => Promise.resolve(mockConversations)),
 							get: vi.fn((id: string) =>
 								mockConversations.find((c) => c.id === id),
 							),
@@ -208,11 +210,15 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				mockUnitOfWork.withScopedTransaction.mockImplementation(
 					async (
 						callback: (repo: {
+							getByListingId: typeof vi.fn;
 							get: typeof vi.fn;
 							save: typeof vi.fn;
 						}) => Promise<void>,
 					) => {
 						const mockRepo = {
+							getByListingId: vi.fn(() =>
+								Promise.resolve(conversationsWithExpiry),
+							),
 							get: vi.fn((id: string) =>
 								conversationsWithExpiry.find((c) => c.id === id),
 							),
@@ -259,28 +265,32 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 			And('an error occurs while processing one listing', () => {
 				let callCount = 0;
-				mockConversationReadRepo.getByListingId.mockImplementation(() => {
-					callCount++;
-					if (callCount === 1) {
-						return Promise.resolve([
-							{
-								id: 'conv-1',
-								expiresAt: undefined,
-								scheduleForDeletion: vi.fn(),
-							},
-						]);
-					}
-					return Promise.reject(new Error('Failed to fetch conversations'));
-				});
-
 				mockUnitOfWork.withScopedTransaction.mockImplementation(
 					async (
 						callback: (repo: {
+							getByListingId: typeof vi.fn;
 							get: typeof vi.fn;
 							save: typeof vi.fn;
 						}) => Promise<void>,
 					) => {
+						callCount++;
 						const mockRepo = {
+							getByListingId: vi.fn(() => {
+								if (callCount === 1) {
+									// First listing succeeds
+									return Promise.resolve([
+										{
+											id: 'conv-1',
+											expiresAt: undefined,
+											scheduleForDeletion: vi.fn(),
+										},
+									]);
+								}
+								// Second listing fails
+								return Promise.reject(
+									new Error('Failed to fetch conversations'),
+								);
+							}),
 							get: vi.fn(() => ({
 								id: 'conv-1',
 								expiresAt: undefined,

@@ -24,6 +24,7 @@ export async function processConversationsForArchivedListings(
 	return await tracer.startActiveSpan(
 		'conversation.processConversationsForArchivedListings',
 		async (span) => {
+			let hadFatalError = false;
 			const result: CleanupResult = {
 				processedCount: 0,
 				scheduledCount: 0,
@@ -41,27 +42,19 @@ export async function processConversationsForArchivedListings(
 
 				for (const listing of archivedListings) {
 					try {
-						const conversations =
-							await dataSources.readonlyDataSource.Conversation.Conversation.ConversationReadRepo.getByListingId(
-								listing.id,
-							);
-
-						result.processedCount += conversations.length;
-
-						const conversationsToSchedule = conversations.filter(
-							(c) => !c.expiresAt,
-						);
-						if (conversationsToSchedule.length === 0) continue;
-
 						await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
 							async (repo) => {
-								for (const conversationRef of conversationsToSchedule) {
-									const conversation = await repo.get(conversationRef.id);
-									if (conversation && !conversation.expiresAt) {
-										conversation.scheduleForDeletion(listing.updatedAt);
-										await repo.save(conversation);
-										result.scheduledCount++;
-									}
+								const conversations = await repo.getByListingId(listing.id);
+								result.processedCount += conversations.length;
+
+								const conversationsToSchedule = conversations.filter(
+									(c) => !c.expiresAt,
+								);
+
+								for (const conversation of conversationsToSchedule) {
+									conversation.scheduleForDeletion(listing.updatedAt);
+									await repo.save(conversation);
+									result.scheduledCount++;
 								}
 							},
 						);
@@ -72,27 +65,29 @@ export async function processConversationsForArchivedListings(
 						console.error('[ConversationCleanup]', msg);
 					}
 				}
-
-				return result;
 			} catch (error) {
+				hadFatalError = true;
 				span.setStatus({ code: SpanStatusCode.ERROR });
 				if (error instanceof Error) {
 					span.recordException(error);
 				}
-				console.error('[ConversationCleanup] Cleanup failed:', error);
+				console.error('[ConversationCleanup] Fatal cleanup error:', error);
 				throw error;
 			} finally {
 				span.setAttribute('processedCount', result.processedCount);
 				span.setAttribute('scheduledCount', result.scheduledCount);
 				span.setAttribute('errorsCount', result.errors.length);
 
-				if (result.errors.length > 0) {
-					span.setStatus({
-						code: SpanStatusCode.ERROR,
-						message: `${result.errors.length} listing(s) failed during cleanup`,
-					});
-				} else {
-					span.setStatus({ code: SpanStatusCode.OK });
+				// Only update status if no fatal error occurred
+				if (!hadFatalError) {
+					if (result.errors.length > 0) {
+						span.setStatus({
+							code: SpanStatusCode.ERROR,
+							message: `${result.errors.length} listing(s) failed during cleanup`,
+						});
+					} else {
+						span.setStatus({ code: SpanStatusCode.OK });
+					}
 				}
 
 				span.end();
@@ -101,6 +96,8 @@ export async function processConversationsForArchivedListings(
 					`[ConversationCleanup] Cleanup complete. Processed: ${result.processedCount}, Scheduled: ${result.scheduledCount}, Errors: ${result.errors.length}`,
 				);
 			}
+
+			return result;
 		},
 	);
 }
