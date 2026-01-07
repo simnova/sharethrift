@@ -7,6 +7,7 @@ import { Domain } from '@sthrift/domain';
 import type mongoose from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { expect, vi } from 'vitest';
+import { makeNewableMock } from '@cellix/test-utils';
 import { ReservationRequestConverter } from './reservation-request.domain-adapter.ts';
 import { ReservationRequestRepository } from './reservation-request.repository.ts';
 
@@ -38,6 +39,8 @@ function makePassport(): Domain.Passport {
 function makeEventBus(): DomainSeedwork.EventBus {
 	return vi.mocked({ dispatch: vi.fn(), register: vi.fn() } as DomainSeedwork.EventBus);
 }
+
+// use shared makeNewableMock from test-utils
 
 function makeUserDoc(id: string): Models.User.PersonalUser {
 	const validId = createValidObjectId(id);
@@ -294,10 +297,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
                     set: vi.fn(),
                 };
                 
-                // Setup repository with constructor mock
-                repository = setupReservationRequestRepo(mockDoc, {
-                    modelCtor: vi.fn(() => mockNewDoc) as unknown as Models.ReservationRequest.ReservationRequestModelType
-                });
+				// Setup repository with constructor mock
+				repository = setupReservationRequestRepo(mockDoc, {
+					modelCtor: makeNewableMock(() => mockNewDoc) as unknown as Models.ReservationRequest.ReservationRequestModelType,
+				});
                 
                 result = await repository.getNewInstance(
                     'PENDING',

@@ -17,7 +17,7 @@
 		"build": "tsc --build",
 		"watch": "tsc --watch",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
+		"test:coverage:node": "vitest run --coverage",
 		"test:integration": "vitest run integration.test.ts",
 		"test:serenity": "SERENITY_OUTPUT_DIR=target/site/serenity NODE_OPTIONS='--import tsx' cucumber-js --config cucumber.yaml --format-options '{\"specDirectory\":\"tests/acceptance/features\"}'",
 		"test:serenity:report": "serenity-bdd run --source target/site/serenity --features tests/acceptance/features",
