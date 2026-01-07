@@ -329,13 +329,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 // Additional non-BDD tests for edge cases
 describe('UserAppealRequestDomainAdapter - Additional Coverage', () => {
-	it('should throw TypeError when blocker is ObjectId', () => {
+	it('should return entity reference with ID when blocker is ObjectId', () => {
 		const doc = makeAppealRequestDoc();
 		const blockerId = new MongooseSeedwork.ObjectId();
 		doc.blocker = blockerId as never;
 		const adapter = new UserAppealRequestDomainAdapter(doc as never);
-		expect(() => adapter.blocker).toThrow(TypeError);
-		expect(() => adapter.blocker).toThrow('blocker is not populated');
+		const result = adapter.blocker;
+		expect(result.id).toBe(blockerId.toString());
 	});
 
 	it('should throw error when loadBlocker is called with null blocker', async () => {
@@ -352,12 +352,13 @@ describe('UserAppealRequestDomainAdapter - Additional Coverage', () => {
 		expect(() => adapter.user).toThrow('user is not populated');
 	});
 
-	it('should throw TypeError when user is ObjectId in getter', () => {
+	it('should return entity reference with ID when user is ObjectId in getter', () => {
 		const doc = makeAppealRequestDoc();
 		const userId = new MongooseSeedwork.ObjectId();
 		doc.user = userId as never;
 		const adapter = new UserAppealRequestDomainAdapter(doc as never);
-		expect(() => adapter.user).toThrow(TypeError);
+		const result = adapter.user;
+		expect(result.id).toBe(userId.toString());
 	});
 
 	it('should throw error when blocker is null in getter', () => {

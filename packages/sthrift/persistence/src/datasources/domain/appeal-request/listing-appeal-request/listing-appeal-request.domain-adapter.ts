@@ -32,7 +32,9 @@ export class ListingAppealRequestDomainAdapter
 			throw new Error('user is not populated');
 		}
 		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError('user is not populated');
+			return {
+				id: this.doc.user.toString(),
+			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.user as Models.User.PersonalUser,
@@ -67,7 +69,9 @@ export class ListingAppealRequestDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError('listing is not populated');
+			return {
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,

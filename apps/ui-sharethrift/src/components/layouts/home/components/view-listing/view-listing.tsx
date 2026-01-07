@@ -1,12 +1,20 @@
-import { Row, Col, Button } from 'antd';
+import { Alert, Button, Col, Row } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useMutation } from '@apollo/client/react';
+import { message } from 'antd';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
+import { BlockInformationModal } from './block-information-modal.tsx';
+import { AppealConfirmationModal } from './appeal-confirmation-modal.tsx';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
+	ViewListingAppealRequestByListingIdQuery,
 } from '../../../../../generated.tsx';
+import { HomeListingInformationCreateListingAppealRequestDocument } from '../../../../../generated.tsx';
 
 interface ViewListingProps {
 	listing: ItemListing;
@@ -16,7 +24,13 @@ interface ViewListingProps {
 	userReservationRequest:
 		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
 		| null;
+	appealRequest:
+		| ViewListingAppealRequestByListingIdQuery['getListingAppealRequestByListingId']
+		| null
+		| undefined;
+	onAppealRequestSuccess?: () => void;
 	sharedTimeAgo?: string;
+	isAdmin: boolean;
 }
 
 export const ViewListing: React.FC<ViewListingProps> = ({
@@ -25,14 +39,73 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	isAuthenticated,
 	currentUserId,
 	userReservationRequest,
+	appealRequest,
+	onAppealRequestSuccess,
 	sharedTimeAgo,
+	isAdmin,
 }) => {
-	// Mock sharer info (since ItemListing.sharer is just an ID)
-	const sharer = listing.sharer;
+	const navigate = useNavigate();
+	const [blockInfoModalVisible, setBlockInfoModalVisible] = useState(false);
+	const [appealConfirmModalVisible, setAppealConfirmModalVisible] =
+		useState(false);
+	const [appealSuccess, setAppealSuccess] = useState(false);
+
+	const [createAppealRequest, { loading: appealLoading }] = useMutation(
+		HomeListingInformationCreateListingAppealRequestDocument,
+		{
+			onCompleted: () => {
+				setAppealSuccess(true);
+				setAppealConfirmModalVisible(false);
+				setBlockInfoModalVisible(false);
+				message.success('Appeal requested successfully.');
+				onAppealRequestSuccess?.();
+			},
+			onError: (error) => {
+				message.error(`Failed to submit appeal: ${error.message}`);
+			},
+		},
+	);
+
+	const { sharer } = listing;
+
+	const isBlocked = listing.state === 'Blocked';
+	const appealRequested = appealRequest?.state === 'REQUESTED';
 
 	const handleBack = () => {
 		window.location.href = '/';
 	};
+
+	const handleEditListing = () => {
+		navigate(`/create-listing/${listing.id}`);
+	};
+
+	const handleAppealBlock = () => {
+		setBlockInfoModalVisible(false);
+		setAppealConfirmModalVisible(true);
+	};
+
+	const handleAppealConfirm = async () => {
+		if (!currentUserId || !listing.id) {
+			message.error('Unable to submit appeal. Please try again.');
+			return;
+		}
+
+		// TODO: SECURITY - Get actual blocker ID from listing block metadata
+		// For now, using a placeholder. The blocker should be tracked when blocking occurs.
+		const blockerId = listing.sharer?.id || currentUserId;
+
+		await createAppealRequest({
+			variables: {
+				input: {
+					userId: currentUserId,
+					listingId: listing.id,
+					reason: 'User is appealing the block on this listing',
+					blockerId,
+				},
+			},
+		});
+	};
+
 
 	return (
 		<>
@@ -86,10 +159,52 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 					paddingBottom: 75,
 					boxSizing: 'border-box',
 					width: '100%',
+					opacity: isBlocked && !isAdmin ? 0.5 : 1,
+					pointerEvents: isBlocked && !isAdmin ? 'none' : 'auto',
 				}}
 				gutter={[0, 24]}
 				className="view-listing-responsive"
 			>
+				{/* Blocked Listing Banner */}
+				{isBlocked && (
+					<Col span={24} style={{ marginBottom: 16 }}>
+						{appealSuccess ? (
+							<>
+								<Alert
+									message="This listing is blocked. Your appeal is awaiting approval."
+									type="error"
+									showIcon
+									action={
+										<Button size="small" onClick={() => setBlockInfoModalVisible(true)}>
+											View Details
+										</Button>
+									}
+								/>
+								<Alert
+									message="Appeal requested successfully."
+									type="success"
+									showIcon
+									style={{ marginTop: 8 }}
+								/>
+							</>
+						) : (
+							<Alert
+								message={
+									appealRequested
+										? 'This listing is blocked. Your appeal is awaiting approval.'
+										: 'This listing is blocked.'
+								}
+								type="error"
+								showIcon
+								action={
+									<Button size="small" onClick={() => setBlockInfoModalVisible(true)}>
+										View Details
+									</Button>
+								}
+							/>
+						)}
+					</Col>
+				)}
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					<Button
 						className="primaryButton"
@@ -101,15 +216,29 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 						Back
 					</Button>
 				</Col>
+				{isBlocked && (
+					<Col span={24}>
+						<Alert
+							message="This listing is currently blocked"
+							description="This listing has been blocked by an administrator and is not visible to regular users."
+							type="error"
+							showIcon
+						/>
+					</Col>
+				)}
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					{/* Sharer Info at top, clickable to profile */}
 					<SharerInformationContainer
 						sharerId={sharer?.id}
 						listingId={listing.id}
+                        listingTitle={listing.title}
 						isOwner={sharer?.id === currentUserId}
 						className="sharer-info-responsive"
 						sharedTimeAgo={sharedTimeAgo}
 						currentUserId={currentUserId}
+                        isAdmin={isAdmin}
+						isBlocked={isBlocked}
+                        sharerName={`${sharer?.account?.profile?.firstName} ${sharer?.account?.profile?.lastName}`}
 					/>
 				</Col>
 				<Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
@@ -137,19 +266,33 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 								className="listing-gallery-responsive"
 							/>
 						</Col>
-					{/* Right: Info/Form */}
-					<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
-						<ListingInformationContainer
-							listing={listing}
-							userIsSharer={userIsSharer}
-							isAuthenticated={isAuthenticated}
-							userReservationRequest={userReservationRequest}
-							className="listing-info-responsive"
-						/>
-					</Col>
+						{/* Right: Info/Form */}
+						<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
+							<ListingInformationContainer
+								listing={listing}
+								userIsSharer={userIsSharer}
+								isAuthenticated={isAuthenticated}
+								userReservationRequest={userReservationRequest}
+								className="listing-info-responsive"
+							/>
+						</Col>
 					</Row>
 				</Col>
 			</Row>
+			{/* Modals */}
+			<BlockInformationModal
+				visible={blockInfoModalVisible}
+				onClose={() => setBlockInfoModalVisible(false)}
+				onEditListing={handleEditListing}
+				onAppealBlock={handleAppealBlock}
+				appealRequested={appealRequested}
+			/>
+			<AppealConfirmationModal
+				visible={appealConfirmModalVisible}
+				onConfirm={handleAppealConfirm}
+				onCancel={() => setAppealConfirmModalVisible(false)}
+				loading={appealLoading}
+			/>
 			{/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
 		</>
 	);

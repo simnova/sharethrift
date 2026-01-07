@@ -6,7 +6,9 @@ import {
 	HomeAllListingsTableContainerCancelItemListingDocument,
 	HomeAllListingsTableContainerDeleteListingDocument,
 	HomeAllListingsTableContainerMyListingsAllDocument,
+	HomeListingInformationCreateListingAppealRequestDocument,
 } from '../../../../../generated.tsx';
+import { useUserId } from '../../../../shared/user-context.tsx';
 import { AllListingsTable } from './all-listings-table.tsx';
 
 interface AllListingsTableContainerProps {
@@ -17,6 +19,7 @@ interface AllListingsTableContainerProps {
 export const AllListingsTableContainer: React.FC<
 	AllListingsTableContainerProps
 > = ({ currentPage, onPageChange }) => {
+	const userId = useUserId();
 	const [searchText, setSearchText] = useState('');
 	const [statusFilters, setStatusFilters] = useState<string[]>([]);
 	const [sorter, setSorter] = useState<{
@@ -80,6 +83,19 @@ export const AllListingsTableContainer: React.FC<
 		},
 	);
 
+    const [createListingAppealRequest] = useMutation(
+        HomeListingInformationCreateListingAppealRequestDocument,
+        {
+            onCompleted: () => {
+                message.success('Appeal request submitted successfully.');
+                refetch();
+            },
+            onError: (error) => {
+                message.error(`Failed to submit appeal request: ${error.message}`);
+            },
+        },
+    );
+
 	const listings = data?.myListingsAll?.items ?? [];
 	const total = data?.myListingsAll?.total ?? 0;
 
@@ -114,6 +130,25 @@ export const AllListingsTableContainer: React.FC<
 			await cancelListing({ variables: { id: listingId } });
 		} else if (action === 'delete') {
 			await deleteListing({ variables: { id: listingId } });
+		} else if (action === 'appeal') {
+			if (!userId) {
+				message.error('Unable to submit appeal. Please log in first.');
+				return;
+			}
+
+			// For appeal requests on user's own listings, the blockerId is typically the admin
+			// who blocked it. Since we don't have that information here, we use the userId.
+			// The backend should track who actually blocked the listing.
+			await createListingAppealRequest({
+				variables: {
+					input: {
+						userId,
+						listingId,
+						blockerId: userId,
+						reason: 'User is appealing the block on this listing',
+					},
+				},
+			});
 		} else {
 			message.info(`Action "${action}" for listing ${listingId} coming soon.`);
 		}

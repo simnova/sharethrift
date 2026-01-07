@@ -29,7 +29,9 @@ export class UserAppealRequestDomainAdapter
 			throw new Error('user is not populated');
 		}
 		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError('user is not populated');
+			return {
+				id: this.doc.user.toString(),
+			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.user as Models.User.PersonalUser,
@@ -64,7 +66,9 @@ export class UserAppealRequestDomainAdapter
 			throw new Error('blocker is not populated');
 		}
 		if (this.doc.blocker instanceof MongooseSeedwork.ObjectId) {
-			throw new TypeError('blocker is not populated');
+			return {
+				id: this.doc.blocker.toString(),
+			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
 		const adapter = new PersonalUserDomainAdapter(
 			this.doc.blocker as Models.User.PersonalUser,

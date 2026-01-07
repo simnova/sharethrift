@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ViewListing } from './view-listing.tsx';
 import {
 	type ItemListing,
 	ViewListingImageGalleryGetImagesDocument,
@@ -9,6 +8,8 @@ import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../../test-utils/storybook-decorators.tsx';
+import { ViewListing } from './view-listing.tsx';
+
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
 const MOCK_LISTING_BASE: ItemListing = {
@@ -46,7 +47,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 		schemaVersion: '1.0',
 		userType: 'personal-user',
 	},
-    listingType: 'item-listing',
+	listingType: 'item-listing',
 };
 
 const mocks = [
@@ -107,20 +108,37 @@ type Story = StoryObj<typeof ViewListing>;
 
 const baseListing = MOCK_LISTING_BASE;
 
+// Shared admin configuration
+const adminBaseArgs = {
+	isAdmin: true,
+	isAuthenticated: true,
+	currentUserId: 'mock-admin-id',
+};
+
+// Blocked listing variant
+const adminBlockedListing = {
+	...baseListing,
+	state: 'Blocked' as string,
+};
+
 export const Default: Story = {
 	args: {
 		listing: baseListing,
 		userIsSharer: false,
 		isAuthenticated: false,
+		currentUserId: '',
 		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
-	}};
+		isAdmin: false,
+	},
+};
 
 export const AsReserver: Story = {
 	args: {
 		...Default.args,
 		userIsSharer: false,
 		isAuthenticated: true,
+		currentUserId: 'mock-reserver-id',
 		userReservationRequest: null,
 	},
 };
@@ -130,6 +148,39 @@ export const AsOwner: Story = {
 		...Default.args,
 		userIsSharer: true,
 		isAuthenticated: true,
+		currentUserId: 'mock-sharer-id',
 		userReservationRequest: null,
+	},
+};
+
+export const AsAdmin: Story = {
+	args: {
+		...Default.args,
+		...adminBaseArgs,
+		listing: baseListing,
+	},
+};
+
+export const BlockedListingAsAdmin: Story = {
+	args: {
+		...Default.args,
+		...adminBaseArgs,
+		listing: adminBlockedListing,
+	},
+};
+
+export const BlockListing: Story = {
+	args: {
+		...Default.args,
+		...adminBaseArgs,
+		listing: baseListing,
+	},
+};
+
+export const UnblockListing: Story = {
+	args: {
+		...Default.args,
+		...adminBaseArgs,
+		listing: adminBlockedListing,
 	},
 };

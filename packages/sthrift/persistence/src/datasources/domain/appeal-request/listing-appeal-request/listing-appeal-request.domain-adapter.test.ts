@@ -437,13 +437,13 @@ describe('ListingAppealRequestDomainAdapter - Additional Coverage', () => {
 		expect(() => adapter.listing).toThrow('listing is not populated');
 	});
 
-	it('should throw TypeError when listing is ObjectId in getter', () => {
+	it('should return entity reference with ID when listing is ObjectId in getter', () => {
 		const doc = makeAppealRequestDoc();
 		const listingId = new MongooseSeedwork.ObjectId();
 		doc.listing = listingId as never;
 		const adapter = new ListingAppealRequestDomainAdapter(doc as never);
-		expect(() => adapter.listing).toThrow(TypeError);
-		expect(() => adapter.listing).toThrow('listing is not populated');
+		const result = adapter.listing;
+		expect(result.id).toBe(listingId.toString());
 	});
 
 	it('should throw error when listing is null in loadListing', async () => {

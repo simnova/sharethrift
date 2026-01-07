@@ -193,7 +193,17 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	get state(): string {
-		return this.props.state;
+		// Field-level authorization: check if user has permission to view blocked listings
+		const currentState = this.props.state.valueOf();
+		const isBlocked = currentState === ValueObjects.ListingStateEnum.Blocked;
+		
+		if (isBlocked && !this.visa.determineIf((permissions) => permissions.canViewBlockedItemListing)) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to view this blocked listing',
+			);
+		}
+		
+		return currentState;
 	}
 
 	set state(value: string) {
@@ -240,6 +250,22 @@ export class ItemListing<props extends ItemListingProps>
 		return (
 			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Active
 		);
+	}
+
+	get blockReason(): string | undefined {
+		return this.props.blockReason;
+	}
+
+	set blockReason(value: string | undefined) {
+		this.props.blockReason = value;
+	}
+
+	get blockDescription(): string | undefined {
+		return this.props.blockDescription;
+	}
+
+	set blockDescription(value: string | undefined) {
+		this.props.blockDescription = value;
 	}
 
 	/**
@@ -319,7 +345,7 @@ export class ItemListing<props extends ItemListingProps>
 			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
 			if (!isBlocked) return; // no-op if not blocked
 
-			this.props.state = ValueObjects.ListingStateEnum.Active;
+			this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
 			return;
 		}
 
@@ -334,6 +360,14 @@ export class ItemListing<props extends ItemListingProps>
 
 		if (current === ValueObjects.ListingStateEnum.Blocked) return; // already blocked
 		this.props.state = ValueObjects.ListingStateEnum.Blocked;
+	}
+
+	/**
+	 * Set whether this listing is blocked.
+	 * Convenience setter that delegates to setBlocked().
+	 */
+	set blocked(value: boolean) {
+		this.setBlocked(value);
 	}
 
 /**
@@ -374,7 +408,8 @@ public requestDelete(): void {
 	 * Create a reference to this entity for use in other contexts
 	 */
 	getEntityReference(): ItemListingEntityReference {
-		return this.props as ItemListingEntityReference;
+		// biome-ignore lint/suspicious/noExplicitAny: Safe cast - this aggregate implements the interface
+		return this as unknown as ItemListingEntityReference;
 	}
 
 	get listingType(): string {

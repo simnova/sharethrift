@@ -21,6 +21,7 @@ export class PersonalUserListingItemListingVisa<
 			canUpdateItemListing: this.user.id === this.root.sharer.id,
 			canDeleteItemListing: this.user.id === this.root.sharer.id,
 			canViewItemListing: true,
+			canViewBlockedItemListing: true,
 			canPublishItemListing: this.user.id === this.root.sharer.id,
 			canUnpublishItemListing: this.user.id === this.root.sharer.id,
 		};

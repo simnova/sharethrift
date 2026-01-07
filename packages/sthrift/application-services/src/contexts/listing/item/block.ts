@@ -1,13 +1,13 @@
 import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 
-export interface ItemListingUnblockCommand {
+export interface ItemListingBlockCommand {
 	id: string;
 }
 
-export const unblock = (dataSources: DataSources) => {
+export const block = (dataSources: DataSources) => {
 	return async (
-		command: ItemListingUnblockCommand,
+		command: ItemListingBlockCommand,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> => {
 		let itemListingToReturn:
 			| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
@@ -19,7 +19,7 @@ export const unblock = (dataSources: DataSources) => {
 					throw new Error('Listing not found');
 				}
 
-				listing.blocked = false;
+				listing.blocked = true;
 				itemListingToReturn = await repo.save(listing);
 			},
 		);
