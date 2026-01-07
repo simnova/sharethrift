@@ -36,14 +36,14 @@ Conversations must be automatically deleted 6 months after the associated listin
 - `Conversation.scheduleForDeletion(archivalDate: Date)` method sets the expiration date
 - `Conversation.expiresAt` property stores the deletion timestamp
 - Authorization enforced through `ConversationDomainPermissions.isSystemAccount` permission
-- Only system passport can schedule conversations for deletion
+- Only the system passport can schedule conversations for deletion
 
 ### Application Services
 
 **ScheduleConversationDeletionByListing Service**
 - Triggered when a listing is archived
 - Finds all conversations associated with the listing
-- Schedules each conversation for deletion with 6-month retention period
+- Schedules each conversation for deletion with a 6-month retention period
 - Uses batch processing with configurable batch sizes
 - Includes OpenTelemetry tracing for observability
 

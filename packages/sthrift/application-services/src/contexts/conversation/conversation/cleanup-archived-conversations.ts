@@ -18,6 +18,46 @@ export interface CleanupResult {
 	errors: string[];
 }
 
+function recordListingError(
+	listingId: string,
+	error: unknown,
+	result: CleanupResult,
+): void {
+	const message = error instanceof Error ? error.message : String(error);
+	const errorMsg = `Failed to process conversations for listing ${listingId}: ${message}`;
+	result.errors.push(errorMsg);
+	console.error(`[ConversationCleanup] ${errorMsg}`);
+}
+
+async function processListing(
+	listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
+	dataSources: DataSources,
+	result: CleanupResult,
+): Promise<void> {
+	const conversations =
+		await dataSources.readonlyDataSource.Conversation.Conversation.ConversationReadRepo.getByListingId(
+			listing.id,
+		);
+
+	result.processedCount += conversations.length;
+
+	const conversationsToSchedule = conversations.filter((c) => !c.expiresAt);
+	if (conversationsToSchedule.length === 0) return;
+
+	await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
+		async (repo) => {
+			for (const conversationRef of conversationsToSchedule) {
+				const conversation = await repo.get(conversationRef.id);
+				if (conversation && !conversation.expiresAt) {
+					conversation.scheduleForDeletion(listing.updatedAt);
+					await repo.save(conversation);
+					result.scheduledCount++;
+				}
+			}
+		},
+	);
+}
+
 export const processConversationsForArchivedListings = (
 	dataSources: DataSources,
 ) => {
@@ -42,53 +82,11 @@ export const processConversationsForArchivedListings = (
 
 					for (const listing of archivedListings) {
 						try {
-							const conversations =
-								await dataSources.readonlyDataSource.Conversation.Conversation.ConversationReadRepo.getByListingId(
-									listing.id,
-								);
-
-							// Filter out conversations that already have expiresAt set
-							const conversationsToSchedule = conversations.filter(
-								(c) => !c.expiresAt,
-							);
-
-							if (conversationsToSchedule.length === 0) {
-								result.processedCount += conversations.length;
-								continue;
-							}
-
-							// Batch all conversations for this listing in a single transaction
-							await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
-								async (repo) => {
-									for (const conversationRef of conversationsToSchedule) {
-										const conversation = await repo.get(conversationRef.id);
-										if (conversation && !conversation.expiresAt) {
-											conversation.scheduleForDeletion(listing.updatedAt);
-											await repo.save(conversation);
-											result.scheduledCount++;
-										}
-										result.processedCount++;
-									}
-								},
-							);
-
-							result.processedCount += conversations.length - conversationsToSchedule.length;
+							await processListing(listing, dataSources, result);
 						} catch (error) {
-							const errorMsg = `Failed to process conversations for listing ${listing.id}: ${error instanceof Error ? error.message : String(error)}`;
-							result.errors.push(errorMsg);
-							console.error(`[ConversationCleanup] ${errorMsg}`);
+							recordListingError(listing.id, error, result);
 						}
 					}
-
-					span.setAttribute('processedCount', result.processedCount);
-					span.setAttribute('scheduledCount', result.scheduledCount);
-					span.setAttribute('errorsCount', result.errors.length);
-					span.setStatus({ code: SpanStatusCode.OK });
-					span.end();
-
-					console.log(
-						`[ConversationCleanup] Cleanup complete. Processed: ${result.processedCount}, Scheduled: ${result.scheduledCount}, Errors: ${result.errors.length}`,
-					);
 
 					return result;
 				} catch (error) {
@@ -97,9 +95,27 @@ export const processConversationsForArchivedListings = (
 						span.recordException(error);
 						result.errors.push(error.message);
 					}
-					span.end();
 					console.error('[ConversationCleanup] Cleanup failed:', error);
 					throw error;
+				} finally {
+					span.setAttribute('processedCount', result.processedCount);
+					span.setAttribute('scheduledCount', result.scheduledCount);
+					span.setAttribute('errorsCount', result.errors.length);
+
+					if (result.errors.length > 0) {
+						span.setStatus({
+							code: SpanStatusCode.ERROR,
+							message: `${result.errors.length} listing(s) failed during cleanup`,
+						});
+					} else {
+						span.setStatus({ code: SpanStatusCode.OK });
+					}
+
+					span.end();
+
+					console.log(
+						`[ConversationCleanup] Cleanup complete. Processed: ${result.processedCount}, Scheduled: ${result.scheduledCount}, Errors: ${result.errors.length}`,
+					);
 				}
 			},
 		);
