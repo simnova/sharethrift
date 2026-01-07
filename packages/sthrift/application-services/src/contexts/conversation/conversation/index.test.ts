@@ -16,8 +16,8 @@ vi.mock('./query-by-user.ts', () => ({
 	queryByUser: vi.fn(),
 }));
 
-import { Conversation } from './index.ts';
 import { create } from './create.ts';
+import { Conversation } from './index.ts';
 import { queryById } from './query-by-id.ts';
 import { queryByUser } from './query-by-user.ts';
 
@@ -44,10 +44,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		const mockQueryByIdFn = vi.fn().mockResolvedValue({
 			id: 'conv-123',
 		});
-		const mockQueryByUserFn = vi.fn().mockResolvedValue([
-			{ id: 'conv-1' },
-			{ id: 'conv-2' },
-		]);
+		const mockQueryByUserFn = vi
+			.fn()
+			.mockResolvedValue([{ id: 'conv-1' }, { id: 'conv-2' }]);
 
 		vi.mocked(create).mockReturnValue(mockCreateFn);
 		vi.mocked(queryById).mockReturnValue(mockQueryByIdFn);
@@ -63,10 +62,10 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				},
 			},
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
-			service = Conversation(mockDataSources);
+		service = Conversation(mockDataSources);
 	});
 
 	Scenario(
