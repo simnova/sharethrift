@@ -70,6 +70,7 @@ generates:
       mappers:
         ItemListing: "import('@sthrift/domain').Domain.Contexts.Listing.ItemListing.ItemListingEntityReference"
         Conversation: "import('@sthrift/domain').Domain.Contexts.Conversation.Conversation.ConversationEntityReference"
+        Message: "import('@sthrift/domain').Domain.Contexts.Conversation.Conversation.MessageEntityReference"
         PersonalUser: "import('@sthrift/domain').Domain.Contexts.User.PersonalUser.PersonalUserEntityReference"
         AdminUser: "import('@sthrift/domain').Domain.Contexts.User.AdminUser.AdminUserEntityReference"
         ReservationRequest: "import('@sthrift/domain').Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference"

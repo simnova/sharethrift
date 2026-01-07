@@ -50,7 +50,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				},
 			},
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
 		result = undefined;
@@ -119,9 +119,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 			And('each conversation should include messaging messages', () => {
 				if (!result || result.length < 2) return;
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				expect((result as any)[0].messages).toBeDefined();
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				expect((result as any)[1].messages).toBeDefined();
 			});
 		},
@@ -196,9 +196,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('the failed conversation should return without messages', () => {
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				expect((result as any)[0].messages).toBeDefined();
-    // biome-ignore lint/suspicious/noExplicitAny: Test mock access
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				expect((result as any)[1].messages).toBeUndefined();
 			});
 		},

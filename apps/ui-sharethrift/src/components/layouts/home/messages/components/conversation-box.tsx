@@ -5,12 +5,15 @@ import { useState, useCallback, useMemo } from 'react';
 
 interface ConversationBoxProps {
 	data: Conversation;
+	currentUserId?: string;
+	onSendMessage: (content: string) => Promise<boolean>;
+	sendingMessage: boolean;
 }
 
 export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 	const [messageText, setMessageText] = useState('');
 
-	const currentUserId = props?.data?.sharer?.id || '';
+	const currentUserId = props.currentUserId ?? props?.data?.sharer?.id;
 
 	const handleSendMessage = useCallback(
 		(e: React.FormEvent) => {

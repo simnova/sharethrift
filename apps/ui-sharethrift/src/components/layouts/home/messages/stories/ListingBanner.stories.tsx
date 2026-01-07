@@ -1,9 +1,9 @@
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from "react-router-dom";
 import { expect, within } from "storybook/test";
-import type { ComponentProps } from "react";
-import { ListingBanner } from "../components/listing-banner.tsx";
-import type { PersonalUser } from "../../../../../generated.tsx";
+import type { ComponentProps } from 'react';
+import type { PersonalUser } from '../../../../../generated.tsx';
+import { ListingBanner } from '../components/listing-banner.tsx';
 
 type ListingBannerStoryProps = ComponentProps<typeof ListingBanner>;
 
@@ -41,8 +41,8 @@ const mockUserWithoutProfile: PersonalUser = {
 } as unknown as PersonalUser;
 
 const meta: Meta<typeof ListingBanner> = {
-  title: "Components/Listings/ListingBanner",
-  component: ListingBanner,
+	title: 'Components/Listings/ListingBanner',
+	component: ListingBanner,
   decorators: [
     (Story) => (
       <MemoryRouter>
@@ -55,9 +55,9 @@ export default meta;
 type Story = StoryObj<typeof ListingBanner>;
 
 export const Default: Story = {
-  args: {
-    owner: mockUser,
-  } satisfies ListingBannerStoryProps,
+	args: {
+		owner: mockUser,
+	} satisfies ListingBannerStoryProps,
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
