@@ -78,7 +78,7 @@ Conversations must be automatically deleted 6 months after the associated listin
 - Error spans track any failures during batch processing
 
 ### Data Integrity
-- Conversations linked to listings via `listingId` foreign key
+- Conversations linked to listings via a `listingId` foreign key
 - Cascade deletion triggered by listing archival status change
 - No orphaned conversations due to comprehensive cleanup mechanism
 
