@@ -114,7 +114,6 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
         try {
             await blockUser({ variables: { userId } });
         } catch (err) {
-            message.error(`Failed to block user: ${userId}`);
             console.error("Block user error:", err);
         }
     };
@@ -123,7 +122,6 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
         try {
             await unblockUser({ variables: { userId } });
         } catch (err) {
-            message.error(`Failed to unblock user: ${userId}`);
             console.error("Unblock user error:", err);
         }
     };

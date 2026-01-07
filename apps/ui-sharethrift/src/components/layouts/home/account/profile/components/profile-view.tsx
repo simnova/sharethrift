@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import {
     Card,
     Avatar,
@@ -9,7 +8,6 @@ import {
     Col,
     Space,
     Divider,
-    message
 } from 'antd';
 import { ListingsGrid } from '@sthrift/ui-components';
 import { UserOutlined } from '@ant-design/icons';
@@ -26,13 +24,23 @@ interface ProfileViewProps {
     user: ProfileUser;
     listings: ItemListing[];
     isOwnProfile: boolean;
-    isBlocked?: boolean;
-    isAdminViewer?: boolean;
-    canBlockUser?: boolean;
+    permissions: {
+        isBlocked: boolean;
+        isAdminViewer: boolean;
+        canBlockUser: boolean;
+    };
     onEditSettings: () => void;
     onListingClick: (listingId: string) => void;
-    onBlockUser?: (values: BlockUserFormValues) => Promise<unknown> | void;
-    onUnblockUser?: () => Promise<unknown> | void;
+    blocking?: {
+        blockModalVisible: boolean;
+        unblockModalVisible: boolean;
+        handleOpenBlockModal: () => void;
+        handleOpenUnblockModal: () => void;
+        handleConfirmBlockUser: (values: BlockUserFormValues) => void;
+        handleConfirmUnblockUser: () => void;
+        closeBlockModal: () => void;
+        closeUnblockModal: () => void;
+    };
     blockUserLoading?: boolean;
     unblockUserLoading?: boolean;
 }
@@ -69,19 +77,13 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
     user,
     listings,
     isOwnProfile,
-    isBlocked = false,
-    isAdminViewer = false,
-    canBlockUser = false,
+    permissions,
     onEditSettings,
     onListingClick,
-    onBlockUser,
-    onUnblockUser,
+    blocking,
     blockUserLoading,
     unblockUserLoading,
 }) => {
-    const [blockModalVisible, setBlockModalVisible] = useState(false);
-    const [unblockModalVisible, setUnblockModalVisible] = useState(false);
-
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
@@ -98,38 +100,6 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
             : profileUser.username || 'Listing User';
     };
 
-    const handleOpenBlockModal = () => {
-        if (canBlockUser) {
-            setBlockModalVisible(true);
-        }
-    };
-
-    const handleOpenUnblockModal = () => {
-        if (canBlockUser) {
-            setUnblockModalVisible(true);
-        }
-    };
-
-    const handleConfirmBlockUser = async (values: BlockUserFormValues) => {
-        if (!onBlockUser) return;
-        try {
-            await onBlockUser(values);
-            setBlockModalVisible(false);
-        } catch {
-            message.error(`Failed to block user. Please try again.`);
-        }
-    };
-
-    const handleConfirmUnblockUser = async () => {
-        if (!onUnblockUser) return;
-        try {
-            await onUnblockUser();
-            setUnblockModalVisible(false);
-        } catch {
-            message.error(`Failed to unblock user. Please try again.`);
-        }
-    };
-
     const ownerLabel = user.firstName || user.username || 'User';
 
     return (
@@ -140,19 +110,23 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
             <Card
                 className="mb-6 profile-header"
                 style={{
-                    opacity: isBlocked && isAdminViewer ? 0.7 : 1,
-                    filter: isBlocked && isAdminViewer ? 'grayscale(50%)' : 'none',
+                    opacity:
+                        permissions.isBlocked && permissions.isAdminViewer ? 0.7 : 1,
+                    filter:
+                        permissions.isBlocked && permissions.isAdminViewer
+                            ? 'grayscale(50%)'
+                            : 'none',
                 }}
             >
                 {/* Mobile actions */}
                 <ProfileActions
                     variant="mobile"
                     isOwnProfile={isOwnProfile}
-                    isBlocked={isBlocked}
-                    canBlockUser={canBlockUser}
+                    isBlocked={permissions.isBlocked}
+                    canBlockUser={permissions.canBlockUser}
                     onEditSettings={onEditSettings}
-                    onBlockUser={handleOpenBlockModal}
-                    onUnblockUser={handleOpenUnblockModal}
+                    onBlockUser={blocking?.handleOpenBlockModal}
+                    onUnblockUser={blocking?.handleOpenUnblockModal}
                 />
                 <Row gutter={24} align="middle">
                     <Col xs={24} sm={6} lg={4} className="text-center mb-4 sm:mb-0">
@@ -176,11 +150,11 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                                 <ProfileActions
                                     variant="desktop"
                                     isOwnProfile={isOwnProfile}
-                                    isBlocked={isBlocked}
-                                    canBlockUser={canBlockUser}
+                                    isBlocked={permissions.isBlocked}
+                                    canBlockUser={permissions.canBlockUser}
                                     onEditSettings={onEditSettings}
-                                    onBlockUser={handleOpenBlockModal}
-                                    onUnblockUser={handleOpenUnblockModal}
+                                    onBlockUser={blocking?.handleOpenBlockModal}
+                                    onUnblockUser={blocking?.handleOpenUnblockModal}
                                 />
                             </div>
                             <h3 className="block mb-2">@{user.username}</h3>
@@ -250,20 +224,20 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                 )}
             </div>
 
-            {canBlockUser && (
+            {permissions.canBlockUser && blocking && (
                 <>
                     <BlockUserModal
-                        visible={blockModalVisible}
+                        visible={blocking.blockModalVisible}
                         userName={getDisplayName(user)}
-                        onConfirm={handleConfirmBlockUser}
-                        onCancel={() => setBlockModalVisible(false)}
+                        onConfirm={blocking.handleConfirmBlockUser}
+                        onCancel={blocking.closeBlockModal}
                         loading={blockUserLoading}
                     />
                     <UnblockUserModal
-                        visible={unblockModalVisible}
+                        visible={blocking.unblockModalVisible}
                         userName={getDisplayName(user)}
-                        onConfirm={handleConfirmUnblockUser}
-                        onCancel={() => setUnblockModalVisible(false)}
+                        onConfirm={blocking.handleConfirmUnblockUser}
+                        onCancel={blocking.closeUnblockModal}
                         loading={unblockUserLoading}
                     />
                 </>

@@ -64,9 +64,11 @@ export const ProfileViewContainer: React.FC = () => {
 
     const profilePermissions = {
         isOwnProfile: true,
-        isBlocked: false,
-        isAdminViewer: false,
-        canBlockUser: false,
+        permissions: {
+            isBlocked: false,
+            isAdminViewer: Boolean(currentUser.userIsAdmin),
+            canBlockUser: false,
+        },
     };
 
     return (
@@ -78,9 +80,10 @@ export const ProfileViewContainer: React.FC = () => {
                 <ProfileView
                     user={profileUser}
                     listings={listings}
+                    isOwnProfile={profilePermissions.isOwnProfile}
+                    permissions={profilePermissions.permissions}
                     onEditSettings={handleEditSettings}
                     onListingClick={handleListingClick}
-                    {...profilePermissions}
                 />
             }
         />
