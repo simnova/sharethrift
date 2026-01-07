@@ -2,6 +2,7 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { Passport } from '../../passport.ts';
+import type { ReservationRequestEntityReference } from '../../reservation-request/reservation-request/reservation-request.entity.ts';
 import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
 import { AdminUser } from '../../user/admin-user/admin-user.ts';
 import type { UserEntityReference } from '../../user/index.ts';
@@ -163,6 +164,19 @@ export class Conversation<props extends ConversationProps>
 			);
 		}
 		this.props.listing = listing;
+	}
+
+	get reservationRequest(): ReservationRequestEntityReference | undefined {
+		return this.props.reservationRequest;
+	}
+
+	async loadReservationRequest(): Promise<
+		ReservationRequestEntityReference | undefined
+	> {
+		if (!this.props.loadReservationRequest) {
+			return undefined;
+		}
+		return await this.props.loadReservationRequest();
 	}
 
 	get messagingConversationId(): string {

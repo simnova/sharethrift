@@ -504,4 +504,61 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario(
+		'Getting conversations by reservation request ID',
+		({ Given, When, Then, And }) => {
+			const validRequestId = createValidObjectId('request-1');
+			Given(
+				'Conversation documents exist with reservationRequest "request-1"',
+				() => {
+					mockDoc = {
+						...makeConversationDoc('conv-1'),
+						reservationRequest: new MongooseSeedwork.ObjectId(validRequestId),
+					} as unknown as Models.Conversation.Conversation;
+					repository = setupConversationRepo(mockDoc, {
+						find: () => createChainableQuery([mockDoc]),
+					});
+				},
+			);
+			When('I call getByReservationRequestId with "request-1"', async () => {
+				result = await repository.getByReservationRequestId(validRequestId);
+			});
+			Then('I should receive an array of Conversation domain objects', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBeGreaterThan(0);
+			});
+			And(
+				'each domain object should have the reservationRequest id "request-1"',
+				() => {
+					const conversations =
+						result as Domain.Contexts.Conversation.Conversation.Conversation<Domain.Contexts.Conversation.Conversation.ConversationProps>[];
+					for (const conversation of conversations) {
+						expect(conversation.reservationRequest?.id).toBe(validRequestId);
+					}
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Getting conversations by nonexistent reservation request ID',
+		({ When, Then }) => {
+			When(
+				'I call getByReservationRequestId with "nonexistent-request"',
+				async () => {
+					repository = setupConversationRepo(mockDoc, {
+						find: () => createChainableQuery([]),
+					});
+					result = await repository.getByReservationRequestId(
+						createValidObjectId('nonexistent-request'),
+					);
+				},
+			);
+			Then('I should receive an empty array', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBe(0);
+			});
+		},
+	);
 });

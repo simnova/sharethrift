@@ -10,6 +10,7 @@ import {
 	type CleanupResult,
 	processConversationsForArchivedListings,
 } from './cleanup-archived-conversations.ts';
+import { processConversationsForArchivedReservationRequests } from './cleanup-archived-reservation-conversations.ts';
 import {
 	type ConversationSendMessageCommand,
 	sendMessage,
@@ -28,6 +29,7 @@ export interface ConversationApplicationService {
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	>;
 	processConversationsForArchivedListings: () => Promise<CleanupResult>;
+	processConversationsForArchivedReservationRequests: () => Promise<CleanupResult>;
 	sendMessage: (
 		command: ConversationSendMessageCommand,
 	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference>;
@@ -42,6 +44,8 @@ export const Conversation = (
 		queryByUser: queryByUser(dataSources),
 		processConversationsForArchivedListings: () =>
 			processConversationsForArchivedListings(dataSources),
+		processConversationsForArchivedReservationRequests: () =>
+			processConversationsForArchivedReservationRequests(dataSources),
 		sendMessage: sendMessage(dataSources),
 	};
 };

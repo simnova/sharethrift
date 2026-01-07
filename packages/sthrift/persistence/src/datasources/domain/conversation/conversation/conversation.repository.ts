@@ -81,6 +81,25 @@ export class ConversationRepository
 		);
 	}
 
+	async getByReservationRequestId(
+		reservationRequestId: string,
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.Conversation<PropType>[]
+	> {
+		const mongoConversations = await this.model
+			.find({
+				reservationRequest: new MongooseSeedwork.ObjectId(reservationRequestId),
+			})
+			.populate('sharer')
+			.populate('reserver')
+			.populate('listing')
+			.populate('reservationRequest')
+			.exec();
+		return mongoConversations.map((doc) =>
+			this.typeConverter.toDomain(doc, this.passport),
+		);
+	}
+
 	async getExpired(
 		limit = 100,
 	): Promise<

@@ -63,3 +63,13 @@ And valid ReservationRequest documents exist in the database
 		Then I should receive an array of ReservationRequest entities
 		And the array should contain active reservation requests for the listing
 
+	Scenario: Getting reservation requests by multiple states
+		Given ReservationRequest documents with states "Closed", "Rejected", and "Cancelled"
+		When I call getByStates with ["Closed", "Rejected", "Cancelled"]
+		Then I should receive an array of ReservationRequest entities
+		And the array should only contain reservation requests with the specified states
+
+	Scenario: Getting reservation requests by states with no matches
+		Given ReservationRequest documents exist in the database
+		When I call getByStates with ["NonexistentState"]
+		Then I should receive an empty array

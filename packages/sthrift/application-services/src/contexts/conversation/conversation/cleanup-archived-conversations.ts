@@ -78,7 +78,6 @@ export async function processConversationsForArchivedListings(
 				span.setAttribute('scheduledCount', result.scheduledCount);
 				span.setAttribute('errorsCount', result.errors.length);
 
-				// Only update status if no fatal error occurred
 				if (!hadFatalError) {
 					if (result.errors.length > 0) {
 						span.setStatus({

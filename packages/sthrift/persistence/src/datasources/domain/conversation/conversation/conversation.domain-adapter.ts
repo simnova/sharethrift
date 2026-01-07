@@ -199,6 +199,63 @@ export class ConversationDomainAdapter
 		this.doc.set('listing', new MongooseSeedwork.ObjectId(listing.id));
 	}
 
+	get reservationRequest():
+		| Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
+		| undefined {
+		if (!this.doc.reservationRequest) {
+			return undefined;
+		}
+		if (this.doc.reservationRequest instanceof MongooseSeedwork.ObjectId) {
+			return {
+				id: this.doc.reservationRequest.toString(),
+			} as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
+		}
+
+		return {
+			id: (
+				this.doc.reservationRequest as unknown as {
+					_id: { toString: () => string };
+				}
+			)._id.toString(),
+		} as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
+	}
+
+	async loadReservationRequest(): Promise<
+		| Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
+		| undefined
+	> {
+		if (!this.doc.reservationRequest) {
+			return undefined;
+		}
+		if (this.doc.reservationRequest instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('reservationRequest');
+		}
+
+		return {
+			id: (
+				this.doc.reservationRequest as unknown as {
+					_id: { toString: () => string };
+				}
+			)._id.toString(),
+		} as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
+	}
+
+	set reservationRequest(reservationRequest:
+		| Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
+		| undefined) {
+		if (!reservationRequest) {
+			this.doc.set('reservationRequest', undefined);
+			return;
+		}
+		if (!reservationRequest?.id) {
+			throw new Error('reservationRequest reference is missing id');
+		}
+		this.doc.set(
+			'reservationRequest',
+			new MongooseSeedwork.ObjectId(reservationRequest.id),
+		);
+	}
+
 	get messagingConversationId(): string {
 		return this.doc.messagingConversationId;
 	}

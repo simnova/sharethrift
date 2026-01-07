@@ -70,3 +70,13 @@ And valid Conversation documents exist in the database
 		Given multiple Conversation documents exist with expiresAt in the past
 		When I call getExpired with limit 2
 		Then I should receive at most 2 Conversation domain objects
+
+	Scenario: Getting conversations by reservation request ID
+		Given Conversation documents exist with reservationRequest "request-1"
+		When I call getByReservationRequestId with "request-1"
+		Then I should receive an array of Conversation domain objects
+		And each domain object should have the reservationRequest id "request-1"
+
+	Scenario: Getting conversations by nonexistent reservation request ID
+		When I call getByReservationRequestId with "nonexistent-request"
+		Then I should receive an empty array
