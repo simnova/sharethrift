@@ -6,6 +6,10 @@ import {
 	type ConversationQueryByUserCommand,
 	queryByUser,
 } from './query-by-user.ts';
+import {
+	type ConversationSendMessageCommand,
+	sendMessage,
+} from './send-message.ts';
 
 export interface ConversationApplicationService {
 	create: (
@@ -19,6 +23,9 @@ export interface ConversationApplicationService {
 	) => Promise<
 		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
 	>;
+	sendMessage: (
+		command: ConversationSendMessageCommand,
+	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference>;
 }
 
 export const Conversation = (
@@ -28,5 +35,6 @@ export const Conversation = (
 		create: create(dataSources),
 		queryById: queryById(dataSources),
 		queryByUser: queryByUser(dataSources),
+		sendMessage: sendMessage(dataSources),
 	};
 };
