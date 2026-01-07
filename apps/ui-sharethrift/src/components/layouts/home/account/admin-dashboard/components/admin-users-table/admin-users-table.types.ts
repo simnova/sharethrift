@@ -31,6 +31,4 @@ export interface AdminUsersTableProps {
 	) => void;
 	onPageChange: (page: number) => void;
 	onAction: (action: 'block' | 'unblock' | 'view-profile' | 'view-report', userId: string) => void;
-    blockLoading?: boolean;
-    unblockLoading?: boolean;
 }

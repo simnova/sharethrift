@@ -157,6 +157,7 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
                 break;
         }
     };
+    const isLoading = loading || blockLoading || unblockLoading;
 
     return (
         <ComponentQueryLoader
@@ -172,14 +173,12 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
                     currentPage={currentPage}
                     pageSize={pageSize}
                     total={total}
-                    loading={loading}
+                    loading={isLoading}
                     onSearch={handleSearch}
                     onStatusFilter={handleStatusFilter}
                     onTableChange={handleTableChange}
                     onPageChange={onPageChange}
                     onAction={handleAction}
-                    blockLoading={blockLoading}
-                    unblockLoading={unblockLoading}
                 />
             }
         />

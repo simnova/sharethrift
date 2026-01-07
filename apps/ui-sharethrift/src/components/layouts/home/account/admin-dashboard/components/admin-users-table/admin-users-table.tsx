@@ -32,9 +32,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
     onStatusFilter,
     onTableChange,
     onPageChange,
-    onAction,
-    blockLoading,
-    unblockLoading,
+    onAction
 }) => {
     const [blockModalVisible, setBlockModalVisible] = useState(false);
     const [unblockModalVisible, setUnblockModalVisible] = useState(false);
@@ -276,7 +274,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
                 userName={getDisplayName(selectedUser)}
                 onConfirm={handleBlockConfirm}
                 onCancel={() => setBlockModalVisible(false)}
-                loading={blockLoading}
+                loading={loading}
             />
 
             {/* Unblock User Modal */}
@@ -285,7 +283,7 @@ export const AdminUsersTable: React.FC<Readonly<AdminUsersTableProps>> = ({
                 userName={getDisplayName(selectedUser)}
                 onConfirm={handleUnblockConfirm}
                 onCancel={() => setUnblockModalVisible(false)}
-                loading={unblockLoading}
+                loading={loading}
             />
         </>
     );
