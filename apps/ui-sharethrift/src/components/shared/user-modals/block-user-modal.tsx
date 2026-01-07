@@ -25,14 +25,6 @@ const BLOCK_REASONS = [
     "Other",
 ];
 
-// TODO: add optional block duration when backend supports it.
-
-// const BLOCK_DURATIONS = [
-//     { label: "7 Days", value: "7" },
-//     { label: "30 Days", value: "30" },
-//     { label: "Indefinite", value: "indefinite" },
-// ];
-
 export const BlockUserModal: React.FC<Readonly<BlockUserModalProps>> = ({
     visible,
     userName,
@@ -100,19 +92,6 @@ export const BlockUserModal: React.FC<Readonly<BlockUserModalProps>> = ({
                             ))}
                         </Select>
                     </Form.Item>
-                    {/* <Form.Item
-                        name="duration"
-                        label="Block Duration"
-                        rules={[{ required: true, message: "Please select a duration" }]}
-                    >
-                        <Select placeholder="Select duration">
-                            {BLOCK_DURATIONS.map((duration) => (
-                                <Select.Option key={duration.value} value={duration.value}>
-                                    {duration.label}
-                                </Select.Option>
-                            ))}
-                        </Select>
-                    </Form.Item> */}
                     <Form.Item
                         name="description"
                         label="Description"
