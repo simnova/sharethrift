@@ -18,12 +18,14 @@ export class PersonalUserConversationVisa<root extends ConversationEntityReferen
 		func: (permissions: Readonly<ConversationDomainPermissions>) => boolean,
 	): boolean {
 		// Personal users can manage conversations they are participants in (either sharer or reserver)
-		const isParticipant = this.root.sharer.id === this.user.id || this.root.reserver.id === this.user.id;
+		const userIsParticipant = 
+			this.root.sharer?.id === this.user.id || 
+			this.root.reserver?.id === this.user.id;
 		
 		const permissions: ConversationDomainPermissions = {
 			canCreateConversation: true, // All personal users can create conversations
-			canManageConversation: isParticipant,
-			canViewConversation: isParticipant,
+			canManageConversation: userIsParticipant,
+			canViewConversation: userIsParticipant,
 		};
 
 		return func(permissions);
