@@ -92,7 +92,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
     Given('the feature property is missing', () => {
       doc = makeAccountPlanDoc({});
       // Remove the feature property to simulate missing
-      // biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures
+      // biome-ignore lint/complexity/useLiteralKeys: Suppressing Biome lint rule to use dynamic property access for delete operation
       delete (doc as unknown as Record<string, unknown>)["feature"];
       adapter = new AccountPlanDomainAdapter(doc);
     });

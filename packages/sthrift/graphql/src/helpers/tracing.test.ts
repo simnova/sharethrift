@@ -47,11 +47,11 @@ vi.mock('@opentelemetry/api', async (importOriginal) => {
 					): Promise<unknown> => {
 						const mockSpan = createMockSpan();
 						// Store references for assertions
-						// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures (TS4111)
+						// biome-ignore lint/complexity/useLiteralKeys: Suppressing Biome lint rule to use dynamic property access on global object
 						(global as Record<string, unknown>)['__mockSpan'] = mockSpan;
-						// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures (TS4111)
+						// biome-ignore lint/complexity/useLiteralKeys: Suppressing Biome lint rule to use dynamic property access on global object
 						(global as Record<string, unknown>)['__mockTracerName'] = tracerName;
-						// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures (TS4111)
+						// biome-ignore lint/complexity/useLiteralKeys: Suppressing Biome lint rule to use dynamic property access on global object
 						(global as Record<string, unknown>)['__mockSpanName'] = spanName;
 						return fn(mockSpan);
 					},
