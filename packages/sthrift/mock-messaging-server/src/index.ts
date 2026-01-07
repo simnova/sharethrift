@@ -87,7 +87,7 @@ export function startServer(port = 10000, seedData = false): Promise<Server> {
 		};
 		
 		const server = https.createServer(httpsOptions, app).listen(port, 'mock-messaging.sharethrift.localhost', () => {
-			console.log(`✅ Mock Messaging Server listening on https://mock-messaging.sharethrift.localhost:${port}`);
+			console.log(` Mock Messaging Server listening on https://mock-messaging.sharethrift.localhost:${port}`);
 			
 			if (seedData) {
 				seedMockData();
