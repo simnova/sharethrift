@@ -92,10 +92,12 @@ function createChainableQuery<T>(result: T) {
 	const query = {
 		populate: vi.fn(),
 		limit: vi.fn(),
+		sort: vi.fn(),
 		exec: vi.fn().mockResolvedValue(result),
 	};
 	query.populate.mockReturnValue(query);
 	query.limit.mockReturnValue(query);
+	query.sort.mockReturnValue(query);
 	return query;
 }
 
