@@ -90,6 +90,7 @@ export class ConversationRepository
 			.find({
 				expiresAt: { $lte: new Date() },
 			})
+			.sort({ expiresAt: 1 })
 			.limit(limit)
 			.populate('sharer')
 			.populate('reserver')

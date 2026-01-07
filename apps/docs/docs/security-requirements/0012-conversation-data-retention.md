@@ -28,7 +28,7 @@ Conversations must be automatically deleted 6 months after the associated listin
 
 ### TTL-Based Automatic Deletion (Primary Mechanism)
 - **MongoDB TTL Index**: Conversations have an `expiresAt` field with a TTL index (`expires: 0`)
-- **Automatic Cleanup**: MongoDB automatically removes documents when `expiresAt` timestamp is reached
+- **Automatic Cleanup**: MongoDB automatically removes documents when the `expiresAt` timestamp is reached
 - **Retention Period**: 6 months (180 days) from listing archival date
 - **Trigger**: When a listing is archived, all associated conversations are scheduled for deletion
 
