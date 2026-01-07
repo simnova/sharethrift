@@ -17,18 +17,56 @@ import {
 import { AllListingsTableStatus } from './AllListingsTableStatus.tsx';
 import { AllListingsCard } from './all-listings-card.tsx';
 
+/**
+ * AllListingsTableProps expects data to be already sorted, filtered, and paginated by the backend.
+ * UI state (searchText, statusFilters, sorter, currentPage, pageSize) is only used to trigger backend fetches.
+ * The backend response must include the correct page of data and total count for pagination.
+ */
 interface AllListingsTableProps {
+	/**
+	 * Data for the current page, already sorted/filtered/paginated by the backend.
+	 */
 	data: HomeAllListingsTableContainerListingFieldsFragment[];
+	/**
+	 * Current search text (for UI control only, not for local filtering).
+	 */
 	searchText: string;
+	/**
+	 * Current status filters (for UI control only, not for local filtering).
+	 */
 	statusFilters: string[];
+	/**
+	 * Current sorter (for UI control only, not for local sorting).
+	 */
 	sorter: { field: string | null; order: 'ascend' | 'descend' | null };
+	/**
+	 * Current page number (1-based).
+	 */
 	currentPage: number;
+	/**
+	 * Page size (number of items per page).
+	 */
 	pageSize: number;
+	/**
+	 * Total number of items (for pagination UI).
+	 */
 	total: number;
 	loading?: boolean;
+	/**
+	 * Triggers backend fetch for search.
+	 */
 	onSearch: (value: string) => void;
+	/**
+	 * Triggers backend fetch for status filter.
+	 */
 	onStatusFilter: (checkedValues: string[]) => void;
+	/**
+	 * Triggers backend fetch for sort/pagination/filter changes.
+	 */
 	onTableChange: TableProps<HomeAllListingsTableContainerListingFieldsFragment>['onChange'];
+	/**
+	 * Triggers backend fetch for page change.
+	 */
 	onPageChange: (page: number) => void;
 	onAction: (action: string, listingId: string) => void;
 	onViewAllRequests: (listingId: string) => void;
@@ -50,8 +88,9 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 	onAction,
 	onViewAllRequests,
 }) => {
-	const columns: TableProps<HomeAllListingsTableContainerListingFieldsFragment>['columns'] =
-		[
+	// All sorting, filtering, and pagination must be handled by the backend.
+	// The columns below only trigger backend fetches via the provided handlers.
+	const columns: TableProps<HomeAllListingsTableContainerListingFieldsFragment>['columns'] = [
 			{
 				title: 'Listing',
 				dataIndex: 'title',

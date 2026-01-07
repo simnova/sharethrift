@@ -53,29 +53,21 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 
 	const allRequests = data?.myListingsRequests ?? [];
 
-	// Transform domain fields to UI format (no client-side search/status filtering in this container)
-	const transformedAllRequests = allRequests.map((request) => {
-		const reserver = request.reserver?.__typename === 'PersonalUser' ? request.reserver : null;
-		const firstName = reserver?.account?.profile?.firstName ?? '';
-		const lastName = reserver?.account?.profile?.lastName ?? '';
-		const requestedBy = firstName || lastName ? `${firstName} ${lastName}`.trim() : 'Unknown';
-		
-		const start = request.reservationPeriodStart ? new Date(request.reservationPeriodStart) : null;
-		const end = request.reservationPeriodEnd ? new Date(request.reservationPeriodEnd) : null;
-		const reservationPeriod = start && end 
-			? `${start.toLocaleDateString()} - ${end.toLocaleDateString()}`
-			: '';
-		
-		return {
-			id: request.id,
-			title: request.listing?.title ?? 'Unknown',
-			image: request.listing?.images?.[0] ?? null,
-			requestedBy,
-			requestedOn: request.createdAt ?? null,
-			reservationPeriod,
-			status: request.state ?? 'Unknown',
-		};
-	});
+	// Transform domain fields to UI format (assume API response matches UI expectations; no type-based remapping)
+	const transformedAllRequests = allRequests.map((request) => ({
+		id: request.id,
+		title: request.listing?.title ?? 'Unknown',
+		image: request.listing?.images?.[0] ?? null,
+		requestedBy: request.reserver?.account?.profile?.firstName && request.reserver?.account?.profile?.lastName
+			? `${request.reserver.account.profile.firstName} ${request.reserver.account.profile.lastName}`.trim()
+			: 'Unknown',
+		requestedOn: request.createdAt ?? '',
+		reservationPeriod:
+			request.reservationPeriodStart && request.reservationPeriodEnd
+				? `${new Date(request.reservationPeriodStart).toLocaleDateString()} - ${new Date(request.reservationPeriodEnd).toLocaleDateString()}`
+				: '',
+		status: request.state ?? 'Unknown',
+	}));
 
 	let displayRequests = transformedAllRequests;
 
@@ -124,23 +116,24 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		onPageChange(1);
 	};
 
-	const handleAccept = async (requestId: string) => {
+
+	const onAccept = async (requestId: string) => {
 		await acceptRequest({ variables: { input: { id: requestId } } });
 	};
 
-	const handleReject = (_requestId: string) => {
+	const onReject = (_requestId: string) => {
 		message.info('Reject functionality coming soon');
 	};
 
-	const handleClose = (_requestId: string) => {
+	const onClose = (_requestId: string) => {
 		message.info('Close functionality coming soon');
 	};
 
-	const handleDelete = (_requestId: string) => {
+	const onDelete = (_requestId: string) => {
 		message.info('Delete functionality coming soon');
 	};
 
-	const handleMessage = (_requestId: string) => {
+	const onMessage = (_requestId: string) => {
 		message.info('Messaging functionality coming soon');
 	};
 
@@ -150,25 +143,25 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 			error={error}
 			hasData={allRequests.length > 0 ? allRequests : null}
 			hasDataComponent={
-				<RequestsTable
-						data={pagedRequests}
-					searchText={searchText}
-					statusFilters={statusFilters}
-					sorter={sorter}
-					currentPage={currentPage}
-					pageSize={pageSize}
-					total={total}
-					onSearch={handleSearch}
-					onStatusFilter={handleStatusFilter}
-					onTableChange={handleTableChange}
-					onPageChange={onPageChange}
-						onAccept={handleAccept}
-						onReject={handleReject}
-						onClose={handleClose}
-						onDelete={handleDelete}
-						onMessage={handleMessage}
-					loading={loading}
-				/>
+		<RequestsTable
+		  data={pagedRequests}
+		  searchText={searchText}
+		  statusFilters={statusFilters}
+		  sorter={sorter}
+		  currentPage={currentPage}
+		  pageSize={pageSize}
+		  total={total}
+		  onSearch={handleSearch}
+		  onStatusFilter={handleStatusFilter}
+		  onTableChange={handleTableChange}
+		  onPageChange={onPageChange}
+		  onAccept={onAccept}
+		  onReject={onReject}
+		  onClose={onClose}
+		  onDelete={onDelete}
+		  onMessage={onMessage}
+		  loading={loading}
+		/>
 			}
 		/>
 	);

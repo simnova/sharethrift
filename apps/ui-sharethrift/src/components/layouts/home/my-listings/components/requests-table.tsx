@@ -59,10 +59,10 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 	onTableChange,
 	onPageChange,
 	onAccept,
-	onReject: _onReject,
-	onClose: _onClose,
-	onDelete: _onDelete,
-	onMessage: _onMessage,
+	onReject,
+	onClose,
+	onDelete,
+	onMessage,
 }) => {
 	const columns: TableProps<ListingRequestData>['columns'] = [
 		{
@@ -252,10 +252,10 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 				<RequestsCard
 					listing={listing}
 					onAccept={onAccept}
-					onReject={_onReject}
-					onClose={_onClose}
-					onDelete={_onDelete}
-					onMessage={_onMessage}
+					onReject={onReject}
+					onClose={onClose}
+					onDelete={onDelete}
+					onMessage={onMessage}
 				/>
 			)}
 		/>
