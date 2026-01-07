@@ -498,9 +498,23 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting conversations by nonexistent listing ID',
 		({ When, Then }) => {
 			When('I call getByListingId with "nonexistent-listing"', async () => {
-				mockModel.find = vi.fn(() =>
-					createNullPopulateChain([]),
-				) as unknown as typeof mockModel.find;
+				// Override mockConversations with empty array for this scenario
+				mockConversations = [];
+				const mockQuery = {
+					lean: vi.fn(),
+					populate: vi.fn(),
+					exec: vi.fn().mockResolvedValue([]),
+					catch: vi.fn((onReject) => Promise.resolve([]).catch(onReject)),
+				};
+				mockQuery.lean.mockReturnValue(mockQuery);
+				mockQuery.populate.mockReturnValue(mockQuery);
+				// biome-ignore lint/suspicious/noThenProperty: Intentional thenable mock for Mongoose queries
+				Object.defineProperty(mockQuery, 'then', {
+					value: vi.fn((onResolve) => Promise.resolve([]).then(onResolve)),
+					enumerable: false,
+					configurable: true,
+				});
+				mockModel.find = vi.fn(() => mockQuery) as unknown as typeof mockModel.find;
 
 				result = await repository.getByListingId(
 					createValidObjectId('nonexistent-listing'),
@@ -524,19 +538,43 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario(
-		'Getting conversations by listing ID with database error',
+		'Getting conversations by listing ID with invalid ObjectId',
 		({ Given, When, Then }) => {
-			Given('an error will occur during the listing query', () => {
-				vi.spyOn(MongooseSeedwork, 'ObjectId').mockImplementationOnce(() => {
-					throw new Error('Database error');
-				});
+			Given('an invalid ObjectId format will be provided', () => {
+				// This will be handled in the When step
 			});
-			When('I call getByListingId with "listing-1"', async () => {
-				result = await repository.getByListingId('listing-1');
+			When('I call getByListingId with invalid ObjectId format', async () => {
+				// Pass a string that will fail ObjectId construction
+				result = await repository.getByListingId('invalid-object-id-format!!!');
 			});
 			Then('I should receive an empty array', () => {
 				expect(Array.isArray(result)).toBe(true);
 				expect((result as unknown[]).length).toBe(0);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting conversations by listing ID with database error',
+		({ Given, When, Then }) => {
+			Given('an error will occur during the database query', () => {
+				// Mock the find method to throw a database error
+				mockModel.find = vi.fn(() => {
+					throw new Error('Database connection failed');
+				}) as unknown as typeof mockModel.find;
+			});
+			When('I call getByListingId with "listing-1"', async () => {
+				try {
+					result = await repository.getByListingId(
+						createValidObjectId('listing-1'),
+					);
+				} catch (error) {
+					result = error;
+				}
+			});
+			Then('an error should be thrown', () => {
+				expect(result).toBeInstanceOf(Error);
+				expect((result as Error).message).toBe('Database connection failed');
 			});
 		},
 	);

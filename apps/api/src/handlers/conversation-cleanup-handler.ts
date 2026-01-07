@@ -15,17 +15,25 @@ export const conversationCleanupHandlerCreator = (
 			);
 		}
 
-		const appServices = await applicationServicesFactory.forRequest();
+		try {
+			const appServices = await applicationServicesFactory.forRequest();
 
-		const result =
-			await appServices.Conversation.Conversation.processConversationsForArchivedListings();
+			const result =
+				await appServices.Conversation.Conversation.processConversationsForArchivedListings();
 
-		context.log(
-			`[ConversationCleanup] Completed. Processed: ${result.processedCount}, Scheduled: ${result.scheduledCount}, Errors: ${result.errors.length}`,
-		);
+			context.log(
+				`[ConversationCleanup] Completed. Processed: ${result.processedCount}, Scheduled: ${result.scheduledCount}, Errors: ${result.errors.length}`,
+			);
 
-		if (result.errors.length > 0) {
-			context.log(`[ConversationCleanup] Errors: ${result.errors.join('; ')}`);
+			if (result.errors.length > 0) {
+				context.log(
+					`[ConversationCleanup] Errors: ${result.errors.join('; ')}`,
+				);
+			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			context.log(`[ConversationCleanup] Fatal error: ${message}`);
+			throw error;
 		}
 	};
 };

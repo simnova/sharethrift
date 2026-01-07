@@ -56,7 +56,7 @@ Conversations must be automatically deleted 6 months after the associated listin
 
 ### Persistence Layer
 - `ConversationModel.expiresAt` field in MongoDB schema
-- TTL index configured with `expires: 0` for instant deletion at expiration time
+- TTL index configured with `expires: 0` for automatic deletion shortly after the expiration time
 - `getByListingId()` repository method for finding conversations by listing
 - `getExpired()` repository method for querying already-expired conversations (fallback)
 

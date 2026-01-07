@@ -18,53 +18,6 @@ export interface CleanupResult {
 	errors: string[];
 }
 
-interface ListingCleanupResult {
-	processedCount: number;
-	scheduledCount: number;
-	errors: string[];
-}
-
-function formatListingError(listingId: string, error: unknown): string {
-	const message = error instanceof Error ? error.message : String(error);
-	return `Failed to process conversations for listing ${listingId}: ${message}`;
-}
-
-async function processListing(
-	listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-	dataSources: DataSources,
-): Promise<ListingCleanupResult> {
-	const result: ListingCleanupResult = {
-		processedCount: 0,
-		scheduledCount: 0,
-		errors: [],
-	};
-
-	const conversations =
-		await dataSources.readonlyDataSource.Conversation.Conversation.ConversationReadRepo.getByListingId(
-			listing.id,
-		);
-
-	result.processedCount = conversations.length;
-
-	const conversationsToSchedule = conversations.filter((c) => !c.expiresAt);
-	if (conversationsToSchedule.length === 0) return result;
-
-	await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
-		async (repo) => {
-			for (const conversationRef of conversationsToSchedule) {
-				const conversation = await repo.get(conversationRef.id);
-				if (conversation && !conversation.expiresAt) {
-					conversation.scheduleForDeletion(listing.updatedAt);
-					await repo.save(conversation);
-					result.scheduledCount++;
-				}
-			}
-		},
-	);
-
-	return result;
-}
-
 export async function processConversationsForArchivedListings(
 	dataSources: DataSources,
 ): Promise<CleanupResult> {
@@ -88,12 +41,33 @@ export async function processConversationsForArchivedListings(
 
 				for (const listing of archivedListings) {
 					try {
-						const listingResult = await processListing(listing, dataSources);
-						result.processedCount += listingResult.processedCount;
-						result.scheduledCount += listingResult.scheduledCount;
-						result.errors.push(...listingResult.errors);
+						const conversations =
+							await dataSources.readonlyDataSource.Conversation.Conversation.ConversationReadRepo.getByListingId(
+								listing.id,
+							);
+
+						result.processedCount += conversations.length;
+
+						const conversationsToSchedule = conversations.filter(
+							(c) => !c.expiresAt,
+						);
+						if (conversationsToSchedule.length === 0) continue;
+
+						await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
+							async (repo) => {
+								for (const conversationRef of conversationsToSchedule) {
+									const conversation = await repo.get(conversationRef.id);
+									if (conversation && !conversation.expiresAt) {
+										conversation.scheduleForDeletion(listing.updatedAt);
+										await repo.save(conversation);
+										result.scheduledCount++;
+									}
+								}
+							},
+						);
 					} catch (err) {
-						const msg = formatListingError(listing.id, err);
+						const message = err instanceof Error ? err.message : String(err);
+						const msg = `Failed to process conversations for listing ${listing.id}: ${message}`;
 						result.errors.push(msg);
 						console.error('[ConversationCleanup]', msg);
 					}

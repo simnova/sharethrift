@@ -131,7 +131,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			When(
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
-					result = await processConversationsForArchivedListings(mockDataSources);
+					result =
+						await processConversationsForArchivedListings(mockDataSources);
 				},
 			);
 
@@ -163,7 +164,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			When(
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
-					result = await processConversationsForArchivedListings(mockDataSources);
+					result =
+						await processConversationsForArchivedListings(mockDataSources);
 				},
 			);
 
@@ -224,7 +226,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			When(
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
-					result = await processConversationsForArchivedListings(mockDataSources);
+					result =
+						await processConversationsForArchivedListings(mockDataSources);
 				},
 			);
 
@@ -293,7 +296,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			When(
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
-					result = await processConversationsForArchivedListings(mockDataSources);
+					result =
+						await processConversationsForArchivedListings(mockDataSources);
 				},
 			);
 
@@ -321,7 +325,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				'the processConversationsForArchivedListings command is executed',
 				async () => {
 					try {
-						result = await processConversationsForArchivedListings(mockDataSources);
+						result =
+							await processConversationsForArchivedListings(mockDataSources);
 					} catch (error) {
 						thrownError = error as Error;
 					}

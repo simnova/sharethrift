@@ -156,21 +156,31 @@ export class ConversationReadRepositoryImpl
 			return [];
 		}
 
+		let objectId: MongooseSeedwork.ObjectId;
 		try {
-			const result = await this.mongoDataSource.find(
-				{
-					listing: new MongooseSeedwork.ObjectId(listingId),
-				},
-				{
-					...options,
-					populateFields: populateFields,
-				},
-			);
-			return result.map((doc) => this.converter.toDomain(doc, this.passport));
+			objectId = new MongooseSeedwork.ObjectId(listingId);
 		} catch (error) {
-			console.warn('Error with ObjectId in getByListingId:', error);
-			return [];
+			if (
+				error instanceof Error &&
+				(error.message.includes('Argument passed in must be') ||
+					error.name === 'BSONError')
+			) {
+				console.warn('Invalid ObjectId in getByListingId:', error);
+				return [];
+			}
+			throw error;
 		}
+
+		const result = await this.mongoDataSource.find(
+			{
+				listing: objectId,
+			},
+			{
+				...options,
+				populateFields: populateFields,
+			},
+		);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
 
