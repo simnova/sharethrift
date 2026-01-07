@@ -286,24 +286,37 @@ async function main() {
 	// Find workspace root by going up from current package directory
 	// When run via turbo/pnpm, cwd is the package directory, so we go up 3 levels to reach project root
 	const workspaceRoot = path.join(process.cwd(), '../../..');
-	const httpsOptions = {
-		key: fs.readFileSync(
-			path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem'),
-		),
-		cert: fs.readFileSync(
-			path.join(workspaceRoot, '.certs/sharethrift.localhost.pem'),
-		),
-	};
+	const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
+	const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
+	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
 
-	https.createServer(httpsOptions, app).listen(port, 'mock-auth.sharethrift.localhost', () => {
-		// eslint-disable-next-line no-console
-		console.log(
-			`Mock OAuth2 server running on https://mock-auth.sharethrift.localhost:${port}`,
-		);
-		console.log(
-			`JWKS endpoint running on https://mock-auth.sharethrift.localhost:${port}/.well-known/jwks.json`,
-		);
-	});
+	if (hasCerts) {
+		const httpsOptions = {
+			key: fs.readFileSync(certKeyPath),
+			cert: fs.readFileSync(certPath),
+		};
+
+		https.createServer(httpsOptions, app).listen(port, 'mock-auth.sharethrift.localhost', () => {
+			// eslint-disable-next-line no-console
+			console.log(
+				`Mock OAuth2 server running on https://mock-auth.sharethrift.localhost:${port}`,
+			);
+			console.log(
+				`JWKS endpoint running on https://mock-auth.sharethrift.localhost:${port}/.well-known/jwks.json`,
+			);
+		});
+	} else {
+		// Fallback to HTTP when certs don't exist (CI/CD)
+		app.listen(port, () => {
+			// eslint-disable-next-line no-console
+			console.log(
+				`Mock OAuth2 server running on http://localhost:${port} (no certs found)`,
+			);
+			console.log(
+				`JWKS endpoint running on http://localhost:${port}/.well-known/jwks.json`,
+			);
+		});
+	}
 }
 
 main();

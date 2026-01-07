@@ -1,12 +1,3 @@
-/**
- * Local HTTPS Proxy for Azure Functions
- * 
- * Azure Functions Core Tools doesn't support HTTPS natively,
- * so this proxy forwards HTTPS requests to the HTTP function host.
- * 
- * Usage: node local-https-proxy.js
- */
-
 import https from 'node:https';
 import http from 'node:http';
 import fs from 'node:fs';
@@ -16,42 +7,39 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const HTTPS_PORT = 7443;
-const FUNCTIONS_PORT = 7071;
-const HOST = 'data-access.sharethrift.localhost';
+const PROXY_PORT = 7072;
+const TARGET_PORT = 7071; // Azure Functions default port
 
-const options = {
-	key: fs.readFileSync(path.join(__dirname, '.certs/sharethrift.localhost-key.pem')),
-	cert: fs.readFileSync(path.join(__dirname, '.certs/sharethrift.localhost.pem')),
-};
+const certPath = path.join(__dirname, '.certs', 'sharethrift.localhost.pem');
+const keyPath = path.join(__dirname, '.certs', 'sharethrift.localhost-key.pem');
 
-const proxy = https.createServer(options, (req, res) => {
-	const proxyReq = http.request({
+const server = https.createServer({
+	cert: fs.readFileSync(certPath),
+	key: fs.readFileSync(keyPath),
+}, (req, res) => {
+	const options = {
 		hostname: 'localhost',
-		port: FUNCTIONS_PORT,
+		port: TARGET_PORT,
 		path: req.url,
 		method: req.method,
-		headers: {
-			...req.headers,
-			host: 'localhost:' + FUNCTIONS_PORT,
-		},
-	}, (proxyRes) => {
+		headers: req.headers,
+	};
+
+	const proxy = http.request(options, (proxyRes) => {
 		res.writeHead(proxyRes.statusCode, proxyRes.headers);
-		proxyRes.pipe(res);
+		proxyRes.pipe(res, { end: true });
 	});
 
-	proxyReq.on('error', (error) => {
-		console.error('Proxy error:', error);
+	req.pipe(proxy, { end: true });
+
+	proxy.on('error', (err) => {
+		console.error('Proxy error:', err);
 		res.writeHead(502);
 		res.end('Bad Gateway');
 	});
-
-	req.pipe(proxyReq);
 });
 
-proxy.listen(HTTPS_PORT, HOST, () => {
-	console.log(` HTTPS Proxy running at https://${HOST}:${HTTPS_PORT}`);
-	console.log(`   Forwarding to http://localhost:${FUNCTIONS_PORT}`);
-	console.log('');
-	console.log(' Ready to accept requests');
+server.listen(PROXY_PORT, () => {
+	console.log(`HTTPS proxy listening on https://data-access.sharethrift.localhost:${PROXY_PORT}`);
+	console.log(`Proxying to http://localhost:${TARGET_PORT}`);
 });

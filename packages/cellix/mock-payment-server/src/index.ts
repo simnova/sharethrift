@@ -1343,21 +1343,21 @@ const startServer = (portToTry: number, attempt = 0): void => {
 	// From dist/src/index.js, go up 5 levels to workspace root
 	// dist/src -> dist -> mock-payment-server -> cellix -> packages -> workspace root
 	const workspaceRoot = path.join(__dirname, '../../../../..');
-	
-	const httpsOptions = {
-		key: fs.readFileSync(
-			path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem'),
-		),
-		cert: fs.readFileSync(
-			path.join(workspaceRoot, '.certs/sharethrift.localhost.pem'),
-		),
-	};
-	
-	const server = https.createServer(httpsOptions, app).listen(portToTry, HOST, () => {
-		console.log(` Mock Payment Server listening on https://${HOST}:${portToTry}`);
-	});
+	const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
+	const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
+	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
 
-	server.on('error', (error: NodeJS.ErrnoException) => {
+	if (hasCerts) {
+		const httpsOptions = {
+			key: fs.readFileSync(certKeyPath),
+			cert: fs.readFileSync(certPath),
+		};
+		
+		const server = https.createServer(httpsOptions, app).listen(portToTry, HOST, () => {
+			console.log(` Mock Payment Server listening on https://${HOST}:${portToTry}`);
+		});
+
+		server.on('error', (error: NodeJS.ErrnoException) => {
 		if (error.code === 'EADDRINUSE' && attempt < 5) {
 			const nextPort = portToTry + 1;
 			console.warn(
@@ -1369,6 +1369,25 @@ const startServer = (portToTry: number, attempt = 0): void => {
 
 		console.error('Failed to start mock-payment-server', error);
 	});
+	} else {
+		// Fallback to HTTP when certs don't exist (CI/CD)
+		const server = app.listen(portToTry, () => {
+			console.log(` Mock Payment Server listening on http://localhost:${portToTry} (no certs found)`);
+		});
+
+		server.on('error', (error: NodeJS.ErrnoException) => {
+			if (error.code === 'EADDRINUSE' && attempt < 5) {
+				const nextPort = portToTry + 1;
+				console.warn(
+					`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
+				);
+				startServer(nextPort, attempt + 1);
+				return;
+			}
+
+			console.error('Failed to start mock-payment-server', error);
+		});
+	}
 };
 
 startServer(DEFAULT_PORT);

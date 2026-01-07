@@ -3,7 +3,6 @@
 /**
  * ShareThrift Local HTTPS Certificate Setup
  * Automatically installs mkcert and generates wildcard SSL certificates for local development
- * Runs idempotently - safe to run multiple times
  */
 
 import { execSync } from 'node:child_process';
@@ -123,7 +122,7 @@ function main() {
 	console.log(`   ${CERT_DIR}\n`);
 	console.log(' Your local domains are now trusted for HTTPS:');
 	console.log('   • https://sharethrift.localhost:3000 (UI)');
-	console.log('   • https://data-access.sharethrift.localhost:7443 (API)');
+	console.log('   • https://data-access.sharethrift.localhost:8443 (API)');
 	console.log('   • https://docs.sharethrift.localhost:3002 (Docs)');
 	console.log('   • https://mock-auth.sharethrift.localhost:4000 (Auth)');
 	console.log('   • https://mock-payment.sharethrift.localhost:3001 (Payment)');
