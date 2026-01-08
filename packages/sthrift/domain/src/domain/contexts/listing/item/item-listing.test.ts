@@ -1107,4 +1107,96 @@ Scenario(
 			expect(adminSharer.userType).toBe('admin-user');
 		});
 	});
+
+	Scenario('Accessing simple getters', ({ Given, When, Then }) => {
+		let values: {
+			createdAt: Date;
+			schemaVersion: string;
+			sharingHistory: string[];
+			reports: number;
+			images: string[];
+			displayLocation: string;
+		};
+		Given('an ItemListing aggregate with permission to update item listing', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('I access createdAt, schemaVersion, sharingHistory, reports, images, and displayLocation', () => {
+			values = {
+				createdAt: listing.createdAt,
+				schemaVersion: listing.schemaVersion,
+				sharingHistory: listing.sharingHistory,
+				reports: listing.reports,
+				images: listing.images,
+				displayLocation: listing.displayLocation,
+			};
+		});
+		Then('all values should be returned correctly', () => {
+			expect(values.createdAt).toBeInstanceOf(Date);
+			expect(values.schemaVersion).toBe('1.0.0');
+			expect(Array.isArray(values.sharingHistory)).toBe(true);
+			expect(typeof values.reports).toBe('number');
+			expect(Array.isArray(values.images)).toBe(true);
+			expect(values.displayLocation).toBe('Delhi');
+		});
+	});
+
+	Scenario('Checking if listing is active', ({ Given, When, Then }) => {
+		let isActive: boolean;
+		Given('an ItemListing aggregate with state "Active"', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
+		});
+		When('I check if the listing is active', () => {
+			isActive = listing.isActive;
+		});
+		Then('it should return true', () => {
+			expect(isActive).toBe(true);
+		});
+	});
+
+	Scenario('Reinstating a listing with permission', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with permission to publish and state "Paused"', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ state: 'Paused' }), passport);
+		});
+		When('I reinstate the listing', () => {
+			listing.reinstate();
+		});
+		Then('the listing state should be "Active"', () => {
+			expect(listing.state).toBe('Active');
+		});
+	});
+
+	Scenario('Reinstating a listing without permission', ({ Given, When, Then }) => {
+		let reinstateWithoutPermission: () => void;
+		Given('an ItemListing aggregate without permission to publish', () => {
+			passport = makePassport(true, false, false, false);
+			listing = new ItemListing(makeBaseProps({ state: 'Paused' }), passport);
+		});
+		When('I try to reinstate the listing', () => {
+			reinstateWithoutPermission = () => {
+				listing.reinstate();
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(reinstateWithoutPermission).toThrow(DomainSeedwork.PermissionError);
+			expect(reinstateWithoutPermission).toThrow('You do not have permission to reinstate this listing');
+		});
+	});
+
+	Scenario('Converting to entity reference', ({ Given, When, Then }) => {
+		let entityRef: ItemListingEntityReference;
+		Given('an ItemListing aggregate with permission to update item listing', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('I convert it to an entity reference', () => {
+			entityRef = listing.getEntityReference();
+		});
+		Then('it should return the props as ItemListingEntityReference', () => {
+			expect(entityRef).toBeDefined();
+			expect(entityRef.id).toBe(listing.id);
+		});
+	});
 });
