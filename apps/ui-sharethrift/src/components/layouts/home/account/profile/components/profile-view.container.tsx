@@ -32,26 +32,31 @@ export const ProfileViewContainer: React.FC = () => {
         navigate(`/listing/${listingId}`);
     };
 
-    const currentUser = userQueryData?.currentUser;
-    const { account, createdAt } = currentUser || {};
+	const currentUser = userQueryData?.currentUser;
+	const { account, createdAt } = currentUser || {};
+	const isBlocked =
+		currentUser?.__typename === 'PersonalUser'
+			? currentUser.isBlocked
+			: false;
 
     if (!currentUser) {
         return null;
     }
 
-    const profileUser = {
-        id: currentUser.id,
-        firstName: account?.profile?.firstName || '',
-        lastName: account?.profile?.lastName || '',
-        username: account?.username || '',
-        email: account?.email || '',
-        accountType: account?.accountType || '',
-        location: {
-            city: account?.profile?.location?.city || '',
-            state: account?.profile?.location?.state || '',
-        },
-        createdAt: createdAt || '',
-    };
+	const profileUser = {
+		id: currentUser.id,
+		firstName: account?.profile?.firstName || '',
+		lastName: account?.profile?.lastName || '',
+		username: account?.username || '',
+		email: account?.email || '',
+		accountType: account?.accountType || '',
+		location: {
+			city: account?.profile?.location?.city || '',
+			state: account?.profile?.location?.state || '',
+		},
+		createdAt: createdAt || '',
+		isBlocked: isBlocked || false,
+	};
 
     const listings = (listingsData?.myListingsAll?.items || []).map((listing) => ({
         ...listing,
