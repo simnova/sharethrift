@@ -4,6 +4,7 @@ query HomeAccountProfileViewContainerCurrentUser {
 			id
 			userIsAdmin
 			userType
+			isBlocked
 			createdAt
 			account {
 				...PersonalUserProfileViewAccountFields
