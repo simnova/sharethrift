@@ -9,8 +9,8 @@ mutation HomeAccountProfileUserAppealContainerCreateUserAppealRequest($input: Cr
 	}
 }
 
-query HomeAccountProfileUserAppealContainerGetUserAppealRequests($userId: ObjectID!) {
-	getUserAppealRequest(id: $userId) {
+query HomeAccountProfileUserAppealContainerGetUserAppealRequests($input: ObjectID!) {
+	getUserAppealRequest(id: $input) {
 		id
 		reason
 		state

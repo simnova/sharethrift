@@ -20,7 +20,7 @@ export const UserAppealContainer: React.FC<
         loading: appealLoading,
         error: appealError,
     } = useQuery(HomeAccountProfileUserAppealContainerGetUserAppealRequestsDocument, {
-        variables: { userId },
+        variables: { input: "695ff6f7122988138ea55340"}, // need to fix this hardcoding with appeal id
     })
 
 
@@ -60,7 +60,7 @@ export const UserAppealContainer: React.FC<
             hasData={appealData}
             hasDataComponent={
                 <UserAppeal
-                    existingAppeal={appealData}
+                    existingAppeal={appealData?.getUserAppealRequest}
                     onSubmitAppeal={handleSubmitAppeal}
                     loading={appealLoading || loading}
                 />
