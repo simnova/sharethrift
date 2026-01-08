@@ -3,6 +3,15 @@ import { ServiceMessagingTwilio } from './index';
 
 // Mock the Twilio module
 vi.mock('twilio', () => {
+	const makeNewableMock = <TArgs extends unknown[], TResult>(
+		impl: (...args: TArgs) => TResult,
+	) => {
+		// biome-ignore lint/complexity/useArrowFunction: Needs to be a regular function to be constructable (Vitest 4 ctor mocking)
+		return vi.fn(function (...args: TArgs) {
+			return impl(...args);
+		});
+	};
+
 	// Mock data must be inside the factory
 	const mockConversationData = {
 		sid: 'CHtest123',
@@ -43,14 +52,14 @@ vi.mock('twilio', () => {
 		conversations: {
 			v1: {
 				conversations: Object.assign(
-					vi.fn(() => mockConversationInstance),
+					makeNewableMock(() => mockConversationInstance),
 					mockConversationsApi,
 				),
 			},
 		},
 	};
 
-	const TwilioConstructor = vi.fn(() => mockClient);
+	const TwilioConstructor = makeNewableMock(() => mockClient);
 
 	return {
 		default: {
@@ -85,7 +94,9 @@ describe('ServiceMessagingTwilio', () => {
 		});
 
 		it('should create instance with empty credentials and warn', () => {
-			const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation();
+			const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+				// empty implementation
+			});
 			service = new ServiceMessagingTwilio('', '');
 			expect(service).toBeDefined();
 			expect(consoleWarnSpy).toHaveBeenCalledWith(
