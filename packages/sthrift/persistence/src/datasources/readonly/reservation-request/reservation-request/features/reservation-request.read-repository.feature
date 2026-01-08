@@ -63,3 +63,10 @@ And valid ReservationRequest documents exist in the database
 		Then I should receive an array of ReservationRequest entities
 		And the array should contain active reservation requests for the listing
 
+	Scenario: Getting expired closed reservation requests
+		Given a ReservationRequest document with state "Closed" and updatedAt more than 6 months ago
+		And a ReservationRequest document with state "Closed" and updatedAt less than 6 months ago
+		When I call getExpiredClosed
+		Then I should receive an array of ReservationRequest entities
+		And the array should contain only reservation requests older than 6 months
+

@@ -48,11 +48,11 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 						PersonalUserReadRepo: mockUserReadRepo,
 					},
 					User: {
-            UserReadRepo: {
-              getByEmail: getUserByEmailSpy,
-              getById: getUserByIdSpy,
-            }
-          }
+						UserReadRepo: {
+							getByEmail: getUserByEmailSpy,
+							getById: getUserByIdSpy,
+						},
+					},
 				},
 				ReservationRequest: {
 					ReservationRequest: {
@@ -71,7 +71,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				},
 			},
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
 		command = {
@@ -108,8 +108,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: 'listing-123',
 					sharer: { id: 'sharer-123' },
 				};
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).Listing.ItemListing.ItemListingReadRepo.getById.mockResolvedValue(
 					mockListing,
@@ -121,8 +122,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: 'user-123',
 					account: { email: 'reserver@example.com' },
 				};
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).User.PersonalUser.PersonalUserReadRepo.getByEmail.mockResolvedValue(
 					mockReserver,
@@ -130,8 +132,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('there are no overlapping reservation requests', () => {
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getOverlapActiveReservationRequestsForListing.mockResolvedValue(
 					[],
@@ -146,11 +148,11 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					reserver: { id: 'user-123' },
 				};
 
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.domainDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
-     // biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
 					async (callback: any) => {
 						const repo = {
 							getNewInstance: vi.fn().mockResolvedValue(mockNewRequest),
@@ -194,8 +196,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			);
 
 			When('the create command is executed', async () => {
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).Listing.ItemListing.ItemListingReadRepo.getById.mockResolvedValue(
 					null,
@@ -239,8 +241,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: 'listing-123',
 					sharer: { id: 'sharer-123' },
 				};
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).Listing.ItemListing.ItemListingReadRepo.getById.mockResolvedValue(
 					mockListing,
@@ -248,8 +251,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			When('the create command is executed', async () => {
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).User.PersonalUser.PersonalUserReadRepo.getByEmail.mockResolvedValue(
 					null,
@@ -298,8 +301,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: 'listing-123',
 					sharer: { id: 'sharer-123' },
 				};
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).Listing.ItemListing.ItemListingReadRepo.getById.mockResolvedValue(
 					mockListing,
@@ -311,8 +315,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: 'user-123',
 					account: { email: 'reserver@example.com' },
 				};
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).User.PersonalUser.PersonalUserReadRepo.getByEmail.mockResolvedValue(
 					mockReserver,
@@ -327,8 +332,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 						listing: { id: 'listing-123' },
 					},
 				];
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getOverlapActiveReservationRequestsForListing.mockResolvedValue(
 					overlappingRequests,
@@ -379,8 +385,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: 'listing-123',
 					sharer: { id: 'sharer-123' },
 				};
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).Listing.ItemListing.ItemListingReadRepo.getById.mockResolvedValue(
 					mockListing,
@@ -392,8 +399,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					id: 'user-123',
 					account: { email: 'reserver@example.com' },
 				};
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).User.PersonalUser.PersonalUserReadRepo.getByEmail.mockResolvedValue(
 					mockReserver,
@@ -401,8 +409,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('there are no overlapping reservation requests', () => {
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getOverlapActiveReservationRequestsForListing.mockResolvedValue(
 					[],
@@ -410,8 +418,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('the repository save operation returns undefined', () => {
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.domainDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork.withScopedTransaction.mockImplementation(
 					// biome-ignore lint/suspicious/noExplicitAny: Test mock callback

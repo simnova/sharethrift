@@ -1,15 +1,15 @@
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
 import type { Domain } from '@sthrift/domain';
+import type { FilterQuery, PipelineStage } from 'mongoose';
 import type { ModelsContext } from '../../../../models-context.ts';
-import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
+import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import type {
 	FindOneOptions,
 	FindOptions,
 	MongoDataSource,
 } from '../../mongo-data-source.ts';
-import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
-import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import type { FilterQuery, PipelineStage } from 'mongoose';
-import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
 
 // Reservation state constants for filtering (inline per codebase patterns)
 const ACTIVE_STATES = ['Accepted', 'Requested'];
@@ -66,6 +66,11 @@ export interface ReservationRequestReadRepository {
 	>;
 	getActiveByListingId: (
 		listingId: string,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
+	getExpiredClosed: (
 		options?: FindOptions,
 	) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
@@ -283,6 +288,36 @@ export class ReservationRequestReadRepositoryImpl
 			state: { $in: ACTIVE_STATES },
 		};
 		return await this.queryMany(filter, options);
+	}
+
+	/**
+	 * Get reservation requests that are in CLOSED state and have been archived for more than 6 months
+	 * Per SRD data retention policy: "Completed Reservation Requests: Any reservation requests in
+	 * the completed state will be deleted after 6 months have passed."
+	 *
+	 * @param options - Optional find options
+	 * @returns Array of expired reservation request entity references
+	 */
+	async getExpiredClosed(
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		// Calculate the date 6 months ago using milliseconds to avoid date arithmetic issues
+		// 6 months ≈ 182.5 days (average) ≈ 15,768,000,000 milliseconds
+		const sixMonthsInMs = 182.5 * 24 * 60 * 60 * 1000;
+		const sixMonthsAgo = new Date(Date.now() - sixMonthsInMs);
+
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			state: 'Closed',
+			updatedAt: { $lt: sixMonthsAgo },
+		};
+
+		const result = await this.mongoDataSource.find(filter, {
+			...options,
+			populateFields: PopulatedFields,
+		});
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
 

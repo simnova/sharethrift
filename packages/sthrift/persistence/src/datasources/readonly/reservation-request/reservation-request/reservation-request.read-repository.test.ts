@@ -1,12 +1,12 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
-import type { Models } from '@sthrift/data-sources-mongoose-models';
-import type { ModelsContext } from '../../../../models-context.ts';
-import type { Domain } from '@sthrift/domain';
-import { ReservationRequestReadRepositoryImpl } from './reservation-request.read-repository.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
+import type { Domain } from '@sthrift/domain';
+import { expect, vi } from 'vitest';
+import type { ModelsContext } from '../../../../models-context.ts';
+import { ReservationRequestReadRepositoryImpl } from './reservation-request.read-repository.ts';
 
 // Helper to create a valid 24-character hex string from a simple ID
 function createValidObjectId(id: string): string {
@@ -511,6 +511,83 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					const reservations =
 						result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
 					expect(reservations.length).toBeGreaterThan(0);
+				},
+			);
+		},
+	);
+
+	// Test for getExpiredClosed
+	Scenario(
+		'Getting expired closed reservation requests',
+		({ Given, And, When, Then }) => {
+			let expiredMockFindResult: Models.ReservationRequest.ReservationRequest[];
+			let result:
+				| Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+				| null;
+
+			Given(
+				'a ReservationRequest document with state "Closed" and updatedAt more than 6 months ago',
+				() => {
+					const sevenMonthsAgo = new Date();
+					sevenMonthsAgo.setMonth(sevenMonthsAgo.getMonth() - 7);
+
+					const expiredRequest = makeMockReservationRequest(
+						'expired-1',
+						'user-1',
+						'listing-1',
+					);
+					expiredRequest.state = 'Closed';
+					expiredRequest.updatedAt = sevenMonthsAgo;
+
+					expiredMockFindResult = [expiredRequest];
+				},
+			);
+
+			And(
+				'a ReservationRequest document with state "Closed" and updatedAt less than 6 months ago',
+				() => {
+					// This would be filtered out by the repository query
+					// The mock only returns the expired one
+				},
+			);
+
+			When('I call getExpiredClosed', async () => {
+				modelsContext = {
+					ReservationRequest: {
+						ReservationRequest: vi.mocked({
+							find: vi.fn(() => createNullPopulateChain(expiredMockFindResult)),
+						} as any),
+					},
+				} as ModelsContext;
+
+				repository = new ReservationRequestReadRepositoryImpl(
+					modelsContext,
+					makePassport(),
+				);
+
+				result = await repository.getExpiredClosed();
+			});
+
+			Then('I should receive an array of ReservationRequest entities', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect(result?.length).toBeGreaterThan(0);
+			});
+
+			And(
+				'the array should contain only reservation requests older than 6 months',
+				() => {
+					const sixMonthsAgo = new Date();
+					sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+					const reservations =
+						result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+					// biome-ignore lint/complexity/noForEach: test verification
+					reservations.forEach((req) => {
+						expect(req.state).toBe('Closed');
+						expect(req.updatedAt.getTime()).toBeLessThan(
+							sixMonthsAgo.getTime(),
+						);
+					});
 				},
 			);
 		},

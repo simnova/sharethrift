@@ -1,40 +1,33 @@
 import './service-config/otel-starter.ts';
 
-import { Cellix } from './cellix.ts';
-import type { ApiContextSpec } from '@sthrift/context-spec';
+import type { MessagingService } from '@cellix/messaging-service';
+import type { PaymentService } from '@cellix/payment-service';
 
 import {
 	type ApplicationServices,
 	buildApplicationServicesFactory,
 } from '@sthrift/application-services';
+import type { ApiContextSpec } from '@sthrift/context-spec';
 import { RegisterEventHandlers } from '@sthrift/event-handler';
-
-import { ServiceMongoose } from '@sthrift/service-mongoose';
-import * as MongooseConfig from './service-config/mongoose/index.ts';
-
-import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
-
-import { ServiceTokenValidation } from '@sthrift/service-token-validation';
-import * as TokenValidationConfig from './service-config/token-validation/index.ts';
-
-import type { MessagingService } from '@cellix/messaging-service';
-import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
-import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
-
 import { graphHandlerCreator } from '@sthrift/graphql';
-import { restHandlerCreator } from '@sthrift/rest';
-
-import type {PaymentService} from '@cellix/payment-service';
-import { PaymentServiceMock } from '@sthrift/payment-service-mock';
+import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
+import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
 import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
-
+import { PaymentServiceMock } from '@sthrift/payment-service-mock';
+import { restHandlerCreator } from '@sthrift/rest';
+import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
+import { ServiceMongoose } from '@sthrift/service-mongoose';
+import { ServiceTokenValidation } from '@sthrift/service-token-validation';
+import { Cellix } from './cellix.ts';
+import { cleanupExpiredReservationRequestsHandlerCreator } from './features/cleanup-expired-reservation-requests.ts';
+import * as MongooseConfig from './service-config/mongoose/index.ts';
+import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
 
 Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	(serviceRegistry) => {
-		
 		serviceRegistry
 			.registerInfrastructureService(
 				new ServiceMongoose(
@@ -47,11 +40,15 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
 			.registerInfrastructureService(
-				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
+				isDevelopment
+					? new ServiceMessagingMock()
+					: new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(
-        isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource()
-      );
+				isDevelopment
+					? new PaymentServiceMock()
+					: new PaymentServiceCybersource(),
+			);
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -62,12 +59,20 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		);
 
 		const messagingService = isDevelopment
-			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
-			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
-    
-    const paymentService = isDevelopment
-      ? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
-      : serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
+			? serviceRegistry.getInfrastructureService<MessagingService>(
+					ServiceMessagingMock,
+				)
+			: serviceRegistry.getInfrastructureService<MessagingService>(
+					ServiceMessagingTwilio,
+				);
+
+		const paymentService = isDevelopment
+			? serviceRegistry.getInfrastructureService<PaymentService>(
+					PaymentServiceMock,
+				)
+			: serviceRegistry.getInfrastructureService<PaymentService>(
+					PaymentServiceCybersource,
+				);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);
@@ -79,7 +84,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 					ServiceTokenValidation,
 				),
 			paymentService,
-      messagingService,
+			messagingService,
 		};
 	})
 	.initializeApplicationServices((context) =>
@@ -97,5 +102,13 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		'rest',
 		{ route: '{communityId}/{role}/{memberId}/{*rest}' },
 		restHandlerCreator,
+	)
+	.registerAzureFunctionTimerHandler(
+		'cleanup-expired-reservation-requests',
+		{
+			schedule: '0 0 2 * * *', // Daily at 2 AM UTC (NCRONTAB format)
+			runOnStartup: false,
+		},
+		cleanupExpiredReservationRequestsHandlerCreator,
 	)
 	.startUp();

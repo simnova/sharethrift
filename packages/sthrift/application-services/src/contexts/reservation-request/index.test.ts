@@ -1,5 +1,5 @@
-import { describe, it, expect, beforeEach } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { ReservationRequest } from './index.ts';
 
 describe('ReservationRequest Context Factory', () => {

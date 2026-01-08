@@ -4,8 +4,8 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import type { DataSources } from '@sthrift/persistence';
 import { expect, vi } from 'vitest';
 import {
-	type ReservationRequestQueryByIdCommand,
 	queryById,
+	type ReservationRequestQueryByIdCommand,
 } from './query-by-id.ts';
 
 const test = { for: describeFeature };
@@ -31,7 +31,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				},
 			},
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
 		command = { id: 'req-123' };
@@ -52,8 +52,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					listing: { id: 'listing-123' },
 					reserver: { id: 'user-123' },
 				};
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getById.mockResolvedValue(
 					mockRequest,
@@ -80,8 +81,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			When('the queryById command is executed', async () => {
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getById.mockResolvedValue(
 					null,

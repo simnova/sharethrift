@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { DataSources } from '@sthrift/persistence';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
+import type { DataSources } from '@sthrift/persistence';
 import { expect, vi } from 'vitest';
 import { ReservationRequest } from './index.ts';
 
@@ -15,13 +15,13 @@ vi.mock('./query-active-by-listing-id.ts');
 vi.mock('./query-listing-requests-by-sharer-id.ts');
 
 import { create } from './create.ts';
-import { queryById } from './query-by-id.ts';
-import { queryActiveByReserverId } from './query-active-by-reserver-id.ts';
-import { queryPastByReserverId } from './query-past-by-reserver-id.ts';
-import { queryActiveByReserverIdAndListingId } from './query-active-by-reserver-id-and-listing-id.ts';
-import { queryOverlapByListingIdAndReservationPeriod } from './query-overlap-by-listing-id-and-reservation-period.ts';
 import { queryActiveByListingId } from './query-active-by-listing-id.ts';
+import { queryActiveByReserverId } from './query-active-by-reserver-id.ts';
+import { queryActiveByReserverIdAndListingId } from './query-active-by-reserver-id-and-listing-id.ts';
+import { queryById } from './query-by-id.ts';
 import { queryListingRequestsBySharerId } from './query-listing-requests-by-sharer-id.ts';
+import { queryOverlapByListingIdAndReservationPeriod } from './query-overlap-by-listing-id-and-reservation-period.ts';
+import { queryPastByReserverId } from './query-past-by-reserver-id.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -64,12 +64,24 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 
 		vi.mocked(create).mockReturnValue(mockCreateFn);
 		vi.mocked(queryById).mockReturnValue(mockQueryByIdFn);
-		vi.mocked(queryActiveByReserverId).mockReturnValue(mockQueryActiveByReserverIdFn);
-		vi.mocked(queryPastByReserverId).mockReturnValue(mockQueryPastByReserverIdFn);
-		vi.mocked(queryActiveByReserverIdAndListingId).mockReturnValue(mockQueryActiveByReserverIdAndListingIdFn);
-		vi.mocked(queryOverlapByListingIdAndReservationPeriod).mockReturnValue(mockQueryOverlapByListingIdAndReservationPeriodFn);
-		vi.mocked(queryActiveByListingId).mockReturnValue(mockQueryActiveByListingIdFn);
-		vi.mocked(queryListingRequestsBySharerId).mockReturnValue(mockQueryListingRequestsBySharerIdFn);
+		vi.mocked(queryActiveByReserverId).mockReturnValue(
+			mockQueryActiveByReserverIdFn,
+		);
+		vi.mocked(queryPastByReserverId).mockReturnValue(
+			mockQueryPastByReserverIdFn,
+		);
+		vi.mocked(queryActiveByReserverIdAndListingId).mockReturnValue(
+			mockQueryActiveByReserverIdAndListingIdFn,
+		);
+		vi.mocked(queryOverlapByListingIdAndReservationPeriod).mockReturnValue(
+			mockQueryOverlapByListingIdAndReservationPeriodFn,
+		);
+		vi.mocked(queryActiveByListingId).mockReturnValue(
+			mockQueryActiveByListingIdFn,
+		);
+		vi.mocked(queryListingRequestsBySharerId).mockReturnValue(
+			mockQueryListingRequestsBySharerIdFn,
+		);
 
 		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		mockDataSources = {} as any;
@@ -151,13 +163,22 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				expect(service).toBeDefined();
 			});
 
-			When('I query for active requests by reserver "reserver-1" and listing "listing-1"', async () => {
-				await service.queryActiveByReserverIdAndListingId({ reserverId: 'reserver-1', listingId: 'listing-1' });
-			});
+			When(
+				'I query for active requests by reserver "reserver-1" and listing "listing-1"',
+				async () => {
+					await service.queryActiveByReserverIdAndListingId({
+						reserverId: 'reserver-1',
+						listingId: 'listing-1',
+					});
+				},
+			);
 
-			Then('it should delegate to the queryActiveByReserverIdAndListingId function', () => {
-				expect(mockQueryActiveByReserverIdAndListingIdFn).toHaveBeenCalled();
-			});
+			Then(
+				'it should delegate to the queryActiveByReserverIdAndListingId function',
+				() => {
+					expect(mockQueryActiveByReserverIdAndListingIdFn).toHaveBeenCalled();
+				},
+			);
 		},
 	);
 
@@ -168,13 +189,25 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				expect(service).toBeDefined();
 			});
 
-			When('I query for overlapping requests for listing "listing-1"', async () => {
-				await service.queryOverlapByListingIdAndReservationPeriod({ listingId: 'listing-1', startDate: new Date(), endDate: new Date() });
-			});
+			When(
+				'I query for overlapping requests for listing "listing-1"',
+				async () => {
+					await service.queryOverlapByListingIdAndReservationPeriod({
+						listingId: 'listing-1',
+						startDate: new Date(),
+						endDate: new Date(),
+					});
+				},
+			);
 
-			Then('it should delegate to the queryOverlapByListingIdAndReservationPeriod function', () => {
-				expect(mockQueryOverlapByListingIdAndReservationPeriodFn).toHaveBeenCalled();
-			});
+			Then(
+				'it should delegate to the queryOverlapByListingIdAndReservationPeriod function',
+				() => {
+					expect(
+						mockQueryOverlapByListingIdAndReservationPeriodFn,
+					).toHaveBeenCalled();
+				},
+			);
 		},
 	);
 
@@ -206,9 +239,12 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				await service.queryListingRequestsBySharerId({ sharerId: 'sharer-1' });
 			});
 
-			Then('it should delegate to the queryListingRequestsBySharerId function', () => {
-				expect(mockQueryListingRequestsBySharerIdFn).toHaveBeenCalled();
-			});
+			Then(
+				'it should delegate to the queryListingRequestsBySharerId function',
+				() => {
+					expect(mockQueryListingRequestsBySharerIdFn).toHaveBeenCalled();
+				},
+			);
 		},
 	);
 });

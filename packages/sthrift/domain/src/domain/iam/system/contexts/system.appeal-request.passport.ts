@@ -1,8 +1,8 @@
-import type { ListingAppealRequestEntityReference } from '../../../contexts/appeal-request/listing-appeal-request/listing-appeal-request.entity.ts';
-import type { UserAppealRequestEntityReference } from '../../../contexts/appeal-request/user-appeal-request/user-appeal-request.entity.ts';
+import type { AppealRequestDomainPermissions } from '../../../contexts/appeal-request/appeal-request.domain-permissions.ts';
 import type { AppealRequestPassport } from '../../../contexts/appeal-request/appeal-request.passport.ts';
 import type { AppealRequestVisa } from '../../../contexts/appeal-request/appeal-request.visa.ts';
-import type { AppealRequestDomainPermissions } from '../../../contexts/appeal-request/appeal-request.domain-permissions.ts';
+import type { ListingAppealRequestEntityReference } from '../../../contexts/appeal-request/listing-appeal-request/listing-appeal-request.entity.ts';
+import type { UserAppealRequestEntityReference } from '../../../contexts/appeal-request/user-appeal-request/user-appeal-request.entity.ts';
 import { SystemPassportBase } from '../system.passport-base.ts';
 
 export class SystemAppealRequestPassport

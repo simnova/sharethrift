@@ -3,4 +3,5 @@ export interface ReservationRequestDomainPermissions {
 	canCancelRequest: boolean;
 	canAcceptRequest: boolean;
 	canRejectRequest: boolean;
+	canDeleteRequest: boolean;
 }

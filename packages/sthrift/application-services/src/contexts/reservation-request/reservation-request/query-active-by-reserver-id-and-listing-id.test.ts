@@ -1,5 +1,5 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { queryActiveByReserverIdAndListingId } from './query-active-by-reserver-id-and-listing-id.ts';
 
 describe('ReservationRequest queryActiveByReserverIdAndListingId', () => {

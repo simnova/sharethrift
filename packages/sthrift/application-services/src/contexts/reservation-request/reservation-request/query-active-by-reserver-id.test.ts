@@ -31,7 +31,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				},
 			},
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
 		command = { reserverId: 'user-123' };
@@ -66,8 +66,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 						listing: { id: 'listing-3', sharer: { id: 'sharer-2' } },
 					},
 				];
+
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getActiveByReserverIdWithListingWithSharer.mockResolvedValue(
 					mockRequests,
@@ -94,8 +95,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			});
 
 			And('the reserver has no active reservation requests', () => {
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 				(
-					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getActiveByReserverIdWithListingWithSharer.mockResolvedValue(
 					[],

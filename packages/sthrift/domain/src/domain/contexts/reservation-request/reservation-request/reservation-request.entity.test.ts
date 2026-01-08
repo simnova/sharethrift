@@ -11,7 +11,9 @@ const feature = await loadFeature(
 );
 
 // biome-ignore lint/suspicious/noExplicitAny: Test helper function
-function makeReservationRequestProps(overrides?: Partial<ReservationRequestProps>): any {
+function makeReservationRequestProps(
+	overrides?: Partial<ReservationRequestProps>,
+): any {
 	return {
 		id: 'test-reservation-id',
 		state: 'pending',
@@ -41,7 +43,6 @@ test.for(feature, ({ Background, Scenario }) => {
 	});
 
 	Scenario('Reservation request state should be a string', ({ When, Then }) => {
-
 		When('I access the state property', () => {
 			// Access the property
 		});
@@ -53,128 +54,161 @@ test.for(feature, ({ Background, Scenario }) => {
 		});
 	});
 
-	Scenario('Reservation request period dates should be Date objects', ({ When, Then }) => {
+	Scenario(
+		'Reservation request period dates should be Date objects',
+		({ When, Then }) => {
+			When('I access the period date properties', () => {
+				// Access the properties
+			});
 
-		When('I access the period date properties', () => {
-			// Access the properties
-		});
+			Then(
+				'reservationPeriodStart and reservationPeriodEnd should be Date objects',
+				() => {
+					const reservationProps: ReservationRequestProps = props;
+					expect(reservationProps.reservationPeriodStart).toBeInstanceOf(Date);
+					expect(reservationProps.reservationPeriodEnd).toBeInstanceOf(Date);
+				},
+			);
+		},
+	);
 
-		Then('reservationPeriodStart and reservationPeriodEnd should be Date objects', () => {
-			const reservationProps: ReservationRequestProps = props;
-			expect(reservationProps.reservationPeriodStart).toBeInstanceOf(Date);
-			expect(reservationProps.reservationPeriodEnd).toBeInstanceOf(Date);
-		});
-	});
+	Scenario(
+		'Reservation request createdAt should be readonly',
+		({ When, Then }) => {
+			When('I access the createdAt property', () => {
+				// Access the property
+			});
 
-	Scenario('Reservation request createdAt should be readonly', ({ When, Then }) => {
+			Then('it should be a Date object', () => {
+				const reservationProps: ReservationRequestProps = props;
+				expect(reservationProps.createdAt).toBeInstanceOf(Date);
+			});
+		},
+	);
 
-		When('I access the createdAt property', () => {
-			// Access the property
-		});
+	Scenario(
+		'Reservation request updatedAt should be readonly',
+		({ When, Then }) => {
+			When('I access the updatedAt property', () => {
+				// Access the property
+			});
 
-		Then('it should be a Date object', () => {
-			const reservationProps: ReservationRequestProps = props;
-			expect(reservationProps.createdAt).toBeInstanceOf(Date);
-		});
-	});
+			Then('it should be a Date object', () => {
+				const reservationProps: ReservationRequestProps = props;
+				expect(reservationProps.updatedAt).toBeInstanceOf(Date);
+			});
+		},
+	);
 
-	Scenario('Reservation request updatedAt should be readonly', ({ When, Then }) => {
+	Scenario(
+		'Reservation request schemaVersion should be readonly',
+		({ When, Then }) => {
+			When('I access the schemaVersion property', () => {
+				// Access the property
+			});
 
-		When('I access the updatedAt property', () => {
-			// Access the property
-		});
+			Then('it should be a string', () => {
+				const reservationProps: ReservationRequestProps = props;
+				expect(typeof reservationProps.schemaVersion).toBe('string');
+				expect(reservationProps.schemaVersion).toBe('1.0');
+			});
+		},
+	);
 
-		Then('it should be a Date object', () => {
-			const reservationProps: ReservationRequestProps = props;
-			expect(reservationProps.updatedAt).toBeInstanceOf(Date);
-		});
-	});
+	Scenario(
+		'Reservation request listing reference should be readonly',
+		({ When, Then }) => {
+			When('I attempt to modify the listing property', () => {
+				Object.defineProperty(props, 'listing', {
+					writable: false,
+					configurable: false,
+					value: props.listing,
+				});
+				try {
+					props.listing = { id: 'new-listing-id' };
+				} catch (_error) {
+					// Expected behavior for readonly
+				}
+			});
 
-	Scenario('Reservation request schemaVersion should be readonly', ({ When, Then }) => {
+			Then('the listing property should be readonly', () => {
+				const reservationProps: ReservationRequestProps = props;
+				expect(reservationProps.listing).toEqual({ id: 'test-listing-id' });
+			});
+		},
+	);
 
-		When('I access the schemaVersion property', () => {
-			// Access the property
-		});
+	Scenario(
+		'Reservation request loadListing should return a promise',
+		({ When, Then }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let result: any;
 
-		Then('it should be a string', () => {
-			const reservationProps: ReservationRequestProps = props;
-			expect(typeof reservationProps.schemaVersion).toBe('string');
-			expect(reservationProps.schemaVersion).toBe('1.0');
-		});
-	});
+			When('I call the loadListing method', async () => {
+				result = await props.loadListing();
+			});
 
-	Scenario('Reservation request listing reference should be readonly', ({ When, Then }) => {
+			Then('it should return a listing reference', () => {
+				expect(result).toEqual({ id: 'test-listing-id' });
+			});
+		},
+	);
 
-		When('I attempt to modify the listing property', () => {
-			Object.defineProperty(props, 'listing', { writable: false, configurable: false, value: props.listing });
-			try {
-				props.listing = { id: 'new-listing-id' };
-			} catch (_error) {
-				// Expected behavior for readonly
-			}
-		});
+	Scenario(
+		'Reservation request reserver reference should be readonly',
+		({ When, Then }) => {
+			When('I attempt to modify the reserver property', () => {
+				Object.defineProperty(props, 'reserver', {
+					writable: false,
+					configurable: false,
+					value: props.reserver,
+				});
+				try {
+					props.reserver = { id: 'new-reserver-id' };
+				} catch (_error) {
+					// Expected behavior for readonly
+				}
+			});
 
-		Then('the listing property should be readonly', () => {
-			const reservationProps: ReservationRequestProps = props;
-			expect(reservationProps.listing).toEqual({ id: 'test-listing-id' });
-		});
-	});
+			Then('the reserver property should be readonly', () => {
+				const reservationProps: ReservationRequestProps = props;
+				expect(reservationProps.reserver).toEqual({ id: 'test-reserver-id' });
+			});
+		},
+	);
 
-	Scenario('Reservation request loadListing should return a promise', ({ When, Then }) => {
-		// biome-ignore lint/suspicious/noExplicitAny: Test variable
-		let result: any;
+	Scenario(
+		'Reservation request loadReserver should return a promise',
+		({ When, Then }) => {
+			// biome-ignore lint/suspicious/noExplicitAny: Test variable
+			let result: any;
 
-		When('I call the loadListing method', async () => {
-			result = await props.loadListing();
-		});
+			When('I call the loadReserver method', async () => {
+				result = await props.loadReserver();
+			});
 
-		Then('it should return a listing reference', () => {
-			expect(result).toEqual({ id: 'test-listing-id' });
-		});
-	});
+			Then('it should return a reserver reference', () => {
+				expect(result).toEqual({ id: 'test-reserver-id' });
+			});
+		},
+	);
 
-	Scenario('Reservation request reserver reference should be readonly', ({ When, Then }) => {
+	Scenario(
+		'Reservation request close flags should be booleans',
+		({ When, Then }) => {
+			When('I access the close request flags', () => {
+				// Access the properties
+			});
 
-		When('I attempt to modify the reserver property', () => {
-			Object.defineProperty(props, 'reserver', { writable: false, configurable: false, value: props.reserver });
-			try {
-				props.reserver = { id: 'new-reserver-id' };
-			} catch (_error) {
-				// Expected behavior for readonly
-			}
-		});
-
-		Then('the reserver property should be readonly', () => {
-			const reservationProps: ReservationRequestProps = props;
-			expect(reservationProps.reserver).toEqual({ id: 'test-reserver-id' });
-		});
-	});
-
-	Scenario('Reservation request loadReserver should return a promise', ({ When, Then }) => {
-		// biome-ignore lint/suspicious/noExplicitAny: Test variable
-		let result: any;
-
-		When('I call the loadReserver method', async () => {
-			result = await props.loadReserver();
-		});
-
-		Then('it should return a reserver reference', () => {
-			expect(result).toEqual({ id: 'test-reserver-id' });
-		});
-	});
-
-	Scenario('Reservation request close flags should be booleans', ({ When, Then }) => {
-
-		When('I access the close request flags', () => {
-			// Access the properties
-		});
-
-		Then('they should be booleans', () => {
-			const reservationProps: ReservationRequestProps = props;
-			expect(typeof reservationProps.closeRequestedBySharer).toBe('boolean');
-			expect(typeof reservationProps.closeRequestedByReserver).toBe('boolean');
-			expect(reservationProps.closeRequestedBySharer).toBe(false);
-			expect(reservationProps.closeRequestedByReserver).toBe(false);
-		});
-	});
+			Then('they should be booleans', () => {
+				const reservationProps: ReservationRequestProps = props;
+				expect(typeof reservationProps.closeRequestedBySharer).toBe('boolean');
+				expect(typeof reservationProps.closeRequestedByReserver).toBe(
+					'boolean',
+				);
+				expect(reservationProps.closeRequestedBySharer).toBe(false);
+				expect(reservationProps.closeRequestedByReserver).toBe(false);
+			});
+		},
+	);
 });
