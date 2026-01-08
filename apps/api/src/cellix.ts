@@ -303,7 +303,7 @@ export class Cellix<ContextType, AppServices = unknown>
 		name: string,
 		options: Omit<HttpFunctionOptions, 'handler'>,
 		handlerCreator: (
-			applicationServicesHost: RequestScopedHost<AppServices, unknown>,
+			applicationServicesHost: AppHost<AppServices>,
 		) => HttpHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices> {
 		this.ensurePhase('app-services', 'handlers');
@@ -316,7 +316,7 @@ export class Cellix<ContextType, AppServices = unknown>
 		name: string,
 		schedule: string,
 		handlerCreator: (
-			applicationServicesHost: RequestScopedHost<AppServices, unknown>,
+			applicationServicesHost: AppHost<AppServices>,
 		) => TimerHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices> {
 		this.ensurePhase('app-services', 'handlers');
