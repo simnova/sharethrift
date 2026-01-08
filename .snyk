@@ -34,7 +34,7 @@ ignore:
         expires: '2026-07-19T00:00:00.000Z'
         created: '2026-01-05T09:39:00.000Z'
   'SNYK-JS-PNPMNPMCONF-14897556':
-    - '@docusaurus/core@3.9.2 > update-notifier@6.0.2 > latest-version@7.0.0 > package-json@8.1.1 > registry-auth-token@5.1.0 > @pnpm/npm-conf@2.3.1':
+    - '@docusaurus/preset-classic@3.9.2 > @docusaurus/core@3.9.2 > update-notifier@6.0.2 > latest-version@7.0.0 > package-json@8.1.1 > registry-auth-token@5.1.0 > @pnpm/npm-conf@2.3.1':
         reason: 'Transitive dependency in Docusaurus (dev-only documentation tool); not exploitable in production. The vulnerability (command injection) is not reachable in the current usage context where npm-conf is only used for reading npm configuration in development workflows.'
         expires: '2026-07-09T00:00:00.000Z'
         created: '2026-01-09T00:00:00.000Z'
