@@ -48,10 +48,21 @@ function makePassport(): Domain.Passport {
 }
 
 function createNullPopulateChain<T>(result: T) {
-	const innerLean = { lean: vi.fn(async () => result) };
-	const innerPopulate = { populate: vi.fn(() => innerLean) };
-	const outerPopulate = { populate: vi.fn(() => innerPopulate) };
-	return { populate: vi.fn(() => outerPopulate) };
+	const mockQuery = {
+		lean: vi.fn(),
+		populate: vi.fn(),
+		exec: vi.fn().mockResolvedValue(result),
+		catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
+	};
+	mockQuery.lean.mockReturnValue(mockQuery);
+	mockQuery.populate.mockReturnValue(mockQuery);
+	// biome-ignore lint/suspicious/noThenProperty: Intentional thenable mock for Mongoose queries
+	Object.defineProperty(mockQuery, 'then', {
+		value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
+		enumerable: false,
+		configurable: true,
+	});
+	return mockQuery;
 }
 
 function makeMockUser(id: string): Models.User.PersonalUser {
@@ -323,9 +334,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			reserverId = createValidObjectId('reserver-1');
 			listingId = createValidObjectId('listing-1');
 
-			mockModel.findOne = vi.fn().mockReturnValue({
-				lean: vi.fn().mockResolvedValue(makeMockConversation()),
-			}) as never;
+			const mockConversation = makeMockConversation();
+			mockModel.findOne = vi.fn(() => createNullPopulateChain(mockConversation)) as unknown as typeof mockModel.findOne;
 		});
 
 		When('I call getBySharerReserverListing', async () => {

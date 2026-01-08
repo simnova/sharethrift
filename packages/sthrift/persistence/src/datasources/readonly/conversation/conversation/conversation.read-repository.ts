@@ -148,21 +148,31 @@ export class ConversationReadRepositoryImpl
 			return null;
 		}
 
-		const result = await this.mongoDataSource.findOne(
-			{
-				sharer: sharerObjectId,
-				reserver: reserverObjectId,
-				listing: listingObjectId,
-			},
-			{
-				...options,
-				populateFields: populateFields,
-			},
-		);
-		if (!result) {
+		try {
+			const result = await this.mongoDataSource.findOne(
+				{
+					sharer: sharerObjectId,
+					reserver: reserverObjectId,
+					listing: listingObjectId,
+				},
+				{
+					...options,
+					populateFields: populateFields,
+				},
+			);
+			if (!result) {
+				return null;
+			}
+			return this.converter.toDomain(result, this.passport);
+		} catch (error) {
+			console.error('[ConversationReadRepository] Error in getBySharerReserverListing:', {
+				sharerId,
+				reserverId,
+				listingId,
+				error: error instanceof Error ? error.message : String(error),
+			});
 			return null;
 		}
-		return this.converter.toDomain(result, this.passport);
 	}
 
 	async getByListingId(
