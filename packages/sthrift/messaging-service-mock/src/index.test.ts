@@ -12,9 +12,9 @@ describe('ServiceMessagingMock Integration Tests', () => {
 
 	beforeAll(async () => {
 		process.env['MESSAGING_MOCK_URL'] = MOCK_SERVER_URL;
-		
+
 		mockServer = await startServer(MOCK_SERVER_PORT, true);
-		
+
 		await new Promise((resolve) => setTimeout(resolve, 500));
 	}, 15000);
 

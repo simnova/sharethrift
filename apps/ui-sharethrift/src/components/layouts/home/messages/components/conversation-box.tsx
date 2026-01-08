@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import type { Conversation } from '../../../../../generated.tsx';
-import { MessageThread } from './index.ts';
 import { ListingBanner } from './listing-banner.tsx';
+import { MessageThread } from './index.ts';
+import { useState, useCallback, useMemo } from 'react';
 
 interface ConversationBoxProps {
 	data: Conversation;
@@ -15,17 +15,31 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 
 	const currentUserId = props.currentUserId ?? props?.data?.sharer?.id;
 
-	const handleSendMessage = async (e: React.FormEvent) => {
-		e.preventDefault();
-		if (props.sendingMessage) return; // Prevent duplicate submits while send is in flight
-		if (!messageText.trim()) return;
+	const handleSendMessage = useCallback(
+		(e: React.FormEvent) => {
+			e.preventDefault();
+			console.log('Send message logic to be implemented', messageText);
+		},
+		[messageText],
+	);
 
-		// Only clear input on successful send so users don't lose unsent content on error
-		const success = await props.onSendMessage(messageText);
-		if (success) {
-			setMessageText('');
-		}
-	};
+	// Build user info for sharer and reserver - memoized to avoid unnecessary rerenders
+	const sharerInfo = useMemo(
+		() => ({
+			id: props.data.sharer?.id || '',
+			displayName: props.data.sharer?.account?.profile?.firstName ?? 'Unknown',
+		}),
+		[props.data?.sharer],
+	);
+
+	const reserverInfo = useMemo(
+		() => ({
+			id: props.data.reserver?.id || '',
+			displayName:
+				props.data.reserver?.account?.profile?.firstName ?? 'Unknown',
+		}),
+		[props.data?.reserver],
+	);
 
 	return (
 		<>
@@ -46,11 +60,13 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 					messages={props.data.messages || []}
 					loading={false}
 					error={null}
-					sendingMessage={props.sendingMessage}
+					sendingMessage={false}
 					messageText={messageText}
 					setMessageText={setMessageText}
 					handleSendMessage={handleSendMessage}
 					currentUserId={currentUserId}
+					sharer={sharerInfo}
+					reserver={reserverInfo}
 				/>
 			</div>
 		</>

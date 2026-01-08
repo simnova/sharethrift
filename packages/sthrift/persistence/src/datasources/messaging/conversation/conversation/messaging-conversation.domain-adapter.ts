@@ -5,7 +5,7 @@ export function toDomainMessage(
 	messagingMessage: MessageInstance,
 	authorId: Domain.Contexts.Conversation.Conversation.AuthorId,
 ): Domain.Contexts.Conversation.Conversation.MessageEntityReference {
-	// biome-ignore lint/complexity/useLiteralKeys: metadata is an index signature requiring bracket notation
+	// biome-ignore lint/complexity/useLiteralKeys: metadata is Record<string, unknown> requiring bracket notation per TS4111
 	const messagingId =
 		(messagingMessage.metadata?.['originalSid'] as string) ||
 		messagingMessage.id;

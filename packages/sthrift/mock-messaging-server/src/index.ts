@@ -67,7 +67,7 @@ export function createApp(): Application {
 }
 
 export function startServer(port = 10000, seedData = false): Promise<Server> {
-	return new Promise((resolve) => {
+	return new Promise((resolve, reject) => {
 		const app = createApp();
 		const server = app.listen(port, () => {
 			console.log(`Mock Twilio Server listening on port ${port}`);
@@ -80,6 +80,7 @@ export function startServer(port = 10000, seedData = false): Promise<Server> {
 			
 			resolve(server);
 		});
+		server.on('error', reject);
 	});
 }
 
