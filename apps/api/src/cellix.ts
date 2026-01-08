@@ -312,15 +312,15 @@ export class Cellix<ContextType, AppServices = unknown>
 		return this;
 	}
 
-	public registerAzureFunctionTimerHandler(
+	public registerAzureFunctionTimerHandler<TFactory extends AppHost<AppServices> = AppHost<AppServices>>(
 		name: string,
 		schedule: string,
 		handlerCreator: (
-			applicationServicesHost: AppHost<AppServices>,
+			applicationServicesFactory: TFactory,
 		) => TimerHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices> {
 		this.ensurePhase('app-services', 'handlers');
-		this.pendingTimerHandlers.push({ name, schedule, handlerCreator });
+		this.pendingTimerHandlers.push({ name, schedule, handlerCreator: handlerCreator as (host: AppHost<AppServices>) => TimerHandler });
 		this.phase = 'handlers';
 		return this;
 	}

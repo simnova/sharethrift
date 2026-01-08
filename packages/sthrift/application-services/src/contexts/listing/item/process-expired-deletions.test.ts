@@ -4,6 +4,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { DataSources } from '@sthrift/persistence';
 import type { Domain } from '@sthrift/domain';
+import type { ListingDeletionConfig } from '@sthrift/context-spec';
 import { processExpiredDeletions } from './process-expired-deletions.ts';
 
 const test = { for: describeFeature };
@@ -15,6 +16,7 @@ const feature = await loadFeature(
 test.for(feature, ({ Background, Scenario }) => {
 	let mockDataSources: DataSources;
 	let mockBlobStorage: Domain.Services['BlobStorage'] | undefined;
+	let mockConfig: ListingDeletionConfig;
 	let mockExpiredListings: Array<{
 		id: string;
 		images: string[];
@@ -51,6 +53,12 @@ test.for(feature, ({ Background, Scenario }) => {
 			shouldFailBlobDeletion = false;
 			mockExpiredListings = [];
 			mockConversations = [];
+
+			mockConfig = {
+				archivalMonths: 6,
+				batchSize: 100,
+				blobContainerName: 'listing-images',
+			};
 
 			mockListingRepo = {
 				get: vi.fn().mockImplementation(() => ({
@@ -138,6 +146,7 @@ test.for(feature, ({ Background, Scenario }) => {
 			When('the expired deletion process runs', async () => {
 				const processFunction = processExpiredDeletions(
 					mockDataSources,
+					mockConfig,
 					mockBlobStorage,
 				);
 				result = await processFunction();
@@ -191,6 +200,7 @@ test.for(feature, ({ Background, Scenario }) => {
 			When('the expired deletion process runs', async () => {
 				const processFunction = processExpiredDeletions(
 					mockDataSources,
+					mockConfig,
 					mockBlobStorage,
 				);
 				result = await processFunction();
@@ -231,6 +241,7 @@ test.for(feature, ({ Background, Scenario }) => {
 			When('the expired deletion process runs', async () => {
 				const processFunction = processExpiredDeletions(
 					mockDataSources,
+					mockConfig,
 					mockBlobStorage,
 				);
 				result = await processFunction();
@@ -268,6 +279,7 @@ test.for(feature, ({ Background, Scenario }) => {
 			When('the expired deletion process runs', async () => {
 				const processFunction = processExpiredDeletions(
 					mockDataSources,
+					mockConfig,
 					mockBlobStorage,
 				);
 				result = await processFunction();
@@ -303,6 +315,7 @@ test.for(feature, ({ Background, Scenario }) => {
 		When('the expired deletion process runs', async () => {
 			const processFunction = processExpiredDeletions(
 				mockDataSources,
+				mockConfig,
 				mockBlobStorage,
 			);
 			result = await processFunction();
@@ -346,6 +359,7 @@ test.for(feature, ({ Background, Scenario }) => {
 			When('the expired deletion process runs', async () => {
 				const processFunction = processExpiredDeletions(
 					mockDataSources,
+					mockConfig,
 					mockBlobStorage,
 				);
 				result = await processFunction();

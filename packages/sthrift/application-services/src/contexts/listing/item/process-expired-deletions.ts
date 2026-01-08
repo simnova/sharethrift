@@ -1,10 +1,7 @@
 import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
+import type { ListingDeletionConfig } from '@sthrift/context-spec';
 import { deleteByListing as deleteConversationsByListing } from '../../conversation/conversation/delete-by-listing.ts';
-
-const ARCHIVAL_MONTHS = 6;
-const BATCH_SIZE = 100;
-const BLOB_CONTAINER_NAME = 'listing-images';
 
 export interface ProcessExpiredDeletionsResult {
 	deletedCount: number;
@@ -17,11 +14,12 @@ export interface ProcessExpiredDeletionsResult {
 async function deleteListingImages(
 	blobStorage: Domain.Services['BlobStorage'],
 	images: string[],
+	containerName: string,
 ): Promise<number> {
 	let deletedCount = 0;
 	for (const imagePath of images) {
 		try {
-			await blobStorage.deleteBlob(BLOB_CONTAINER_NAME, imagePath);
+			await blobStorage.deleteBlob(containerName, imagePath);
 			deletedCount++;
 		} catch (error) {
 			console.warn(`[ExpiredDeletion] Failed to delete image ${imagePath}: ${error instanceof Error ? error.message : String(error)}`);
@@ -43,6 +41,7 @@ async function deleteListingById(
 
 export const processExpiredDeletions = (
 	dataSources: DataSources,
+	config: ListingDeletionConfig,
 	blobStorage?: Domain.Services['BlobStorage'],
 ): (() => Promise<ProcessExpiredDeletionsResult>) => {
 	return async (): Promise<ProcessExpiredDeletionsResult> => {
@@ -56,8 +55,8 @@ export const processExpiredDeletions = (
 
 		const expiredListings =
 			await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getExpiredForDeletion(
-				ARCHIVAL_MONTHS,
-				BATCH_SIZE,
+				config.archivalMonths,
+				config.batchSize,
 			);
 
 		console.log(
@@ -77,7 +76,11 @@ export const processExpiredDeletions = (
 
 			try {
 				if (blobStorage && listing.images && listing.images.length > 0) {
-					const imagesDeleted = await deleteListingImages(blobStorage, listing.images);
+					const imagesDeleted = await deleteListingImages(
+						blobStorage,
+						listing.images,
+						config.blobContainerName,
+					);
 					result.deletedImagesCount += imagesDeleted;
 					console.log(`[ExpiredDeletion] Deleted ${imagesDeleted} images for listing ${listingId}`);
 				}

@@ -86,6 +86,11 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			paymentService,
       messagingService,
 			blobStorageService,
+			listingDeletionConfig: {
+				archivalMonths: Number(process.env['LISTING_ARCHIVAL_MONTHS']) || 6,
+				batchSize: Number(process.env['LISTING_DELETION_BATCH_SIZE']) || 100,
+				blobContainerName: process.env['LISTING_IMAGES_CONTAINER'] || 'listing-images',
+			},
 		};
 	})
 	.initializeApplicationServices((context) =>

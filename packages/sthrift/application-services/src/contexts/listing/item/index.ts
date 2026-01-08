@@ -1,5 +1,6 @@
 import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
+import type { ListingDeletionConfig } from '@sthrift/context-spec';
 import { type ItemListingCreateCommand, create } from './create.ts';
 import { type ItemListingQueryByIdCommand, queryById } from './query-by-id.ts';
 import {
@@ -61,6 +62,7 @@ export interface ItemListingApplicationService {
 export interface ItemListingDependencies {
 	dataSources: DataSources;
 	blobStorage?: Domain.Services['BlobStorage'];
+	listingDeletionConfig?: ListingDeletionConfig;
 }
 
 export const ItemListing = (
@@ -68,6 +70,14 @@ export const ItemListing = (
 ): ItemListingApplicationService => {
 	const dataSources = 'dataSources' in deps ? deps.dataSources : deps;
 	const blobStorage = 'blobStorage' in deps ? deps.blobStorage : undefined;
+	const config = 'listingDeletionConfig' in deps ? deps.listingDeletionConfig : undefined;
+
+	// Use default config if not provided (for backward compatibility and testing)
+	const deletionConfig: ListingDeletionConfig = config ?? {
+		archivalMonths: 6,
+		batchSize: 100,
+		blobContainerName: 'listing-images',
+	};
 
 	return {
 		create: create(dataSources),
@@ -79,6 +89,6 @@ export const ItemListing = (
 		deleteListings: deleteListings(dataSources),
 		unblock: unblock(dataSources),
 		queryPaged: queryPaged(dataSources),
-		processExpiredDeletions: processExpiredDeletions(dataSources, blobStorage),
+		processExpiredDeletions: processExpiredDeletions(dataSources, deletionConfig, blobStorage),
 	};
 };

@@ -134,11 +134,11 @@ export const buildApplicationServicesFactory = (
 	return {
 		forRequest,
 		forSystemTask: (): SystemTaskServices => {
-			const dataSources =
-				infrastructureServicesRegistry.dataSourcesFactory.withSystemPassport();
-			const blobStorage = infrastructureServicesRegistry.blobStorageService;
+			const { dataSourcesFactory, blobStorageService, listingDeletionConfig } =
+				infrastructureServicesRegistry;
+			const dataSources = dataSourcesFactory.withSystemPassport();
 			return {
-				Listing: Listing({ dataSources, blobStorage }),
+				Listing: Listing({ dataSources, blobStorage: blobStorageService, listingDeletionConfig }),
 				Conversation: Conversation(dataSources),
 			};
 		},
