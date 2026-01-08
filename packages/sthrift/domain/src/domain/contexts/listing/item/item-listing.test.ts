@@ -1095,8 +1095,8 @@ Scenario(
 				},
 			};
 			const listingProps = makeBaseProps({
-sharer: adminUserProps as any,
-});
+				sharer: adminUserProps as unknown as PersonalUserProps,
+			});
 			listing = new ItemListing(listingProps, passport);
 		});
 		When('I access the sharer property', () => {
