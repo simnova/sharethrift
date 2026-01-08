@@ -71,14 +71,14 @@ test.for(feature, ({ Background, Scenario }) => {
 					if (shouldFailListingDeletion) {
 						return Promise.reject(new Error('Failed to delete listing'));
 					}
-					return callback(mockListingRepo);
+					return Promise.resolve(callback(mockListingRepo));
 				}),
 			};
 
 			mockConversationUow = {
-				withScopedTransaction: vi.fn((callback) => {
-					return callback(mockConversationRepo);
-				}),
+				withScopedTransaction: vi.fn((callback) =>
+					Promise.resolve(callback(mockConversationRepo)),
+				),
 			};
 
 			mockDataSources = {
@@ -98,18 +98,14 @@ test.for(feature, ({ Background, Scenario }) => {
 					Listing: {
 						ItemListing: {
 							ItemListingReadRepo: {
-								getExpiredForDeletion: vi.fn().mockImplementation(() => {
-									return Promise.resolve(mockExpiredListings);
-								}),
+								getExpiredForDeletion: vi.fn().mockResolvedValue(mockExpiredListings),
 							},
 						},
 					},
 					Conversation: {
 						Conversation: {
 							ConversationReadRepo: {
-								getByListingId: vi.fn().mockImplementation(() => {
-									return Promise.resolve(mockConversations);
-								}),
+								getByListingId: vi.fn().mockResolvedValue(mockConversations),
 							},
 						},
 					},

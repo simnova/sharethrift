@@ -40,8 +40,6 @@ test.for(feature, ({ Background, Scenario }) => {
 		});
 
 		And('the conversation repository is available', () => {
-			let callCount = 0;
-
 			mockConversationRepo = {
 				get: vi.fn().mockImplementation(() => ({
 					requestDelete: vi.fn(),
@@ -49,13 +47,14 @@ test.for(feature, ({ Background, Scenario }) => {
 				save: vi.fn().mockResolvedValue(undefined),
 			};
 
+			let callCount = 0;
 			mockConversationUow = {
 				withScopedTransaction: vi.fn((callback) => {
 					callCount++;
 					if (shouldFailFirstConversation && callCount === 1) {
 						return Promise.reject(new Error('Failed to delete conversation'));
 					}
-					return callback(mockConversationRepo);
+					return Promise.resolve(callback(mockConversationRepo));
 				}),
 			};
 
@@ -71,9 +70,7 @@ test.for(feature, ({ Background, Scenario }) => {
 					Conversation: {
 						Conversation: {
 							ConversationReadRepo: {
-								getByListingId: vi.fn().mockImplementation(() => {
-									return Promise.resolve(mockConversations);
-								}),
+								getByListingId: vi.fn().mockResolvedValue(mockConversations),
 							},
 						},
 					},
