@@ -6,6 +6,8 @@ import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.ts';
+import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
 import type { ItemListingProps } from './item-listing.entity.ts';
 import { ItemListing } from './item-listing.ts';
 
@@ -42,6 +44,9 @@ function makePassport(
 		},
 		user: {
 			forPersonalUser: vi.fn(() => ({
+				determineIf: () => true,
+			})),
+			forAdminUser: vi.fn(() => ({
 				determineIf: () => true,
 			})),
 		},
@@ -1072,6 +1077,34 @@ Scenario(
 		});
 		Then('the expiresAt should be cleared', () => {
 			expect(listing.expiresAt).toBeUndefined();
+		});
+	});
+
+	Scenario('Getting sharer as AdminUser', ({ Given, When, Then }) => {
+		let adminSharer: AdminUser<AdminUserProps>;
+		Given('an ItemListing aggregate with an admin user sharer', () => {
+			passport = makePassport(true, true, true, true);
+			const adminUserProps: AdminUserProps = {
+				userType: 'admin-user',
+				id: 'admin-1',
+				isBlocked: false,
+				schemaVersion: '1.0.0',
+				profile: {
+					firstName: 'Admin',
+					lastName: 'User',
+				},
+			};
+			const listingProps = makeBaseProps({
+sharer: adminUserProps as any,
+});
+			listing = new ItemListing(listingProps, passport);
+		});
+		When('I access the sharer property', () => {
+			adminSharer = listing.sharer as AdminUser<AdminUserProps>;
+		});
+		Then('the sharer should be an AdminUser instance', () => {
+			expect(adminSharer).toBeInstanceOf(AdminUser);
+			expect(adminSharer.userType).toBe('admin-user');
 		});
 	});
 });

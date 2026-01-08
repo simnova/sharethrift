@@ -217,3 +217,8 @@ Feature: <AggregateRoot>ItemListing
     Given an ItemListing aggregate with permission to update item listing and expiresAt set
     When I set the expiresAt to undefined
     Then the expiresAt should be cleared
+
+  Scenario: Getting sharer as AdminUser
+    Given an ItemListing aggregate with an admin user sharer
+    When I access the sharer property
+    Then the sharer should be an AdminUser instance
