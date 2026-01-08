@@ -1,15 +1,15 @@
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
 import type { Domain } from '@sthrift/domain';
+import type { FilterQuery } from 'mongoose';
 import type { ModelsContext } from '../../../../models-context.ts';
-import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
+import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
 import type {
 	FindOneOptions,
 	FindOptions,
 	MongoDataSource,
 } from '../../mongo-data-source.ts';
-import { ReservationRequestConverter } from '../../../domain/reservation-request/reservation-request/reservation-request.domain-adapter.ts';
-import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import type { FilterQuery, PipelineStage } from 'mongoose';
-import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { ReservationRequestDataSourceImpl } from './reservation-request.data.ts';
 
 // Reservation state constants for filtering (inline per codebase patterns)
 const ACTIVE_STATES = ['Accepted', 'Requested'];
@@ -68,6 +68,13 @@ export interface ReservationRequestReadRepository {
 		listingId: string,
 		options?: FindOptions,
 	) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
+	queryOverlapByListingIdAndReservationPeriod: (params: {
+		listingId: string;
+		reservationPeriodStart: Date;
+		reservationPeriodEnd: Date;
+	}) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	>;
 }
@@ -191,44 +198,28 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
-		// Use aggregation pipeline to join listings and filter by sharerId
-		const pipeline: PipelineStage[] = [
-			{
-				$lookup: {
-					from: this.models.Listing.ItemListingModel.collection.name,
-					localField: 'listing',
-					foreignField: '_id',
-					as: 'listingDoc',
-				},
-			},
-			{ $unwind: '$listingDoc' },
-			{
-				$match: {
-					'listingDoc.sharer': new MongooseSeedwork.ObjectId(sharerId),
-				},
-			},
-		];
+		// First, find all listings owned by this sharer
+		const listingIds = await this.models.Listing.ItemListingModel.find({
+			sharer: new MongooseSeedwork.ObjectId(sharerId),
+		})
+			.select('_id')
+			.lean()
+			.exec();
 
-		// Apply additional options if provided (e.g., limit, sort)
-		if (options?.limit) {
-			pipeline.push({ $limit: options.limit } as PipelineStage);
-		}
-		if (options?.sort) {
-			pipeline.push({ $sort: options.sort } as PipelineStage);
+		// If no listings found, return empty array
+		if (listingIds.length === 0) {
+			return [];
 		}
 
-		const docs =
-			await this.models.ReservationRequest.ReservationRequest.aggregate(
-				pipeline,
-			).exec();
+		// Query reservation requests for those listings
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			listing: { $in: listingIds.map((l) => l._id) },
+		};
 
-		// Convert to domain entities
-		return docs.map((doc) =>
-			this.converter.toDomain(
-				doc as Models.ReservationRequest.ReservationRequest,
-				this.passport,
-			),
-		);
+		return await this.queryMany(filter, {
+			...options,
+			populateFields: PopulatedFields,
+		});
 	}
 
 	async getActiveByReserverIdAndListingId(
@@ -284,11 +275,27 @@ export class ReservationRequestReadRepositoryImpl
 		};
 		return await this.queryMany(filter, options);
 	}
+
+	async queryOverlapByListingIdAndReservationPeriod(params: {
+		listingId: string;
+		reservationPeriodStart: Date;
+		reservationPeriodEnd: Date;
+	}): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			listing: new MongooseSeedwork.ObjectId(params.listingId),
+			state: { $in: ACTIVE_STATES },
+			reservationPeriodStart: { $lt: params.reservationPeriodEnd },
+			reservationPeriodEnd: { $gt: params.reservationPeriodStart },
+		};
+		return await this.queryMany(filter);
+	}
 }
 
 export const getReservationRequestReadRepository = (
 	models: ModelsContext,
 	passport: Domain.Passport,
-) => {
+): ReservationRequestReadRepository => {
 	return new ReservationRequestReadRepositoryImpl(models, passport);
 };

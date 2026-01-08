@@ -24,8 +24,7 @@ function makeReservationRequestProps(overrides?: Partial<ReservationRequestProps
 		loadListing: async () => ({ id: 'test-listing-id' }),
 		reserver: { id: 'test-reserver-id' },
 		loadReserver: async () => ({ id: 'test-reserver-id' }),
-		closeRequestedBySharer: false,
-		closeRequestedByReserver: false,
+		closeRequestedBy: null,
 		...overrides,
 	};
 }
@@ -163,18 +162,15 @@ test.for(feature, ({ Background, Scenario }) => {
 		});
 	});
 
-	Scenario('Reservation request close flags should be booleans', ({ When, Then }) => {
+	Scenario('Reservation request closeRequestedBy should be nullable', ({ When, Then }) => {
 
-		When('I access the close request flags', () => {
+		When('I access the close request field', () => {
 			// Access the properties
 		});
 
-		Then('they should be booleans', () => {
+		Then('it should be null by default', () => {
 			const reservationProps: ReservationRequestProps = props;
-			expect(typeof reservationProps.closeRequestedBySharer).toBe('boolean');
-			expect(typeof reservationProps.closeRequestedByReserver).toBe('boolean');
-			expect(reservationProps.closeRequestedBySharer).toBe(false);
-			expect(reservationProps.closeRequestedByReserver).toBe(false);
+			expect(reservationProps.closeRequestedBy).toBe(null);
 		});
 	});
 });

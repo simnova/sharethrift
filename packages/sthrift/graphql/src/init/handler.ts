@@ -10,7 +10,7 @@ import type { GraphContext } from './context.ts';
 import { combinedSchema } from '../schema/builder/schema-builder.ts';
 import { applyMiddleware } from 'graphql-middleware';
 import depthLimit from 'graphql-depth-limit';
-
+ 
 // biome-ignore lint/complexity/useLiteralKeys: NODE_ENV is a standard environment variable
 const isProduction = process.env['NODE_ENV'] === 'production';
 const MAX_QUERY_DEPTH = 10;

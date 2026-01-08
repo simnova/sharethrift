@@ -14,14 +14,18 @@ import {
 import { expect, within } from 'storybook/test';
 
 const mockUserSarah: PersonalUser = {
+	__typename: 'PersonalUser',
 	id: '507f1f77bcf86cd799439099',
+	userIsAdmin: false,
 	userType: 'personal-user',
 	account: {
+		__typename: 'PersonalUserAccount',
 		accountType: 'verified-personal',
 
 		username: 'sarah_williams',
 		email: 'sarah.williams@example.com',
 		profile: {
+			__typename: 'PersonalUserAccountProfile',
 			firstName: 'Sarah',
 			lastName: 'Williams',
 			location: {
@@ -36,10 +40,14 @@ const mockUserSarah: PersonalUser = {
 };
 
 const mockUserAlex: PersonalUser = {
+	__typename: 'PersonalUser',
 	id: '507f1f77bcf86cd799439102',
+	userIsAdmin: false,
 	userType: 'personal-user',
 	account: {
+		__typename: 'PersonalUserAccount',
 		profile: {
+			__typename: 'PersonalUserAccountProfile',
 			firstName: 'Alex',
 			lastName: '',
 			location: {
@@ -57,6 +65,7 @@ const mockUserAlex: PersonalUser = {
 
 const mockTwoListings: ItemListing[] = [
 	{
+		__typename: 'ItemListing',
 		id: '64f7a9c2d1e5b97f3c9d0a41',
 		title: 'City Bike',
 		description:
@@ -72,6 +81,7 @@ const mockTwoListings: ItemListing[] = [
 		listingType: 'item-listing',
 	},
 	{
+		__typename: 'ItemListing',
 		id: '64f7a9c2d1e5b97f3c9d0a13',
 		title: 'Projector',
 		description: 'HD projector for movie nights and presentations.',
@@ -86,19 +96,6 @@ const mockTwoListings: ItemListing[] = [
 		listingType: 'item-listing',
 	},
 ];
-
-const userIsAdminMockRequest = (userId: string) => {
-	return {
-		request: {
-			query: UseUserIsAdminDocument,
-		},
-		result: {
-			data: {
-				currentUser: {id: userId, userIsAdmin: false },
-			},
-		},
-	};
-};
 
 const meta: Meta<typeof HomeRoutes> = {
 	title: 'Pages/Account/Profile',
@@ -123,6 +120,20 @@ export const DefaultView: Story = {
 			mocks: [
 				{
 					request: {
+						query: UseUserIsAdminDocument,
+					},
+					result: {
+						data: {
+							currentUser: {
+								id: mockUserSarah.id,
+								userIsAdmin: false,
+								__typename: 'PersonalUser',
+							},
+						},
+					},
+				},
+				{
+					request: {
 						query: HomeAccountProfileViewContainerCurrentUserDocument,
 					},
 					result: {
@@ -140,15 +151,15 @@ export const DefaultView: Story = {
 					result: {
 						data: {
 							myListingsAll: {
+								__typename: 'PaginatedMyListings',
 								items: mockTwoListings,
-								total: 2,
+								total: mockTwoListings.length,
 								page: 1,
 								pageSize: 100,
 							},
 						},
 					},
 				},
-				userIsAdminMockRequest(mockUserSarah.id),
 			],
 		},
 	},
@@ -158,6 +169,20 @@ export const NoListings: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
+				{
+					request: {
+						query: UseUserIsAdminDocument,
+					},
+					result: {
+						data: {
+							currentUser: {
+								id: mockUserAlex.id,
+								userIsAdmin: false,
+								__typename: 'PersonalUser',
+							},
+						},
+					},
+				},
 				{
 					request: {
 						query: HomeAccountProfileViewContainerCurrentUserDocument,
@@ -175,11 +200,16 @@ export const NoListings: Story = {
 					},
 					result: {
 						data: {
-							myListingsAll:  { items: [], total: 0, page: 1, pageSize: 100 },
+							myListingsAll: {
+								__typename: 'PaginatedMyListings',
+								items: [],
+								total: 0,
+								page: 1,
+								pageSize: 100,
+							},
 						},
 					},
 				},
-				userIsAdminMockRequest(mockUserAlex.id),
 			],
 		},
 	},

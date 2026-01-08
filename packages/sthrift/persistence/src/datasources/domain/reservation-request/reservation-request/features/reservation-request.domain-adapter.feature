@@ -23,17 +23,15 @@ And a ReservationRequestDomainAdapter wrapping the document
 		When I set the state to "ACCEPTED"
 		Then the state should be "ACCEPTED"
 
-	Scenario: Getting and setting closeRequestedBySharer
-		When I get the closeRequestedBySharer property
-		Then it should return a boolean value
-		When I set closeRequestedBySharer to true
-		Then closeRequestedBySharer should be true
+	Scenario: Getting and setting closeRequestedBy (SHARER)
+		When I get the closeRequestedBy property
+		Then it should return null by default
+		When I set closeRequestedBy to "SHARER"
+		Then closeRequestedBy should be "SHARER"
 
-	Scenario: Getting and setting closeRequestedByReserver
-		When I get the closeRequestedByReserver property
-		Then it should return a boolean value
-		When I set closeRequestedByReserver to true
-		Then closeRequestedByReserver should be true
+	Scenario: Getting and setting closeRequestedBy (RESERVER)
+		When I set closeRequestedBy to "RESERVER"
+		Then closeRequestedBy should be "RESERVER"
 
 	Scenario: Setting reservationPeriodStart
 		Given a new start date

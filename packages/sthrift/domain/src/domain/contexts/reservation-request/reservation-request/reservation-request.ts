@@ -1,6 +1,7 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ReservationRequestVisa } from '../reservation-request.visa.ts';
+import { ReservationRequestAcceptedEvent } from './events/reservation-request-accepted.event.ts';
 import { ReservationRequestStates } from './reservation-request.value-objects.ts';
 import * as ValueObjects from './reservation-request.value-objects.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
@@ -199,10 +200,12 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		this.props.reserver = value;
 	}
 
-	get closeRequestedBySharer(): boolean {
-		return this.props.closeRequestedBySharer;
+	get closeRequestedBy(): ValueObjects.ReservationRequestCloseRequestedBy | null {
+		return this.props.closeRequestedBy;
 	}
-	set closeRequestedBySharer(value: boolean) {
+	set closeRequestedBy(
+		value: ValueObjects.ReservationRequestCloseRequestedBy | null,
+	) {
 		if (
 			!this.visa.determineIf(
 				(domainPermissions) => domainPermissions.canCloseRequest,
@@ -217,28 +220,13 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			throw new Error('Cannot close reservation in current state');
 		}
 
-		this.props.closeRequestedBySharer = value;
-	}
-
-	get closeRequestedByReserver(): boolean {
-		return this.props.closeRequestedByReserver;
-	}
-	set closeRequestedByReserver(value: boolean) {
-		if (
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canCloseRequest,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to request close for this reservation request',
-			);
+		if (value === null) {
+			this.props.closeRequestedBy = null;
+			return;
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
-			throw new Error('Cannot close reservation in current state');
-		}
-
-		this.props.closeRequestedByReserver = value;
+		this.props.closeRequestedBy =
+			new ValueObjects.ReservationRequestCloseRequestedByValue(value).valueOf() as ValueObjects.ReservationRequestCloseRequestedBy;
 	}
 
 	//#endregion Properties
@@ -266,9 +254,19 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			throw new Error('Can only accept requested reservations');
 		}
 
+		const now = new Date();
 		this.props.state = new ValueObjects.ReservationRequestStateValue(
 			ReservationRequestStates.ACCEPTED,
 		).valueOf();
+
+		// Emit domain event for automatic conversation creation
+		this.addDomainEvent(ReservationRequestAcceptedEvent, {
+			reservationRequestId: this.id,
+			listingId: this.props.listing.id,
+			sharerId: this.props.listing.sharer.id,
+			reserverId: this.props.reserver.id,
+			acceptedAt: now,
+		});
 	}
 
 	private reject(): void {
@@ -329,11 +327,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			throw new Error('Can only close accepted reservations');
 		}
 
-		if (
-			!(
-				this.props.closeRequestedBySharer || this.props.closeRequestedByReserver
-			)
-		) {
+		if (this.props.closeRequestedBy === null) {
 			throw new Error(
 				'Can only close reservation requests if at least one user requested it',
 			);

@@ -45,6 +45,11 @@ Feature: GraphQL Resolver Helper Functions
     When PopulateUserFromField resolver is called
     Then it should return the original field value
 
+  Scenario: PopulateUserFromField returns original object when lookups fail
+    Given both AdminUser and PersonalUser lookups return null
+    When PopulateUserFromField resolver is called
+    Then it should fall back to the original field object
+
   Scenario: PopulateItemListingFromField resolves listing by ID
     Given a parent object with a valid listing ID field
     When PopulateItemListingFromField resolver is called
@@ -54,6 +59,11 @@ Feature: GraphQL Resolver Helper Functions
     Given a parent object with an invalid listing ID
     When PopulateItemListingFromField resolver is called
     Then it should return the original field value
+
+  Scenario: PopulateItemListingFromField skips lookup for non-ObjectId shapes
+    Given listingId has an id field that is not a valid ObjectId
+    When PopulateItemListingFromField resolver is called
+    Then it should return the original listing object without querying
 
   Scenario: getRequestedFieldPaths extracts field paths from selection
     Given a GraphQL resolve info with field selections

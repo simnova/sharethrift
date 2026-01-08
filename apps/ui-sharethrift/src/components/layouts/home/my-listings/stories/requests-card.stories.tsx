@@ -7,7 +7,7 @@ const MOCK_REQUEST = {
 	image: '/assets/item-images/projector.png',
 	requestedOn: '2025-12-23',
 	reservationPeriod: '2020-11-08 - 2020-12-23',
-	status: 'Pending',
+	status: 'Requested',
 	requestedBy: 'John Doe',
 };
 
@@ -16,12 +16,43 @@ const meta: Meta<typeof RequestsCard> = {
 	component: RequestsCard,
 	args: {
 		listing: MOCK_REQUEST,
-		onAction: (action: string, id: string) =>
-			console.log('Action:', action, 'Request ID:', id),
+		onAccept: async (id: string) => console.log('Accept:', id),
+		onReject: (id: string) => console.log('Reject:', id),
+		onClose: (id: string) => console.log('Close:', id),
+		onDelete: (id: string) => console.log('Delete:', id),
+		onMessage: (id: string) => console.log('Message:', id),
 	},
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {};
+export const Requested: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Requested' },
+	},
+};
+
+export const Accepted: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Accepted' },
+	},
+};
+
+export const Rejected: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Rejected' },
+	},
+};
+
+export const Closed: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Closed' },
+	},
+};
+
+export const Expired: Story = {
+	args: {
+		listing: { ...MOCK_REQUEST, status: 'Expired' },
+	},
+};

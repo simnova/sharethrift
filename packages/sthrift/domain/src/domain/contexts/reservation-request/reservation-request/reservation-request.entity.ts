@@ -1,6 +1,7 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import type { UserEntityReference } from '../../user/index.ts';
+import type { ReservationRequestCloseRequestedBy } from './reservation-request.value-objects.ts';
 
 export interface ReservationRequestProps
 	extends DomainSeedwork.DomainEntityProps {
@@ -14,8 +15,7 @@ export interface ReservationRequestProps
 	loadListing(): Promise<ItemListingEntityReference>;
 	reserver: Readonly<UserEntityReference>;
 	loadReserver(): Promise<UserEntityReference>;
-	closeRequestedBySharer: boolean;
-	closeRequestedByReserver: boolean;
+	closeRequestedBy: ReservationRequestCloseRequestedBy | null;
 }
 
 export interface ReservationRequestEntityReference

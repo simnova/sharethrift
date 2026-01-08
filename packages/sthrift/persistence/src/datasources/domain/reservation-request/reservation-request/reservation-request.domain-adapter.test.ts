@@ -152,43 +152,37 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Getting and setting closeRequestedBySharer', ({ When, Then }) => {
-		let value: boolean;
+	Scenario('Getting and setting closeRequestedBy (SHARER)', ({ When, Then }) => {
+		let value: string | null;
 
-		When('I get the closeRequestedBySharer property', () => {
-			value = adapter.closeRequestedBySharer;
+		When('I get the closeRequestedBy property', () => {
+			value = adapter.closeRequestedBy;
 		});
 
-		Then('it should return a boolean value', () => {
-			expect(typeof value).toBe('boolean');
+		Then('it should return null by default', () => {
+			expect(value).toBe(null);
 		});
 
-		When('I set closeRequestedBySharer to true', () => {
-			adapter.closeRequestedBySharer = true;
+		When('I set closeRequestedBy to "SHARER"', () => {
+			adapter.closeRequestedBy = 'SHARER';
 		});
 
-		Then('closeRequestedBySharer should be true', () => {
-			expect(adapter.closeRequestedBySharer).toBe(true);
+		Then('closeRequestedBy should be "SHARER"', () => {
+			expect(adapter.closeRequestedBy).toBe('SHARER');
+			expect(doc.closeRequestedBySharer).toBe(true);
+			expect(doc.closeRequestedByReserver).toBe(false);
 		});
 	});
 
-	Scenario('Getting and setting closeRequestedByReserver', ({ When, Then }) => {
-		let value: boolean;
-
-		When('I get the closeRequestedByReserver property', () => {
-			value = adapter.closeRequestedByReserver;
+	Scenario('Getting and setting closeRequestedBy (RESERVER)', ({ When, Then }) => {
+		When('I set closeRequestedBy to "RESERVER"', () => {
+			adapter.closeRequestedBy = 'RESERVER';
 		});
 
-		Then('it should return a boolean value', () => {
-			expect(typeof value).toBe('boolean');
-		});
-
-		When('I set closeRequestedByReserver to true', () => {
-			adapter.closeRequestedByReserver = true;
-		});
-
-		Then('closeRequestedByReserver should be true', () => {
-			expect(adapter.closeRequestedByReserver).toBe(true);
+		Then('closeRequestedBy should be "RESERVER"', () => {
+			expect(adapter.closeRequestedBy).toBe('RESERVER');
+			expect(doc.closeRequestedBySharer).toBe(false);
+			expect(doc.closeRequestedByReserver).toBe(true);
 		});
 	});
 

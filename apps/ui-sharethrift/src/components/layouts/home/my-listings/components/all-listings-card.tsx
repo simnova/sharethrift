@@ -171,7 +171,7 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 								onClick={() => onViewPendingRequests(listing.id)}
 							>
 								<span style={{ display: 'flex', alignItems: 'center' }}>
-									View Pending Requests
+									View Requests
 									<Badge
 										count={0}
 										showZero

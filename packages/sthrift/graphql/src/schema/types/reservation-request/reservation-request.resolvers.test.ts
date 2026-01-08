@@ -55,8 +55,7 @@ function createMockReservationRequest(
 		} as PersonalUserEntity,
 		loadListing: vi.fn(),
 		loadReserver: vi.fn(),
-		closeRequestedBySharer: false,
-		closeRequestedByReserver: false,
+		closeRequestedBy: null,
 		...overrides,
 	};
 	return baseRequest;
@@ -275,12 +274,10 @@ test.for(feature, ({ Scenario }) => {
 
 	Scenario(
 		'Querying reservation requests for listings owned by sharer',
-		({ Given, And, When, Then }) => {
+		({ Given, When, Then }) => {
 			const sharerId = 'sharer-123';
-			Given('a valid sharerId', () => {
+			Given('a valid sharerId and reservation requests', () => {
 				context = makeMockGraphContext();
-			});
-			And('valid pagination arguments (page, pageSize)', () => {
 				const mockRequests = [
 					createMockReservationRequest({
 						id: '1',
@@ -303,43 +300,31 @@ test.for(feature, ({ Scenario }) => {
 				const resolver = reservationRequestResolvers.Query
 					?.myListingsRequests as TestResolver<{
 					sharerId: string;
-					page: number;
-					pageSize: number;
 				}>;
 				result = await resolver(
 					{},
-					{ sharerId, page: 1, pageSize: 10 },
+					{ sharerId },
 					context,
 					{} as never,
 				);
 			});
 			Then(
-				'it should call ReservationRequest.queryListingRequestsBySharerId with the provided sharerId',
-				() => {
-					expect(
-						context.applicationServices.ReservationRequest.ReservationRequest
-							.queryListingRequestsBySharerId,
-					).toHaveBeenCalledWith({ sharerId });
-				},
-			);
-			And(
-				'it should paginate and map the results using paginateAndFilterListingRequests',
+				'it should return raw domain objects without UI transformation',
 				() => {
 					expect(result).toBeDefined();
+					expect(Array.isArray(result)).toBe(true);
+					const requests = result as ReservationRequestEntity[];
+					expect(requests).toHaveLength(1);
+					expect(requests[0]?.id).toBe('1');
+					expect(requests[0]?.state).toBe('Requested');
 				},
 			);
-			And('it should return items, total, page, and pageSize', () => {
-				expect(result).toHaveProperty('items');
-				expect(result).toHaveProperty('total');
-				expect(result).toHaveProperty('page');
-				expect(result).toHaveProperty('pageSize');
-			});
 		},
 	);
 
 	Scenario(
-		'Filtering myListingsRequests by search text',
-		({ Given, And, When, Then }) => {
+		'Returning all reservation requests without filtering',
+		({ Given, When, Then }) => {
 			Given('reservation requests for a sharer', () => {
 				context = makeMockGraphContext();
 				const mockRequests = [
@@ -363,45 +348,37 @@ test.for(feature, ({ Scenario }) => {
 						.queryListingRequestsBySharerId,
 				).mockResolvedValue(mockRequests);
 			});
-			And('a searchText "camera"', () => {
-				// Searchtext will be used in the When step
-			});
 			When('the myListingsRequests query is executed', async () => {
 				const resolver = reservationRequestResolvers.Query
 					?.myListingsRequests as TestResolver<{
 					sharerId: string;
-					page: number;
-					pageSize: number;
-					searchText: string;
 				}>;
 				result = await resolver(
 					{},
 					{
 						sharerId: 'sharer-123',
-						page: 1,
-						pageSize: 10,
-						searchText: 'camera',
 					},
 					context,
 					{} as never,
 				);
 			});
 			Then(
-				'only listings whose titles include "camera" should be returned',
+				'all reservation requests should be returned',
 				() => {
-					const items = (result as { items: { title: string }[] }).items;
-					expect(items).toHaveLength(1);
-					expect(items[0]?.title).toBe('Camera');
+					const requests = result as ReservationRequestEntity[];
+					expect(requests).toHaveLength(2);
+					expect(requests[0]?.listing?.title).toBe('Camera');
+					expect(requests[1]?.listing?.title).toBe('Drone');
 				},
 			);
 		},
 	);
 
 	Scenario(
-		'Filtering myListingsRequests by status',
-		({ Given, And, When, Then }) => {
+		'Returning mixed status reservation requests',
+		({ Given, When, Then }) => {
 			Given(
-				'reservation requests with mixed statuses ["Pending", "Approved"]',
+				'reservation requests with mixed statuses',
 				() => {
 					context = makeMockGraphContext();
 					const mockRequests = [
@@ -430,33 +407,25 @@ test.for(feature, ({ Scenario }) => {
 					).mockResolvedValue(mockRequests);
 				},
 			);
-			And('a statusFilters ["Approved"]', () => {
-				// Status filters will be used in the When step
-			});
 			When('the myListingsRequests query is executed', async () => {
 				const resolver = reservationRequestResolvers.Query
 					?.myListingsRequests as unknown as TestResolver<{
 					sharerId: string;
-					page: number;
-					pageSize: number;
-					statusFilters: string[];
 				}>;
 				result = await resolver(
 					{},
 					{
 						sharerId: 'sharer-123',
-						page: 1,
-						pageSize: 10,
-						statusFilters: ['Accepted'],
 					},
 					context,
 					{} as never,
 				);
 			});
-			Then('only requests with status "Approved" should be included', () => {
-				const items = (result as { items: { status: string }[] }).items;
-				expect(items).toHaveLength(1);
-				expect(items[0]?.status).toBe('Accepted');
+			Then('all requests should be returned with their domain state', () => {
+				const requests = result as ReservationRequestEntity[];
+				expect(requests).toHaveLength(2);
+				expect(requests[0]?.state).toBe('Accepted');
+				expect(requests[1]?.state).toBe('Requested');
 			});
 		},
 	);
@@ -807,8 +776,8 @@ test.for(feature, ({ Scenario }) => {
 	);
 
 	Scenario(
-		'Sorting myListingsRequests by requestedOn descending',
-		({ Given, And, When, Then }) => {
+		'Returning reservation requests with different timestamps',
+		({ Given, When, Then }) => {
 			Given('reservation requests with varying createdAt timestamps', () => {
 				context = makeMockGraphContext();
 				const mockRequests = [
@@ -839,37 +808,28 @@ test.for(feature, ({ Scenario }) => {
 						.queryListingRequestsBySharerId,
 				).mockResolvedValue(mockRequests);
 			});
-			And('sorter field "requestedOn" with order "descend"', () => {
-				// Sorter will be used in the When step
-			});
 			When('the myListingsRequests query is executed', async () => {
 				const resolver = reservationRequestResolvers.Query
 					?.myListingsRequests as TestResolver<{
 					sharerId: string;
-					page: number;
-					pageSize: number;
-					sorter?: { field: string; order: 'ascend' | 'descend' };
 				}>;
 				result = await resolver(
 					{},
 					{
 						sharerId: 'sharer-123',
-						page: 1,
-						pageSize: 10,
-						sorter: { field: 'requestedOn', order: 'descend' },
 					},
 					context,
 					{} as never,
 				);
 			});
 			Then(
-				'results should be sorted by requestedOn in descending order',
+				'all requests should be returned in their original order',
 				() => {
-					const items = (result as { items: { requestedOn: string }[] }).items;
-					expect(items.length).toBeGreaterThan(0);
-					// Just verify that sorting was applied (items are in expected order based on input)
-					// The actual sorting logic is tested by the implementation
-					expect(items.length).toBe(3);
+					const requests = result as ReservationRequestEntity[];
+					expect(requests).toHaveLength(3);
+					expect(requests[0]?.id).toBe('1');
+					expect(requests[1]?.id).toBe('2');
+					expect(requests[2]?.id).toBe('3');
 				},
 			);
 		},
@@ -955,11 +915,9 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
-	Scenario('Mapping listing request fields', ({ Given, When, Then, And }) => {
-		// This is tested implicitly through other scenarios that use myListingsRequests
-		// as they all verify the mapping occurs correctly
+	Scenario('Returning domain reservation request objects', ({ Given, When, Then }) => {
 		Given(
-			'a ListingRequestDomainShape object with title, state, and reserver username',
+			'a reservation request with complete domain properties',
 			() => {
 				context = makeMockGraphContext();
 				const mockRequests = [
@@ -981,63 +939,35 @@ test.for(feature, ({ Scenario }) => {
 				).mockResolvedValue(mockRequests);
 			},
 		);
-		When('paginateAndFilterListingRequests is called', async () => {
+		When('the myListingsRequests query is executed', async () => {
 			const resolver = reservationRequestResolvers.Query
 				?.myListingsRequests as TestResolver<{
 				sharerId: string;
-				page: number;
-				pageSize: number;
 			}>;
 			result = await resolver(
 				{},
-				{ sharerId: 'sharer-123', page: 1, pageSize: 10 },
+				{ sharerId: 'sharer-123' },
 				context,
 				{} as never,
 			);
 		});
 		Then(
-			'it should map title, requestedBy, requestedOn, reservationPeriod, and status into ListingRequestUiShape',
+			'it should return domain objects with all properties',
 			() => {
-				const items = (
-					result as {
-						items: {
-							title: string;
-							requestedBy: string;
-							requestedOn: string;
-							reservationPeriod: string;
-							status: string;
-						}[];
-					}
-				).items;
-				expect(items[0]).toHaveProperty('title');
-				expect(items[0]).toHaveProperty('requestedBy');
-				expect(items[0]).toHaveProperty('requestedOn');
-				expect(items[0]).toHaveProperty('reservationPeriod');
-				expect(items[0]).toHaveProperty('status');
-			},
-		);
-		And(
-			"missing fields should default to 'Unknown', '@unknown', or 'Pending' as appropriate",
-			() => {
-				// Test with missing fields
-				const items = (
-					result as {
-						items: {
-							title: string;
-							requestedBy: string;
-							status: string;
-						}[];
-					}
-				).items;
-				expect(items[0]?.title).toBe('Test Item');
-				expect(items[0]?.requestedBy).toBe('@testuser');
-				expect(items[0]?.status).toBe('Requested');
+				const requests = result as ReservationRequestEntity[];
+				expect(requests[0]).toHaveProperty('id');
+				expect(requests[0]).toHaveProperty('state');
+				expect(requests[0]).toHaveProperty('createdAt');
+				expect(requests[0]).toHaveProperty('reservationPeriodStart');
+				expect(requests[0]).toHaveProperty('reservationPeriodEnd');
+				expect(requests[0]).toHaveProperty('listing');
+				expect(requests[0]).toHaveProperty('reserver');
 			},
 		);
 	});
 
-	Scenario('Paginating listing requests', ({ Given, When, Then }) => {
-		Given('25 listing requests and a pageSize of 10', () => {
+	Scenario('Returning all listing requests', ({ Given, When, Then }) => {
+		Given('25 listing requests', () => {
 			context = makeMockGraphContext();
 			const mockRequests = Array.from({ length: 25 }, (_, i) =>
 				createMockReservationRequest({
@@ -1055,40 +985,30 @@ test.for(feature, ({ Scenario }) => {
 					.queryListingRequestsBySharerId,
 			).mockResolvedValue(mockRequests);
 		});
-		When('paginateAndFilterListingRequests is called for page 2', async () => {
+		When('the myListingsRequests query is executed', async () => {
 			const resolver = reservationRequestResolvers.Query
 				?.myListingsRequests as TestResolver<{
 				sharerId: string;
-				page: number;
-				pageSize: number;
 			}>;
 			result = await resolver(
 				{},
-				{ sharerId: 'sharer-123', page: 2, pageSize: 10 },
+				{ sharerId: 'sharer-123' },
 				context,
 				{} as never,
 			);
 		});
 		Then(
-			'it should return 10 items starting from index 10 and total 25',
+			'it should return all 25 requests',
 			() => {
-				const paginatedResult = result as {
-					items: unknown[];
-					total: number;
-					page: number;
-					pageSize: number;
-				};
-				expect(paginatedResult.items.length).toBe(10);
-				expect(paginatedResult.total).toBe(25);
-				expect(paginatedResult.page).toBe(2);
-				expect(paginatedResult.pageSize).toBe(10);
+				const requests = result as ReservationRequestEntity[];
+				expect(requests).toHaveLength(25);
 			},
 		);
 	});
 
 	Scenario(
-		'Sorting listing requests by title ascending',
-		({ Given, And, When, Then }) => {
+		'Returning listing requests with different titles',
+		({ Given, When, Then }) => {
 			Given('multiple listing requests with varying titles', () => {
 				context = makeMockGraphContext();
 				const mockRequests = [
@@ -1119,38 +1039,172 @@ test.for(feature, ({ Scenario }) => {
 						.queryListingRequestsBySharerId,
 				).mockResolvedValue(mockRequests);
 			});
-			And('sorter field "title" with order "ascend"', () => {
-				// Sorter will be used in the When step
-			});
-			When('paginateAndFilterListingRequests is called', async () => {
+			When('the myListingsRequests query is executed', async () => {
 				const resolver = reservationRequestResolvers.Query
 					?.myListingsRequests as TestResolver<{
 					sharerId: string;
-					page: number;
-					pageSize: number;
-					sorter?: { field: string; order: 'ascend' | 'descend' };
 				}>;
 				result = await resolver(
 					{},
 					{
 						sharerId: 'sharer-123',
-						page: 1,
-						pageSize: 10,
-						sorter: { field: 'title', order: 'ascend' },
 					},
 					context,
 					{} as never,
 				);
 			});
-			Then('the results should be sorted alphabetically by title', () => {
-				const items = (result as { items: { title: string }[] }).items;
-				expect(items.length).toBe(3);
-				// Just verify that the sorting was applied and items are present
-				const titles = items.map((item) => item.title);
-				expect(titles).toContain('Apple Drone');
-				expect(titles).toContain('Zebra Camera');
-				expect(titles).toContain('Microphone Beta');
+			Then('all requests should be returned in their original order', () => {
+				const requests = result as ReservationRequestEntity[];
+				expect(requests).toHaveLength(3);
+				expect(requests[0]?.listing.title).toBe('Zebra Camera');
+				expect(requests[1]?.listing.title).toBe('Apple Drone');
+				expect(requests[2]?.listing.title).toBe('Microphone Beta');
 			});
+		},
+	);
+
+	Scenario(
+		'Accepting a reservation request successfully',
+		({ Given, And, When, Then }) => {
+			const requestId = 'request-123';
+			const updatedRequest = createMockReservationRequest({
+				id: requestId,
+				state: 'Accepted',
+			});
+
+			// Mock the sharer
+			const mockSharer = {
+				id: 'user-1',
+			};
+
+			// Mock the full listing with sharer populated
+			const mockFullListing = {
+				id: 'listing-1',
+				title: 'Test Listing',
+				sharer: mockSharer,
+			};
+
+			// Mock the listing reference in the reservation request
+			const mockListingRef = {
+				id: 'listing-1',
+			};
+			
+			// Mock the authenticated user
+			const mockAuthUser = {
+				id: 'user-1',
+				email: 'sharer@example.com',
+			};
+
+			// Mock the reservation request with listing reference
+			const mockRequest = {
+				...createMockReservationRequest({
+					id: requestId,
+					state: 'Requested',
+				}),
+				listing: mockListingRef,
+			};
+
+			Given(
+				'a verified user with a valid verifiedJwt containing email',
+				() => {
+					context = makeMockGraphContext({
+						applicationServices: {
+							ReservationRequest: {
+								ReservationRequest: {
+									queryById: vi.fn().mockResolvedValue(mockRequest),
+									update: vi.fn().mockResolvedValue(updatedRequest),
+								},
+							},
+							Listing: {
+								ItemListing: {
+									queryById: vi.fn().mockResolvedValue(mockFullListing),
+								},
+							},
+							User: {
+								PersonalUser: {
+									queryByEmail: vi.fn().mockResolvedValue(mockAuthUser),
+								},
+							},
+							verifiedUser: {
+								verifiedJwt: {
+									sub: 'user-1',
+									email: 'sharer@example.com',
+								},
+							},
+						} as unknown as GraphContext['applicationServices'],
+					});
+				},
+			);
+
+			And('a valid reservation request id', () => {
+				// requestId is already set
+			});
+
+			When('the acceptReservationRequest mutation is executed', async () => {
+				const resolver = reservationRequestResolvers.Mutation
+					?.acceptReservationRequest as TestResolver<{
+					input: { id: string };
+				}>;
+				result = await resolver(
+					{},
+					{ input: { id: requestId } },
+					context,
+					{} as never,
+				);
+			});
+
+			Then(
+				'it should call ReservationRequest.update with id and state "Accepted"',
+				() => {
+					expect(
+						context.applicationServices.ReservationRequest.ReservationRequest
+							.update,
+					).toHaveBeenCalledWith({
+						id: requestId,
+						state: 'Accepted',
+					});
+				},
+			);
+
+			And('it should return the accepted reservation request', () => {
+				expect(result).toEqual(updatedRequest);
+				expect((result as ReservationRequestEntity).state).toBe('Accepted');
+			});
+		},
+	);
+
+	Scenario(
+		'Accepting a reservation request without authentication',
+		({ Given, When, Then }) => {
+			Given('a user without a verifiedJwt in their context', () => {
+				context = makeMockGraphContext({
+					applicationServices: {
+						verifiedUser: undefined,
+					} as unknown as GraphContext['applicationServices'],
+				});
+			});
+
+			When('the acceptReservationRequest mutation is executed', async () => {
+				const resolver = reservationRequestResolvers.Mutation
+					?.acceptReservationRequest as TestResolver<{
+					input: { id: string };
+				}>;
+				try {
+					await resolver({}, { input: { id: 'request-123' } }, context, {} as never);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+
+			Then(
+				'it should throw a "User must be authenticated to accept a reservation request" error',
+				() => {
+					expect(error).toBeDefined();
+					expect(error?.message).toBe(
+						'User must be authenticated to accept a reservation request',
+					);
+				},
+			);
 		},
 	);
 });

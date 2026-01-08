@@ -1,17 +1,127 @@
-import { Card, Tag, Space } from 'antd';
+import { Button, Card, Popconfirm, Space, Tag } from 'antd';
 import styles from './all-listings-card.module.css';
-import type { ListingRequestData } from './my-listings-dashboard.types.ts';
-import {
-	getStatusTagClass,
-	getActionButtons,
-} from './requests-status-helpers.tsx';
+import type { ListingRequestData } from './my-listings-dashboard.types.tsx';
 
 interface RequestsCardProps {
 	listing: ListingRequestData;
-	onAction: (action: string, listingId: string) => void;
+	onAccept: (requestId: string) => Promise<void>;
+	onReject: (requestId: string) => void;
+	onClose: (requestId: string) => void;
+	onDelete: (requestId: string) => void;
+	onMessage: (requestId: string) => void;
 }
 
-const RequestsCard: React.FC<RequestsCardProps> = ({ listing, onAction }) => {
+const RequestsCard: React.FC<RequestsCardProps> = ({
+	listing,
+	onAccept,
+	onReject,
+	onClose,
+	onDelete,
+	onMessage,
+}) => {
+	const statusClassMap: Record<string, string> = {
+		Accepted: 'requestAcceptedTag',
+		Rejected: 'requestRejectedTag',
+		Closed: 'expiredTag',
+		Pending: 'pendingTag',
+		Requested: 'pendingTag',
+		Closing: 'closingTag',
+		Expired: 'expiredTag',
+	};
+
+	const statusClass = statusClassMap[listing.status] ?? '';
+
+	let actions: string[] = [];
+	switch (listing.status) {
+		case 'Pending':
+		case 'Requested':
+			actions = ['accept', 'reject'];
+			break;
+		case 'Accepted':
+			actions = ['close', 'message'];
+			break;
+		case 'Closed':
+			actions = ['message'];
+			break;
+		case 'Rejected':
+		case 'Expired':
+		case 'Cancelled':
+			actions = ['delete'];
+			break;
+	}
+
+	const actionButtons = actions.map((action) => {
+		if (action === 'accept') {
+			return (
+				<Button
+					key="accept"
+					type="link"
+					size="small"
+					onClick={() => onAccept(listing.id)}
+				>
+					Accept
+				</Button>
+			);
+		}
+		if (action === 'reject') {
+			return (
+				<Button
+					key="reject"
+					type="link"
+					size="small"
+					onClick={() => onReject(listing.id)}
+				>
+					Reject
+				</Button>
+			);
+		}
+		if (action === 'close') {
+			return (
+				<Popconfirm
+					key="close"
+					title="Close this request?"
+					description="Are you sure you want to close this request?"
+					onConfirm={() => onClose(listing.id)}
+					okText="Yes"
+					cancelText="No"
+				>
+					<Button type="link" size="small">
+						Close
+					</Button>
+				</Popconfirm>
+			);
+		}
+		if (action === 'message') {
+			return (
+				<Button
+					key="message"
+					type="link"
+					size="small"
+					onClick={() => onMessage(listing.id)}
+				>
+					Message
+				</Button>
+			);
+		}
+		if (action === 'delete') {
+			return (
+				<Popconfirm
+					key="delete"
+					title="Delete this request?"
+					description="Are you sure you want to delete this request? This action cannot be undone."
+					onConfirm={() => onDelete(listing.id)}
+					okText="Yes"
+					cancelText="No"
+				>
+					<Button type="link" size="small" danger>
+						Delete
+					</Button>
+				</Popconfirm>
+			);
+		}
+		return null;
+	});
+
 	return (
 		<Card
 			className={styles['listingCard']}
@@ -26,7 +136,7 @@ const RequestsCard: React.FC<RequestsCardProps> = ({ listing, onAction }) => {
 							className={styles['listingImage']}
 						/>
 						<div className={styles['statusTagOverlay']}>
-							<Tag className={getStatusTagClass(listing.status)}>
+							<Tag className={statusClass}>
 								{listing.status}
 							</Tag>
 						</div>
@@ -41,7 +151,7 @@ const RequestsCard: React.FC<RequestsCardProps> = ({ listing, onAction }) => {
 						<div>{listing.reservationPeriod}</div>
 					</div>
 					<div className={styles['cardActions']}>
-						<Space>{getActionButtons(listing, onAction)}</Space>
+						<Space>{actionButtons}</Space>
 					</div>
 				</div>
 			</div>

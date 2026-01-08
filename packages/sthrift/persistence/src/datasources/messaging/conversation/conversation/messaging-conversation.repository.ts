@@ -8,6 +8,9 @@ export interface MessagingConversationRepository {
 	) => Promise<
 		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
 	>;
+	) => Promise<
+		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
+	>;
 
 	sendMessage: (
 		conversation: Domain.Contexts.Conversation.Conversation.ConversationEntityReference,
@@ -26,6 +29,9 @@ export interface MessagingConversationRepository {
 export class MessagingConversationRepositoryImpl
 	implements MessagingConversationRepository
 {
+export class MessagingConversationRepositoryImpl
+	implements MessagingConversationRepository
+{
 	private readonly messagingService: MessagingService;
 
 	constructor(messagingService: MessagingService) {
@@ -34,6 +40,9 @@ export class MessagingConversationRepositoryImpl
 
 	async getMessages(
 		conversationId: string,
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
+	> {
 	): Promise<
 		Domain.Contexts.Conversation.Conversation.MessageEntityReference[]
 	> {
@@ -88,10 +97,13 @@ export class MessagingConversationRepositoryImpl
 		} catch (error: unknown) {
 			const errorMessage =
 				error instanceof Error ? error.message : 'Unknown error';
-			console.error('Error deleting conversation from messaging service:', {
+			console.error(
+				'Error deleting conversation from messaging service:',
+				{
 				conversationId,
 				errorMessage,
-			});
+			},
+			);
 			throw error;
 		}
 	}
@@ -105,13 +117,13 @@ export class MessagingConversationRepositoryImpl
 				displayName,
 				uniqueIdentifier,
 			);
-			const result: { id: string; displayName?: string } = {
-				id: conversation.id,
-			};
 			if (conversation.displayName) {
-				result.displayName = conversation.displayName;
+				return {
+					id: conversation.id,
+					displayName: conversation.displayName,
+				};
 			}
-			return result;
+			return { id: conversation.id };
 		} catch (error: unknown) {
 			const errorMessage =
 				error instanceof Error ? error.message : 'Unknown error';

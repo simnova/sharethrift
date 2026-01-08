@@ -1,13 +1,9 @@
-import { Input, Checkbox, Image, Tag } from 'antd';
-import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
-import type { TableProps } from 'antd';
+import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-components';
-import { RequestsCard } from './requests-card.tsx';
+import type { TableProps } from 'antd';
+import { Button, Checkbox, Image, Input, Tag } from 'antd';
 import type { ListingRequestData } from './my-listings-dashboard.types.tsx';
-import {
-	getStatusTagClass,
-	getActionButtons,
-} from './requests-status-helpers.tsx';
+import { RequestsCard } from './requests-card.tsx';
 
 const { Search } = Input;
 
@@ -24,18 +20,30 @@ interface RequestsTableProps {
 	onStatusFilter: (checkedValues: string[]) => void;
 	onTableChange: TableProps<ListingRequestData>['onChange'];
 	onPageChange: (page: number) => void;
-	onAction: (action: string, requestId: string) => void;
+	onAccept: (requestId: string) => Promise<void>;
+	onReject: (requestId: string) => void;
+	onClose: (requestId: string) => void;
+	onDelete: (requestId: string) => void;
+	onMessage: (requestId: string) => void;
 }
 
 const REQUEST_STATUS_OPTIONS = [
+	{ label: 'Requested', value: 'Requested' },
 	{ label: 'Accepted', value: 'Accepted' },
 	{ label: 'Rejected', value: 'Rejected' },
 	{ label: 'Closed', value: 'Closed' },
-	{ label: 'Pending', value: 'Pending' },
-	{ label: 'Closing', value: 'Closing' },
+	{ label: 'Expired', value: 'Expired' },
 ];
 
-// getStatusTagClass and getActionButtons moved to requests-status-helpers.tsx
+const statusTagClassMap: Record<string, string> = {
+	Accepted: 'requestAcceptedTag',
+	Rejected: 'requestRejectedTag',
+	Closed: 'expiredTag',
+	Pending: 'pendingTag',
+	Requested: 'pendingTag',
+	Closing: 'closingTag',
+	Expired: 'expiredTag',
+};
 
 export const RequestsTable: React.FC<RequestsTableProps> = ({
 	data,
@@ -50,7 +58,11 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 	onStatusFilter,
 	onTableChange,
 	onPageChange,
-	onAction,
+	onAccept,
+	onReject,
+	onClose,
+	onDelete,
+	onMessage,
 }) => {
 	const columns: TableProps<ListingRequestData>['columns'] = [
 		{
@@ -143,7 +155,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 				// Try to format both as yyyy-mm-dd
 				function formatDate(str: string) {
 					const d = new Date(str);
-					if (isNaN(d.getTime())) {
+					if (Number.isNaN(d.getTime())) {
 						return str;
 					}
 					const yyyy = d.getFullYear();
@@ -192,19 +204,36 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			filterIcon: (filtered: boolean) => (
 				<FilterOutlined style={{ color: filtered ? '#1890ff' : undefined }} />
 			),
-			render: (status: string) => (
-				<Tag className={getStatusTagClass(status)}>{status}</Tag>
-			),
+			render: (status: string) => {
+				const statusClass = statusTagClassMap[status] ?? '';
+				return <Tag className={statusClass}>{status}</Tag>;
+			},
 		},
 		{
 			title: 'Actions',
 			key: 'actions',
 			width: 200,
-			render: (_: unknown, record: ListingRequestData) => (
-				<div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
-					{getActionButtons(record, onAction)}
-				</div>
-			),
+			render: (_: unknown, record: ListingRequestData) => {
+				const canAccept =
+					record.status === 'Pending' || record.status === 'Requested';
+
+				if (!canAccept) {
+					return null;
+				}
+
+				return (
+					<div style={{ display: 'flex', flexWrap: 'wrap', gap: 4 }}>
+						<Button
+							key="accept"
+							type="link"
+							size="small"
+							onClick={() => onAccept(record.id)}
+						>
+							Accept
+						</Button>
+					</div>
+				);
+			},
 		},
 	];
 
@@ -220,8 +249,15 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			showPagination={true}
 			onChange={onTableChange}
 			renderGridItem={(listing) => (
-				<RequestsCard listing={listing} onAction={onAction} />
+				<RequestsCard
+					listing={listing}
+					onAccept={onAccept}
+					onReject={onReject}
+					onClose={onClose}
+					onDelete={onDelete}
+					onMessage={onMessage}
+				/>
 			)}
 		/>
 	);
-}
+};

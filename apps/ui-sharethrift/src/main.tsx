@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from 'react-oidc-context';
+import { App } from 'antd';
 import { oidcConfig } from './config/oidc-config.tsx';
 import { ApolloConnection } from './components/shared/apollo-connection.tsx';
 import { AppContainer } from './App.container.tsx';
@@ -20,7 +21,9 @@ if (rootElement) {
 			<BrowserRouter>
 				<AuthProvider {...selectedConfig}>
 					<ApolloConnection>
-						<AppContainer />
+						<App>
+							<AppContainer />
+						</App>
 					</ApolloConnection>
 				</AuthProvider>
 			</BrowserRouter>
