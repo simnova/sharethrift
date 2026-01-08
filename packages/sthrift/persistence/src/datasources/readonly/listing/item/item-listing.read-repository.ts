@@ -201,6 +201,18 @@ class ItemListingReadRepositoryImpl
 		archivalMonths: number,
 		limit = 100,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
+		// Validate archivalMonths to avoid unexpected date calculation when misconfigured
+		if (!Number.isFinite(archivalMonths) || archivalMonths <= 0) {
+			console.error(
+				'[ItemListingReadRepository] Invalid archivalMonths value:',
+				{
+					archivalMonths,
+					isFinite: Number.isFinite(archivalMonths),
+				},
+			);
+			return [];
+		}
+
 		const cutoffDate = new Date();
 		cutoffDate.setMonth(cutoffDate.getMonth() - archivalMonths);
 
