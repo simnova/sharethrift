@@ -1,8 +1,7 @@
 import type { DataSources } from '@sthrift/persistence';
 import { Domain } from '@sthrift/domain';
-import { trace, SpanStatusCode } from '@opentelemetry/api';
-
-const tracer = trace.getTracer('conversation:cleanup');
+import { processArchivedEntities } from './cleanup-shared.ts';
+import type { CleanupResult } from './cleanup.types.ts';
 
 const ARCHIVED_RESERVATION_REQUEST_STATES = [
 	Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestStates
@@ -13,113 +12,62 @@ const ARCHIVED_RESERVATION_REQUEST_STATES = [
 		.CANCELLED,
 ];
 
-export interface CleanupResult {
-	processedCount: number;
-	scheduledCount: number;
-	timestamp: Date;
-	errors: string[];
-}
-
-export async function processConversationsForArchivedReservationRequests(
+export function processConversationsForArchivedReservationRequests(
 	dataSources: DataSources,
 ): Promise<CleanupResult> {
-	return await tracer.startActiveSpan(
-		'conversation.processConversationsForArchivedReservationRequests',
-		async (span) => {
-			let hadFatalError = false;
-			const result: CleanupResult = {
-				processedCount: 0,
-				scheduledCount: 0,
-				timestamp: new Date(),
-				errors: [],
-			};
+	return processArchivedEntities({
+		spanName: 'conversation.processConversationsForArchivedReservationRequests',
+		entityLabel: 'reservation request',
+		fetchEntities: () =>
+			dataSources.readonlyDataSource.ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getByStates(
+				ARCHIVED_RESERVATION_REQUEST_STATES,
+			),
+		processEntity: async (reservationRequest) => {
+			let processed = 0;
+			let scheduled = 0;
+			const errors: string[] = [];
 
-			try {
-				const archivedReservationRequests =
-					await dataSources.readonlyDataSource.ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getByStates(
-						ARCHIVED_RESERVATION_REQUEST_STATES,
+			await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
+				async (repo) => {
+					const conversations = await repo.getByReservationRequestId(
+						reservationRequest.id,
+					);
+					processed += conversations.length;
+
+					const conversationsToSchedule = conversations.filter(
+						(c) => !c.expiresAt,
 					);
 
-				span.setAttribute(
-					'archivedReservationRequestsCount',
-					archivedReservationRequests.length,
-				);
+					// NOTE: For CLOSED (completed) requests, use reservationPeriodEnd as the most
+					// semantically correct anchor (end of the reservation period).
+					// For REJECTED/CANCELLED, use updatedAt as a fallback since these don't have
+					// a natural "completion" date. This may drift if the request is updated after
+					// state change. Consider adding explicit completedAt/cancelledAt/rejectedAt
+					// timestamps in the future for more precise retention tracking.
+					const anchorDate =
+						reservationRequest.state ===
+						Domain.Contexts.ReservationRequest.ReservationRequest
+							.ReservationRequestStates.CLOSED
+							? reservationRequest.reservationPeriodEnd
+							: reservationRequest.updatedAt;
 
-				for (const reservationRequest of archivedReservationRequests) {
-					try {
-						await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
-							async (repo) => {
-								const conversations = await repo.getByReservationRequestId(
-									reservationRequest.id,
-								);
-								result.processedCount += conversations.length;
-
-								const conversationsToSchedule = conversations.filter(
-									(c) => !c.expiresAt,
-								);
-
-								// NOTE: For CLOSED (completed) requests, use reservationPeriodEnd as the most
-								// semantically correct anchor (end of the reservation period).
-								// For REJECTED/CANCELLED, use updatedAt as a fallback since these don't have
-								// a natural "completion" date. This may drift if the request is updated after
-								// state change. Consider adding explicit completedAt/cancelledAt/rejectedAt
-								// timestamps in the future for more precise retention tracking.
-								const anchorDate =
-									reservationRequest.state ===
-									Domain.Contexts.ReservationRequest.ReservationRequest
-										.ReservationRequestStates.CLOSED
-										? reservationRequest.reservationPeriodEnd
-										: reservationRequest.updatedAt;
-
-								for (const conversation of conversationsToSchedule) {
-									conversation.scheduleForDeletion(anchorDate);
-									await repo.save(conversation);
-									result.scheduledCount++;
-								}
-							},
-						);
-					} catch (err) {
-						const message = err instanceof Error ? err.message : String(err);
-						const msg = `Failed to process conversations for reservation request ${reservationRequest.id}: ${message}`;
-						result.errors.push(msg);
-						console.error('[ConversationCleanup]', msg);
+					// Guard against undefined anchorDate - skip scheduling if missing
+					if (!anchorDate) {
+						const msg = `Skipping reservation request ${reservationRequest.id}: anchorDate is undefined (state: ${reservationRequest.state})`;
+						errors.push(msg);
+						console.warn('[ConversationCleanup]', msg);
+						return;
 					}
-				}
-			} catch (error) {
-				hadFatalError = true;
-				span.setStatus({ code: SpanStatusCode.ERROR });
-				if (error instanceof Error) {
-					span.recordException(error);
-				}
-				console.error(
-					'[ConversationCleanup] Fatal cleanup error for reservation requests:',
-					error,
-				);
-				throw error;
-			} finally {
-				span.setAttribute('processedCount', result.processedCount);
-				span.setAttribute('scheduledCount', result.scheduledCount);
-				span.setAttribute('errorsCount', result.errors.length);
 
-				if (!hadFatalError) {
-					if (result.errors.length > 0) {
-						span.setStatus({
-							code: SpanStatusCode.ERROR,
-							message: `${result.errors.length} reservation request(s) failed during cleanup`,
-						});
-					} else {
-						span.setStatus({ code: SpanStatusCode.OK });
+					for (const conversation of conversationsToSchedule) {
+						conversation.scheduleForDeletion(anchorDate);
+						await repo.save(conversation);
+						scheduled++;
 					}
-				}
+				},
+			);
 
-				span.end();
-
-				console.log(
-					`[ConversationCleanup] Reservation request cleanup complete. Processed: ${result.processedCount}, Scheduled: ${result.scheduledCount}, Errors: ${result.errors.length}`,
-				);
-			}
-
-			return result;
+			return { processed, scheduled, errors };
 		},
-	);
+	});
 }

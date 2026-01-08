@@ -6,11 +6,9 @@ import {
 	type ConversationQueryByUserCommand,
 	queryByUser,
 } from './query-by-user.ts';
-import {
-	type CleanupResult,
-	processConversationsForArchivedListings,
-} from './cleanup-archived-conversations.ts';
+import { processConversationsForArchivedListings } from './cleanup-archived-conversations.ts';
 import { processConversationsForArchivedReservationRequests } from './cleanup-archived-reservation-conversations.ts';
+import type { CleanupResult } from './cleanup.types.ts';
 import {
 	type ConversationSendMessageCommand,
 	sendMessage,

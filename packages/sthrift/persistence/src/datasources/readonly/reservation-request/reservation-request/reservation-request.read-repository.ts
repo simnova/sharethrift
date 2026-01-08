@@ -297,6 +297,9 @@ export class ReservationRequestReadRepositoryImpl
 	): Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	> {
+		if (!states || states.length === 0) {
+			return [];
+		}
 		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
 			state: { $in: states },
 		};
