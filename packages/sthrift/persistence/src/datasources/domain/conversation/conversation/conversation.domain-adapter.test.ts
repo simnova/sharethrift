@@ -4,6 +4,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { Domain } from '@sthrift/domain';
 import { ConversationDomainAdapter } from './conversation.domain-adapter.ts';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 
@@ -48,14 +49,17 @@ function makeListingDoc(overrides: Partial<Models.Listing.ItemListing> = {}) {
 function makeConversationDoc(
 	overrides: Partial<Models.Conversation.Conversation> = {},
 ) {
+	const setSpy = vi.fn(
+		(key: keyof Models.Conversation.Conversation, value: unknown) => {
+			(base as Models.Conversation.Conversation)[key] = value as never;
+		},
+	);
 	const base = {
 		sharer: overrides.sharer ?? undefined,
 		reserver: overrides.reserver ?? undefined,
 		listing: overrides.listing ?? undefined,
 		messagingConversationId: 'twilio-123',
-		set(key: keyof Models.Conversation.Conversation, value: unknown) {
-			(this as Models.Conversation.Conversation)[key] = value as never;
-		},
+		set: overrides.set ?? setSpy,
 		...overrides,
 	} as Models.Conversation.Conversation;
 	return vi.mocked(base);
@@ -571,6 +575,111 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 			Then('the listing should be set correctly', () => {
 				expect(doc.set).toHaveBeenCalledWith('listing', expect.anything());
+			});
+		},
+	);
+
+	Scenario(
+		'Setting sharer with AdminUser domain entity',
+		({ Given, When, Then }) => {
+			let adminUser: never;
+
+			Given('an AdminUser domain entity', () => {
+				const adminUserDoc = {
+					...makeUserDoc(),
+					userType: 'admin-user',
+				} as never;
+				// Create an AdminUser domain entity instance
+				adminUser = {
+					props: { doc: adminUserDoc },
+					id: adminUserDoc.id,
+					constructor: { name: 'AdminUser' },
+				} as never;
+				// Mock instanceof check by ensuring it's recognized as AdminUser
+				Object.setPrototypeOf(
+					adminUser,
+					Domain.Contexts.User.AdminUser.AdminUser.prototype,
+				);
+				doc = makeConversationDoc();
+				adapter = new ConversationDomainAdapter(doc);
+			});
+
+			When('I set the sharer property with the AdminUser domain entity', () => {
+				adapter.sharer = adminUser;
+			});
+
+			Then('the sharer should be set to the admin user doc', () => {
+				expect(doc.set).toHaveBeenCalledWith('sharer', expect.anything());
+			});
+		},
+	);
+
+	Scenario(
+		'Setting reserver with PersonalUser domain entity',
+		({ Given, When, Then }) => {
+			let personalUser: never;
+
+			Given('a PersonalUser domain entity', () => {
+				const userDoc = makeUserDoc();
+				// Create a PersonalUser domain entity instance
+				personalUser = {
+					props: { doc: userDoc },
+					id: userDoc.id,
+					constructor: { name: 'PersonalUser' },
+				} as never;
+				// Mock instanceof check
+				Object.setPrototypeOf(
+					personalUser,
+					Domain.Contexts.User.PersonalUser.PersonalUser.prototype,
+				);
+				doc = makeConversationDoc();
+				adapter = new ConversationDomainAdapter(doc);
+			});
+
+			When('I set the reserver property with the domain entity', () => {
+				adapter.reserver = personalUser;
+			});
+
+			Then('the reserver should be set correctly', () => {
+				expect(doc.set).toHaveBeenCalledWith('reserver', expect.anything());
+			});
+		},
+	);
+
+	Scenario(
+		'Setting reserver with AdminUser domain entity',
+		({ Given, When, Then }) => {
+			let adminUser: never;
+
+			Given('an AdminUser domain entity', () => {
+				const adminUserDoc = {
+					...makeUserDoc(),
+					userType: 'admin-user',
+				} as never;
+				// Create an AdminUser domain entity instance
+				adminUser = {
+					props: { doc: adminUserDoc },
+					id: adminUserDoc.id,
+					constructor: { name: 'AdminUser' },
+				} as never;
+				// Mock instanceof check
+				Object.setPrototypeOf(
+					adminUser,
+					Domain.Contexts.User.AdminUser.AdminUser.prototype,
+				);
+				doc = makeConversationDoc();
+				adapter = new ConversationDomainAdapter(doc);
+			});
+
+			When(
+				'I set the reserver property with the AdminUser domain entity',
+				() => {
+					adapter.reserver = adminUser;
+				},
+			);
+
+			Then('the reserver should be set to the admin user doc', () => {
+				expect(doc.set).toHaveBeenCalledWith('reserver', expect.anything());
 			});
 		},
 	);

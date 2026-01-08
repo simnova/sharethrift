@@ -85,9 +85,9 @@ Conversations must be automatically deleted 6 months after the associated listin
 ## Success Criteria
 
 ### Automatic Deletion
-- All conversations for archived listings are deleted within 6 months + 1 day
-- MongoDB TTL index actively removes expired documents
-- No manual intervention required for standard deletion flow
+- All conversations for archived listings are deleted shortly after 6 months
+- MongoDB TTL index and the daily cleanup job remove expired documents; deletions are performed by MongoDB's background TTL task and may be delayed beyond the exact expiration time
+- No manual intervention is typically required for the standard deletion flow, aside from operational responses to observed failures
 
 ### Authorization Enforcement
 - Domain layer prevents unauthorized expiration date modifications
