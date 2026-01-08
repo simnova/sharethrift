@@ -248,10 +248,14 @@ test.for(feature, ({ Scenario, BeforeEachScenario, Background }) => {
 
     // Mock the constructors
     vi.mocked(ReservationRequestDataSourceImpl).mockImplementation(
-      () => mockDataSource as unknown as InstanceType<typeof ReservationRequestDataSourceImpl>
+      function (_model) {
+        return mockDataSource as unknown as InstanceType<typeof ReservationRequestDataSourceImpl>;
+      },
     );
     vi.mocked(ReservationRequestConverter).mockImplementation(
-      () => mockConverter as unknown as ReservationRequestConverter
+      function () {
+        return mockConverter as unknown as ReservationRequestConverter;
+      },
     );
 
     repository = new ReservationRequestReadRepositoryImpl(models, passport);
