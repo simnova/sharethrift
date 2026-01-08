@@ -11,8 +11,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 
 interface AdminUsersTableContainerProps {
-  currentPage: number;
-  onPageChange: (page: number) => void;
+    currentPage: number;
+    onPageChange: (page: number) => void;
 }
 
 export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContainerProps>> = ({
@@ -110,42 +110,56 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
         });
     };
 
+    const handleBlockUser = async (userId: string) => {
+        try {
+            await blockUser({ variables: { userId } });
+        } catch (err) {
+            console.error("Block user error:", err);
+        }
+    };
+
+    const handleUnblockUser = async (userId: string) => {
+        try {
+            await unblockUser({ variables: { userId } });
+        } catch (err) {
+            console.error("Unblock user error:", err);
+        }
+    };
+
+    const handleViewProfile = (userId: string) => {
+        navigate(`/account/profile/${userId}`);
+    };
+
+    const handleViewReport = (userId: string) => {
+        message.info(`TODO: Navigate to user reports for user ${userId}`);
+        // TODO: Navigate to user reports page
+    };
+
     const handleAction = async (
         action: "block" | "unblock" | "view-profile" | "view-report",
         userId: string
     ) => {
         console.log(`Action: ${action}, User ID: ${userId}`);
-
         switch (action) {
             case "block":
-                try {
-                    await blockUser({ variables: { userId } });
-                } catch (err) {
-                    // Error handled by mutation onError callback
-                    console.error("Block user error:", err);
-                }
+                await handleBlockUser(userId);
                 break;
             case "unblock":
-                try {
-                    await unblockUser({ variables: { userId } });
-                } catch (err) {
-                    // Error handled by mutation onError callback
-                    console.error("Unblock user error:", err);
-                }
+                await handleUnblockUser(userId);
                 break;
             case "view-profile":
-                navigate(`/account/profile/${userId}`);
+                handleViewProfile(userId);
                 break;
             case "view-report":
-                message.info(`TODO: Navigate to user reports for user ${userId}`);
-                // TODO: Navigate to user reports page
+                handleViewReport(userId);
                 break;
         }
     };
+    const isLoading = loading || blockLoading || unblockLoading;
 
     return (
         <ComponentQueryLoader
-            loading={loading}
+            loading={isLoading}
             hasData={data?.allUsers}
             error={error}
             hasDataComponent={
@@ -157,14 +171,12 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
                     currentPage={currentPage}
                     pageSize={pageSize}
                     total={total}
-                    loading={loading}
+                    loading={isLoading}
                     onSearch={handleSearch}
                     onStatusFilter={handleStatusFilter}
                     onTableChange={handleTableChange}
                     onPageChange={onPageChange}
                     onAction={handleAction}
-                    blockLoading={blockLoading}
-                    unblockLoading={unblockLoading}
                 />
             }
         />

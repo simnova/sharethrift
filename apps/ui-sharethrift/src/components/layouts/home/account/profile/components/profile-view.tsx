@@ -1,13 +1,13 @@
 import {
-	Card,
-	Avatar,
-	Button,
-	Tag,
-	Typography,
-	Row,
-	Col,
-	Space,
-	Divider,
+    Card,
+    Avatar,
+    Button,
+    Tag,
+    Typography,
+    Row,
+    Col,
+    Space,
+    Divider,
 } from 'antd';
 import { ListingsGrid } from '@sthrift/ui-components';
 import { UserOutlined } from '@ant-design/icons';
@@ -16,37 +16,75 @@ import type { ItemListing } from '../../../../../../generated';
 import type { ProfileUser } from './profile-view.types';
 import { ProfileActions } from './profile-actions.tsx';
 import { UserAppealContainer } from './user-appeal.container.tsx';
+import { BlockUserModal, UnblockUserModal } from '../../../../../shared/user-modals';
+import type { BlockUserFormValues } from '../../../../../shared/user-modals/block-user-modal.tsx';
+import { getUserDisplayName } from "../../../../../shared/user-display-name.ts";
 
 const { Text } = Typography;
-
-// ...interfaces now imported from profile-view.types.ts
 
 interface ProfileViewProps {
     user: ProfileUser;
     listings: ItemListing[];
     isOwnProfile: boolean;
-    isBlocked?: boolean;
-    isAdminViewer?: boolean;
-    canBlockUser?: boolean;
+    permissions: {
+        isBlocked: boolean;
+        isAdminViewer: boolean;
+        canBlockUser: boolean;
+    };
     onEditSettings: () => void;
     onListingClick: (listingId: string) => void;
-    onBlockUser?: () => void;
-    onUnblockUser?: () => void;
-    adminControls?: React.ReactNode;
+    blocking?: {
+        blockModalVisible: boolean;
+        unblockModalVisible: boolean;
+        handleOpenBlockModal: () => void;
+        handleOpenUnblockModal: () => void;
+        handleConfirmBlockUser: (values: BlockUserFormValues) => void;
+        handleConfirmUnblockUser: () => void;
+        closeBlockModal: () => void;
+        closeUnblockModal: () => void;
+    };
+    blockUserLoading?: boolean;
+    unblockUserLoading?: boolean;
 }
+
+const adaptProfileListing = (l: ItemListing) => ({
+    ...l,
+    id: l.id,
+    sharingPeriodStart: new Date(l.sharingPeriodStart),
+    sharingPeriodEnd: new Date(l.sharingPeriodEnd),
+    state: [
+        'Active',
+        'Paused',
+        'Cancelled',
+        'Draft',
+        'Expired',
+        'Blocked',
+    ].includes(l.state ?? '')
+        ? (l.state as
+            | 'Active'
+            | 'Paused'
+            | 'Cancelled'
+            | 'Draft'
+            | 'Expired'
+            | 'Blocked'
+            | undefined)
+        : undefined,
+    createdAt: l.createdAt ? new Date(l.createdAt) : undefined,
+    sharingHistory: [], 
+    reports: 0,
+    images: l.images ? [...l.images] : []
+});
 
 export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
     user,
     listings,
     isOwnProfile,
-    isBlocked = false,
-    isAdminViewer = false,
-    canBlockUser = false,
+    permissions,
     onEditSettings,
     onListingClick,
-    onBlockUser,
-    onUnblockUser,
-    adminControls,
+    blocking,
+    blockUserLoading,
+    unblockUserLoading,
 }) => {
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString('en-US', {
@@ -68,19 +106,23 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
             <Card
                 className="mb-6 profile-header"
                 style={{
-                    opacity: isBlocked && isAdminViewer ? 0.7 : 1,
-                    filter: isBlocked && isAdminViewer ? 'grayscale(50%)' : 'none',
+                    opacity:
+                        permissions.isBlocked && permissions.isAdminViewer ? 0.7 : 1,
+                    filter:
+                        permissions.isBlocked && permissions.isAdminViewer
+                            ? 'grayscale(50%)'
+                            : 'none',
                 }}
             >
                 {/* Mobile actions */}
                 <ProfileActions
                     variant="mobile"
                     isOwnProfile={isOwnProfile}
-                    isBlocked={isBlocked}
-                    canBlockUser={canBlockUser}
+                    isBlocked={permissions.isBlocked}
+                    canBlockUser={permissions.canBlockUser}
                     onEditSettings={onEditSettings}
-                    onBlockUser={onBlockUser}
-                    onUnblockUser={onUnblockUser}
+                    onBlockUser={blocking?.handleOpenBlockModal}
+                    onUnblockUser={blocking?.handleOpenUnblockModal}
                 />
                 <Row gutter={24} align="middle">
                     <Col xs={24} sm={6} lg={4} className="text-center mb-4 sm:mb-0">
@@ -104,11 +146,11 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                                 <ProfileActions
                                     variant="desktop"
                                     isOwnProfile={isOwnProfile}
-                                    isBlocked={isBlocked}
-                                    canBlockUser={canBlockUser}
+                                    isBlocked={permissions.isBlocked}
+                                    canBlockUser={permissions.canBlockUser}
                                     onEditSettings={onEditSettings}
-                                    onBlockUser={onBlockUser}
-                                    onUnblockUser={onUnblockUser}
+                                    onBlockUser={blocking?.handleOpenBlockModal}
+                                    onUnblockUser={blocking?.handleOpenUnblockModal}
                                 />
                             </div>
                             <h3 className="block mb-2">@{user.username}</h3>
@@ -154,33 +196,7 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                 }}
             >
                 <ListingsGrid
-                    listings={listings.map((l) => ({
-                        ...l,
-                        id: l.id,
-                        sharingPeriodStart: new Date(l.sharingPeriodStart),
-                        sharingPeriodEnd: new Date(l.sharingPeriodEnd),
-                        state: [
-                            'Active',
-                            'Paused',
-                            'Cancelled',
-                            'Draft',
-                            'Expired',
-                            'Blocked',
-                        ].includes(l.state ?? '')
-                            ? (l.state as
-                                | 'Active'
-                                | 'Paused'
-                                | 'Cancelled'
-                                | 'Draft'
-                                | 'Expired'
-                                | 'Blocked'
-                                | undefined)
-                            : undefined,
-                        createdAt: l.createdAt ? new Date(l.createdAt) : undefined,
-                        sharingHistory: [], // Placeholder
-                        reports: 0, // Placeholder
-                        images: l.images ? [...l.images] : [], // Placeholder
-                    }))}
+                    listings={listings.map(adaptProfileListing)}
                     onListingClick={(listing) => onListingClick(listing.id)}
                     currentPage={1}
                     pageSize={20}
@@ -204,8 +220,24 @@ export const ProfileView: React.FC<Readonly<ProfileViewProps>> = ({
                 )}
             </div>
 
-            {/* Admin controls slot (modals etc.) */}
-            {adminControls}
+            {permissions.canBlockUser && blocking && (
+                <>
+                    <BlockUserModal
+                        visible={blocking.blockModalVisible}
+                        userName={getUserDisplayName(user)}
+                        onConfirm={blocking.handleConfirmBlockUser}
+                        onCancel={blocking.closeBlockModal}
+                        loading={blockUserLoading}
+                    />
+                    <UnblockUserModal
+                        visible={blocking.unblockModalVisible}
+                        userName={getUserDisplayName(user)}
+                        onConfirm={blocking.handleConfirmUnblockUser}
+                        onCancel={blocking.closeUnblockModal}
+                        loading={unblockUserLoading}
+                    />
+                </>
+            )}
         </div>
     );
 };

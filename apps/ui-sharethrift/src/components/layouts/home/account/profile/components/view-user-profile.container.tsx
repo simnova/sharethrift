@@ -12,13 +12,67 @@ import {
 import { message } from "antd";
 import type { ItemListing } from "../../../../../../generated.tsx";
 import type { BlockUserFormValues } from "../../../../../shared/user-modals/block-user-modal.tsx";
-import { BlockUserModal, UnblockUserModal } from "../../../../../shared/user-modals";
+
+interface ProfilePermissions {
+    isBlocked: boolean;
+    isAdminViewer: boolean;
+    canBlockUser: boolean;
+}
+
+interface UseProfileBlockingOptions {
+    onBlockUser?: (values: BlockUserFormValues) => Promise<unknown> | void;
+    onUnblockUser?: () => Promise<unknown> | void;
+}
+
+const useProfileBlocking = ({
+    onBlockUser,
+    onUnblockUser,
+}: UseProfileBlockingOptions) => {
+    const [blockModalVisible, setBlockModalVisible] = useState(false);
+    const [unblockModalVisible, setUnblockModalVisible] = useState(false);
+
+    const handleOpenBlockModal = () => setBlockModalVisible(true);
+    const handleOpenUnblockModal = () => setUnblockModalVisible(true);
+
+    const handleConfirmBlockUser = async (values: BlockUserFormValues) => {
+        if (!onBlockUser) {
+            return;
+        }
+        try {
+            await onBlockUser(values);
+            setBlockModalVisible(false);
+        } catch {
+            message.error("Failed to block user. Please try again.");
+        }
+    };
+
+    const handleConfirmUnblockUser = async () => {
+        if (!onUnblockUser) {
+            return;
+        }
+        try {
+            await onUnblockUser();
+            setUnblockModalVisible(false);
+        } catch {
+            message.error("Failed to unblock user. Please try again.");
+        }
+    };
+
+    return {
+        blockModalVisible,
+        unblockModalVisible,
+        handleOpenBlockModal,
+        handleOpenUnblockModal,
+        handleConfirmBlockUser,
+        handleConfirmUnblockUser,
+        closeBlockModal: () => setBlockModalVisible(false),
+        closeUnblockModal: () => setUnblockModalVisible(false),
+    };
+};
 
 export const ViewUserProfileContainer: React.FC = () => {
     const navigate = useNavigate();
     const { userId } = useParams<{ userId: string }>();
-    const [blockModalVisible, setBlockModalVisible] = useState(false);
-    const [unblockModalVisible, setUnblockModalVisible] = useState(false);
 
     const {
         data: currentUserData,
@@ -41,7 +95,6 @@ export const ViewUserProfileContainer: React.FC = () => {
         {
             onCompleted: () => {
                 message.success("User blocked successfully");
-                setBlockModalVisible(false);
                 refetchUser();
             },
             onError: (err) => {
@@ -55,7 +108,6 @@ export const ViewUserProfileContainer: React.FC = () => {
         {
             onCompleted: () => {
                 message.success("User unblocked successfully");
-                setUnblockModalVisible(false);
                 refetchUser();
             },
             onError: (err) => {
@@ -74,9 +126,17 @@ export const ViewUserProfileContainer: React.FC = () => {
     const viewedUser = userQueryData?.userById;
     const currentUser = currentUserData?.currentUser;
 
-    const isAdminViewer =
-        currentUser?.__typename === "AdminUser" &&
-        currentUser?.userIsAdmin;
+    const isAdmin = Boolean(currentUser?.userIsAdmin);
+
+    const canBlockUsersFromRole = (currentUser as any)?.role?.permissions?.userPermissions?.canBlockUsers;
+
+    const canBlockUsers = Boolean(
+        typeof canBlockUsersFromRole === "boolean"
+            ? canBlockUsersFromRole
+            : isAdmin,
+    );
+
+    const isAdminViewer = isAdmin;
 
     useEffect(() => {
         if (viewedUser?.isBlocked && !isAdminViewer) {
@@ -94,18 +154,22 @@ export const ViewUserProfileContainer: React.FC = () => {
         navigate(`/listing/${listingId}`);
     };
 
-    const handleBlockUser = (_blockUserFormValues: BlockUserFormValues) => {
+    const handleBlockUser = async (
+        _blockUserFormValues: BlockUserFormValues,
+    ): Promise<unknown> => {
         // TODO: wire _blockUserFormValues's values through to the backend when supported
-        blockUser({ variables: { userId: userId! } });
+        if (!userId) {
+            throw new Error("Missing userId for blockUser");
+        }
+        return blockUser({ variables: { userId } });
     };
 
-    const handleUnblockUser = () => {
-        unblockUser({ variables: { userId: userId! } });
+    const handleUnblockUser = async (): Promise<unknown> => {
+        if (!userId) {
+            throw new Error("Missing userId for unblockUser");
+        }
+        return unblockUser({ variables: { userId } });
     };
-
-    const canBlockUsers =
-        currentUser?.__typename === "AdminUser" &&
-        currentUser?.userIsAdmin;
 
     const isOwnProfile = currentUser?.id === viewedUser?.id;
 
@@ -127,57 +191,35 @@ export const ViewUserProfileContainer: React.FC = () => {
 
     const listings: ItemListing[] = [];
 
-    const getDisplayName = (user?: {
-        firstName?: string;
-        lastName?: string;
-        username?: string;
-    } | null) => {
-        if (!user) return "";
-        const nameParts = [user.firstName, user.lastName].filter(
-            (p) => Boolean(p) && p !== "N/A",
-        ) as string[];
-        return nameParts.length > 0 ? nameParts.join(" ") : user.username || "Listing User";
+    const permissions: ProfilePermissions = {
+        isBlocked: Boolean(isBlocked),
+        isAdminViewer,
+        canBlockUser: canBlockUsers,
     };
 
+    const blocking = useProfileBlocking({
+        onBlockUser: handleBlockUser,
+        onUnblockUser: handleUnblockUser,
+    });
+
     return (
-        <ComponentQueryLoader
-            loading={userLoading || currentUserLoading}
-            error={userError ?? currentUserError}
-            hasData={viewedUser && currentUser}
-            hasDataComponent={
-                <ProfileView
-                    user={profileUser}
-                    listings={listings}
-                    isOwnProfile={isOwnProfile}
-                    isBlocked={isBlocked ?? false}
-                    isAdminViewer={isAdminViewer ?? false}
-                    canBlockUser={canBlockUsers ?? false}
-                    onEditSettings={handleEditSettings}
-                    onListingClick={handleListingClick}
-                    onBlockUser={() => setBlockModalVisible(true)}
-                    onUnblockUser={() => setUnblockModalVisible(true)}
-                    adminControls={
-                        (canBlockUsers ?? false) && (
-                            <>
-                                <BlockUserModal
-                                    visible={blockModalVisible}
-                                    userName={getDisplayName(profileUser)}
-                                    onConfirm={handleBlockUser}
-                                    onCancel={() => setBlockModalVisible(false)}
-                                    loading={blockLoading}
-                                />
-                                <UnblockUserModal
-                                    visible={unblockModalVisible}
-                                    userName={getDisplayName(profileUser)}
-                                    onConfirm={handleUnblockUser}
-                                    onCancel={() => setUnblockModalVisible(false)}
-                                    loading={unblockLoading}
-                                />
-                            </>
-                        )
-                    }
-                />
-            }
-        />
+            <ComponentQueryLoader
+                loading={userLoading || currentUserLoading}
+                error={userError ?? currentUserError}
+                hasData={viewedUser && currentUser}
+                hasDataComponent={
+                    <ProfileView
+                        user={profileUser}
+                        listings={listings}
+                        isOwnProfile={isOwnProfile}
+                        permissions={permissions}
+                        onEditSettings={handleEditSettings}
+                        onListingClick={handleListingClick}
+                        blocking={blocking}
+                        blockUserLoading={blockLoading}
+                        unblockUserLoading={unblockLoading}
+                    />
+                }
+            />
     );
 };
