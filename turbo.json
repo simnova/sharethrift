@@ -1,118 +1,73 @@
 {
-    "ui": "tui",
-    "tasks": {
-        "build": {
-            "dependsOn": [
-                "^build",
-                "//#gen"
-            ],
-            "inputs": [
-                "src/**",
-                "tsconfig*.json"
-            ],
-            "outputs": [
-                "dist/**",
-                "build/**"
-            ]
-        },
-        "test": {
-            "dependsOn": [
-                "^build",
-                "@cellix/vitest-config#build"
-            ],
-            "inputs": [
-                "src/**",
-                "tests/**",
-                "vitest*.config.*"
-            ]
-        },
-        "test:coverage": {
-            "dependsOn": [
-                "build",
-                "^build",
-                "@cellix/vitest-config#build"
-            ],
-            "inputs": [
-                "src/**",
-                "tests/**",
-                "vitest*.config.*"
-            ],
-            "outputs": [
-                "coverage/lcov.info"
-            ]
-        },
-        "test:watch": {
-            "dependsOn": [
-                "^build"
-            ],
-            "cache": false,
-            "persistent": true
-        },
-        "test:unit": {
-            "dependsOn": [
-                "^build"
-            ],
-            "inputs": [
-                "src/**",
-                "tests/**",
-                "vitest*.config.*"
-            ],
-            "outputs": [
-                "coverage/**"
-            ]
-        },
-        "test:integration": {
-            "dependsOn": [
-                "^build"
-            ],
-            "inputs": [
-                "src/**",
-                "tests/**",
-                "vitest*.config.*"
-            ],
-            "outputs": [
-                "coverage/**"
-            ]
-        },
-        "storybook": {
-            "dependsOn": [
-                "^build",
-                "//#gen"
-            ],
-            "cache": false,
-            "persistent": true
-        },
-        "start": {
-            "cache": false,
-            "persistent": true
-        },
-        "azurite": {
-            "cache": false,
-            "persistent": true
-        },
-        "lint": {},
-        "format": {
-            "outputs": []
-        },
-        "clean": {
-            "cache": false,
-            "outputs": []
-        },
-        "//#gen": {
-            "cache": true,
-            "inputs": [
-                "codegen.yml",
-                "**/*.graphql"
-            ],
-            "outputs": [
-                "**/generated.ts",
-                "**/graphql.schema.json",
-                "**/generated.tsx"
-            ]
-        },
-        "//#gen:watch": {
-            "cache": false,
-            "persistent": true
-        }
-    }
+	"ui": "tui",
+	"tasks": {
+		"build": {
+			"dependsOn": ["^build", "//#gen"],
+			"inputs": ["src/**", "tsconfig*.json"],
+			"outputs": ["dist/**", "build/**"]
+		},
+		"test": {
+			"dependsOn": ["^build", "@cellix/vitest-config#build"],
+			"inputs": ["src/**", "tests/**", "vitest*.config.*"]
+		},
+		"test:coverage:node": {
+			"dependsOn": ["build", "^build", "@cellix/vitest-config#build"],
+			"inputs": ["src/**", "tests/**", "vitest*.config.*"],
+			"outputs": ["coverage/lcov.info"]
+		},
+		"test:coverage:ui": {
+			"dependsOn": ["build", "^build", "@cellix/vitest-config#build"],
+			"inputs": ["src/**", "tests/**", "vitest*.config.*"],
+			"outputs": ["coverage/lcov.info"]
+		},
+		"test:watch": {
+			"dependsOn": ["^build"],
+			"cache": false,
+			"persistent": true
+		},
+		"test:unit": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "tests/**", "vitest*.config.*"],
+			"outputs": ["coverage/**"]
+		},
+		"test:integration": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "tests/**", "vitest*.config.*"],
+			"outputs": ["coverage/**"]
+		},
+		"storybook": {
+			"dependsOn": ["^build", "//#gen"],
+			"cache": false,
+			"persistent": true
+		},
+		"start": {
+			"cache": false,
+			"persistent": true
+		},
+		"azurite": {
+			"cache": false,
+			"persistent": true
+		},
+		"lint": {},
+		"format": {
+			"outputs": []
+		},
+		"clean": {
+			"cache": false,
+			"outputs": []
+		},
+		"//#gen": {
+			"cache": true,
+			"inputs": ["codegen.yml", "**/*.graphql"],
+			"outputs": [
+				"**/generated.ts",
+				"**/graphql.schema.json",
+				"**/generated.tsx"
+			]
+		},
+		"//#gen:watch": {
+			"cache": false,
+			"persistent": true
+		}
+	}
 }

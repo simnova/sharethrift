@@ -7,6 +7,7 @@ import { Domain } from '@sthrift/domain';
 import type mongoose from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { expect, vi } from 'vitest';
+import { makeNewableMock } from '@cellix/test-utils';
 import { ConversationConverter } from './conversation.domain-adapter.ts';
 import { ConversationRepository } from './conversation.repository.ts';
 
@@ -43,6 +44,8 @@ function makeEventBus(): DomainSeedwork.EventBus {
 		register: vi.fn(),
 	} as DomainSeedwork.EventBus);
 }
+
+// use shared makeNewableMock from test-utils
 
 function makeUserDoc(id: string): Models.User.PersonalUser {
 	const validId = createValidObjectId(id);
@@ -358,9 +361,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 					// Setup repository with constructor mock
 					repository = setupConversationRepo(mockDoc, {
-						modelCtor: vi.fn(
-							() => mockNewDoc,
-						) as unknown as Models.Conversation.ConversationModelType,
+					modelCtor: makeNewableMock(() => mockNewDoc) as unknown as Models.Conversation.ConversationModelType,
 					});
 
 					result = await repository.getNewInstance(sharer, reserver, listing);
