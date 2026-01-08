@@ -3,10 +3,65 @@ import { AppContainer } from './App.container.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
-	MockUnauthWrapper,
 } from './test-utils/storybook-decorators.tsx';
-import { AppContainerCurrentUserDocument } from './generated.tsx';
+import {
+	AppContainerCurrentUserDocument,
+	ListingsPageContainerGetListingsDocument,
+	SelectAccountTypeContainerAccountPlansDocument,
+	SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+	UseUserIsAdminDocument,
+} from './generated.tsx';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MockUnauthWrapper } from './test-utils/storybook-mock-auth-wrappers.tsx';
+
+const mockListings = [
+	{
+		__typename: 'ItemListing',
+		id: '1',
+		title: 'Projector',
+		description: 'High-quality projector for home and office use',
+		category: 'Tools & Equipment',
+		location: 'Toronto, ON',
+		state: 'Active',
+		images: ['/assets/item-images/projector.png'],
+		sharingPeriodStart: '2025-01-01',
+		sharingPeriodEnd: '2025-12-31',
+		createdAt: '2025-01-01T00:00:00Z',
+		updatedAt: '2025-01-01T00:00:00Z',
+		schemaVersion: '1.0',
+		version: '1.0',
+		reports: 0,
+		sharingHistory: [],
+	},
+	{
+		__typename: 'ItemListing',
+		id: '2',
+		title: 'Umbrella',
+		description: 'Umbrella in excellent condition',
+		category: 'Accessories',
+		location: 'Vancouver, BC',
+		state: 'Active',
+		images: ['/assets/item-images/umbrella.png'],
+		sharingPeriodStart: '2025-02-01',
+		sharingPeriodEnd: '2025-06-30',
+		createdAt: '2025-01-15T00:00:00Z',
+		updatedAt: '2025-01-15T00:00:00Z',
+		schemaVersion: '1.0',
+		version: '1.0',
+		reports: 0,
+		sharingHistory: [],
+	},
+];
+
+const buildListingsMock = (listings = mockListings) => ({
+	request: { query: ListingsPageContainerGetListingsDocument },
+	result: { data: { itemListings: listings } },
+});
+
+const buildUseUserIsAdminMock = (isAdmin = false) => ({
+	request: { query: UseUserIsAdminDocument },
+	result: { data: { currentUser: { useUserIsAdmin: isAdmin } } },
+});
 
 const meta: Meta<typeof AppContainer> = {
 	title: 'App/AppContainer',
@@ -19,26 +74,11 @@ const meta: Meta<typeof AppContainer> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-// Mock for authenticated user who has completed onboarding
-const mockAuthenticatedCompletedOnboarding = {
-	request: {
-		query: AppContainerCurrentUserDocument,
-		variables: {},
-	},
-	result: {
-		data: {
-			currentUser: {
-				__typename: 'PersonalUser' as const,
-				id: 'user-123',
-				userType: 'personal-user',
-				hasCompletedOnboarding: true,
-			},
-		},
-	},
-};
-
-// Mock for authenticated user who hasn't completed onboarding
-const mockAuthenticatedNotCompletedOnboarding = {
+// Helper to build a current-user mock
+const buildCurrentUserMock = (opts: {
+	id?: string;
+	hasCompletedOnboarding?: boolean;
+} = {}) => ({
 	request: {
 		query: AppContainerCurrentUserDocument,
 		variables: {},
@@ -47,19 +87,29 @@ const mockAuthenticatedNotCompletedOnboarding = {
 		data: {
 			currentUserAndCreateIfNotExists: {
 				__typename: 'PersonalUser' as const,
-				id: 'user-456',
+				id: opts.id ?? 'user-123',
 				userType: 'personal-user',
-				hasCompletedOnboarding: false,
+				hasCompletedOnboarding: opts.hasCompletedOnboarding ?? true,
 			},
 		},
 	},
-};
+});
+
+// Reusable canned responses
+const mockAuthenticatedCompletedOnboarding = buildCurrentUserMock({
+	id: 'user-123',
+	hasCompletedOnboarding: true,
+});
+const mockAuthenticatedNotCompletedOnboarding = buildCurrentUserMock({
+	id: 'user-456',
+	hasCompletedOnboarding: false,
+});
 
 export const AuthenticatedCompletedOnboarding: Story = {
 	decorators: [withMockApolloClient, withMockRouter('/')],
 	parameters: {
 		apolloClient: {
-			mocks: [mockAuthenticatedCompletedOnboarding],
+			mocks: [mockAuthenticatedCompletedOnboarding, buildListingsMock(), buildUseUserIsAdminMock(false)],
 		},
 	},
 };
@@ -68,7 +118,105 @@ export const AuthenticatedNotCompletedOnboarding: Story = {
 	decorators: [withMockApolloClient, withMockRouter('/')],
 	parameters: {
 		apolloClient: {
-			mocks: [mockAuthenticatedNotCompletedOnboarding],
+			mocks: [
+				mockAuthenticatedNotCompletedOnboarding,
+				{
+					request: {
+						query:
+							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+					},
+					result: {
+						data: {
+							currentPersonalUserAndCreateIfNotExists: {
+								id: 'user-456',
+								account: {
+									accountType: 'personal-user',
+								},
+							},
+						},
+					},
+				},
+				buildListingsMock(),
+				buildUseUserIsAdminMock(false),
+				{
+					request: { query: SelectAccountTypeContainerAccountPlansDocument },
+					result: {
+						data: {
+							accountPlans: [
+								{
+									name: 'non-verified-personal',
+									description: 'Non-Verified Personal',
+									billingPeriodLength: 0,
+									billingPeriodUnit: 'month',
+									billingAmount: 0,
+									currency: 'USD',
+									setupFee: 0,
+									feature: {
+										activeReservations: 0,
+										bookmarks: 3,
+										itemsToShare: 15,
+										friends: 5,
+										__typename: 'AccountPlanFeature',
+									},
+									status: null,
+									cybersourcePlanId: null,
+									id: '607f1f77bcf86cd799439001',
+									schemaVersion: '1.0.0',
+									createdAt: '2023-05-02T10:00:00.000Z',
+									updatedAt: '2023-05-02T10:00:00.000Z',
+									__typename: 'AccountPlan',
+								},
+								{
+									name: 'verified-personal',
+									description: 'Verified Personal',
+									billingPeriodLength: 0,
+									billingPeriodUnit: 'month',
+									billingAmount: 0,
+									currency: 'USD',
+									setupFee: 0,
+									feature: {
+										activeReservations: 10,
+										bookmarks: 10,
+										itemsToShare: 30,
+										friends: 10,
+										__typename: 'AccountPlanFeature',
+									},
+									status: null,
+									cybersourcePlanId: null,
+									id: '607f1f77bcf86cd799439002',
+									schemaVersion: '1.0.0',
+									createdAt: '2023-05-02T10:00:00.000Z',
+									updatedAt: '2023-05-02T10:00:00.000Z',
+									__typename: 'AccountPlan',
+								},
+								{
+									name: 'verified-personal-plus',
+									description: 'Verified Personal Plus',
+									billingPeriodLength: 12,
+									billingPeriodUnit: 'month',
+									billingAmount: 4.99,
+									currency: 'USD',
+									setupFee: 0,
+									feature: {
+										activeReservations: 30,
+										bookmarks: 30,
+										itemsToShare: 50,
+										friends: 30,
+										__typename: 'AccountPlanFeature',
+									},
+									status: 'active',
+									cybersourcePlanId: 'cybersource_plan_001',
+									id: '607f1f77bcf86cd799439000',
+									schemaVersion: '1.0.0',
+									createdAt: '2023-05-02T10:00:00.000Z',
+									updatedAt: '2023-05-02T10:00:00.000Z',
+									__typename: 'AccountPlan',
+								},
+							],
+					},
+					},
+				},
+			],
 		},
 	},
 };
@@ -88,7 +236,10 @@ export const Unauthenticated: Story = {
 	],
 	parameters: {
 		apolloClient: {
-			mocks: [],
+			mocks: [
+        buildListingsMock(),
+        buildUseUserIsAdminMock(false),
+      ],
 		},
 	},
 };

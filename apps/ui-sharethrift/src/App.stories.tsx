@@ -1,46 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { AuthProvider } from 'react-oidc-context';
-import { MockedProvider } from '@apollo/client/testing/react';
 import { App } from './App.tsx';
-
-const mockEnv = {
-	VITE_FUNCTION_ENDPOINT: 'https://mock-functions.example.com',
-	VITE_BLOB_STORAGE_CONFIG_URL: 'https://mock-storage.example.com',
-	VITE_B2C_AUTHORITY: 'https://mock-authority.example.com',
-	VITE_B2C_CLIENTID: 'mock-client-id',
-	NODE_ENV: 'development',
-};
-
-const mockStorage = {
-	getItem: (key: string) => {
-		if (key.includes('oidc.user')) {
-			return JSON.stringify({
-				access_token: '',
-				profile: { sub: 'test-user' },
-			});
-		}
-		return null;
-	},
-	setItem: (_key: string, _value: string) => Promise.resolve(),
-	removeItem: (_key: string) => Promise.resolve(),
-	clear: () => Promise.resolve(),
-	key: () => null,
-	length: 0,
-	set: (_key: string, _value: unknown) => Promise.resolve(),
-	get: (_key: string) => Promise.resolve(null),
-	remove: (_key: string) => Promise.resolve(null),
-	getAllKeys: () => Promise.resolve([]),
-};
-
-Object.defineProperty(globalThis, 'sessionStorage', { value: mockStorage, writable: true });
-Object.defineProperty(globalThis, 'localStorage', { value: mockStorage, writable: true });
-
-Object.defineProperty(import.meta, 'env', {
-	value: mockEnv,
-	writable: true,
-});
+import { withAuthDecorator } from './test-utils/storybook-decorators.tsx';
 
 const meta: Meta<typeof App> = {
 	title: 'App/Main Application',
@@ -58,21 +20,7 @@ const meta: Meta<typeof App> = {
 			},
 		},
 	},
-	decorators: [
-		(Story) => (
-			<MockedProvider mocks={[]}>
-				<AuthProvider
-					authority={mockEnv.VITE_B2C_AUTHORITY}
-					client_id={mockEnv.VITE_B2C_CLIENTID}
-					redirect_uri={globalThis.location.origin}
-					post_logout_redirect_uri={globalThis.location.origin}
-					userStore={mockStorage}
-				>
-					<Story />
-				</AuthProvider>
-			</MockedProvider>
-		),
-	],
+	decorators: [withAuthDecorator],
 } satisfies Meta<typeof App>;
 
 export default meta;

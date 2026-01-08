@@ -5,6 +5,8 @@ import type { Decorator, StoryContext } from '@storybook/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { UserIdProvider } from '../components/shared/user-context.tsx';
 import { MockAuthWrapper } from './storybook-mock-auth-wrappers.tsx';
+import { AuthProvider } from 'react-oidc-context';
+import { MockedProvider } from '@apollo/client/testing/react';
 
 /**
  * Reusable Apollo Client decorator for Storybook stories.
@@ -96,3 +98,65 @@ export const withMockRouter =
 			</MemoryRouter>
 		</MockAuthWrapper>
 	);
+
+const mockEnv = {
+	VITE_FUNCTION_ENDPOINT: 'https://mock-functions.example.com',
+	VITE_BLOB_STORAGE_CONFIG_URL: 'https://mock-storage.example.com',
+	VITE_B2C_AUTHORITY: 'https://mock-authority.example.com',
+	VITE_B2C_CLIENTID: 'mock-client-id',
+	NODE_ENV: 'development',
+};
+
+const mockStorage = {
+	getItem: (key: string) => {
+		if (key.includes('oidc.user')) {
+			return JSON.stringify({
+				access_token: '',
+				profile: { sub: 'test-user' },
+			});
+		}
+		return null;
+	},
+	setItem: () => Promise.resolve(),
+	removeItem: () => Promise.resolve(),
+	clear: () => Promise.resolve(),
+	key: () => null,
+	length: 0,
+	set: () => Promise.resolve(),
+	get: () => Promise.resolve(null),
+	remove: () => Promise.resolve(null),
+	getAllKeys: () => Promise.resolve([]),
+};
+
+// Apply mocks to global environment for stories
+Object.defineProperty(globalThis, 'sessionStorage', {
+	value: mockStorage,
+	writable: true,
+});
+Object.defineProperty(globalThis, 'localStorage', {
+	value: mockStorage,
+	writable: true,
+});
+
+Object.defineProperty(import.meta, 'env', {
+	value: mockEnv,
+	writable: true,
+});
+
+// StoryFn's runtime signature can vary; accept `any` here so the
+// decorator works regardless of Storybook's inferred types.
+export const withAuthDecorator: Decorator = (Story) => (
+	<MockedProvider mocks={[]}>
+		<AuthProvider
+			authority={mockEnv.VITE_B2C_AUTHORITY}
+			client_id={mockEnv.VITE_B2C_CLIENTID}
+			redirect_uri={globalThis.location.origin}
+			post_logout_redirect_uri={globalThis.location.origin}
+			userStore={mockStorage}
+		>
+			<Story />
+		</AuthProvider>
+	</MockedProvider>
+);
+
+export const mockEnvironment = { mockEnv, mockStorage };

@@ -1,48 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within } from 'storybook/test';
-import { AuthProvider } from 'react-oidc-context';
-import { MemoryRouter } from 'react-router-dom';
 import { ApolloConnection } from './apollo-connection.tsx';
-
-// Mock environment variables
-const mockEnv = {
-	VITE_FUNCTION_ENDPOINT: 'https://mock-functions.example.com',
-	VITE_BLOB_STORAGE_CONFIG_URL: 'https://mock-storage.example.com',
-	VITE_B2C_AUTHORITY: 'https://mock-authority.example.com',
-	VITE_B2C_CLIENTID: 'mock-client-id',
-	NODE_ENV: 'development',
-};
-
-// Mock window.sessionStorage and window.localStorage
-const mockStorage = {
-	getItem: (key: string) => {
-		if (key.includes('oidc.user')) {
-			return JSON.stringify({
-				access_token: '',
-				profile: { sub: 'test-user' },
-			});
-		}
-		return null;
-	},
-	setItem: (_key: string, _value: string) => Promise.resolve(),
-	removeItem: (_key: string) => Promise.resolve(),
-	clear: () => Promise.resolve(),
-	key: () => null,
-	length: 0,
-	set: (_key: string, _value: unknown) => Promise.resolve(),
-	get: (_key: string) => Promise.resolve(null),
-	remove: (_key: string) => Promise.resolve(null),
-	getAllKeys: () => Promise.resolve([]),
-};
-
-Object.defineProperty(globalThis, 'sessionStorage', { value: mockStorage, writable: true });
-Object.defineProperty(globalThis, 'localStorage', { value: mockStorage, writable: true });
-
-// Mock import.meta.env
-Object.defineProperty(import.meta, 'env', {
-	value: mockEnv,
-	writable: true,
-});
+import { withAuthDecorator } from '../../test-utils/storybook-decorators.tsx';
 
 const meta: Meta<typeof ApolloConnection> = {
 	title: 'Components/Shared/Apollo Connection',
@@ -56,21 +15,7 @@ const meta: Meta<typeof ApolloConnection> = {
 			},
 		},
 	},
-	decorators: [
-		(Story) => (
-			<AuthProvider
-				authority={mockEnv.VITE_B2C_AUTHORITY}
-				client_id={mockEnv.VITE_B2C_CLIENTID}
-				redirect_uri={globalThis.location.origin}
-				post_logout_redirect_uri={globalThis.location.origin}
-				userStore={mockStorage}
-			>
-				<MemoryRouter>
-					<Story />
-				</MemoryRouter>
-			</AuthProvider>
-		),
-	],
+	decorators: [withAuthDecorator],
 } satisfies Meta<typeof ApolloConnection>;
 
 export default meta;
