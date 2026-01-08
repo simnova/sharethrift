@@ -106,14 +106,14 @@ test.for(feature, ({ Background, Scenario }) => {
 					Listing: {
 						ItemListing: {
 							ItemListingReadRepo: {
-								getExpiredForDeletion: vi.fn().mockResolvedValue(mockExpiredListings),
+								getExpiredForDeletion: vi.fn().mockImplementation(() => Promise.resolve(mockExpiredListings)),
 							},
 						},
 					},
 					Conversation: {
 						Conversation: {
 							ConversationReadRepo: {
-								getByListingId: vi.fn().mockResolvedValue(mockConversations),
+								getByListingId: vi.fn().mockImplementation(() => Promise.resolve(mockConversations)),
 							},
 						},
 					},

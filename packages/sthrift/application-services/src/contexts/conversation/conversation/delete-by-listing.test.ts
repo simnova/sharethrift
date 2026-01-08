@@ -70,7 +70,7 @@ test.for(feature, ({ Background, Scenario }) => {
 					Conversation: {
 						Conversation: {
 							ConversationReadRepo: {
-								getByListingId: vi.fn().mockResolvedValue(mockConversations),
+								getByListingId: vi.fn().mockImplementation(() => Promise.resolve(mockConversations)),
 							},
 						},
 					},
