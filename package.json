@@ -57,6 +57,9 @@
             "ignoreGhsas": [
                 "GHSA-6rw7-vpxm-498p"
             ]
+        },
+        "overrides": {
+            "@pnpm/npm-conf": ">=3.0.2"
         }
     },
     "devDependencies": {
