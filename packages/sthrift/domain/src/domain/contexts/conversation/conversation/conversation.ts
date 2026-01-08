@@ -20,7 +20,7 @@ export class Conversation<props extends ConversationProps>
 	implements ConversationEntityReference
 {
 	private isNew: boolean = false;
-	public static readonly RETENTION_PERIOD_MS = 180 * 24 * 60 * 60 * 1000;
+	public static readonly RETENTION_PERIOD_MS = 180 * 24 * 60 * 60 * 1000; // 6-month (180-day) retention period expressed in milliseconds
 	private readonly visa: ConversationVisa;
 
 	//#region Constructor

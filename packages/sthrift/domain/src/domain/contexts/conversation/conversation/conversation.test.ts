@@ -6,6 +6,7 @@ import { expect, vi } from 'vitest';
 import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { Passport } from '../../passport.ts';
+import type { ReservationRequestEntityReference } from '../../reservation-request/reservation-request/reservation-request.entity.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { UserEntityReference } from '../../user/index.ts';
@@ -1027,6 +1028,117 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(scheduleWithoutPermission).toThrow(
 					'You do not have permission to schedule this conversation for deletion',
 				);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting reservation request when it exists',
+		({ Given, When, Then }) => {
+			let mockReservationRequest: ReservationRequestEntityReference;
+			let result: ReservationRequestEntityReference | undefined;
+
+			Given('a Conversation aggregate with a reservation request', () => {
+				passport = makePassport(true);
+				mockReservationRequest = {} as ReservationRequestEntityReference;
+				const props = {
+					...makeBaseProps(),
+					reservationRequest: mockReservationRequest,
+				};
+				conversation = new Conversation(props, passport);
+			});
+
+			When('I get the reservationRequest property', () => {
+				result = conversation.reservationRequest;
+			});
+
+			Then('it should return the reservation request entity reference', () => {
+				expect(result).toBeDefined();
+				expect(result).toBe(mockReservationRequest);
+			});
+		},
+	);
+
+	Scenario(
+		"Getting reservation request when it doesn't exist",
+		({ Given, When, Then }) => {
+			let result: ReservationRequestEntityReference | undefined;
+
+			Given('a Conversation aggregate without a reservation request', () => {
+				passport = makePassport(true);
+				const props = {
+					...makeBaseProps(),
+					reservationRequest: undefined,
+				};
+				conversation = new Conversation(props, passport);
+			});
+
+			When('I get the reservationRequest property', () => {
+				result = conversation.reservationRequest;
+			});
+
+			Then('it should return undefined', () => {
+				expect(result).toBeUndefined();
+			});
+		},
+	);
+
+	Scenario(
+		'Loading reservation request when loader exists',
+		({ Given, When, Then }) => {
+			let mockReservationRequest: ReservationRequestEntityReference;
+			let result: ReservationRequestEntityReference | undefined;
+
+			Given(
+				'a Conversation aggregate with a reservation request loader',
+				() => {
+					passport = makePassport(true);
+					mockReservationRequest = {} as ReservationRequestEntityReference;
+					const props = {
+						...makeBaseProps(),
+						loadReservationRequest: async () => mockReservationRequest,
+					};
+					conversation = new Conversation(props, passport);
+				},
+			);
+
+			When('I call loadReservationRequest', async () => {
+				result = await conversation.loadReservationRequest();
+			});
+
+			Then(
+				'it should return the loaded reservation request entity reference',
+				() => {
+					expect(result).toBeDefined();
+					expect(result).toBe(mockReservationRequest);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		"Loading reservation request when loader doesn't exist",
+		({ Given, When, Then }) => {
+			let result: ReservationRequestEntityReference | undefined;
+
+			Given(
+				'a Conversation aggregate without a reservation request loader',
+				() => {
+					passport = makePassport(true);
+					const props = {
+						...makeBaseProps(),
+						loadReservationRequest: undefined,
+					};
+					conversation = new Conversation(props, passport);
+				},
+			);
+
+			When('I call loadReservationRequest', async () => {
+				result = await conversation.loadReservationRequest();
+			});
+
+			Then('it should return undefined', () => {
+				expect(result).toBeUndefined();
 			});
 		},
 	);

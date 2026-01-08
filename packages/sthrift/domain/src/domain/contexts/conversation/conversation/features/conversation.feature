@@ -152,3 +152,22 @@ Feature: Conversation aggregate
     When I try to call scheduleForDeletion
     Then a PermissionError should be thrown
 
+  Scenario: Getting reservation request when it exists
+    Given a Conversation aggregate with a reservation request
+    When I get the reservationRequest property
+    Then it should return the reservation request entity reference
+
+  Scenario: Getting reservation request when it doesn't exist
+    Given a Conversation aggregate without a reservation request
+    When I get the reservationRequest property
+    Then it should return undefined
+
+  Scenario: Loading reservation request when loader exists
+    Given a Conversation aggregate with a reservation request loader
+    When I call loadReservationRequest
+    Then it should return the loaded reservation request entity reference
+
+  Scenario: Loading reservation request when loader doesn't exist
+    Given a Conversation aggregate without a reservation request loader
+    When I call loadReservationRequest
+    Then it should return undefined
