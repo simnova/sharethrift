@@ -488,6 +488,9 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
       '@types/express':
         specifier: ^4.17.23
         version: 4.17.25
@@ -525,6 +528,9 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
       '@types/express':
         specifier: ^4.17.21
         version: 4.17.25
