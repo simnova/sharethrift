@@ -13,6 +13,9 @@ __*
 # SonarScanner
 .scannerwork
 
+# Serenity reports copied to Docusaurus static folder (build artifacts)
+apps/docs/static/serenity-reports
+
 # Generated GraphQL files
 **/generated.ts
 **/generated.tsx
