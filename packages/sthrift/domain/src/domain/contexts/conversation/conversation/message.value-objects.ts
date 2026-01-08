@@ -1,8 +1,5 @@
-import { VOString } from '@lucaspaganini/value-objects';
+import { VOArray, VOString } from '@lucaspaganini/value-objects';
 import { ObjectId } from '../../value-objects.ts';
-
-// Constant for messages with unknown/anonymous authors
-export const ANONYMOUS_AUTHOR_ID = '000000000000000000000000';
 
 export class AuthorId extends ObjectId {}
 
@@ -13,9 +10,15 @@ export class MessagingMessageId extends VOString({
 	maxLength: 255,
 }) {}
 
-// Message content value object
-export class MessageContent extends VOString({
+// Value object for validating a single text content item within a message.
+export class MessageText extends VOString({
 	trim: true,
 	minLength: 1,
 	maxLength: 2000,
+}) {}
+
+// Value object for an array of message content items.
+export class MessageContents extends VOArray(MessageText, {
+	minLength: 1,
+	maxLength: 10,
 }) {}
