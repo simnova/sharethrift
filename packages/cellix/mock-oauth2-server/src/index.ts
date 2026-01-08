@@ -171,18 +171,17 @@ async function main() {
 			}
 		}
 
-		// Use different credentials based on portal type
-		const email = isAdminPortal
-			? process.env['Admin_Email'] || process.env['Email'] || ''
-			: process.env['Email'] || '';
-		const given_name = isAdminPortal
-			? process.env['Admin_Given_Name'] || process.env['Given_Name'] || ''
-			: process.env['Given_Name'] || '';
-		const family_name = isAdminPortal
-			? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
-			: process.env['Family_Name'] || '';
-
-		const profile: TokenProfile = {
+	// Use different credentials based on portal type
+	// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures
+	const email = isAdminPortal
+		? process.env['Admin_Email'] || process.env['Email'] || ''
+		: process.env['Email'] || '';
+	const given_name = isAdminPortal
+		? process.env['Admin_Given_Name'] || process.env['Given_Name'] || ''
+		: process.env['Given_Name'] || '';
+	const family_name = isAdminPortal
+		? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
+		: process.env['Family_Name'] || '';		const profile: TokenProfile = {
 			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),
 			iss: `http://localhost:${port}`,
