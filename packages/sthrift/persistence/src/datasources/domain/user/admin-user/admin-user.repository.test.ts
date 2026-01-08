@@ -6,6 +6,7 @@ import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { Domain } from '@sthrift/domain';
 import type mongoose from 'mongoose';
 import { expect, vi } from 'vitest';
+import { makeNewableMock } from '@cellix/test-utils';
 import { AdminUserConverter } from './admin-user.domain-adapter.ts';
 import { AdminUserRepository } from './admin-user.repository.ts';
 
@@ -31,6 +32,8 @@ function makeEventBus(): DomainSeedwork.EventBus {
 		register: vi.fn(),
 	} as DomainSeedwork.EventBus);
 }
+
+// use shared makeNewableMock from test-utils
 
 function makeSession(): mongoose.ClientSession {
 	return vi.mocked({} as mongoose.ClientSession);
@@ -168,9 +171,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'I call getNewInstance with email "newadmin@example.com", username "newadmin", firstName "New", and lastName "Admin"',
 			async () => {
 				const newDoc = { ...mockDoc };
-				// Create a proper constructor function mock
-				const ModelConstructor = vi.fn().mockImplementation(() => newDoc);
-				// Add the other mongoose model methods that might be needed
+				const ModelConstructor = makeNewableMock(() => newDoc);
 				Object.assign(ModelConstructor, {
 					findOne: mockModel.findOne,
 					findById: mockModel.findById,
