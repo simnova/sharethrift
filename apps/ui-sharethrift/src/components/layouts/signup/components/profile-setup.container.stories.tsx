@@ -77,7 +77,7 @@ export default meta;
 type Story = StoryObj<typeof ProfileSetupContainer>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -105,7 +105,7 @@ export const LoadingState: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
@@ -127,7 +127,7 @@ export const QueryError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -159,7 +159,7 @@ export const NoUserData: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		// Component should handle null user gracefully
 		expect(canvasElement).toBeTruthy();
 	},
@@ -203,7 +203,7 @@ export const UpdateSuccess: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -257,7 +257,7 @@ export const UpdateFailure: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -299,7 +299,7 @@ export const UpdateError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -344,7 +344,7 @@ export const EmptyProfile: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -383,7 +383,7 @@ export const UpdateLoading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {

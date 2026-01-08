@@ -24,7 +24,7 @@ export const FileExports: Story = {
 			<p>Settings component file exists and exports correctly</p>
 		</div>
 	),
-	play: async () => {
+	play:  async () => {
 		const { Settings } = await import('./Settings.tsx');
 		expect(Settings).toBeDefined();
 		expect(typeof Settings).toBe('function');

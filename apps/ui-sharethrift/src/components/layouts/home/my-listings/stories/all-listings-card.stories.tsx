@@ -93,7 +93,7 @@ export const Default: Story = {
 	args: {
 		listing: MOCK_LISTING_PAUSED,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		const title = canvas.getByText(/Electric Guitar/i);
@@ -121,7 +121,7 @@ export const ActiveListing: Story = {
 	args: {
 		listing: MOCK_LISTING_ACTIVE,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText(/Cordless Drill/i)).toBeInTheDocument();
 		const pauseBtn = canvas.queryByRole('button', { name: /pause/i });
@@ -133,7 +133,7 @@ export const PausedListing: Story = {
 	args: {
 		listing: MOCK_LISTING_PAUSED,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText(/Electric Guitar/i)).toBeInTheDocument();
 		const reinstateBtn = canvas.queryByRole('button', { name: /reinstate/i });
@@ -145,7 +145,7 @@ export const BlockedListing: Story = {
 	args: {
 		listing: MOCK_LISTING_BLOCKED,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText(/Blocked Item/i)).toBeInTheDocument();
 		const appealBtn = canvas.queryByRole('button', { name: /appeal/i });
@@ -157,7 +157,7 @@ export const DraftListing: Story = {
 	args: {
 		listing: MOCK_LISTING_DRAFT,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText(/Draft Listing/i)).toBeInTheDocument();
 		const publishBtn = canvas.queryByRole('button', { name: /publish/i });
@@ -169,7 +169,7 @@ export const ExpiredListing: Story = {
 	args: {
 		listing: MOCK_LISTING_EXPIRED,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText(/Expired Item/i)).toBeInTheDocument();
 		const reinstateBtn = canvas.queryByRole('button', { name: /reinstate/i });
@@ -181,7 +181,7 @@ export const ReservedListing: Story = {
 	args: {
 		listing: MOCK_LISTING_RESERVED,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText(/Reserved Item/i)).toBeInTheDocument();
 		const pauseBtn = canvas.queryByRole('button', { name: /pause/i });
@@ -193,7 +193,7 @@ export const NoImageListing: Story = {
 	args: {
 		listing: MOCK_LISTING_NO_IMAGE,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText(/No Image Listing/i)).toBeInTheDocument();
 	},
@@ -205,7 +205,7 @@ export const WithPendingRequests: Story = {
 		onViewPendingRequests: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		
 		const title = canvas.getByText(/Cordless Drill/i);

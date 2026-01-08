@@ -78,7 +78,7 @@ export default meta;
 type Story = StoryObj<typeof AccountSetUpContainer>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -104,7 +104,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
@@ -126,7 +126,7 @@ export const WithError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -178,7 +178,7 @@ export const UpdateSuccess: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -230,7 +230,7 @@ export const UpdateFailure: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -270,7 +270,7 @@ export const UpdateError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -302,7 +302,7 @@ export const WithMissingUserData: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		// Component should handle null user gracefully
 		expect(canvasElement).toBeTruthy();
 	},

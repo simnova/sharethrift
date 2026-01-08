@@ -110,7 +110,7 @@ export const Default: Story = {
 			mocks: defaultMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// ListingBanner shows "{firstName}'s Listing"
 		await expect(
@@ -128,7 +128,7 @@ export const SendMessageSuccess: Story = {
 			mocks: sendMessageSuccessMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'Test message');
@@ -146,7 +146,7 @@ export const SendMessageError: Story = {
 			mocks: sendMessageErrorMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'This will fail');
@@ -164,7 +164,7 @@ export const SendMessageNetworkError: Story = {
 			mocks: sendMessageNetworkErrorMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'Network will fail');
@@ -182,7 +182,7 @@ export const CacheUpdateOnSuccess: Story = {
 			mocks: cacheUpdateMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'First message');

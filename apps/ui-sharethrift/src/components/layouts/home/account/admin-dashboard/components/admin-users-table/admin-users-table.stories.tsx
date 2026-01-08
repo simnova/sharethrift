@@ -76,7 +76,7 @@ export const WithUsers: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -145,7 +145,7 @@ export const OpenBlockModal: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: async({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const blockButton = await canvas.findByRole('button', { name: 'Block' });
 		await userEvent.click(blockButton);

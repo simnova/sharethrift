@@ -60,7 +60,7 @@ export default meta;
 type Story = StoryObj<typeof ListingInformation>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 		await expect(canvasElement.querySelector('.title42')).toBeTruthy();
 	},
@@ -70,7 +70,7 @@ export const Unauthenticated: Story = {
 	args: {
 		isAuthenticated: false,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -79,7 +79,7 @@ export const SharerView: Story = {
 	args: {
 		userIsSharer: true,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -94,7 +94,7 @@ export const WithPendingRequest: Story = {
 			reservationPeriodEnd: '1739145600000',
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -106,7 +106,7 @@ export const WithDatesSelected: Story = {
 			endDate: new Date('2025-02-10'),
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -118,7 +118,7 @@ export const ListingNotPublished: Story = {
 			state: 'Draft' as const,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 		await expect(canvasElement.textContent).toContain('Listing Not Available');
 	},
@@ -128,7 +128,7 @@ export const LoadingOtherReservations: Story = {
 	args: {
 		otherReservationsLoading: true,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -141,7 +141,7 @@ export const ReservationLoading: Story = {
 			endDate: new Date('2025-02-10'),
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -150,7 +150,7 @@ export const WithOtherReservations: Story = {
 	args: {
 		otherReservations: mockOtherReservations,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -159,7 +159,7 @@ export const WithReservationError: Story = {
 	args: {
 		otherReservationsError: new Error('Failed to load reservations'),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -172,7 +172,7 @@ export const ClickReserveButton: Story = {
 			endDate: new Date('2025-02-10'),
 		},
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const reserveButton = canvas.queryByRole('button', { name: /Reserve/i });
@@ -194,7 +194,7 @@ export const ClickCancelButton: Story = {
 			reservationPeriodEnd: '1739145600000',
 		},
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const cancelButton = canvas.queryByRole('button', { name: /Cancel/i });
@@ -210,7 +210,7 @@ export const UnauthenticatedLoginClick: Story = {
 		isAuthenticated: false,
 		onLoginClick: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const loginButton = canvas.queryByRole('button', { name: /Login/i });
@@ -226,7 +226,7 @@ export const UnauthenticatedSignUpClick: Story = {
 		isAuthenticated: false,
 		onSignUpClick: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const signUpButton = canvas.queryByRole('button', { name: /Sign Up/i });
@@ -247,7 +247,7 @@ export const WithApprovedReservation: Story = {
 			reservationPeriodEnd: '1739145600000',
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -257,7 +257,7 @@ export const DateRangeWithOverlap: Story = {
 		otherReservations: mockOtherReservations,
 		onReservationDatesChange: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const dateInputs = canvas.getAllByPlaceholderText(/date/i);
@@ -272,7 +272,7 @@ export const ClickLoginToReserve: Story = {
 	args: {
 		isAuthenticated: false,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const loginButton = canvas.queryByRole('button', { name: /Log in to Reserve/i });
@@ -287,7 +287,7 @@ export const SelectDatesInDatePicker: Story = {
 		otherReservations: [],
 		onReservationDatesChange: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const dateInputs = canvas.getAllByPlaceholderText(/date/i);
@@ -306,7 +306,7 @@ export const ClearDateSelection: Story = {
 		},
 		onReservationDatesChange: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };

@@ -100,7 +100,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -133,7 +133,7 @@ export const Empty: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -151,7 +151,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };

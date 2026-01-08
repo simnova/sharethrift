@@ -136,7 +136,7 @@ export const EmptyListings: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

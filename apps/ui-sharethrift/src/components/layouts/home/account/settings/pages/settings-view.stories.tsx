@@ -53,7 +53,7 @@ export default meta;
 type Story = StoryObj<typeof SettingsView>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 		const canvas = within(canvasElement);
 		expect(canvas.getByText('John')).toBeInTheDocument();
@@ -201,7 +201,7 @@ export const UserWithoutBilling: Story = {
 			billing: undefined,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const notProvidedTexts = canvas.getAllByText('Not provided');
 		expect(notProvidedTexts.length).toBeGreaterThan(0);
@@ -224,7 +224,7 @@ export const MinimalUser: Story = {
 			},
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const notProvidedTexts = canvas.getAllByText('Not provided');
 		expect(notProvidedTexts.length).toBeGreaterThan(0);
@@ -235,7 +235,7 @@ export const SavingState: Story = {
 	args: {
 		isSavingSection: true,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

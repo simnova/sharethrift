@@ -91,7 +91,7 @@ export const Authenticated: Story = {
 	args: {
 		isAuthenticated: true,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await waitFor(
 			() => {
 				// Component rendered
@@ -123,7 +123,7 @@ export const Unauthenticated: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await waitFor(
 			() => {
 				// Component rendered
@@ -151,7 +151,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);

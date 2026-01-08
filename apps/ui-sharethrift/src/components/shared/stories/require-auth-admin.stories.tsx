@@ -2,7 +2,6 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import {
 	withMockApolloClient,
-	MockAuthWrapper,
 } from '../../../test-utils/storybook-decorators.tsx';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from 'react-oidc-context';
@@ -10,6 +9,7 @@ import { RequireAuthAdmin } from '../require-auth-admin.tsx';
 import { UseUserIsAdminDocument } from '../../../generated.tsx';
 import { createMockAuth } from '../../../test/utils/mockAuth.ts';
 import { vi } from 'vitest';
+import { MockAuthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
 
 const meta: Meta<typeof RequireAuthAdmin> = {
 	title: 'Shared/RequireAuthAdmin',
@@ -172,7 +172,7 @@ export const UnauthenticatedWithError: Story = {
 			);
 		},
 	],
-	play: async ({ canvasElement }) => {
+	play:  async({ canvasElement }) => {
 		// Should redirect on error
 		await expect(canvasElement).toBeTruthy();
 	},

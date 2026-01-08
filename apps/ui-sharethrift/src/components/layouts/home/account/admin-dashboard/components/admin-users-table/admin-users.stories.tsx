@@ -95,7 +95,7 @@ export default meta;
 type Story = StoryObj<typeof AdminUsers>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

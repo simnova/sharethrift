@@ -68,7 +68,7 @@ export const ActiveUser: Story = {
 	args: {
 		user: mockActiveUser,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText('johndoe')).toBeTruthy();
 		expect(canvas.getByText('Active')).toBeTruthy();
@@ -82,7 +82,7 @@ export const BlockedUser: Story = {
 	args: {
 		user: mockBlockedUser,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText('blockeduser')).toBeTruthy();
 		expect(canvas.getByText('Blocked')).toBeTruthy();
@@ -95,7 +95,7 @@ export const UserWithReports: Story = {
 	args: {
 		user: mockUserWithReports,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText('reporteduser')).toBeTruthy();
 		expect(canvas.getByText('View Report (5)')).toBeTruthy();
@@ -106,7 +106,7 @@ export const UserWithNoDate: Story = {
 	args: {
 		user: mockUserNoDate,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText('newuser')).toBeTruthy();
 		expect(canvasElement.textContent).toContain('N/A');

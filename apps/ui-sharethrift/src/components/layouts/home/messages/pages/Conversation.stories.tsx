@@ -20,7 +20,7 @@ type Story = StoryObj<typeof Conversation>;
 
 export const Default: Story = {
 	name: 'Default',
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 		const content = canvasElement.textContent;
 		expect(content).toContain('Conversation Page');

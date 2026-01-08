@@ -74,7 +74,7 @@ export default meta;
 type Story = StoryObj<typeof AdminDashboardMain>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 		const tabs = canvasElement.querySelectorAll('[role="tab"]');
 		expect(tabs.length).toBeGreaterThan(0);

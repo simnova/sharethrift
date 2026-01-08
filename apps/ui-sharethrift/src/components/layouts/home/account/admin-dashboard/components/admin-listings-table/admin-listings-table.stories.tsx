@@ -68,7 +68,7 @@ export const WithListings: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -89,7 +89,7 @@ export const LoadingState: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -110,7 +110,7 @@ export const WithBlockedListings: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -131,7 +131,7 @@ export const EmptyState: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

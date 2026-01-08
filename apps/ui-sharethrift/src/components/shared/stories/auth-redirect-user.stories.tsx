@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
 import { AuthRedirectUser } from '../auth-redirect-user.tsx';
+import { MockAuthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
 
 const meta: Meta<typeof AuthRedirectUser> = {
 	title: 'Shared/AuthRedirectUser',

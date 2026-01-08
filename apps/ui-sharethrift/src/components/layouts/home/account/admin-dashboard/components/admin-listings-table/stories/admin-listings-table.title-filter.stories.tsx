@@ -25,7 +25,7 @@ export const Empty: Story = {
 		searchText: '',
 		selectedKeys: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByPlaceholderText('Search listings');
 		expect(input).toBeTruthy();
@@ -37,7 +37,7 @@ export const WithSearchText: Story = {
 		searchText: 'bicycle',
 		selectedKeys: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByPlaceholderText('Search listings');
 		expect(input).toBeTruthy();
@@ -49,7 +49,7 @@ export const WithSelectedKeys: Story = {
 		searchText: '',
 		selectedKeys: ['tent'],
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const input = canvas.getByPlaceholderText('Search listings');
 		expect((input as HTMLInputElement).value).toBe('tent');

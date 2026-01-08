@@ -72,7 +72,7 @@ export default meta;
 type Story = StoryObj<typeof SharerInformation>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -82,7 +82,7 @@ export const OwnerView: Story = {
 		isOwner: true,
 		currentUserId: 'user-1',
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -91,7 +91,7 @@ export const WithoutCurrentUser: Story = {
 	args: {
 		currentUserId: null,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -100,7 +100,7 @@ export const RecentlyShared: Story = {
 	args: {
 		sharedTimeAgo: '1h ago',
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -109,13 +109,13 @@ export const LongTimeAgo: Story = {
 	args: {
 		sharedTimeAgo: '3 months ago',
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
 
 export const ClickMessageButton: Story = {
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const messageButton = canvas.queryByRole('button', { name: /Message/i });
@@ -160,7 +160,7 @@ export const MessageButtonWithError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const messageButton = canvas.queryByRole('button', { name: /Message/i });
@@ -176,7 +176,7 @@ export const MobileView: Story = {
 			defaultViewport: 'mobile1',
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };

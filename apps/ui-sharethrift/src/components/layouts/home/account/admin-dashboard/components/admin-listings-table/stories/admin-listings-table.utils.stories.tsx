@@ -48,7 +48,7 @@ export default meta;
 type Story = StoryObj<typeof FormatDateTest>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		// Test valid date formatting with ISO strings (includes timezone)
 		expect(formatDate('2024-01-15T10:30:00Z')).toBe('2024-01-15');
 		expect(formatDate('2024-12-25T12:00:00Z')).toBe('2024-12-25');

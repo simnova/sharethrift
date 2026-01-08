@@ -88,7 +88,7 @@ export default meta;
 type Story = StoryObj<typeof AdminViewListing>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -119,7 +119,7 @@ export const ListingNotFound: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -142,7 +142,7 @@ export const LoadingState: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -200,7 +200,7 @@ export const UnblockSuccess: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -249,7 +249,7 @@ export const UnblockError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -309,7 +309,7 @@ export const DeleteSuccess: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -369,7 +369,7 @@ export const DeleteFailure: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -418,7 +418,7 @@ export const DeleteError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -460,7 +460,7 @@ export const PublishedListing: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -502,7 +502,7 @@ export const AppealRequestedListing: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

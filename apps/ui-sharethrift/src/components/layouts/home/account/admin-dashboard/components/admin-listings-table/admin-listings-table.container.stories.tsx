@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent, waitFor } from 'storybook/test';
-import { AdminListings } from './admin-listings-table.container.tsx';
-import {
-	withMockApolloClient,
-	withMockRouter,
-} from '../../../../../../../test-utils/storybook-decorators.tsx';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
 	AdminListingsTableContainerUnblockListingDocument,
 } from '../../../../../../../generated.tsx';
+import {
+	withMockApolloClient,
+	withMockRouter,
+} from '../../../../../../../test-utils/storybook-decorators.tsx';
+import { AdminListings } from './admin-listings-table.container.tsx';
 
 const meta: Meta<typeof AdminListings> = {
 	title: 'Containers/AdminListingsTableContainer',
@@ -214,7 +214,7 @@ export const LoadingState: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
