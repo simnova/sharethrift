@@ -266,7 +266,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 	}
 
 	async loadSharer(): Promise<UserEntityReference> {
-		return (await this.props.loadListing()).sharer;
+		return this.props.listing.sharer;
 	}
 
 	async loadListing(): Promise<ItemListingEntityReference> {
