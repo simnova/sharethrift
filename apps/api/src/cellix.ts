@@ -118,11 +118,11 @@ interface AzureFunctionHandlerRegistry<ContextType = unknown, AppServices = unkn
      *
      * @throws Error - If called before application services are initialized.
      */
-	registerAzureFunctionTimerHandler(
+	registerAzureFunctionTimerHandler<TFactory extends RequestScopedHost<AppServices, unknown> = AppHost<AppServices>>(
 		name: string,
 		schedule: string,
 		handlerCreator: (
-			applicationServicesHost: AppHost<AppServices>,
+			applicationServicesFactory: TFactory,
 		) => TimerHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices>;
     /**
@@ -192,7 +192,7 @@ interface PendingHandler<AppServices> {
 interface PendingTimerHandler<AppServices> {
 	name: string;
 	schedule: string;
-	handlerCreator: (applicationServicesHost: AppHost<AppServices>) => TimerHandler;
+	handlerCreator: (applicationServicesHost: RequestScopedHost<AppServices, unknown>) => TimerHandler;
 }
 
 type Phase = 'infrastructure' | 'context' | 'app-services' | 'handlers' | 'started';
@@ -312,7 +312,7 @@ export class Cellix<ContextType, AppServices = unknown>
 		return this;
 	}
 
-	public registerAzureFunctionTimerHandler<TFactory extends AppHost<AppServices> = AppHost<AppServices>>(
+	public registerAzureFunctionTimerHandler<TFactory extends RequestScopedHost<AppServices, unknown> = AppHost<AppServices>>(
 		name: string,
 		schedule: string,
 		handlerCreator: (
@@ -320,7 +320,13 @@ export class Cellix<ContextType, AppServices = unknown>
 		) => TimerHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices> {
 		this.ensurePhase('app-services', 'handlers');
-		this.pendingTimerHandlers.push({ name, schedule, handlerCreator: handlerCreator as (host: AppHost<AppServices>) => TimerHandler });
+		// Type assertion is safe here because TFactory extends RequestScopedHost<AppServices, unknown>
+		// and the actual runtime value passed will be compatible with whatever TFactory the caller specified
+		this.pendingTimerHandlers.push({ 
+			name, 
+			schedule, 
+			handlerCreator: handlerCreator as (host: RequestScopedHost<AppServices, unknown>) => TimerHandler 
+		});
 		this.phase = 'handlers';
 		return this;
 	}

@@ -87,8 +87,11 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
       messagingService,
 			blobStorageService,
 			listingDeletionConfig: {
+				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
 				archivalMonths: Number(process.env['LISTING_ARCHIVAL_MONTHS']) || 6,
+				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
 				batchSize: Number(process.env['LISTING_DELETION_BATCH_SIZE']) || 100,
+				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
 				blobContainerName: process.env['LISTING_IMAGES_CONTAINER'] || 'listing-images',
 			},
 		};
