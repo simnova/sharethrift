@@ -81,6 +81,7 @@ export function startServer(port = 10000, seedData = false): Promise<Server> {
 		const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
 		const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
 		
+		/* c8 ignore start - HTTPS setup requires real certificates in production, cannot be tested with mocks */
 		if (hasCerts) {
 			const httpsOptions = {
 				key: fs.readFileSync(certKeyPath),
@@ -98,6 +99,7 @@ export function startServer(port = 10000, seedData = false): Promise<Server> {
 			resolve(server);
 		});
 	} else {
+		/* c8 ignore stop */
 		// Fallback to HTTP when certs don't exist (CI/CD)
 		const server = http.createServer(app).listen(port, () => {
 			console.log(` Mock Messaging Server listening on http://localhost:${port} (no certs found)`);
