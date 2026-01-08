@@ -19,7 +19,7 @@
         "gen:watch": "graphql-codegen --config codegen.yml --watch",
         "tsbuild": "tsc --build",
         "tswatch": "tsc --build --watch",
-    "clean": "pnpm install && turbo run clean && rimraf dist node_modules **/coverage .turbo",
+        "clean": "pnpm install && turbo run clean && rimraf dist node_modules **/coverage .turbo",
         "start:api": "pnpm run start --workspace=@sthrift/api",
         "start:ui-sharethrift": "pnpm run dev --workspace=@sthrift/ui-sharethrift",
         "start-emulator:mongo-memory-server": "pnpm run start --workspace=@cellix/mock-mongodb-memory-server",
@@ -27,7 +27,9 @@
         "start-emulator:payment-server": "pnpm run start --workspace=@cellix/mock-payment-server",
         "start-emulator:messaging-server": "pnpm run start --workspace=@sthrift/mock-messaging-server",
         "test:all": "turbo run test:all",
-        "test:coverage": "turbo run test:coverage",
+        "test:coverage": "turbo run test:coverage:ui && turbo run test:coverage:node",
+        "test:coverage:node": "turbo run test:coverage:node",
+        "test:coverage:ui": "turbo run test:coverage:ui",
         "test:coverage:merge": "pnpm run test:coverage && pnpm run merge-lcov-reports",
         "merge-lcov-reports": "node build-pipeline/scripts/merge-coverage.js",
         "test:integration": "turbo run test:integration",
@@ -48,8 +50,15 @@
         "snyk:iac": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift",
         "snyk:iac:report": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --target-name=sharethrift-iac --report"
     },
+    "pnpm": {
+        "auditConfig": {
+            "ignoreGhsas": [
+                "GHSA-6rw7-vpxm-498p"
+            ]
+        }
+    },
     "devDependencies": {
-        "@amiceli/vitest-cucumber": "^5.1.2",
+        "@amiceli/vitest-cucumber": "^6.1.0",
         "@biomejs/biome": "2.0.0",
         "@graphql-codegen/cli": "^5.0.7",
         "@graphql-codegen/introspection": "^4.0.3",
@@ -61,18 +70,19 @@
         "@playwright/test": "^1.55.1",
         "@sonar/scan": "^4.3.0",
         "@types/node": "^24.7.2",
-        "@vitest/coverage-v8": "^3.2.4",
+        "@vitest/browser-playwright": "catalog:",
+        "@vitest/coverage-v8": "catalog:",
         "azurite": "^3.35.0",
         "concurrently": "^9.1.2",
         "cpx2": "^3.0.2",
         "knip": "^5.61.1",
         "rimraf": "^6.0.1",
-        "rollup": "3.29.4",
+        "rollup": "3.29.5",
         "snyk": "^1.1301.0",
         "tsx": "^4.20.3",
         "turbo": "^2.5.8",
         "typescript": "^5.8.3",
-        "vite": "^7.0.4",
-        "vitest": "^3.2.4"
+        "vite": "catalog:",
+        "vitest": "catalog:"
     }
 }

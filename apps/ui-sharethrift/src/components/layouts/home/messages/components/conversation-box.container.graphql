@@ -4,6 +4,22 @@ query ConversationBoxContainerConversation($conversationId: ObjectID!) {
 	}
 }
 
+mutation ConversationBoxContainerSendMessage($input: SendMessageInput!) {
+	sendMessage(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		message {
+			id
+			messagingMessageId
+			authorId
+			content
+			createdAt
+		}
+	}
+}
+
 fragment ConversationBoxContainerConversationFields on Conversation {
 	id
 	schemaVersion

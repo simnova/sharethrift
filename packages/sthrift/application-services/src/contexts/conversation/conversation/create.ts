@@ -21,21 +21,27 @@ export const create = (dataSources: DataSources) => {
 			return existingConversation;
 		}
 
-		const sharer = await dataSources.readonlyDataSource.User.User.UserReadRepo.getById(
-			command.sharerId,
-		);
-		const reserver = await dataSources.readonlyDataSource.User.User.UserReadRepo.getById(
-			command.reserverId,
-		);
+		const sharer =
+			await dataSources.readonlyDataSource.User.User.UserReadRepo.getById(
+				command.sharerId,
+			);
+		const reserver =
+			await dataSources.readonlyDataSource.User.User.UserReadRepo.getById(
+				command.reserverId,
+			);
 		const listing =
 			await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getById(
 				command.listingId,
 			);
 		if (!sharer) {
-			throw new Error(`Personal user (sharer) not found for id ${command.sharerId}`);
+			throw new Error(
+				`Personal user (sharer) not found for id ${command.sharerId}`,
+			);
 		}
 		if (!reserver) {
-			throw new Error(`Personal user (reserver) not found for id ${command.reserverId}`);
+			throw new Error(
+				`Personal user (reserver) not found for id ${command.reserverId}`,
+			);
 		}
 		if (!listing) {
 			throw new Error(`Listing not found for id ${command.listingId}`);

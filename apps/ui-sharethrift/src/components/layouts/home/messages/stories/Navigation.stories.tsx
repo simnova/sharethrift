@@ -1,8 +1,9 @@
+import { Navigation } from '@sthrift/ui-components';
 import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
-import { Navigation } from '@sthrift/ui-components';
+
 const meta: Meta<typeof Navigation> = {
-	title: "Components/Navigation",
+	title: 'Components/Navigation',
 	component: Navigation,
 	parameters: {
 		layout: 'fullscreen',
@@ -14,7 +15,13 @@ const meta: Meta<typeof Navigation> = {
 		},
 		selectedKey: {
 			control: 'select',
-			options: ['home', 'my-listings', 'my-reservations', 'messages', 'account'],
+			options: [
+				'home',
+				'my-listings',
+				'my-reservations',
+				'messages',
+				'account',
+			],
 			description: 'The currently selected navigation item',
 		},
 		onNavigate: {
@@ -29,24 +36,27 @@ const meta: Meta<typeof Navigation> = {
 	decorators: [
 		(Story) => (
 			<MemoryRouter>
-				<div style={{ 
-					height: '100vh', 
-					width: '100vw',
-					display: 'flex',
-					overflow: 'hidden'
-				}}>
-					<Story />
-					<div style={{ 
-						marginLeft: '240px',
-						flex: 1,
-						backgroundColor: '#f5f5f5',
+				<div
+					style={{
+						height: '100vh',
+						width: '100vw',
 						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						color: '#666',
-						fontSize: '18px'
-					}}>
-					</div>
+						overflow: 'hidden',
+					}}
+				>
+					<Story />
+					<div
+						style={{
+							marginLeft: '240px',
+							flex: 1,
+							backgroundColor: '#f5f5f5',
+							display: 'flex',
+							alignItems: 'center',
+							justifyContent: 'center',
+							color: '#666',
+							fontSize: '18px',
+						}}
+					></div>
 				</div>
 			</MemoryRouter>
 		),
@@ -62,4 +72,5 @@ export const Default: Story = {
 		selectedKey: 'home',
 		onNavigate: (route: string) => console.log('Navigate to:', route),
 		onLogout: () => console.log('Logout clicked'),
-	}};
+	},
+};
