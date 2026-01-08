@@ -50,11 +50,11 @@ class EventA extends DomainSeedwork.CustomDomainEventImpl<{ a: string }> {}
 class EventB extends DomainSeedwork.CustomDomainEventImpl<{ b: string }> {}
 
 test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
-  let handler: ReturnType<typeof vi.fn>;
-  let handler1: ReturnType<typeof vi.fn>;
-  let handler2: ReturnType<typeof vi.fn>;
-  let handlerA: ReturnType<typeof vi.fn>;
-  let handlerB: ReturnType<typeof vi.fn>;
+  let handler: (payload: { test: string }) => Promise<void>;
+  let handler1: (payload: { test: string }) => Promise<void>;
+  let handler2: (payload: { test: string }) => Promise<void>;
+  let handlerA: (payload: { a: string }) => Promise<void>;
+  let handlerB: (payload: { b: string }) => Promise<void>;
 
   BeforeEachScenario(() => {
     handler = vi.fn().mockResolvedValue(undefined);
@@ -135,8 +135,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
       // handlerA, handlerB, EventA, EventB are already defined
     });
     When('each handler is registered for a different event', () => {
-      NodeEventBusInstance.register(EventA, handlerA);
-      NodeEventBusInstance.register(EventB, handlerB);
+      NodeEventBusInstance.register(EventA, handlerA as (payload: { a: string }) => Promise<void>);
+      NodeEventBusInstance.register(EventB, handlerB as (payload: { b: string }) => Promise<void>);
     });
     And('each event is dispatched', async () => {
       await NodeEventBusInstance.dispatch(EventA, { a: 'A' });
@@ -287,8 +287,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
     let callOrder: string[];
     Given('multiple handlers for the same event class', () => {
       callOrder = [];
-      handler1 = vi.fn(() => callOrder.push('handler1'));
-      handler2 = vi.fn(() => callOrder.push('handler2'));
+      handler1 = vi.fn(() => {
+        callOrder.push('handler1');
+        return Promise.resolve();
+      });
+      handler2 = vi.fn(() => {
+        callOrder.push('handler2');
+        return Promise.resolve();
+      });
     });
     When('all handlers are registered', () => {
       NodeEventBusInstance.register(TestEvent, handler1);
@@ -341,7 +347,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
   Scenario('Dispatch does not wait for handler completion', ({ Given, When, And, Then }) => {
     let handlerStarted = false;
     let handlerCompleted = false;
-    let asyncHandler: ReturnType<typeof vi.fn>;
+    let asyncHandler: (payload: { test: string }) => Promise<void>;
     Given('a handler for an event that is asynchronous', () => {
       asyncHandler = vi.fn(async () => {
         handlerStarted = true;

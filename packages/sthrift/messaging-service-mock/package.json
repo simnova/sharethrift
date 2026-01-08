@@ -14,7 +14,7 @@
 	"scripts": {
 		"build": "tsc --project tsconfig.json",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
+		"test:coverage:node": "vitest run --coverage",
 		"test:watch": "vitest"
 	},
 	"dependencies": {

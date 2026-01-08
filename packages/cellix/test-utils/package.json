@@ -1,5 +1,5 @@
 {
-	"name": "@sthrift/service-mongoose",
+	"name": "@cellix/test-utils",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
@@ -16,22 +16,17 @@
 		"prebuild": "biome lint",
 		"build": "tsc --build",
 		"watch": "tsc --watch",
-		"test": "vitest run",
-		"test:coverage:node": "vitest run --coverage",
-		"test:watch": "vitest",
 		"lint": "biome lint",
-		"clean": "rimraf dist"
-	},
-	"dependencies": {
-		"mongoose": "catalog:",
-		"@cellix/api-services-spec": "workspace:*",
-		"@cellix/mongoose-seedwork": "workspace:*"
+		"clean": "rimraf dist",
+		"test": "vitest run",
+		"test:watch": "vitest",
+    "test:coverage:node": "vitest run --coverage"
 	},
 	"devDependencies": {
-		"@cellix/typescript-config": "workspace:*",
-		"@cellix/vitest-config": "workspace:*",
+		"rimraf": "^6.0.1",
 		"typescript": "^5.8.3",
-		"rimraf": "^6.0.1"
+		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*"
 	},
 	"license": "MIT"
 }
