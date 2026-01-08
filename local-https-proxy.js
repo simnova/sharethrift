@@ -17,6 +17,14 @@ const server = https.createServer({
 	cert: fs.readFileSync(certPath),
 	key: fs.readFileSync(keyPath),
 }, (req, res) => {
+	// Validate hostname
+	const host = req.headers.host?.split(':')[0];
+	if (host !== 'data-access.sharethrift.localhost') {
+		res.writeHead(404);
+		res.end('Not Found');
+		return;
+	}
+
 	const options = {
 		hostname: 'localhost',
 		port: TARGET_PORT,
