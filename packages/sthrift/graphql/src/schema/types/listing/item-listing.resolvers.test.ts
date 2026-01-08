@@ -287,7 +287,7 @@ test.for(feature, ({ Scenario }) => {
 				() => {
 					expect(
 						context.applicationServices.Listing.ItemListing.queryById,
-					).toHaveBeenCalledWith({ id: 'listing-1' });
+					).toHaveBeenCalledWith({ id: 'listing-1', isAdmin: false });
 				},
 			);
 			And('it should return the corresponding listing', () => {
@@ -1017,11 +1017,13 @@ test.for(feature, ({ Scenario }) => {
 					id: 'listing-1',
 				});
 			});
-			And('it should return the BlockListingResult with success', () => {
+			And('it should return the ItemListingMutationResult with success', () => {
 				expect(result).toEqual({
-					id: 'listing-1',
-					state: 'Published',
-					success: true,
+					status: { success: true },
+					listing: expect.objectContaining({
+						id: 'listing-1',
+						state: 'Published',
+					}),
 				});
 			});
 		},
@@ -1075,11 +1077,13 @@ test.for(feature, ({ Scenario }) => {
 				id: 'listing-1',
 			});
 		});
-		And('it should return the BlockListingResult with success', () => {
+		And('it should return the ItemListingMutationResult with success', () => {
 			expect(result).toEqual({
-				id: 'listing-1',
-				state: 'Blocked',
-				success: true,
+				status: { success: true },
+				listing: expect.objectContaining({
+					id: 'listing-1',
+					state: 'Blocked',
+				}),
 			});
 		});
 	});

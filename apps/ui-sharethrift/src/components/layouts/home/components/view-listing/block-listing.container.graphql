@@ -1,15 +1,25 @@
 mutation BlockListingContainerBlockListing($id: ObjectID!) {
   blockListing(id: $id) {
-    id
-    state
-    success
+    status {
+      success
+      errorMessage
+    }
+    listing {
+      id
+      state
+    }
   }
 }
 
 mutation BlockListingContainerUnblockListing($id: ObjectID!) {
   unblockListing(id: $id) {
-    id
-    state
-    success
+    status {
+      success
+      errorMessage
+    }
+    listing {
+      id
+      state
+    }
   }
 }

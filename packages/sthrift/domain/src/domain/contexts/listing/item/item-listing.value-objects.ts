@@ -9,8 +9,7 @@ export const ListingStateEnum = {
 	Cancelled: 'Cancelled',
 	Draft: 'Draft',
 	Expired: 'Expired',
-	Blocked: 'Blocked',
-	AppealRequested: 'Appeal Requested',
+	Blocked: 'Blocked'
 } as const;
 
 export class ListingState extends VOString({

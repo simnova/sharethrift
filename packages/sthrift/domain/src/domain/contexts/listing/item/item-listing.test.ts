@@ -954,8 +954,8 @@ Scenario(
 			When('I set blocked = false using the setter', () => {
 				listing.blocked = false;
 			});
-			Then('the listing\'s state should be "Appeal Requested"', () => {
-				expect(listing.state).toBe('Appeal Requested');
+			Then('the listing\'s state should be "Active"', () => {
+				expect(listing.state).toBe('Active');
 			});
 		},
 	);

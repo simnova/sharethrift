@@ -4,6 +4,7 @@ import type { DataSources } from '@sthrift/persistence';
 export interface ItemListingQueryByIdCommand {
 	id: string;
 	fields?: string[];
+	isAdmin?: boolean;
 }
 
 export const queryById = (dataSources: DataSources) => {
@@ -12,7 +13,10 @@ export const queryById = (dataSources: DataSources) => {
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> => {
 		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getById(
 			command.id,
-			{ fields: command.fields },
+			{ 
+				fields: command.fields,
+				isAdmin: command.isAdmin ?? false,
+			},
 		);
 	};
 };

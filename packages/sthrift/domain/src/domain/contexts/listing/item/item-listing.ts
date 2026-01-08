@@ -329,7 +329,7 @@ export class ItemListing<props extends ItemListingProps>
 			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
 			if (!isBlocked) return; // no-op if not blocked
 
-			this.props.state = ValueObjects.ListingStateEnum.AppealRequested;
+			this.props.state = ValueObjects.ListingStateEnum.Active;
 			return;
 		}
 
@@ -351,6 +351,13 @@ export class ItemListing<props extends ItemListingProps>
 	 * Convenience setter that delegates to setBlocked().
 	 */
 	set blocked(value: boolean) {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to change the blocked state of this listing',
+			);
+		}
 		this.setBlocked(value);
 	}
 
@@ -392,8 +399,7 @@ public requestDelete(): void {
 	 * Create a reference to this entity for use in other contexts
 	 */
 	getEntityReference(): ItemListingEntityReference {
-		// biome-ignore lint/suspicious/noExplicitAny: Safe cast - this aggregate implements the interface
-		return this as unknown as ItemListingEntityReference;
+		return this.props as ItemListingEntityReference;
 	}
 
 	get listingType(): string {

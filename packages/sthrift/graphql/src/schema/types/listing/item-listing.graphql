@@ -74,18 +74,12 @@ type ItemListingMutationResult implements MutationResult {
   listing: ItemListing
 }
 
-type BlockListingResult {
-  id: ObjectID!
-  state: String!
-  success: Boolean!
-}
-
 extend type Mutation {
   createItemListing(input: CreateItemListingInput!): ItemListing!
   cancelItemListing(id: ObjectID!): ItemListingMutationResult!
   deleteItemListing(id: ObjectID!): ItemListingMutationResult!
-  unblockListing(id: ObjectID!): BlockListingResult!
-  blockListing(id: ObjectID!): BlockListingResult!
+  unblockListing(id: ObjectID!): ItemListingMutationResult!
+  blockListing(id: ObjectID!): ItemListingMutationResult!
 }
 
 extend type Query {

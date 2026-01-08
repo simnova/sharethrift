@@ -42,6 +42,7 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
     listingTitle = ''
 
 }) => {
+    console.log('Rendering SharerInformation with isBlocked:', isBlocked, isBlocked);
 	const [isMobile, setIsMobile] = useState(false);
 	const navigate = useNavigate();
 

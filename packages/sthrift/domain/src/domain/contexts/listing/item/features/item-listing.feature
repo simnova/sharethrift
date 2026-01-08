@@ -191,7 +191,7 @@ Feature: <AggregateRoot>ItemListing
   Scenario: Setting blocked state to false using setter
     Given an ItemListing aggregate with permission to publish item listing that is blocked
     When I set blocked = false using the setter
-    Then the listing's state should be "Appeal Requested"
+    Then the listing's state should be "Active"
 
   Scenario: Creating new instance with images
     Given a new ItemListing aggregate factory method with images

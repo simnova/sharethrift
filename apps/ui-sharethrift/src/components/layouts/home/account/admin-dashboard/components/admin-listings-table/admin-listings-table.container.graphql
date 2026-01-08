@@ -43,8 +43,18 @@ mutation AdminListingsTableContainerDeleteListing($id: ObjectID!) {
 
 mutation AdminListingsTableContainerUnblockListing($id: ObjectID!) {
   unblockListing(id: $id) {
-    id
-    state
-    success
+    status {
+      success
+      errorMessage
+    }
+    listing {
+      id
+      title
+      state
+      images
+      createdAt
+      sharingPeriodStart
+      sharingPeriodEnd
+    }
   }
 }

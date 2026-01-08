@@ -73,7 +73,7 @@ export const BlockListingButton: React.FC<BlockListingButtonProps> = ({
 		await unblockListing({ variables: { id: listingId } });
 		setUnblockModalVisible(false);
 	};
-
+console.log('isBlocked:', isBlocked);
 	return (
 		<>
 			{isBlocked ? (

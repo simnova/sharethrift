@@ -1,6 +1,6 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.js';
-import { PopulateUserFromField } from '../../resolver-helper.ts';
+import { PopulateUserFromField, currentViewerIsAdmin } from '../../resolver-helper.ts';
 
 // Helper type for paged arguments
 export type PagedArgs = {
@@ -10,6 +10,7 @@ export type PagedArgs = {
 	statusFilters?: string[];
 	sorter?: { field: string; order: 'ascend' | 'descend' };
 	sharerId?: string;
+	isAdmin?: boolean;
 };
 
 // Helper function to construct pagedArgs
@@ -48,6 +49,7 @@ const itemListingResolvers: Resolvers = {
 		myListingsAll: async (_parent: unknown, args, context) => {
 			const currentUser = context.applicationServices.verifiedUser;
 			const email = currentUser?.verifiedJwt?.email;
+			const isAdmin = await currentViewerIsAdmin(context);
 			let sharerId: string | undefined;
 			if (email) {
 				sharerId =
@@ -56,7 +58,10 @@ const itemListingResolvers: Resolvers = {
 					}).then((user) => (user ? user.id : undefined));
 			}
 
-			const pagedArgs = buildPagedArgs(args, sharerId ? { sharerId } : {});
+			const pagedArgs = buildPagedArgs(args, { 
+				...(sharerId ? { sharerId } : {}),
+				isAdmin 
+			});
 
 			return await context.applicationServices.Listing.ItemListing.queryPaged(
 				pagedArgs,
@@ -67,13 +72,15 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		itemListing: async (_parent, args, context) => {
+			const isAdmin = await currentViewerIsAdmin(context);
 			return await context.applicationServices.Listing.ItemListing.queryById({
 				id: args.id,
+				isAdmin,
 			});
 		},
 		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			const pagedArgs = buildPagedArgs(args);
+			const pagedArgs = buildPagedArgs(args, { isAdmin: true });
 
 			return await context.applicationServices.Listing.ItemListing.queryPaged(
 				pagedArgs,
@@ -120,9 +127,8 @@ const itemListingResolvers: Resolvers = {
 				id: args.id,
 			});
 			return {
-				id: listing.id,
-				state: listing.state,
-				success: true,
+				status: { success: true },
+				listing,
 			};
 		},
 		blockListing: async (_parent, args, context) => {
@@ -131,9 +137,8 @@ const itemListingResolvers: Resolvers = {
 				id: args.id,
 			});
 			return {
-				id: listing.id,
-				state: listing.state,
-				success: true,
+				status: { success: true },
+				listing,
 			};
 		},
 		cancelItemListing: async (

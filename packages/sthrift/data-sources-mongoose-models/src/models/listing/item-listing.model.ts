@@ -21,7 +21,6 @@ export interface ItemListing extends Listing {
 		| 'Draft'
 		| 'Expired'
 		| 'Blocked'
-		| 'Appeal Requested'
 	createdAt: Date;
 	updatedAt: Date;
 	sharingHistory?: ObjectId[];
