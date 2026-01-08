@@ -15,14 +15,18 @@
 		"@cellix/typescript-config": "workspace:*",
 		"@types/express": "^4.17.21",
 		"@types/jsonwebtoken": "^9.0.10",
+		"@types/node": "^24.7.2",
 		"ts-node": "^10.9.2",
 		"ts-node-dev": "^2.0.0",
 		"tsc-watch": "^7.1.1",
-		"typescript": "^5.0.0"
+		"typescript": "^5.0.0",
+		"vitest": "catalog:"
 	},
 	"scripts": {
 		"start": "node dist/src/index.js",
 		"build": "tsc --build && node dist/src/copy-assets.js",
-		"clean": "rimraf node_modules package-lock.json dist"
+		"clean": "rimraf node_modules package-lock.json dist",
+		"test": "vitest run",
+		"test:watch": "vitest"
 	}
 }
