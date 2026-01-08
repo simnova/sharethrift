@@ -10,7 +10,7 @@ export interface ListingContextApplicationService {
 	ItemListing: ItemListingApplicationService;
 }
 
-export interface ListingDependencies {
+interface ListingDependencies {
 	dataSources: DataSources;
 	blobStorage?: Domain.Services['BlobStorage'];
 }

@@ -1,11 +1,11 @@
 import type { TimerHandler } from '@azure/functions';
-import type { ApplicationServicesFactory, AppServicesHost, ApplicationServices } from '@sthrift/application-services';
+import type { ApplicationServicesFactory } from '@sthrift/application-services';
 import { trace, SpanStatusCode } from '@opentelemetry/api';
 
 const tracer = trace.getTracer('timer:expired-listing-deletion');
 
 export const expiredListingDeletionHandlerCreator = (
-	applicationServicesHost: AppServicesHost<ApplicationServices>,
+	applicationServicesFactory: ApplicationServicesFactory,
 ): TimerHandler => {
 	return async (timer, context) => {
 		await tracer.startActiveSpan('processExpiredListingDeletions', async (span) => {
@@ -16,8 +16,7 @@ export const expiredListingDeletionHandlerCreator = (
 					context.log('ExpiredListingDeletion: Timer is past due');
 				}
 
-				const factory = applicationServicesHost as ApplicationServicesFactory;
-				const systemServices = factory.forSystemTask();
+				const systemServices = applicationServicesFactory.forSystemTask();
 				const result = await systemServices.Listing.ItemListing.processExpiredDeletions();
 
 				span.setAttribute('deletedCount', result.deletedCount);
