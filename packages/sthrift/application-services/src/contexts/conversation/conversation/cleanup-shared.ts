@@ -78,8 +78,6 @@ export function processArchivedEntities<T extends { id: string }>({
 				}
 			}
 
-			span.end();
-
 			console.log(
 				`[ConversationCleanup] ${entityLabel} cleanup complete. Processed: ${result.processedCount}, Scheduled: ${result.scheduledCount}, Errors: ${result.errors.length}`,
 			);

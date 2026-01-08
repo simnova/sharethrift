@@ -15,11 +15,19 @@ vi.mock('./query-by-id.ts', () => ({
 vi.mock('./query-by-user.ts', () => ({
 	queryByUser: vi.fn(),
 }));
+vi.mock('./cleanup-archived-conversations.ts', () => ({
+	processConversationsForArchivedListings: vi.fn(),
+}));
+vi.mock('./cleanup-archived-reservation-conversations.ts', () => ({
+	processConversationsForArchivedReservationRequests: vi.fn(),
+}));
 
 import { create } from './create.ts';
 import { Conversation } from './index.ts';
 import { queryById } from './query-by-id.ts';
 import { queryByUser } from './query-by-user.ts';
+import { processConversationsForArchivedListings } from './cleanup-archived-conversations.ts';
+import { processConversationsForArchivedReservationRequests } from './cleanup-archived-reservation-conversations.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -51,6 +59,20 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		vi.mocked(create).mockReturnValue(mockCreateFn);
 		vi.mocked(queryById).mockReturnValue(mockQueryByIdFn);
 		vi.mocked(queryByUser).mockReturnValue(mockQueryByUserFn);
+		vi.mocked(processConversationsForArchivedListings).mockResolvedValue({
+			processedCount: 10,
+			scheduledCount: 5,
+			timestamp: new Date(),
+			errors: [],
+		});
+		vi.mocked(
+			processConversationsForArchivedReservationRequests,
+		).mockResolvedValue({
+			processedCount: 8,
+			scheduledCount: 3,
+			timestamp: new Date(),
+			errors: [],
+		});
 
 		mockDataSources = {
 			domainDataSource: {
@@ -161,6 +183,74 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			Then('it should delegate to the queryByUser function', () => {
 				expect(result).toBeDefined();
 				expect(result.length).toBe(2);
+			});
+		},
+	);
+
+	Scenario(
+		'Processing conversations for archived listings through the application service',
+		({
+			Given,
+			When,
+			Then,
+		}: {
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Given: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			When: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Then: any;
+		}) => {
+			let result: { processedCount: number; scheduledCount: number };
+
+			Given('a conversation application service', () => {
+				expect(service).toBeDefined();
+			});
+
+			When('I process conversations for archived listings', async () => {
+				result = await service.processConversationsForArchivedListings();
+			});
+
+			Then('it should delegate to the cleanup function', () => {
+				expect(result).toBeDefined();
+				expect(result.processedCount).toBe(10);
+				expect(result.scheduledCount).toBe(5);
+			});
+		},
+	);
+
+	Scenario(
+		'Processing conversations for archived reservation requests through the application service',
+		({
+			Given,
+			When,
+			Then,
+		}: {
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Given: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			When: any;
+			// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+			Then: any;
+		}) => {
+			let result: { processedCount: number; scheduledCount: number };
+
+			Given('a conversation application service', () => {
+				expect(service).toBeDefined();
+			});
+
+			When(
+				'I process conversations for archived reservation requests',
+				async () => {
+					result =
+						await service.processConversationsForArchivedReservationRequests();
+				},
+			);
+
+			Then('it should delegate to the cleanup function', () => {
+				expect(result).toBeDefined();
+				expect(result.processedCount).toBe(8);
+				expect(result.scheduledCount).toBe(3);
 			});
 		},
 	);

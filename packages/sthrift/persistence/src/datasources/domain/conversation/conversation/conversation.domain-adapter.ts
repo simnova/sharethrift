@@ -289,6 +289,6 @@ export class ConversationDomainAdapter
 	}
 
 	set expiresAt(value: Date | undefined) {
-		this.doc.expiresAt = value;
+		this.doc.set('expiresAt', value);
 	}
 }

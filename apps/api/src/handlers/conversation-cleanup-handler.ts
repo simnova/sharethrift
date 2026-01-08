@@ -15,10 +15,17 @@ export const conversationCleanupHandlerCreator = (
 			);
 		}
 
-		try {
-			const appServices = await applicationServicesFactory.forRequest();
+		const appServices = await applicationServicesFactory.forRequest();
 
-			const listingsResult =
+		let listingsResult = {
+			processedCount: 0,
+			scheduledCount: 0,
+			errors: [] as string[],
+		};
+		let listingsFatalError: Error | null = null;
+
+		try {
+			listingsResult =
 				await appServices.Conversation.Conversation.processConversationsForArchivedListings();
 
 			context.log(
@@ -30,8 +37,23 @@ export const conversationCleanupHandlerCreator = (
 					`[ConversationCleanup] Listings errors: ${listingsResult.errors.join('; ')}`,
 				);
 			}
+		} catch (error) {
+			listingsFatalError =
+				error instanceof Error ? error : new Error(String(error));
+			context.log(
+				`[ConversationCleanup] Fatal error in listings cleanup: ${listingsFatalError.message}`,
+			);
+		}
 
-			const reservationsResult =
+		let reservationsResult = {
+			processedCount: 0,
+			scheduledCount: 0,
+			errors: [] as string[],
+		};
+		let reservationsFatalError: Error | null = null;
+
+		try {
+			reservationsResult =
 				await appServices.Conversation.Conversation.processConversationsForArchivedReservationRequests();
 
 			context.log(
@@ -43,21 +65,39 @@ export const conversationCleanupHandlerCreator = (
 					`[ConversationCleanup] Reservation requests errors: ${reservationsResult.errors.join('; ')}`,
 				);
 			}
-
-			const totalProcessed =
-				listingsResult.processedCount + reservationsResult.processedCount;
-			const totalScheduled =
-				listingsResult.scheduledCount + reservationsResult.scheduledCount;
-			const totalErrors =
-				listingsResult.errors.length + reservationsResult.errors.length;
-
-			context.log(
-				`[ConversationCleanup] Overall totals - Processed: ${totalProcessed}, Scheduled: ${totalScheduled}, Errors: ${totalErrors}`,
-			);
 		} catch (error) {
-			const message = error instanceof Error ? error.message : String(error);
-			context.log(`[ConversationCleanup] Fatal error: ${message}`);
-			throw error;
+			reservationsFatalError =
+				error instanceof Error ? error : new Error(String(error));
+			context.log(
+				`[ConversationCleanup] Fatal error in reservation requests cleanup: ${reservationsFatalError.message}`,
+			);
+		}
+
+		const totalProcessed =
+			listingsResult.processedCount + reservationsResult.processedCount;
+		const totalScheduled =
+			listingsResult.scheduledCount + reservationsResult.scheduledCount;
+		const totalErrors =
+			listingsResult.errors.length + reservationsResult.errors.length;
+
+		context.log(
+			`[ConversationCleanup] Overall totals - Processed: ${totalProcessed}, Scheduled: ${totalScheduled}, Errors: ${totalErrors}`,
+		);
+
+		if (listingsFatalError && reservationsFatalError) {
+			context.log(
+				'[ConversationCleanup] Both cleanup phases failed - throwing combined error',
+			);
+			throw new Error(
+				`Both cleanup phases failed. Listings: ${listingsFatalError.message}; Reservations: ${reservationsFatalError.message}`,
+			);
+		}
+
+		if (listingsFatalError) {
+			throw listingsFatalError;
+		}
+		if (reservationsFatalError) {
+			throw reservationsFatalError;
 		}
 	};
 };

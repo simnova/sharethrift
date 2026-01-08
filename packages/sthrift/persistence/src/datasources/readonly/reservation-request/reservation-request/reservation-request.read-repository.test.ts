@@ -586,4 +586,22 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		},
 	);
+	Scenario(
+		'Getting reservation requests by states with empty array',
+		({ Given, When, Then }) => {
+			Given('ReservationRequest documents exist in the database', () => {
+				mockReservationRequests = [
+					makeMockReservationRequest({ state: 'Accepted' }),
+					makeMockReservationRequest({ state: 'Requested' }),
+				];
+			});
+			When('I call getByStates with an empty array', async () => {
+				result = await repository.getByStates([]);
+			});
+			Then('I should receive an empty array', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect(result).toHaveLength(0);
+			});
+		},
+	);
 });

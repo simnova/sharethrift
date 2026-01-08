@@ -73,3 +73,8 @@ And valid ReservationRequest documents exist in the database
 		Given ReservationRequest documents exist in the database
 		When I call getByStates with ["NonexistentState"]
 		Then I should receive an empty array
+
+	Scenario: Getting reservation requests by states with empty array
+		Given ReservationRequest documents exist in the database
+		When I call getByStates with an empty array
+		Then I should receive an empty array
