@@ -44,7 +44,10 @@ export const getUserAppealRequestReadRepository = (
 
 	return {
 		getById: (id: string) => {
-			return repository.getById(id).then((result) => result ?? null);
+			return repository
+				.getById(id)
+				.then((result) => result ?? null)
+				.catch(() => null);
 		},
 
 		getAll: (args) => {
