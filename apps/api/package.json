@@ -14,6 +14,7 @@
 		"watch": "tsc -w",
 		"test": "vitest run --silent --reporter=dot",
 		"test:coverage": "vitest run --coverage --silent --reporter=dot",
+		"test:coverage:node": "vitest run --coverage",
 		"test:watch": "vitest",
 		"lint": "biome lint",
 		"clean": "rimraf dist",

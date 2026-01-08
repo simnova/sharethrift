@@ -112,7 +112,7 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 	)
 	.registerAzureFunctionTimerHandler(
 		'conversationCleanup',
-		'0 0 2 * * *',
+		'0 0 2 * * *', // Runs every day at 02:00 UTC
 		conversationCleanupHandlerCreator,
 	)
 	.startUp();
