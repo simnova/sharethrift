@@ -34,8 +34,16 @@ export function processConversationsForArchivedListings(
 						(c) => !c.expiresAt,
 					);
 
+					// NOTE: Use sharingPeriodEnd as the primary anchor date since it represents
+					// the definitive end of the sharing period (most semantically correct).
+					// Fall back to updatedAt for legacy/malformed listings to avoid permanently
+					// retaining conversations. The updatedAt fallback may drift if the listing
+					// is updated after archival; consider adding explicit archivedAt timestamp
+					// in the future for more precise retention tracking.
+					const anchorDate = listing.sharingPeriodEnd ?? listing.updatedAt;
+
 					for (const conversation of conversationsToSchedule) {
-						conversation.scheduleForDeletion(listing.updatedAt);
+						conversation.scheduleForDeletion(anchorDate);
 						await repo.save(conversation);
 						scheduled++;
 					}

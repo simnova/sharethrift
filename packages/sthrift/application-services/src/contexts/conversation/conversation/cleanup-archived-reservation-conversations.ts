@@ -38,26 +38,19 @@ export function processConversationsForArchivedReservationRequests(
 						(c) => !c.expiresAt,
 					);
 
-					// NOTE: For CLOSED (completed) requests, use reservationPeriodEnd as the most
-					// semantically correct anchor (end of the reservation period).
-					// For REJECTED/CANCELLED, use updatedAt as a fallback since these don't have
-					// a natural "completion" date. This may drift if the request is updated after
-					// state change. Consider adding explicit completedAt/cancelledAt/rejectedAt
-					// timestamps in the future for more precise retention tracking.
+					// NOTE: For CLOSED (completed) requests, prefer reservationPeriodEnd as the
+					// most semantically correct anchor (end of the reservation period).
+					// For REJECTED/CANCELLED or when reservationPeriodEnd is missing, fall back
+					// to updatedAt to avoid permanently retaining conversations for legacy or
+					// malformed records. The updatedAt fallback may drift if the request is
+					// updated after state change. Consider adding explicit completedAt/cancelledAt/
+					// rejectedAt timestamps in the future for more precise retention tracking.
 					const anchorDate =
-						reservationRequest.state ===
+						(reservationRequest.state ===
 						Domain.Contexts.ReservationRequest.ReservationRequest
 							.ReservationRequestStates.CLOSED
 							? reservationRequest.reservationPeriodEnd
-							: reservationRequest.updatedAt;
-
-					// Guard against undefined anchorDate - skip scheduling if missing
-					if (!anchorDate) {
-						const msg = `Skipping reservation request ${reservationRequest.id}: anchorDate is undefined (state: ${reservationRequest.state})`;
-						errors.push(msg);
-						console.warn('[ConversationCleanup]', msg);
-						return;
-					}
+							: null) ?? reservationRequest.updatedAt;
 
 					for (const conversation of conversationsToSchedule) {
 						conversation.scheduleForDeletion(anchorDate);
