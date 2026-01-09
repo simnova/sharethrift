@@ -36,8 +36,7 @@ export const LISTING_STATE_ENUM = [
 	'Cancelled',
 	'Draft',
 	'Expired',
-	'Blocked',
-	'Appeal Requested',
+	'Blocked'
 ] as const;
 
 export const ItemListingSchema = new Schema<
