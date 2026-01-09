@@ -117,15 +117,15 @@ interface AzureFunctionHandlerRegistry<ContextType = unknown, AppServices = unkn
      * @returns The registry (for chaining).
      *
      * @throws Error - If called before application services are initialized.
-     */
-	registerAzureFunctionTimerHandler<TFactory extends RequestScopedHost<AppServices, unknown> = AppHost<AppServices>>(
+	 */
+	registerAzureFunctionTimerHandler(
 		name: string,
 		schedule: string,
 		handlerCreator: (
-			applicationServicesFactory: TFactory,
+			applicationServicesHost: RequestScopedHost<AppServices, unknown>,
 		) => TimerHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices>;
-    /**
+	/**
      * Finalizes configuration and starts the application.
      *
      * @remarks
@@ -177,7 +177,7 @@ interface InitializedServiceRegistry {
 type UninitializedServiceRegistry<ContextType = unknown, AppServices = unknown> = InfrastructureServiceRegistry<ContextType, AppServices>;
 
 
-type RequestScopedHost<S, H = unknown> = {
+export type RequestScopedHost<S, H = unknown> = {
   forRequest(rawAuthHeader?: string, hints?: H): Promise<S>;
 };
 
@@ -312,20 +312,18 @@ export class Cellix<ContextType, AppServices = unknown>
 		return this;
 	}
 
-	public registerAzureFunctionTimerHandler<TFactory extends RequestScopedHost<AppServices, unknown> = AppHost<AppServices>>(
+	public registerAzureFunctionTimerHandler(
 		name: string,
 		schedule: string,
 		handlerCreator: (
-			applicationServicesFactory: TFactory,
+			applicationServicesHost: RequestScopedHost<AppServices, unknown>,
 		) => TimerHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices> {
 		this.ensurePhase('app-services', 'handlers');
-		// Type assertion is safe here because TFactory extends RequestScopedHost<AppServices, unknown>
-		// and the actual runtime value passed will be compatible with whatever TFactory the caller specified
 		this.pendingTimerHandlers.push({ 
 			name, 
 			schedule, 
-			handlerCreator: handlerCreator as (host: RequestScopedHost<AppServices, unknown>) => TimerHandler 
+			handlerCreator,
 		});
 		this.phase = 'handlers';
 		return this;
