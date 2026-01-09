@@ -537,4 +537,110 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario('Getting expired listings for deletion', ({ Given, When, Then }) => {
+		let result: unknown;
+		let mockExpiredListings: unknown[];
+
+		Given('expired listings exist past the archival period', () => {
+			const oldDate = new Date();
+			oldDate.setMonth(oldDate.getMonth() - 8);
+
+			mockExpiredListings = [
+				{
+					id: 'expired-1',
+					title: 'Expired Item 1',
+					state: 'Expired',
+					updatedAt: oldDate,
+				},
+				{
+					id: 'expired-2',
+					title: 'Cancelled Item',
+					state: 'Cancelled',
+					updatedAt: oldDate,
+				},
+			];
+		});
+
+		When('I call getExpiredForDeletion with 6 months archival period', async () => {
+			const mockModel = {
+				find: vi.fn(() => createQueryChain(mockExpiredListings)),
+			};
+
+			const mockModels = createMockModelsContext(mockModel);
+			const mockPassport = createMockPassport();
+
+			repository = getItemListingReadRepository(mockModels, mockPassport);
+			result = await repository.getExpiredForDeletion(6);
+		});
+
+		Then('I should receive expired listings', () => {
+			expect(Array.isArray(result)).toBe(true);
+			expect((result as unknown[]).length).toBe(2);
+		});
+	});
+
+	Scenario(
+		'Getting expired listings for deletion when none exist',
+		({ When, Then }) => {
+			let result: unknown;
+
+			When(
+				'I call getExpiredForDeletion and no expired listings exist',
+				async () => {
+					const mockModel = {
+						find: vi.fn(() => createQueryChain([])),
+					};
+
+					const mockModels = createMockModelsContext(mockModel);
+					const mockPassport = createMockPassport();
+
+					repository = getItemListingReadRepository(mockModels, mockPassport);
+					result = await repository.getExpiredForDeletion(6);
+				},
+			);
+
+			Then('I should receive empty array for expired', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBe(0);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting expired listings for deletion with custom limit',
+		({ Given, When, Then }) => {
+			let result: unknown;
+			let mockListings: unknown[];
+
+			Given('more expired listings exist than the limit', () => {
+				const oldDate = new Date();
+				oldDate.setMonth(oldDate.getMonth() - 8);
+
+				mockListings = Array.from({ length: 5 }, (_, i) => ({
+					id: `expired-${i}`,
+					title: `Expired Item ${i}`,
+					state: 'Expired',
+					updatedAt: oldDate,
+				}));
+			});
+
+			When('I call getExpiredForDeletion with limit 5', async () => {
+				const mockModel = {
+					find: vi.fn(() => createQueryChain(mockListings)),
+				};
+
+				const mockModels = createMockModelsContext(mockModel);
+				const mockPassport = createMockPassport();
+
+				repository = getItemListingReadRepository(mockModels, mockPassport);
+				result = await repository.getExpiredForDeletion(6, 5);
+			});
+
+			Then('I should receive at most 5 listings', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBeLessThanOrEqual(5);
+			});
+		},
+	);
 });

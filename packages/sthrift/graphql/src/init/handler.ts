@@ -1,6 +1,6 @@
 import { ApolloServer } from '@apollo/server';
 import type { HttpHandler } from '@azure/functions';
-import type { ApplicationServicesFactory, PrincipalHints } from '@sthrift/application-services';
+import type { AppServicesHost, ApplicationServices, PrincipalHints } from '@sthrift/application-services';
 import {
 	type AzureFunctionsMiddlewareOptions,
     startServerAndCreateHandler,
@@ -16,7 +16,7 @@ const isProduction = process.env['NODE_ENV'] === 'production';
 const MAX_QUERY_DEPTH = 10;
 
 export const graphHandlerCreator = (
-	applicationServicesFactory: ApplicationServicesFactory,
+	applicationServicesHost: AppServicesHost<ApplicationServices>,
 ): HttpHandler => {
 	// Set up Apollo Server with security configurations
 	// Note: Apollo Server v4 removed direct CORS support - CORS must be handled at the web framework level
@@ -39,7 +39,7 @@ export const graphHandlerCreator = (
                 communityId: req.headers.get('x-community-id') ?? undefined,
             };
             return {
-                applicationServices: await applicationServicesFactory.forRequest(authHeader, hints),
+                applicationServices: await applicationServicesHost.forRequest(authHeader, hints),
             };
 		},
 	};

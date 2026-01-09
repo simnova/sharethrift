@@ -3,14 +3,14 @@ import type {
 	HttpResponseInit,
 	InvocationContext,
 } from '@azure/functions';
-import type { ApplicationServicesFactory, PrincipalHints } from '@sthrift/application-services';
+import type { AppServicesHost, ApplicationServices, PrincipalHints } from '@sthrift/application-services';
 
 export type HttpHandler = (
 	request: HttpRequest,
 	context: InvocationContext,
 ) => Promise<HttpResponseInit>;
 
-export const restHandlerCreator = (applicationServicesFactory: ApplicationServicesFactory): HttpHandler => {
+export const restHandlerCreator = (applicationServicesHost: AppServicesHost<ApplicationServices>): HttpHandler => {
 	return async (request: HttpRequest, _context: InvocationContext) => {
 		const rawAuthHeader = request.headers.get('Authorization') ?? undefined;
 		const hints: PrincipalHints = {
@@ -19,7 +19,7 @@ export const restHandlerCreator = (applicationServicesFactory: ApplicationServic
 			// biome-ignore lint:useLiteralKeys
 			communityId: request.params['communityId'] ?? undefined,
 		};
-		const applicationServices = await applicationServicesFactory.forRequest(rawAuthHeader, hints);
+		const applicationServices = await applicationServicesHost.forRequest(rawAuthHeader, hints);
 
 		return {
 			status: 200,

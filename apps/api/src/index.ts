@@ -23,6 +23,7 @@ import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
+import { expiredListingDeletionHandlerCreator } from './timers/expired-listing-deletion-handler.ts';
 
 import type {PaymentService} from '@cellix/payment-service';
 import { PaymentServiceMock } from '@sthrift/payment-service-mock';
@@ -69,6 +70,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
       ? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
       : serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
+		const blobStorageService = serviceRegistry.getInfrastructureService<ServiceBlobStorage>(
+			ServiceBlobStorage,
+		);
+
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);
 
@@ -80,6 +85,15 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				),
 			paymentService,
       messagingService,
+			blobStorageService,
+			listingDeletionConfig: {
+				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+				archivalMonths: Number(process.env['LISTING_ARCHIVAL_MONTHS']) || 6,
+				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+				batchSize: Number(process.env['LISTING_DELETION_BATCH_SIZE']) || 100,
+				// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for process.env
+				blobContainerName: process.env['LISTING_IMAGES_CONTAINER'] || 'listing-images',
+			},
 		};
 	})
 	.initializeApplicationServices((context) =>
@@ -97,5 +111,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		'rest',
 		{ route: '{communityId}/{role}/{memberId}/{*rest}' },
 		restHandlerCreator,
+	)
+	.registerAzureFunctionTimerHandler(
+		'processExpiredListingDeletions',
+		'0 0 2 * * *',
+		expiredListingDeletionHandlerCreator,
 	)
 	.startUp();

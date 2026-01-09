@@ -192,4 +192,19 @@ export class Conversation<props extends ConversationProps>
 	get schemaVersion(): string {
 		return this.props.schemaVersion;
 	}
+
+	requestDelete(): void {
+		if (
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canManageConversation,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to delete this conversation',
+			);
+		}
+		if (!this.isDeleted) {
+			super.isDeleted = true;
+		}
+	}
 }
