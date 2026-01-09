@@ -4,7 +4,7 @@ import { Form } from 'antd';
 import { useState } from 'react';
 
 const meta: Meta<typeof PaymentTokenFormItems> = {
-	title: 'Shared/Payment/PaymentTokenFormItems',
+	title: 'Components/Shared/Payment/PaymentTokenFormItems',
 	component: PaymentTokenFormItems,
 	parameters: {
 		layout: 'padded',

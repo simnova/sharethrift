@@ -1,11 +1,11 @@
 import { Route, Routes } from 'react-router-dom';
 import { HomeRoutes } from './components/layouts/home/index.tsx';
 import { SignupRoutes } from './components/layouts/signup/Index.tsx';
-import { LoginSelection } from './components/shared/login-selection.tsx';
 import { AuthRedirectAdmin } from './components/shared/auth-redirect-admin.tsx';
 import { AuthRedirectUser } from './components/shared/auth-redirect-user.tsx';
 import { RequireAuth } from './components/shared/require-auth.tsx';
 import { useOnboardingRedirect } from './components/shared/use-has-completed-onboarding-check.ts';
+import { LoginSelection } from './components/layouts/login/login-selection.tsx';
 
 const signupSection = (
 	<RequireAuth redirectPath="/" forceLogin={true}>

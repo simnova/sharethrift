@@ -19,6 +19,7 @@ const meta: Meta<typeof AuthRedirectUser> = {
 			</MockAuthWrapper>
 		),
 	],
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 
 export default meta;

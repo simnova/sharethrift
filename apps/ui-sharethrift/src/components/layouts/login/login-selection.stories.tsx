@@ -1,22 +1,22 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { LoginSelection } from '../login-selection.tsx';
-import { MockAuthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
+import { MockUnauthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
+import { LoginSelection } from './login-selection.tsx';
 
 const meta: Meta<typeof LoginSelection> = {
-	title: 'Shared/LoginSelection',
+	title: 'Pages/LoginSelection',
 	component: LoginSelection,
 	parameters: {
 		layout: 'fullscreen',
 	},
 	decorators: [
 		(Story) => (
-			<MockAuthWrapper>
+			<MockUnauthWrapper>
 				<MemoryRouter>
 					<Story />
 				</MemoryRouter>
-			</MockAuthWrapper>
+			</MockUnauthWrapper>
 		),
 	],
 };
