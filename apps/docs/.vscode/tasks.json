@@ -1,0 +1,12 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Docusaurus Dev Server",
+			"type": "shell",
+			"command": "pnpm run start",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}
