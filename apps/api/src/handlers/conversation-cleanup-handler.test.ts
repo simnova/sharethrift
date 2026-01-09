@@ -50,7 +50,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		};
 
 		mockApplicationServicesFactory = {
-			forRequest: vi.fn().mockResolvedValue(mockAppServices),
+			forSystemOperation: vi.fn().mockReturnValue(mockAppServices),
 		} as unknown as ApplicationServicesFactory;
 	});
 
@@ -160,9 +160,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				};
 
-				mockApplicationServicesFactory.forRequest = vi
+				mockApplicationServicesFactory.forSystemOperation = vi
 					.fn()
-					.mockResolvedValue(mockAppServices);
+					.mockReturnValue(mockAppServices);
 
 				const handler = conversationCleanupHandlerCreator(
 					mockApplicationServicesFactory,
@@ -212,9 +212,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				};
 
-				mockApplicationServicesFactory.forRequest = vi
+				mockApplicationServicesFactory.forSystemOperation = vi
 					.fn()
-					.mockResolvedValue(mockAppServices);
+					.mockReturnValue(mockAppServices);
 
 				const handler = conversationCleanupHandlerCreator(
 					mockApplicationServicesFactory,
@@ -269,9 +269,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					},
 				};
 
-				mockApplicationServicesFactory.forRequest = vi
+				mockApplicationServicesFactory.forSystemOperation = vi
 					.fn()
-					.mockResolvedValue(mockAppServices);
+					.mockReturnValue(mockAppServices);
 
 				const handler = conversationCleanupHandlerCreator(
 					mockApplicationServicesFactory,
@@ -327,9 +327,9 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 						},
 					};
 
-					mockApplicationServicesFactory.forRequest = vi
+					mockApplicationServicesFactory.forSystemOperation = vi
 						.fn()
-						.mockResolvedValue(mockAppServices);
+						.mockReturnValue(mockAppServices);
 
 					const handler = conversationCleanupHandlerCreator(
 						mockApplicationServicesFactory,

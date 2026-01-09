@@ -60,6 +60,7 @@ export type PrincipalHints = Record<string, unknown>;
 
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
+	forSystemOperation(): S;
 }
 
 export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
@@ -67,7 +68,6 @@ export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
 ): ApplicationServicesFactory => {
-
 	const forRequest = async (
 		rawAuthHeader?: string,
 		hints?: PrincipalHints,
@@ -108,7 +108,7 @@ export const buildApplicationServicesFactory = (
 			infrastructureServicesRegistry.dataSourcesFactory.withPassport(
 				passport,
 				infrastructureServicesRegistry.messagingService,
-        infrastructureServicesRegistry.paymentService,
+				infrastructureServicesRegistry.paymentService,
 			);
 
 		return {
@@ -124,8 +124,26 @@ export const buildApplicationServicesFactory = (
 		};
 	};
 
+	const forSystemOperation = (): ApplicationServices => {
+		const dataSources =
+			infrastructureServicesRegistry.dataSourcesFactory.withSystemPassport();
+
+		return {
+			User: User(dataSources),
+			get verifiedUser(): VerifiedUser | null {
+				return null;
+			},
+			ReservationRequest: ReservationRequest(dataSources),
+			Listing: Listing(dataSources),
+			Conversation: Conversation(dataSources),
+			AccountPlan: AccountPlan(dataSources),
+			AppealRequest: AppealRequest(dataSources),
+		};
+	};
+
 	return {
 		forRequest,
+		forSystemOperation,
 	};
 };
 

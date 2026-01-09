@@ -206,6 +206,7 @@ type UninitializedServiceRegistry<
 
 type RequestScopedHost<S, H = unknown> = {
 	forRequest(rawAuthHeader?: string, hints?: H): Promise<S>;
+	forSystemOperation(): S;
 };
 
 type AppHost<AppServices> = RequestScopedHost<AppServices, unknown>;

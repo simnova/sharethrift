@@ -77,4 +77,21 @@ export const reservationRequests = [
 		createdAt: new Date('2025-08-11T10:00:00Z'),
 		updatedAt: new Date('2025-08-11T10:00:00Z'),
 	},
+	// Rejected reservation request for conversation cleanup testing
+	// Conversations linked to this should be scheduled for deletion
+	{
+		_id: '907f1f77bcf86cd799439056',
+		state: 'Rejected',
+		reservationPeriodStart: new Date('2023-04-01T08:00:00Z'),
+		reservationPeriodEnd: new Date('2023-04-05T20:00:00Z'),
+		schemaVersion: '1.0.0',
+		listing: new ObjectId('707f1f77bcf86cd799439032'), // Mountain Bike (Bob's listing)
+		reserver: new ObjectId('507f1f77bcf86cd799439013'), // Charlie (reserver)
+		closeRequestedBySharer: false,
+		closeRequestedByReserver: false,
+		version: 1,
+		discriminatorKey: 'reservation-request',
+		createdAt: new Date('2023-03-25T10:00:00Z'),
+		updatedAt: new Date('2023-03-26T10:00:00Z'),
+	},
 ] as unknown as Models.ReservationRequest.ReservationRequest[];

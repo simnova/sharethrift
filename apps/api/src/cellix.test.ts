@@ -227,7 +227,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 		});
 
 		When('application services factory is initialized', () => {
-			const result = cellixWithContext.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			const result = cellixWithContext.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			expect(result.registerAzureFunctionHttpHandler).toBeDefined();
 		});
 
@@ -255,7 +255,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 
 		When('initializeApplicationServices is called', () => {
 			expect(() => {
-				cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+				cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			}).toThrow('Context creator must be set before initializing application services');
 		});
 
@@ -268,7 +268,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 		Given('a Cellix instance in app-services phase', () => {
 			cellix = Cellix.initializeInfrastructureServices(() => { /* no op */ }) as Cellix<unknown, unknown>;
 			cellix.setContext(() => ({}));
-			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 		});
 
 		When('an Azure Function HTTP handler is registered', () => {
@@ -323,7 +323,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 				registry.registerInfrastructureService(mockService);
 			}) as Cellix<unknown, unknown>;
 			cellix.setContext(() => ({}));
-			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			cellix.registerAzureFunctionHttpHandler(
 				'test-handler',
 				{ authLevel: 'anonymous' },
@@ -368,7 +368,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 		Given('a Cellix instance in handlers phase without context creator', () => {
 			cellix = Cellix.initializeInfrastructureServices(() => { /* no op */ }) as Cellix<unknown, unknown>;
 			cellix.setContext(() => ({}));
-			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			cellix.registerAzureFunctionHttpHandler(
 				'test-handler',
 				{ authLevel: 'anonymous' },
@@ -395,7 +395,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 				registry.registerInfrastructureService(mockService);
 			}) as Cellix<unknown, unknown>;
 			cellix.setContext(() => ({}));
-			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			cellix.registerAzureFunctionHttpHandler(
 				'test-handler',
 				{ authLevel: 'anonymous' },
@@ -417,7 +417,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 		Given('a started Cellix application with no registered services', async () => {
 			cellix = Cellix.initializeInfrastructureServices(() => { /* no op */ }) as Cellix<unknown, unknown>;
 			cellix.setContext(() => ({}));
-			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			cellix.registerAzureFunctionHttpHandler(
 				'test-handler',
 				{ authLevel: 'anonymous' },
@@ -457,7 +457,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 				registry.registerInfrastructureService(mockService);
 			}) as Cellix<unknown, unknown>;
 			cellix.setContext(() => ({}));
-			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			cellix.registerAzureFunctionHttpHandler(
 				'test-handler',
 				{ authLevel: 'anonymous' },
@@ -500,7 +500,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 				registry.registerInfrastructureService(mockService);
 			}) as Cellix<unknown, unknown>;
 			cellix.setContext(() => ({}));
-			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			cellix.registerAzureFunctionHttpHandler(
 				'test-handler',
 				{ authLevel: 'anonymous' },
@@ -531,7 +531,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 				registry.registerInfrastructureService(failingService);
 			}) as Cellix<unknown, unknown>;
 			cellix.setContext(() => ({}));
-			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			cellix.registerAzureFunctionHttpHandler(
 				'test-handler',
 				{ authLevel: 'anonymous' },
@@ -568,7 +568,7 @@ test.for(feature, ({ BeforeEachScenario, Scenario }) => {
 				registry.registerInfrastructureService(failingService);
 			}) as Cellix<unknown, unknown>;
 			cellix.setContext(() => ({}));
-			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn() }));
+			cellix.initializeApplicationServices(() => ({ forRequest: vi.fn(), forSystemOperation: vi.fn() }));
 			cellix.registerAzureFunctionHttpHandler(
 				'test-handler',
 				{ authLevel: 'anonymous' },

@@ -210,4 +210,37 @@ export const itemListings = [
 			'https://traceaudio.com/cdn/shop/products/NewSM7BwithAnserModcopy_1200x1200.jpg?v=1662083374',
 		],
 	}),
+	// Expired listing for conversation cleanup testing
+	// This listing has ended and any associated conversations should be scheduled for deletion
+	createListing({
+		_id: '707f1f77bcf86cd799439041',
+		sharer: COMMON_USERS.alice,
+		title: 'Vintage Record Player',
+		description:
+			'Classic turntable for vinyl enthusiasts. Sharing period has ended.',
+		category: 'Electronics',
+		location: COMMON_LOCATIONS.springfield,
+		sharingPeriodStart: new Date('2023-01-01T08:00:00Z'),
+		sharingPeriodEnd: new Date('2023-02-28T20:00:00Z'),
+		state: 'Expired',
+		createdAt: new Date('2022-12-15T09:00:00Z'),
+		updatedAt: new Date('2023-03-01T00:00:00Z'),
+		images: [],
+	}),
+	// Cancelled listing for conversation cleanup testing
+	// This listing was cancelled by the sharer and any associated conversations should be scheduled for deletion
+	createListing({
+		_id: '707f1f77bcf86cd799439042',
+		sharer: COMMON_USERS.bob,
+		title: 'Electric Scooter',
+		description: 'Electric scooter - listing cancelled by owner.',
+		category: 'Vehicles',
+		location: COMMON_LOCATIONS.philadelphia,
+		sharingPeriodStart: new Date('2023-06-01T08:00:00Z'),
+		sharingPeriodEnd: new Date('2023-08-31T20:00:00Z'),
+		state: 'Cancelled',
+		createdAt: new Date('2023-05-15T10:00:00Z'),
+		updatedAt: new Date('2023-06-10T10:00:00Z'),
+		images: [],
+	}),
 ];

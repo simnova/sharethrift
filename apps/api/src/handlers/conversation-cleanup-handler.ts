@@ -15,7 +15,9 @@ export const conversationCleanupHandlerCreator = (
 			);
 		}
 
-		const appServices = await applicationServicesFactory.forRequest();
+		// Use forSystemOperation() to get SystemPassport with canManageConversation permission
+		// This is required because scheduleForDeletion() checks for this permission
+		const appServices = applicationServicesFactory.forSystemOperation();
 
 		let listingsResult = {
 			processedCount: 0,
