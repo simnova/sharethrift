@@ -118,11 +118,11 @@ interface AzureFunctionHandlerRegistry<ContextType = unknown, AppServices = unkn
      *
      * @throws Error - If called before application services are initialized.
 	 */
-	registerAzureFunctionTimerHandler(
+	registerAzureFunctionTimerHandler<TFactory extends RequestScopedHost<AppServices, unknown> = AppHost<AppServices>>(
 		name: string,
 		schedule: string,
 		handlerCreator: (
-			applicationServicesHost: RequestScopedHost<AppServices, unknown>,
+			applicationServicesHost: TFactory,
 		) => TimerHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices>;
 	/**
@@ -312,18 +312,18 @@ export class Cellix<ContextType, AppServices = unknown>
 		return this;
 	}
 
-	public registerAzureFunctionTimerHandler(
+	public registerAzureFunctionTimerHandler<TFactory extends RequestScopedHost<AppServices, unknown> = AppHost<AppServices>>(
 		name: string,
 		schedule: string,
 		handlerCreator: (
-			applicationServicesHost: RequestScopedHost<AppServices, unknown>,
+			applicationServicesHost: TFactory,
 		) => TimerHandler,
 	): AzureFunctionHandlerRegistry<ContextType, AppServices> {
 		this.ensurePhase('app-services', 'handlers');
 		this.pendingTimerHandlers.push({ 
 			name, 
 			schedule, 
-			handlerCreator,
+			handlerCreator: handlerCreator as (host: RequestScopedHost<AppServices, unknown>) => TimerHandler,
 		});
 		this.phase = 'handlers';
 		return this;

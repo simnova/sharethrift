@@ -47,21 +47,26 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
-function createNullPopulateChain<T>(result: T) {
+function createQueryChain<T>(result: T) {
 	const mockQuery = {
 		lean: vi.fn(),
 		populate: vi.fn(),
 		exec: vi.fn().mockResolvedValue(result),
 		catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
 	};
+
 	mockQuery.lean.mockReturnValue(mockQuery);
 	mockQuery.populate.mockReturnValue(mockQuery);
+
 	// biome-ignore lint/suspicious/noThenProperty: Intentional thenable mock for Mongoose queries
 	Object.defineProperty(mockQuery, 'then', {
-		value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
+		value: vi.fn((onResolve, onReject) =>
+			Promise.resolve(result).then(onResolve, onReject),
+		),
 		enumerable: false,
 		configurable: true,
 	});
+
 	return mockQuery;
 }
 
@@ -144,34 +149,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		passport = makePassport();
 		mockConversations = [makeMockConversation()];
 
-		// Create mock query that supports chaining and is thenable
-		const createMockQuery = (result: unknown) => {
-			const mockQuery = {
-				lean: vi.fn(),
-				populate: vi.fn(),
-				exec: vi.fn().mockResolvedValue(result),
-				catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
-			};
-			// Configure methods to return the query object for chaining
-			mockQuery.lean.mockReturnValue(mockQuery);
-			mockQuery.populate.mockReturnValue(mockQuery);
-			
-			// SONARQUBE SUPPRESSION: S7739 - Intentional thenable mock
-			// This object intentionally implements the 'then' property to mock Mongoose
-			// query behavior. Mongoose queries are thenable and can be awaited.
-			// biome-ignore lint/suspicious/noThenProperty: Intentional thenable mock for Mongoose queries
-			Object.defineProperty(mockQuery, 'then', {
-				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
-				enumerable: false,
-				configurable: true,
-			});
-			return mockQuery;
-		};
-
 		mockModel = {
-			find: vi.fn(() => createMockQuery(mockConversations)),
-			findById: vi.fn(() => createMockQuery(mockConversations[0])),
-			findOne: vi.fn(() => createMockQuery(mockConversations[0] || null)),
+			find: vi.fn(() => createQueryChain(mockConversations)),
+			findById: vi.fn(() => createQueryChain(mockConversations[0])),
+			findOne: vi.fn(() => createQueryChain(mockConversations[0] || null)),
 		} as unknown as Models.Conversation.ConversationModelType;
 
 		const modelsContext = {
@@ -239,7 +220,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Getting a conversation by nonexistent ID', ({ When, Then }) => {
 		When('I call getById with "nonexistent-id"', async () => {
-			mockModel.findById = vi.fn(() => createNullPopulateChain(null)) as unknown as typeof mockModel.findById;
+			mockModel.findById = vi.fn(() => createQueryChain(null)) as unknown as typeof mockModel.findById;
 
 			result = await repository.getById('nonexistent-id');
 		});
@@ -300,7 +281,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting conversations by user ID with no conversations',
 		({ When, Then }) => {
 			When('I call getByUser with "user-without-conversations"', async () => {
-				mockModel.find = vi.fn(() => createNullPopulateChain([])) as unknown as typeof mockModel.find;
+				mockModel.find = vi.fn(() => createQueryChain([])) as unknown as typeof mockModel.find;
 
 				result = await repository.getByUser(createValidObjectId('user-without-conversations'));
 			});
@@ -330,15 +311,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		let listingId: string;
 
 		Given('valid sharer, reserver, and listing IDs', () => {
-			sharerId = createValidObjectId('sharer-1');
-			reserverId = createValidObjectId('reserver-1');
-			listingId = createValidObjectId('listing-1');
+		sharerId = createValidObjectId('sharer-1');
+		reserverId = createValidObjectId('reserver-1');
+		listingId = createValidObjectId('listing-1');
 
-			const mockConversation = makeMockConversation();
-			mockModel.findOne = vi.fn(() => createNullPopulateChain(mockConversation)) as unknown as typeof mockModel.findOne;
-		});
-
-		When('I call getBySharerReserverListing', async () => {
+		const mockConversation = makeMockConversation();
+		mockModel.findOne = vi.fn(() => createQueryChain(mockConversation)) as unknown as typeof mockModel.findOne;
+	});		When('I call getBySharerReserverListing', async () => {
 			result = await repository.getBySharerReserverListing(sharerId, reserverId, listingId);
 		});
 
@@ -433,34 +412,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Getting conversations by listing ID', ({ Given, When, Then, And }) => {
-		Given('a Conversation document with listing "listing-1"', () => {
-			mockConversations = [
-				makeMockConversation({
-					listing: makeMockListing('listing-1'),
-				}),
-			];
-			// Update mock model to return new conversations
-			const createMockQuery = (queryResult: unknown) => {
-				const mockQuery = {
-					lean: vi.fn(),
-					populate: vi.fn(),
-					exec: vi.fn().mockResolvedValue(queryResult),
-					catch: vi.fn((onReject) => Promise.resolve(queryResult).catch(onReject)),
-				};
-				mockQuery.lean.mockReturnValue(mockQuery);
-				mockQuery.populate.mockReturnValue(mockQuery);
-				// biome-ignore lint/suspicious/noThenProperty: Intentional thenable mock for Mongoose queries
-				Object.defineProperty(mockQuery, 'then', {
-					value: vi.fn((onResolve) => Promise.resolve(queryResult).then(onResolve)),
-					enumerable: false,
-					configurable: true,
-				});
-				return mockQuery;
-			};
-			mockModel.find = vi.fn(() => createMockQuery(mockConversations)) as unknown as typeof mockModel.find;
-		});
-
-		When('I call getByListingId with "listing-1"', async () => {
+	Given('a Conversation document with listing "listing-1"', () => {
+		mockConversations = [
+			makeMockConversation({
+				listing: makeMockListing('listing-1'),
+			}),
+		];
+		// Update mock model to return new conversations
+		mockModel.find = vi.fn(() => createQueryChain(mockConversations)) as unknown as typeof mockModel.find;
+	});		When('I call getByListingId with "listing-1"', async () => {
 			result = await repository.getByListingId(createValidObjectId('listing-1'));
 		});
 
@@ -477,7 +437,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Getting conversations by listing ID with no conversations', ({ When, Then }) => {
 		When('I call getByListingId with "listing-without-conversations"', async () => {
-			mockModel.find = vi.fn(() => createNullPopulateChain([])) as unknown as typeof mockModel.find;
+			mockModel.find = vi.fn(() => createQueryChain([])) as unknown as typeof mockModel.find;
 
 			result = await repository.getByListingId(createValidObjectId('listing-without-conversations'));
 		});

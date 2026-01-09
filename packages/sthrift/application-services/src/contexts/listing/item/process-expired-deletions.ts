@@ -3,6 +3,8 @@ import type { DataSources } from '@sthrift/persistence';
 import type { ListingDeletionConfig } from '@sthrift/context-spec';
 import { deleteByListing as deleteConversationsByListing } from '../../conversation/conversation/delete-by-listing.ts';
 
+type BlobStorageService = Domain.Services['BlobStorage'];
+
 export interface ProcessExpiredDeletionsResult {
 	deletedCount: number;
 	deletedListingIds: string[];
@@ -12,17 +14,34 @@ export interface ProcessExpiredDeletionsResult {
 }
 
 async function deleteListingImages(
-	blobStorage: Domain.Services['BlobStorage'],
+	blobStorage: BlobStorageService,
 	images: string[],
 	containerName: string,
 ): Promise<number> {
 	let deletedCount = 0;
-	for (const imagePath of images) {
-		try {
-			await blobStorage.deleteBlob(containerName, imagePath);
-			deletedCount++;
-		} catch (error) {
-			console.warn(`[ExpiredDeletion] Failed to delete image ${imagePath}: ${error instanceof Error ? error.message : String(error)}`);
+	// Process images concurrently with bounded concurrency
+	const imagePromises = images.map((imagePath) =>
+		blobStorage
+			.deleteBlob(containerName, imagePath)
+			.then(() => ({ success: true as const, imagePath }))
+			.catch((error) => ({
+				success: false as const,
+				imagePath,
+				error:
+					error instanceof Error ? error.message : String(error),
+			})),
+	);
+
+	const results = await Promise.allSettled(imagePromises);
+	for (const result of results) {
+		if (result.status === 'fulfilled') {
+			if (result.value.success) {
+				deletedCount++;
+			} else {
+				console.warn(
+					`[ExpiredDeletion] Failed to delete image ${result.value.imagePath}: ${result.value.error}`,
+				);
+			}
 		}
 	}
 	return deletedCount;
@@ -42,7 +61,7 @@ async function deleteListingById(
 export const processExpiredDeletions = (
 	dataSources: DataSources,
 	config: ListingDeletionConfig,
-	blobStorage?: Domain.Services['BlobStorage'],
+	blobStorage?: BlobStorageService,
 ): (() => Promise<ProcessExpiredDeletionsResult>) => {
 	return async (): Promise<ProcessExpiredDeletionsResult> => {
 		const result: ProcessExpiredDeletionsResult = {

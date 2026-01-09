@@ -27,6 +27,10 @@ export const deleteByListing = (dataSources: DataSources) => {
 			dataSources.domainDataSource.Conversation.Conversation
 				.ConversationUnitOfWork;
 
+		// Note: Using per-conversation transactions to maintain error isolation.
+		// While a single batched transaction would be more performant, it would
+		// cause all deletions to fail if any one conversation has an issue.
+		// This approach ensures maximum resilience and partial success.
 		for (const conversation of conversations) {
 			const conversationId = conversation.id;
 
