@@ -241,8 +241,8 @@ export const AdminViewingBlockedUser: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		// Profile should be visible but grayed out
-		await expect(canvas.getByText('John')).toBeInTheDocument();
+		// Profile should be visible but grayed out - use regex to match text that might be split
+		await expect(canvas.getByText(/John/)).toBeInTheDocument();
 	},
 };
 

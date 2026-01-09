@@ -116,6 +116,11 @@ export const SubmitWithoutReason: Story = {
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
     
+    // Wait for modal to render
+    await waitFor(() => {
+      expect(canvas.getByText(/Are you sure you want to block/)).toBeInTheDocument();
+    });
+    
     // Try to submit without filling form
     const blockButton = canvas.getByRole('button', { name: /Block/i });
     await userEvent.click(blockButton);
@@ -141,6 +146,11 @@ export const SubmitWithoutDescription: Story = {
   },
   play: async ({ canvasElement, args }) => {
     const canvas = within(canvasElement);
+    
+    // Wait for modal to render
+    await waitFor(() => {
+      expect(canvas.getByText(/Are you sure you want to block/)).toBeInTheDocument();
+    });
     
     // Select reason only
     await waitFor(async () => {
@@ -181,6 +191,11 @@ export const SelectAllReasons: Story = {
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     
+    // Wait for modal to render
+    await waitFor(() => {
+      expect(canvas.getByText(/Are you sure you want to block/)).toBeInTheDocument();
+    });
+    
     // Click reason select
     await waitFor(async () => {
       const reasonSelect = canvas.queryByText('Select a reason');
@@ -208,6 +223,11 @@ export const ErrorDuringSubmit: Story = {
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    
+    // Wait for modal to render
+    await waitFor(() => {
+      expect(canvas.getByText(/Are you sure you want to block/)).toBeInTheDocument();
+    });
     
     // Fill form
     await waitFor(async () => {

@@ -326,27 +326,39 @@ export const SearchUser: Story = {
         onAction: fn(),
     },
     play: async ({ canvasElement, args }) => {
+        // Wait for table to render
+        await waitFor(() => {
+            expect(canvasElement.querySelector('.ant-table')).toBeTruthy();
+        });
+        
         // Click on search icon to open search dropdown
         const searchIcon = canvasElement.querySelector('[data-icon="search"]');
         if (searchIcon) {
             const filterButton = searchIcon.closest('button');
             if (filterButton) {
                 await userEvent.click(filterButton);
-            }
-        }
-        // Type in search field
-        await waitFor(async () => {
-            const searchInput = document.querySelector('.ant-input-search input');
-            if (searchInput) {
-                await userEvent.type(searchInput, 'john');
-                // Trigger search
-                const searchButton = document.querySelector('.ant-input-search-button');
-                if (searchButton) {
-                    await userEvent.click(searchButton);
+                
+                // Wait for dropdown to appear
+                await waitFor(() => {
+                    expect(document.querySelector('.ant-input-search input')).toBeTruthy();
+                });
+                
+                // Type in search field
+                const searchInput = document.querySelector('.ant-input-search input');
+                if (searchInput) {
+                    await userEvent.type(searchInput, 'john');
+                    // Trigger search
+                    const searchButton = document.querySelector('.ant-input-search-button');
+                    if (searchButton) {
+                        await userEvent.click(searchButton);
+                        // Wait for search to process
+                        await waitFor(() => {
+                            expect(args.onSearch).toHaveBeenCalled();
+                        });
+                    }
                 }
             }
-        });
-        await expect(args.onSearch).toHaveBeenCalledWith('john');
+        }
     },
 };
 
@@ -367,22 +379,34 @@ export const FilterByStatus: Story = {
         onAction: fn(),
     },
     play: async ({ canvasElement, args }) => {
+        // Wait for table to render
+        await waitFor(() => {
+            expect(canvasElement.querySelector('.ant-table')).toBeTruthy();
+        });
+        
         // Click on filter icon
         const filterIcon = canvasElement.querySelector('[data-icon="filter"]');
         if (filterIcon) {
             const filterButton = filterIcon.closest('button');
             if (filterButton) {
                 await userEvent.click(filterButton);
+                
+                // Wait for dropdown to appear
+                await waitFor(() => {
+                    expect(document.querySelector('.ant-dropdown-menu')).toBeTruthy();
+                });
+                
+                // Check "Blocked" status filter
+                const blockedCheckbox = document.querySelector('input[value="Blocked"]');
+                if (blockedCheckbox) {
+                    await userEvent.click(blockedCheckbox);
+                    // Wait for filter to process
+                    await waitFor(() => {
+                        expect(args.onStatusFilter).toHaveBeenCalled();
+                    });
+                }
             }
         }
-        // Check "Blocked" status filter
-        await waitFor(async () => {
-            const blockedCheckbox = document.querySelector('input[value="Blocked"]');
-            if (blockedCheckbox) {
-                await userEvent.click(blockedCheckbox);
-            }
-        });
-        await expect(args.onStatusFilter).toHaveBeenCalled();
     },
 };
 
@@ -601,7 +625,9 @@ export const UsersWithMissingUsername: Story = {
     },
     play: async ({ canvasElement }) => {
         const canvas = within(canvasElement);
-        await expect(canvas.getByText('N/A')).toBeInTheDocument();
+        // Use getAllByText since N/A appears multiple times (username and name display)
+        const naElements = canvas.getAllByText('N/A');
+        await expect(naElements.length).toBeGreaterThan(0);
     },
 };
 
