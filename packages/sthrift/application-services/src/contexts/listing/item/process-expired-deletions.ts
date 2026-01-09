@@ -1,6 +1,6 @@
+import type { ListingDeletionConfig } from '@sthrift/context-spec';
 import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
-import type { ListingDeletionConfig } from '@sthrift/context-spec';
 import { deleteByListing as deleteConversationsByListing } from '../../conversation/conversation/delete-by-listing.ts';
 
 type BlobStorageService = Domain.Services['BlobStorage'];
@@ -19,7 +19,7 @@ async function deleteListingImages(
 	containerName: string,
 ): Promise<number> {
 	let deletedCount = 0;
-	// Process images concurrently with bounded concurrency
+	// Process all images concurrently (unbounded parallelism) for maximum throughput
 	const imagePromises = images.map((imagePath) =>
 		blobStorage
 			.deleteBlob(containerName, imagePath)
@@ -27,8 +27,7 @@ async function deleteListingImages(
 			.catch((error) => ({
 				success: false as const,
 				imagePath,
-				error:
-					error instanceof Error ? error.message : String(error),
+				error: error instanceof Error ? error.message : String(error),
 			})),
 	);
 
@@ -101,7 +100,9 @@ export const processExpiredDeletions = (
 						config.blobContainerName,
 					);
 					result.deletedImagesCount += imagesDeleted;
-					console.log(`[ExpiredDeletion] Deleted ${imagesDeleted} images for listing ${listingId}`);
+					console.log(
+						`[ExpiredDeletion] Deleted ${imagesDeleted} images for listing ${listingId}`,
+					);
 				}
 
 				const conversationResult = await deleteConversations(listingId);
