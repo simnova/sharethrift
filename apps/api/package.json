@@ -30,7 +30,6 @@
 		"@sthrift/event-handler": "workspace:*",
 		"@sthrift/graphql": "workspace:*",
 		"@sthrift/messaging-service-mock": "workspace:*",
-		"@sthrift/messaging-service-twilio": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
 		"@sthrift/rest": "workspace:*",
 		"@sthrift/service-blob-storage": "workspace:*",
@@ -39,7 +38,8 @@
 		"@sthrift/payment-service-cybersource": "workspace:*",
 		"@sthrift/service-mongoose": "workspace:*",
 		"@sthrift/service-otel": "workspace:*",
-		"@sthrift/service-token-validation": "workspace:*"
+		"@sthrift/service-token-validation": "workspace:*",
+		"@sthrift/messaging-service-twilio": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

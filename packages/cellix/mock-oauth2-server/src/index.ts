@@ -31,9 +31,9 @@ const redirectUriToAudience = new Map([
 	['http://localhost:3000/auth-redirect-user', 'user-portal'],
 	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
 ]);
-// Deprecated: kept for backwards compatibility
+// Deprecated: kept for backwards compatibility. Uses process.env's index signature
+// (string | undefined) and falls back to a default redirect URI when not set.
 const allowedRedirectUri =
-	// biome-ignore lint:useLiteralKeys
 	process.env['ALLOWED_REDIRECT_URI'] ||
 	'http://localhost:3000/auth-redirect-user';
 // Type for user profile used in token claims
@@ -189,6 +189,7 @@ async function main() {
 		}
 
 		// Use different credentials based on portal type
+		// TypeScript requires bracket notation for process.env index signature (TS4111)
 		const email = isAdminPortal
 			? process.env['Admin_Email'] || process.env['Email'] || ''
 			: process.env['Email'] || '';
@@ -198,7 +199,6 @@ async function main() {
 		const family_name = isAdminPortal
 			? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
 			: process.env['Family_Name'] || '';
-
 		const profile: TokenProfile = {
 			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),

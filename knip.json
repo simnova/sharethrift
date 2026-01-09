@@ -92,8 +92,7 @@
 		"@graphql-tools/json-file-loader",
 		"@graphql-tools/load",
 		"rollup",
-		"tsx",
 		"vite"
 	],
-	"ignoreBinaries": ["func"]
+	"ignoreBinaries": ["func", "open"]
 }

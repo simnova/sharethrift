@@ -402,16 +402,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			let invalidReserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 			let listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 
-			Given('an invalid reserver reference', () => {
-				// biome-ignore lint/suspicious/noExplicitAny: test requires any for invalid type simulation
-				invalidReserver = null as any;
-			});
-			When('I call getNewInstance with state "PENDING", a valid listing, and the invalid reserver', async () => {
-				listing = vi.mocked({
-					id: createValidObjectId('listing-1'),
-				} as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
-
-				try {
+            Given('an invalid reserver reference', () => {
+                // biome-ignore lint/suspicious/noExplicitAny: test requires any for invalid type simulation
+                invalidReserver = null as any;
+            });
+            When('I call getNewInstance with state "PENDING", a valid listing, and the invalid reserver', async () => {
+                listing = vi.mocked({
+                    id: createValidObjectId('listing-1'),
+                } as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);				try {
 					result = await repository.getNewInstance(
 						'PENDING',
 						listing,
