@@ -22,8 +22,8 @@ function createValidObjectId(id: string): string {
 	const hexChars = '0123456789abcdef';
 	let hex = '';
 	for (let i = 0; i < id.length && hex.length < 24; i++) {
-		const charCode = id.charCodeAt(i);
-		hex += hexChars[charCode % 16];
+		const codePoint = id.codePointAt(i) ?? 0;
+		hex += hexChars[codePoint % 16];
 	}
 	return hex.padEnd(24, '0').substring(0, 24);
 }
@@ -92,7 +92,7 @@ function makeListingDoc(id: string): Models.Listing.ItemListing {
 	} as unknown as Models.Listing.ItemListing;
 }
 
-function makeReservationRequestDoc(id = 'reservation-1', state = 'PENDING'): Models.ReservationRequest.ReservationRequest {
+function makeReservationRequestDoc(id = 'reservation-1', state = 'Requested'): Models.ReservationRequest.ReservationRequest {
 	return {
 		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
 		id: id,
@@ -139,7 +139,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let result: unknown;
 
 	BeforeEachScenario(() => {
-		mockDoc = makeReservationRequestDoc('reservation-1', 'PENDING');
+		mockDoc = makeReservationRequestDoc('reservation-1', 'Requested');
 		repository = setupReservationRequestRepo(mockDoc);
 		result = undefined;
 	});
@@ -162,12 +162,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	Scenario(
 		'Getting a reservation request by ID',
 		({ Given, When, Then, And }) => {
-			Given(
-				'a ReservationRequest document with id "reservation-1", state "PENDING", and a populated reserver',
-				() => {
-					// Already set up in BeforeEachScenario
-				},
-			);
+			Given('a ReservationRequest document with id "reservation-1", state "Requested", and a populated reserver', () => {
+				// Mock document is already set up in BeforeEachScenario with the correct data
+			});
 			When('I call getById with "reservation-1"', async () => {
 				result = await repository.getById('reservation-1');
 			});
@@ -176,12 +173,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest,
 				);
 			});
-			And('the domain object\'s state should be "PENDING"', () => {
+			And('the domain object should have state "Requested"', () => {
 				const reservationRequest =
 					result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<
 						Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
 					>;
-				expect(reservationRequest.state).toBe('PENDING');
+				expect(reservationRequest.state).toBe('Requested');
 			});
 			And('the domain object\'s reserver should be a PersonalUser domain object with correct user data', () => {
 				const reservationRequest =
@@ -256,20 +253,23 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
             let reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
             let listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
             Given("a valid Listing domain entity reference", () => {
-                listing = vi.mocked({
+                listing = {
                     id: createValidObjectId('listing-1'),
                     state: 'Active',
-                } as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
+                    sharer: {
+                        id: createValidObjectId('sharer-1'),
+                    } as unknown as Domain.Contexts.User.UserEntityReference,
+                } as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
             });
             And('a valid PersonalUser domain entity reference as reserver', () => {
-                reserver = vi.mocked({
+                reserver = {
                     id: createValidObjectId('user-1'),
-                } as unknown as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference);
+                } as unknown as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
             });
             And('reservation period from "2025-10-20" to "2025-10-25"', () => {
                 // Dates are provided in the When step
             });
-            When('I call getNewInstance with state "PENDING", the listing, the reserver, and the reservation period', async () => {
+            When('I call getNewInstance with state "Requested", the listing, the reserver, and the reservation period', async () => {
                 // Use future dates that will always be valid
                 const tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
@@ -284,7 +284,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
                 // Mock the model constructor to return a document with required properties
                 const mockNewDoc = {
                     id: { toString: () => 'new-reservation-id' },
-                    state: 'PENDING',
+                    state: 'Requested',
                     reserver: userDocWithMatchingId,
                     listing: makeListingDoc('listing-1'),
                     reservationPeriodStart: tomorrow,
@@ -303,7 +303,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				});
                 
                 result = await repository.getNewInstance(
-                    'PENDING',
+                    'Requested',
                     listing,
                     reserver,
                     tomorrow,
@@ -315,12 +315,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
                     Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest,
                 );
             });
-            And('the domain object\'s state should be "PENDING"', () => {
+            And('the new instance should have state "Requested"', () => {
                 const reservationRequest =
                     result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<
                         Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
                     >;
-                expect(reservationRequest.state).toBe('PENDING');
+                expect(reservationRequest.state).toBe('Requested');
             });
             And('the reservation period should be from "2025-10-20" to "2025-10-25"', () => {
                 const reservationRequest =
@@ -346,7 +346,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting reservation requests by reserver ID',
 		({ Given, When, Then, And }) => {
 			Given('a reserver with id "user-123"', () => {
-				mockDoc = makeReservationRequestDoc('reservation-1', 'PENDING');
+				mockDoc = makeReservationRequestDoc('reservation-1', 'Requested');
 				mockDoc.reserver = makeUserDoc('user-123');
 				repository = setupReservationRequestRepo(mockDoc);
 			});
@@ -373,7 +373,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting reservation requests by listing ID',
 		({ Given, When, Then, And }) => {
 			Given('a listing with id "listing-456"', () => {
-				mockDoc = makeReservationRequestDoc('reservation-1', 'PENDING');
+				mockDoc = makeReservationRequestDoc('reservation-1', 'Requested');
 				mockDoc.listing = makeListingDoc('listing-456');
 				repository = setupReservationRequestRepo(mockDoc);
 			});
@@ -406,14 +406,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				// biome-ignore lint/suspicious/noExplicitAny: test requires any for invalid type simulation
 				invalidReserver = null as any;
 			});
-			When('I call getNewInstance with state "PENDING", a valid listing, and the invalid reserver', async () => {
+			When('I call getNewInstance with state "Requested", a valid listing, and the invalid reserver', async () => {
 				listing = vi.mocked({
 					id: createValidObjectId('listing-1'),
 				} as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
 
 				try {
 					result = await repository.getNewInstance(
-						'PENDING',
+						'Requested',
 						listing,
 						invalidReserver,
 						new Date('2025-10-20'),

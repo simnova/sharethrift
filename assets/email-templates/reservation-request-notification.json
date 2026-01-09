@@ -1,0 +1,5 @@
+{
+  "fromEmail": "noreply@sharethrift.com",
+  "subject": "New Reservation Request for Your Listing: {{listingTitle}}",
+  "body": "<html><body><h1>Hello {{sharerName}},</h1><p>{{reserverName}} has requested to reserve your listing <strong>{{listingTitle}}</strong> from {{reservationStart}} to {{reservationEnd}}.</p><p>Please review this request in your ShareThrift dashboard.</p><p>Request ID: {{reservationRequestId}}</p><p>Best regards,<br>The ShareThrift Team</p></body></html>"
+}

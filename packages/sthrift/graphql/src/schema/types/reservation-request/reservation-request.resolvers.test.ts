@@ -55,6 +55,7 @@ function createMockReservationRequest(
 		} as PersonalUserEntity,
 		loadListing: vi.fn(),
 		loadReserver: vi.fn(),
+		loadSharer: vi.fn(),
 		closeRequestedBySharer: false,
 		closeRequestedByReserver: false,
 		...overrides,

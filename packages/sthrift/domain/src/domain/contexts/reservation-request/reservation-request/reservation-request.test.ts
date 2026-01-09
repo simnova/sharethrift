@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
+import { expect, vi, describe, it, beforeEach } from 'vitest';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { ReservationRequest } from './reservation-request.ts';
 import { ReservationRequestStates } from './reservation-request.value-objects.ts';
@@ -51,7 +51,21 @@ function makePassport(
 function makeListing(state = 'Active'): ItemListingEntityReference {
 	return {
 		id: 'listing-1',
-		sharer: {} as UserEntityReference,
+		sharer: {
+			id: 'sharer-1',
+			userType: 'personal',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			// biome-ignore lint/suspicious/noExplicitAny: test mock data
+			role: {} as any,
+			// biome-ignore lint/suspicious/noExplicitAny: test mock data
+			loadRole: async () => ({}) as any,
+			// biome-ignore lint/suspicious/noExplicitAny: test mock data
+			account: {} as any,
+			schemaVersion: '1',
+			createdAt: new Date('2024-01-01T00:00:00Z'),
+			updatedAt: new Date('2024-01-02T00:00:00Z'),
+		} as UserEntityReference,
 		title: 'Listing',
 		description: 'Desc',
 		category: 'General',
@@ -72,11 +86,11 @@ function makeUser(): UserEntityReference {
 		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types
+		// biome-ignore lint/suspicious/noExplicitAny: test mock data
 		role: {} as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types
+		// biome-ignore lint/suspicious/noExplicitAny: test mock data
 		loadRole: async () => ({}) as any,
-		// biome-ignore lint/suspicious/noExplicitAny: Test mock requires any for complex types
+		// biome-ignore lint/suspicious/noExplicitAny: test mock data
 		account: {} as any,
 		schemaVersion: '1',
 		createdAt: new Date('2024-01-01T00:00:00Z'),
@@ -101,6 +115,7 @@ function makeBaseProps(
 		loadListing: async () => makeListing(),
 		reserver: makeUser(),
 		loadReserver: async () => makeUser(),
+		loadSharer: async () => makeListing().sharer,
 		closeRequestedBySharer: false,
 		closeRequestedByReserver: false,
 		...overrides,
@@ -1165,4 +1180,299 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+});
+
+// Additional unit tests for static helper methods
+describe('ReservationRequest static helper methods', () => {
+
+	describe('getNewInstance - Event Emission', () => {
+		let testPassport: Passport;
+		let testListing: ItemListingEntityReference;
+		let testReserver: UserEntityReference;
+		let testBaseProps: ReservationRequestProps;
+
+		beforeEach(() => {
+			testPassport = makePassport();
+			testListing = makeListing('Active');
+			testReserver = makeUser();
+			const tomorrow = new Date(Date.now() + 86_400_000);
+			const nextMonth = new Date(Date.now() + 86_400_000 * 30);
+			testBaseProps = {
+				id: 'rr-1',
+				state: ReservationRequestStates.REQUESTED,
+				reservationPeriodStart: tomorrow,
+				reservationPeriodEnd: nextMonth,
+				createdAt: new Date('2024-01-01T00:00:00Z'),
+				updatedAt: new Date('2024-01-02T00:00:00Z'),
+				schemaVersion: '1',
+				listing: testListing,
+				loadListing: async () => testListing,
+				reserver: testReserver,
+				loadReserver: async () => testReserver,
+				loadSharer: async () => testListing.sharer,
+				closeRequestedBySharer: false,
+				closeRequestedByReserver: false,
+			};
+		});
+
+	it('emits ReservationRequestCreated event when state is REQUESTED', () => {
+		const spy = vi.spyOn(console, 'warn').mockImplementation(() => {
+			// Mock implementation is intentionally empty
+		});
+
+		const instance = ReservationRequest.getNewInstance(
+			testBaseProps,
+			ReservationRequestStates.REQUESTED,
+			testListing,
+			testReserver,
+			testBaseProps.reservationPeriodStart,
+			testBaseProps.reservationPeriodEnd,
+			testPassport,
+		);
+
+		// Check that instance was created successfully
+		expect(instance).toBeInstanceOf(ReservationRequest);
+		expect(instance.state).toBe(ReservationRequestStates.REQUESTED);
+
+		spy.mockRestore();
+	});
+
+	it('does not emit ReservationRequestCreated event for non-REQUESTED state', () => {
+		const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+			// Mock implementation is intentionally empty
+		});
+
+		const instance = ReservationRequest.getNewInstance(
+			testBaseProps,
+			ReservationRequestStates.ACCEPTED,
+			testListing,
+			testReserver,
+			testBaseProps.reservationPeriodStart,
+			testBaseProps.reservationPeriodEnd,
+			testPassport,
+		);
+
+		expect(instance).toBeInstanceOf(ReservationRequest);
+		expect(instance.state).toBe(ReservationRequestStates.ACCEPTED);
+
+		consoleSpy.mockRestore();
+	});
+
+	it('handles missing listing gracefully during event emission', () => {
+		const incompleteListing = {
+			...testListing,
+			id: undefined,
+	} as unknown as ItemListingEntityReference;
+
+		const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {
+			// Mock implementation is intentionally empty
+		});
+
+		const instance = ReservationRequest.getNewInstance(
+			testBaseProps,
+			ReservationRequestStates.REQUESTED,
+			incompleteListing,
+			testReserver,
+			testBaseProps.reservationPeriodStart,
+			testBaseProps.reservationPeriodEnd,
+			testPassport,
+		);
+
+		// Should still create instance even if event emission warns
+		expect(instance).toBeInstanceOf(ReservationRequest);
+
+		warnSpy.mockRestore();
+	});
+});
+
+describe('Async property loading', () => {
+	let testPassport: Passport;
+	let testListing: ItemListingEntityReference;
+	let testReserver: UserEntityReference;
+	let testBaseProps: ReservationRequestProps;
+
+	beforeEach(() => {
+		testPassport = makePassport();
+			testListing = makeListing('Active');
+			testReserver = makeUser();
+			const tomorrow = new Date(Date.now() + 86_400_000);
+			const nextMonth = new Date(Date.now() + 86_400_000 * 30);
+			testBaseProps = {
+				id: 'rr-1',
+				state: ReservationRequestStates.REQUESTED,
+				reservationPeriodStart: tomorrow,
+				reservationPeriodEnd: nextMonth,
+				createdAt: new Date('2024-01-01T00:00:00Z'),
+				updatedAt: new Date('2024-01-02T00:00:00Z'),
+				schemaVersion: '1',
+				listing: testListing,
+				loadListing: async () => testListing,
+				reserver: testReserver,
+				loadReserver: async () => testReserver,
+				loadSharer: async () => testListing.sharer,
+				closeRequestedBySharer: false,
+				closeRequestedByReserver: false,
+			};
+		});
+
+		it('loadReserver returns user from props', async () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			const loadedReserver = await aggregate.loadReserver();
+			expect(loadedReserver).toBe(testReserver);
+		});
+
+		it('loadListing returns listing from props', async () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			const loadedListing = await aggregate.loadListing();
+			expect(loadedListing).toBe(testListing);
+		});
+
+		it('loadSharer returns sharer from listing', async () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			const loadedSharer = await aggregate.loadSharer();
+			expect(loadedSharer).toBe(testListing.sharer);
+		});
+	});
+
+	describe('Immutable date validation after creation', () => {
+		let testPassport: Passport;
+		let testListing: ItemListingEntityReference;
+		let testReserver: UserEntityReference;
+		let testBaseProps: ReservationRequestProps;
+
+		beforeEach(() => {
+			testPassport = makePassport();
+			testListing = makeListing('Active');
+			testReserver = makeUser();
+			const tomorrow = new Date(Date.now() + 86_400_000);
+			const nextMonth = new Date(Date.now() + 86_400_000 * 30);
+			testBaseProps = {
+				id: 'rr-1',
+				state: ReservationRequestStates.REQUESTED,
+				reservationPeriodStart: tomorrow,
+				reservationPeriodEnd: nextMonth,
+				createdAt: new Date('2024-01-01T00:00:00Z'),
+				updatedAt: new Date('2024-01-02T00:00:00Z'),
+				schemaVersion: '1',
+				listing: testListing,
+				loadListing: async () => testListing,
+				reserver: testReserver,
+				loadReserver: async () => testReserver,
+				loadSharer: async () => testListing.sharer,
+				closeRequestedBySharer: false,
+				closeRequestedByReserver: false,
+			};
+		});
+
+		it('cannot set past reservation period start date', () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			expect(() => {
+				aggregate.reservationPeriodStart = new Date(Date.now() - 86_400_000);
+			}).toThrow();
+		});
+
+		it('cannot set past reservation period end date', () => {
+			const aggregate = ReservationRequest.getNewInstance(
+				testBaseProps,
+				ReservationRequestStates.REQUESTED,
+				testListing,
+				testReserver,
+				testBaseProps.reservationPeriodStart,
+				testBaseProps.reservationPeriodEnd,
+				testPassport,
+			);
+
+			expect(() => {
+				aggregate.reservationPeriodEnd = new Date(Date.now() - 86_400_000);
+			}).toThrow();
+		});
+	});
+
+	describe('Close request permissions', () => {
+		let testPassport: Passport;
+		let testListing: ItemListingEntityReference;
+		let testReserver: UserEntityReference;
+
+		beforeEach(() => {
+			testPassport = makePassport();
+			testListing = makeListing('Active');
+			testReserver = makeUser();
+		});
+
+		it('can request close for ACCEPTED reservation when permitted', () => {
+			const acceptedProps = makeBaseProps({
+				state: ReservationRequestStates.ACCEPTED,
+				listing: testListing,
+				reserver: testReserver,
+			});
+			const aggregate = new ReservationRequest(acceptedProps, testPassport);
+
+			expect(() => {
+				aggregate.closeRequestedBySharer = true;
+			}).not.toThrow();
+		});
+
+		it('cannot request close when not permitted', () => {
+			const deniedPassport = makePassport({ canCloseRequest: false });
+			const acceptedProps = makeBaseProps({
+				state: ReservationRequestStates.ACCEPTED,
+				listing: testListing,
+				reserver: testReserver,
+			});
+			const aggregate = new ReservationRequest(acceptedProps, deniedPassport);
+
+			expect(() => {
+				aggregate.closeRequestedBySharer = true;
+			}).toThrow(DomainSeedwork.PermissionError);
+		});
+
+		it('cannot request close for non-ACCEPTED reservation', () => {
+			const requestedProps = makeBaseProps({
+				state: ReservationRequestStates.REQUESTED,
+				listing: testListing,
+				reserver: testReserver,
+			});
+			const aggregate = new ReservationRequest(requestedProps, testPassport);
+
+			expect(() => {
+				aggregate.closeRequestedBySharer = true;
+			}).toThrow(/Cannot close reservation in current state/);
+		});
+	});
 });

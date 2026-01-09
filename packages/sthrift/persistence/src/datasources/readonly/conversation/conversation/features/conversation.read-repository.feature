@@ -40,26 +40,35 @@ And valid Conversation documents exist in the database
 		When I call getByUser with an empty string
 		Then I should receive an empty array
 
-	Scenario: Getting conversation by sharer, reserver, and listing
-		Given valid sharer, reserver, and listing IDs
-		When I call getBySharerReserverListing
-		Then I should receive a Conversation entity or null
+	Scenario: Getting conversation by sharer, reserver, and listing IDs
+		Given a conversation with specific sharer, reserver, and listing
+		When I call getBySharerReserverListing with valid IDs
+		Then I should receive a Conversation entity
+		And the entity should match the criteria
 
-	Scenario: Getting conversation with missing sharer ID
-		Given empty sharer ID
-		When I call getBySharerReserverListing with empty sharer
+	Scenario: Getting conversation by sharer, reserver, and listing with no match
+		When I call getBySharerReserverListing with non-matching IDs
 		Then it should return null
 
-	Scenario: Getting conversation with missing reserver ID
-		Given empty reserver ID
-		When I call getBySharerReserverListing with empty reserver
+	Scenario: Getting conversation by sharer, reserver, and listing with empty parameters
+		When I call getBySharerReserverListing with empty parameters
 		Then it should return null
 
-	Scenario: Getting conversation with missing listing ID
-		Given empty listing ID
-		When I call getBySharerReserverListing with empty listing
+	Scenario: Getting conversation by sharer, reserver, and listing with partial empty parameters
+		When I call getBySharerReserverListing with partial empty parameters
 		Then it should return null
 
+	Scenario: Getting conversation by sharer, reserver, and listing with invalid ObjectId
+		When I call getBySharerReserverListing with invalid ObjectId that throws error
+		Then it should return null due to error handling
+
+	Scenario: Testing getByUser with invalid ObjectId that throws error
+		When I call getByUser with ObjectId that throws error
+		Then it should return empty array due to error handling
+
+	Scenario: Testing getConversationReadRepository factory function
+		When I call getConversationReadRepository factory function
+		Then it should return a ConversationReadRepositoryImpl instance
 	Scenario: Getting conversation with error in database query
 		Given an error will occur during the query
 		When I call getBySharerReserverListing

@@ -1,0 +1,36 @@
+{
+  "name": "@sthrift/transactional-email-service-sendgrid",
+  "version": "0.1.0",
+  "description": "SendGrid implementation of transactional email service for ShareThrift",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
+  "license": "MIT",
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc --build",
+    "lint": "biome lint .",
+    "test": "vitest run",
+    "clean": "rimraf dist",
+    "test:coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.0.0",
+    "@cellix/typescript-config": "workspace:*",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "dependencies": {
+    "@cellix/transactional-email-service": "workspace:*",
+    "@sendgrid/mail": "^8.0.0"
+  }
+}

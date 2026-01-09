@@ -21,6 +21,10 @@ import type { MessagingService } from '@cellix/messaging-service';
 import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
 import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
+import type { TransactionalEmailService } from '@cellix/transactional-email-service';
+import { ServiceTransactionalEmailSendGrid } from '@sthrift/transactional-email-service-sendgrid';
+import { ServiceTransactionalEmailMock } from '@sthrift/transactional-email-service-mock';
+
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 
@@ -50,7 +54,11 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(
-        isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource()
+				// Use mock if in development OR if SendGrid API key is not available
+				isDevelopment ? new ServiceTransactionalEmailMock() : new ServiceTransactionalEmailSendGrid(),
+			)
+			.registerInfrastructureService(
+                isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource()
       );
 	},
 )
@@ -69,8 +77,12 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
       ? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
       : serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
+		const emailService = isDevelopment
+			? serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailMock)
+			: serviceRegistry.getInfrastructureService<TransactionalEmailService>(ServiceTransactionalEmailSendGrid);
+
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
-		RegisterEventHandlers(domainDataSource);
+		RegisterEventHandlers(domainDataSource, emailService);
 
 		return {
 			dataSourcesFactory,
@@ -79,7 +91,8 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 					ServiceTokenValidation,
 				),
 			paymentService,
-      messagingService,
+			messagingService,
+			emailService,
 		};
 	})
 	.initializeApplicationServices((context) =>

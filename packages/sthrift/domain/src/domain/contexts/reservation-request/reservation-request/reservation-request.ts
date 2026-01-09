@@ -2,13 +2,13 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ReservationRequestVisa } from '../reservation-request.visa.ts';
 import { ReservationRequestStates } from './reservation-request.value-objects.ts';
-import * as ValueObjects from './reservation-request.value-objects.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import type { UserEntityReference } from '../../user/index.ts';
 import type {
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
 } from './reservation-request.entity.ts';
+import { ReservationRequestCreated } from '../../../events/index.ts';
 
 export class ReservationRequest<props extends ReservationRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>
@@ -36,6 +36,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		reservationPeriodEnd: Date,
 		passport: Passport,
 	): ReservationRequest<props> {
+		
 		// Validate reservation period
 		if (
 			reservationPeriodStart &&
@@ -44,19 +45,36 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		) {
 			throw new Error('Reservation start date must be before end date');
 		}
+		
 		const instance = new ReservationRequest(newProps, passport);
-		instance.markAsNew();
-		instance.state = state;
+
+        instance.markAsNew();
+        instance.state = state;
+
+		// Set all properties using setters to maintain validation - no ordering constraints
 		instance.listing = listing;
 		instance.reserver = reserver;
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
+		instance.props.state = state;
+		
+		// Lock the instance by setting isNew to false to prevent further modifications
 		instance.isNew = false;
+		
 		return instance;
 	}
 
 	private markAsNew(): void {
-		this.isNew = true;
+        this.isNew = true;
+		// Emit integration event for new reservation request
+		this.addIntegrationEvent(ReservationRequestCreated, {
+			reservationRequestId: this.props.id,
+			listingId: this.props.listing.id,
+			reserverId: this.props.reserver.id,
+			sharerId: this.props.listing.sharer?.id ?? '',
+			reservationPeriodStart: this.props.reservationPeriodStart,
+			reservationPeriodEnd: this.props.reservationPeriodEnd,
+		});
 	}
 
 	//#region Properties
@@ -213,7 +231,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
+		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
 			throw new Error('Cannot close reservation in current state');
 		}
 
@@ -234,7 +252,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
+		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
 			throw new Error('Cannot close reservation in current state');
 		}
 
@@ -245,6 +263,10 @@ export class ReservationRequest<props extends ReservationRequestProps>
 
 	async loadReserver(): Promise<UserEntityReference> {
 		return await this.props.loadReserver();
+	}
+
+	async loadSharer(): Promise<UserEntityReference> {
+		return await this.props.loadSharer();
 	}
 
 	async loadListing(): Promise<ItemListingEntityReference> {
@@ -262,13 +284,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
+		if (this.props.state !== ReservationRequestStates.REQUESTED) {
 			throw new Error('Can only accept requested reservations');
 		}
 
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.ACCEPTED,
-		).valueOf();
+		this.props.state = ReservationRequestStates.ACCEPTED;
 	}
 
 	private reject(): void {
@@ -282,13 +302,11 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.REQUESTED) {
+		if (this.props.state !== ReservationRequestStates.REQUESTED) {
 			throw new Error('Can only reject requested reservations');
 		}
 
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.REJECTED,
-		).valueOf();
+		this.props.state = ReservationRequestStates.REJECTED;
 	}
 
 	private cancel(): void {
@@ -303,15 +321,13 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		}
 
 		if (
-			this.props.state.valueOf() !== ReservationRequestStates.REQUESTED &&
-			this.props.state.valueOf() !== ReservationRequestStates.REJECTED
+			this.props.state !== ReservationRequestStates.REQUESTED &&
+			this.props.state !== ReservationRequestStates.REJECTED
 		) {
 			throw new Error('Cannot cancel reservation in current state');
 		}
 
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.CANCELLED,
-		).valueOf();
+		this.props.state = ReservationRequestStates.CANCELLED;
 	}
 
 	private close(): void {
@@ -325,7 +341,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
+		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
 			throw new Error('Can only close accepted reservations');
 		}
 
@@ -339,9 +355,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.CLOSED,
-		).valueOf();
+		this.props.state = ReservationRequestStates.CLOSED;
 	}
 
 	private request(): void {
@@ -351,14 +365,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			);
 		}
 
-		if (!this.isNew) {
-			throw new Error(
-				'Can only set state to requested when creating new reservation requests',
-			);
-		}
-
-		this.props.state = new ValueObjects.ReservationRequestStateValue(
-			ReservationRequestStates.REQUESTED,
-		).valueOf();
+		this.props.state = ReservationRequestStates.REQUESTED;
 	}
 }
