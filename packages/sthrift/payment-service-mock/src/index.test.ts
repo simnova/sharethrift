@@ -62,7 +62,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
     });
     Then('an error should be thrown indicating already started', () => {
       expect(error).toBeDefined();
-      expect(error).toMatch(/already started/);
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toMatch(/already started/);
     });
   });
 
@@ -92,7 +93,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
     });
     Then('an error should be thrown indicating not started', () => {
       expect(error).toBeDefined();
-      expect(error).toMatch(/not started/);
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toMatch(/not started/);
     });
   });
 
@@ -109,7 +111,8 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
     });
     Then('an error should be thrown indicating not started', () => {
       expect(error).toBeDefined();
-      expect(error).toMatch(/not started/);
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toMatch(/not started/);
     });
   });
 

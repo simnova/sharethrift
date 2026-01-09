@@ -1,4 +1,8 @@
 import express from 'express';
+import https from 'node:https';
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
 import type { Request, Response, Application } from 'express';
 import type { Server } from 'node:http';
 import { config } from 'dotenv';
@@ -69,8 +73,21 @@ export function createApp(): Application {
 export function startServer(port = 10000, seedData = false): Promise<Server> {
 	return new Promise((resolve) => {
 		const app = createApp();
-		const server = app.listen(port, () => {
-			console.log(`Mock Twilio Server listening on port ${port}`);
+		
+		// From package directory, go up 3 levels to workspace root
+		// packages/sthrift/mock-messaging-server -> ../../..
+		const workspaceRoot = path.join(process.cwd(), '../../../');
+		const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
+		const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
+		const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
+		
+		if (hasCerts) {
+			const httpsOptions = {
+				key: fs.readFileSync(certKeyPath),
+				cert: fs.readFileSync(certPath),
+			};
+			const server = https.createServer(httpsOptions, app).listen(port, 'mock-messaging.sharethrift.localhost', () => {
+			console.log(` Mock Messaging Server listening on https://mock-messaging.sharethrift.localhost:${port}`);
 			
 			if (seedData) {
 				seedMockData();
@@ -80,6 +97,20 @@ export function startServer(port = 10000, seedData = false): Promise<Server> {
 			
 			resolve(server);
 		});
+	} else {
+		// Fallback to HTTP when certs don't exist (CI/CD)
+		const server = http.createServer(app).listen(port, () => {
+			console.log(` Mock Messaging Server listening on http://localhost:${port} (no certs found)`);
+			
+			if (seedData) {
+				seedMockData();
+			} else {
+				console.log('Starting with empty data store (set seedData=true to seed)');
+			}
+			
+			resolve(server);
+		});
+	}
 	});
 }
 
@@ -89,7 +120,7 @@ export function stopServer(server: Server): Promise<void> {
 			if (err) {
 				reject(err);
 			} else {
-				console.log('Mock Twilio Server stopped');
+				console.log('Mock Messaging Server stopped');
 				resolve();
 			}
 		});
