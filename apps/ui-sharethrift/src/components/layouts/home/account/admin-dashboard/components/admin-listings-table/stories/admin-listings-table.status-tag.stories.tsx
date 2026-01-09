@@ -3,7 +3,7 @@ import { expect, within } from 'storybook/test';
 import { StatusTag } from '../admin-listings-table.status-tag.tsx';
 
 const meta: Meta<typeof StatusTag> = {
-	title: 'Admin/ListingsTable/StatusTag',
+	title: 'Components/AdminListingsTable/StatusTag',
 	component: StatusTag,
 	parameters: {
 		layout: 'centered',

@@ -51,7 +51,7 @@ const mockUserNoDate: AdminUserData = {
 };
 
 const meta: Meta<typeof AdminUsersCard> = {
-	title: 'Admin/UsersTable/AdminUsersCard',
+	title: 'Components/AdminUsers/AdminUsersCard',
 	component: AdminUsersCard,
 	parameters: {
 		layout: 'centered',

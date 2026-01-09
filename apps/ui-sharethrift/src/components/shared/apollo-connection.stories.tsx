@@ -16,6 +16,7 @@ const meta: Meta<typeof ApolloConnection> = {
 		},
 	},
 	decorators: [withAuthDecorator],
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 } satisfies Meta<typeof ApolloConnection>;
 
 export default meta;

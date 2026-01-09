@@ -11,6 +11,7 @@ const meta: Meta<typeof App> = {
 		hasCompletedOnboarding: false,
 		isAuthenticated: false,
 	},
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	parameters: {
 		layout: 'fullscreen',
 		docs: {
