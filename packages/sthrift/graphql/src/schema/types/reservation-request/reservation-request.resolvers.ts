@@ -2,6 +2,7 @@ import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { Resolvers } from '../../builder/generated.ts';
 import {
+
 	PopulateItemListingFromField,
 	PopulateUserFromField,
 } from '../../resolver-helper.ts';
@@ -216,6 +217,29 @@ const reservationRequest: Resolvers = {
 					reservationPeriodStart: new Date(args.input.reservationPeriodStart),
 					reservationPeriodEnd: new Date(args.input.reservationPeriodEnd),
 					reserverEmail: verifiedJwt.email,
+				},
+			);
+		},
+		cancelReservation: async (
+			_parent: unknown,
+			args: {
+				input: {
+					id: string;
+				};
+			},
+			context: GraphContext,
+			_info: GraphQLResolveInfo,
+		) => {
+			const verifiedJwt = context.applicationServices.verifiedUser?.verifiedJwt;
+			if (!verifiedJwt) {
+				throw new Error(
+					'User must be authenticated to cancel a reservation request',
+				);
+			}
+
+			return await context.applicationServices.ReservationRequest.ReservationRequest.cancel(
+				{
+					id: args.input.id,
 				},
 			);
 		},

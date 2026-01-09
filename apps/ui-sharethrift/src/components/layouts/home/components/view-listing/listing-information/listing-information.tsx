@@ -1,4 +1,5 @@
 import { Row, Col, DatePicker, Button } from 'antd';
+import { CancelReservationPopconfirm } from '@sthrift/ui-components';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import type {
@@ -47,6 +48,7 @@ interface ListingInformationProps {
 		endDate: Date | null;
 	}) => void;
 	reservationLoading?: boolean;
+	cancelLoading?: boolean;
 	otherReservationsLoading?: boolean;
 	otherReservationsError?: Error;
 	otherReservations?: ViewListingQueryActiveByListingIdQuery['queryActiveByListingId'];
@@ -63,6 +65,7 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 	reservationDates,
 	onReservationDatesChange,
 	reservationLoading = false,
+	cancelLoading = false,
 	otherReservationsLoading = false,
 	otherReservationsError,
 	otherReservations,
@@ -309,28 +312,27 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 					<Col span={24}>
 						{(() => {
 							if (!userIsSharer && isAuthenticated) {
+								if (reservationRequestStatus === 'Requested') {
+									return (
+										<CancelReservationPopconfirm
+											onConfirm={onCancelClick}
+											loading={cancelLoading}
+										>
+											<Button type="default" block loading={cancelLoading}>
+												Cancel Request
+											</Button>
+										</CancelReservationPopconfirm>
+									);
+								}
 								return (
 									<Button
-										type={
-											reservationRequestStatus === 'Requested'
-												? 'default'
-												: 'primary'
-										}
+										type="primary"
 										block
-										onClick={
-											reservationRequestStatus === 'Requested'
-												? onCancelClick
-												: onReserveClick
-										}
-										disabled={
-											!areDatesSelected &&
-											reservationRequestStatus !== 'Requested'
-										}
+										onClick={onReserveClick}
+										disabled={!areDatesSelected}
 										icon={reservationLoading ? <LoadingOutlined /> : undefined}
 									>
-										{reservationRequestStatus === 'Requested'
-											? 'Cancel Request'
-											: 'Reserve'}
+										Reserve
 									</Button>
 								);
 							}
