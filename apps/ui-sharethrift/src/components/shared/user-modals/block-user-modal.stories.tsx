@@ -58,27 +58,36 @@ export const FillFormAndSubmit: Story = {
     onConfirm: fn(),
     onCancel: fn(),
   },
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
-    await waitFor(async () => {
-      const reasonSelect = canvas.queryByText('Select a reason');
-      if (reasonSelect) {
-        await userEvent.click(reasonSelect);
-      }
+  play: async ({ args }) => {
+    const body = within(document.body);
+    
+    // Wait for modal to render
+    await waitFor(() => {
+      expect(body.getByText(/Are you sure you want to block/)).toBeInTheDocument();
     });
     
-    // Select first option from dropdown
+    // Click on the select control (not the text, but the control itself)
+    const selectControl = document.querySelector('.ant-select-selector');
+    if (selectControl) {
+      await userEvent.click(selectControl);
+    }
+    
+    // Wait for dropdown and select first option
+    await waitFor(() => {
+      const firstOption = document.querySelector('.ant-select-item');
+      expect(firstOption).toBeTruthy();
+    });
     const firstOption = document.querySelector('.ant-select-item');
     if (firstOption) {
       await userEvent.click(firstOption);
     }
     
     // Fill description
-    const descriptionField = canvas.getByPlaceholderText('This message will be shown to the user');
+    const descriptionField = body.getByPlaceholderText('This message will be shown to the user');
     await userEvent.type(descriptionField, 'Test block description');
     
     // Submit form
-    const blockButton = canvas.getByRole('button', { name: /Block/i });
+    const blockButton = body.getByRole('button', { name: /Block/i });
     await userEvent.click(blockButton);
     
     await waitFor(() => {
@@ -95,10 +104,15 @@ export const CancelModal: Story = {
     onConfirm: fn(),
     onCancel: fn(),
   },
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
+  play: async ({ args }) => {
+    const body = within(document.body);
     
-    const cancelButton = canvas.getByRole('button', { name: /Cancel/i });
+    // Wait for modal to render
+    await waitFor(() => {
+      expect(body.getByText(/Are you sure you want to block/)).toBeInTheDocument();
+    });
+    
+    const cancelButton = body.getByRole('button', { name: /Cancel/i });
     await userEvent.click(cancelButton);
     
     await expect(args.onCancel).toHaveBeenCalled();
@@ -113,21 +127,21 @@ export const SubmitWithoutReason: Story = {
     onConfirm: fn(),
     onCancel: fn(),
   },
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
+  play: async ({ args }) => {
+    const body = within(document.body);
     
     // Wait for modal to render
     await waitFor(() => {
-      expect(canvas.getByText(/Are you sure you want to block/)).toBeInTheDocument();
+      expect(body.getByText(/Are you sure you want to block/)).toBeInTheDocument();
     });
     
     // Try to submit without filling form
-    const blockButton = canvas.getByRole('button', { name: /Block/i });
+    const blockButton = body.getByRole('button', { name: /Block/i });
     await userEvent.click(blockButton);
     
     // Should show validation error
     await waitFor(() => {
-      const errorMessage = canvas.queryByText('Please select a reason');
+      const errorMessage = body.queryByText('Please select a reason');
       expect(errorMessage).toBeInTheDocument();
     });
     
@@ -144,20 +158,22 @@ export const SubmitWithoutDescription: Story = {
     onConfirm: fn(),
     onCancel: fn(),
   },
-  play: async ({ canvasElement, args }) => {
-    const canvas = within(canvasElement);
+  play: async ({ args }) => {
+    const body = within(document.body);
     
     // Wait for modal to render
     await waitFor(() => {
-      expect(canvas.getByText(/Are you sure you want to block/)).toBeInTheDocument();
+      expect(body.getByText(/Are you sure you want to block/)).toBeInTheDocument();
     });
     
-    // Select reason only
-    await waitFor(async () => {
-      const reasonSelect = canvas.queryByText('Select a reason');
-      if (reasonSelect) {
-        await userEvent.click(reasonSelect);
-      }
+    // Click on the select control
+    const selectControl = document.querySelector('.ant-select-selector');
+    if (selectControl) {
+      await userEvent.click(selectControl);
+    }
+    
+    await waitFor(() => {
+      expect(document.querySelector('.ant-select-item')).toBeTruthy();
     });
     
     const firstOption = document.querySelector('.ant-select-item');
@@ -166,12 +182,12 @@ export const SubmitWithoutDescription: Story = {
     }
     
     // Try to submit without description
-    const blockButton = canvas.getByRole('button', { name: /Block/i });
+    const blockButton = body.getByRole('button', { name: /Block/i });
     await userEvent.click(blockButton);
     
     // Should show validation error
     await waitFor(() => {
-      const errorMessage = canvas.queryByText('Please provide a description');
+      const errorMessage = body.queryByText('Please provide a description');
       expect(errorMessage).toBeInTheDocument();
     });
     
@@ -188,21 +204,19 @@ export const SelectAllReasons: Story = {
     onConfirm: fn(),
     onCancel: fn(),
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+  play: async () => {
+    const body = within(document.body);
     
     // Wait for modal to render
     await waitFor(() => {
-      expect(canvas.getByText(/Are you sure you want to block/)).toBeInTheDocument();
+      expect(body.getByText(/Are you sure you want to block/)).toBeInTheDocument();
     });
     
-    // Click reason select
-    await waitFor(async () => {
-      const reasonSelect = canvas.queryByText('Select a reason');
-      if (reasonSelect) {
-        await userEvent.click(reasonSelect);
-      }
-    });
+    // Click on the select control
+    const selectControl = document.querySelector('.ant-select-selector');
+    if (selectControl) {
+      await userEvent.click(selectControl);
+    }
     
     // Verify all options are present
     await waitFor(() => {
@@ -221,20 +235,22 @@ export const ErrorDuringSubmit: Story = {
     },
     onCancel: fn(),
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+  play: async () => {
+    const body = within(document.body);
     
     // Wait for modal to render
     await waitFor(() => {
-      expect(canvas.getByText(/Are you sure you want to block/)).toBeInTheDocument();
+      expect(body.getByText(/Are you sure you want to block/)).toBeInTheDocument();
     });
     
-    // Fill form
-    await waitFor(async () => {
-      const reasonSelect = canvas.queryByText('Select a reason');
-      if (reasonSelect) {
-        await userEvent.click(reasonSelect);
-      }
+    // Click on the select control
+    const selectControl = document.querySelector('.ant-select-selector');
+    if (selectControl) {
+      await userEvent.click(selectControl);
+    }
+    
+    await waitFor(() => {
+      expect(document.querySelector('.ant-select-item')).toBeTruthy();
     });
     
     const firstOption = document.querySelector('.ant-select-item');
@@ -242,11 +258,11 @@ export const ErrorDuringSubmit: Story = {
       await userEvent.click(firstOption);
     }
     
-    const descriptionField = canvas.getByPlaceholderText('This message will be shown to the user');
+    const descriptionField = body.getByPlaceholderText('This message will be shown to the user');
     await userEvent.type(descriptionField, 'Test description');
     
     // Submit form - should handle error gracefully
-    const blockButton = canvas.getByRole('button', { name: /Block/i });
+    const blockButton = body.getByRole('button', { name: /Block/i });
     await userEvent.click(blockButton);
   },
 };
