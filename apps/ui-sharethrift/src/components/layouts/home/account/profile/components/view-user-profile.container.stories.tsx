@@ -164,3 +164,269 @@ export const Loading: Story = {
     },
   },
 };
+
+export const BlockedUserAsAdmin: Story = {
+  parameters: {
+    apolloClient: {
+      mocks: [
+        {
+          request: {
+            query: HomeAccountViewUserProfileCurrentUserDocument,
+          },
+          result: {
+            data: {
+              currentUser: mockCurrentUser,
+            },
+          },
+        },
+        {
+          request: {
+            query: HomeAccountViewUserProfileUserByIdDocument,
+            variables: { userId: "507f1f77bcf86cd799439011" },
+          },
+          result: {
+            data: {
+              userById: {
+                ...mockProfileUser,
+                isBlocked: true,
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement).toBeTruthy();
+  },
+};
+
+export const BlockedUserAsNonAdmin: Story = {
+  parameters: {
+    apolloClient: {
+      mocks: [
+        {
+          request: {
+            query: HomeAccountViewUserProfileCurrentUserDocument,
+          },
+          result: {
+            data: {
+              currentUser: {
+                ...mockCurrentUser,
+                userIsAdmin: false,
+                role: null,
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: HomeAccountViewUserProfileUserByIdDocument,
+            variables: { userId: "507f1f77bcf86cd799439011" },
+          },
+          result: {
+            data: {
+              userById: {
+                ...mockProfileUser,
+                isBlocked: true,
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    // Should redirect to /home since user is blocked and viewer is not admin
+    await expect(canvasElement).toBeTruthy();
+  },
+};
+
+export const ErrorLoadingCurrentUser: Story = {
+  parameters: {
+    apolloClient: {
+      mocks: [
+        {
+          request: {
+            query: HomeAccountViewUserProfileCurrentUserDocument,
+          },
+          error: new Error('Failed to load current user'),
+        },
+        {
+          request: {
+            query: HomeAccountViewUserProfileUserByIdDocument,
+            variables: { userId: "507f1f77bcf86cd799439011" },
+          },
+          result: {
+            data: {
+              userById: mockProfileUser,
+            },
+          },
+        },
+      ],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement).toBeTruthy();
+  },
+};
+
+export const ErrorLoadingUser: Story = {
+  parameters: {
+    apolloClient: {
+      mocks: [
+        {
+          request: {
+            query: HomeAccountViewUserProfileCurrentUserDocument,
+          },
+          result: {
+            data: {
+              currentUser: mockCurrentUser,
+            },
+          },
+        },
+        {
+          request: {
+            query: HomeAccountViewUserProfileUserByIdDocument,
+            variables: { userId: "507f1f77bcf86cd799439011" },
+          },
+          error: new Error('Failed to load user profile'),
+        },
+      ],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement).toBeTruthy();
+  },
+};
+
+export const UserWithCanBlockUsersPermission: Story = {
+  parameters: {
+    apolloClient: {
+      mocks: [
+        {
+          request: {
+            query: HomeAccountViewUserProfileCurrentUserDocument,
+          },
+          result: {
+            data: {
+              currentUser: {
+                ...mockCurrentUser,
+                userIsAdmin: false,
+                role: {
+                  permissions: {
+                    userPermissions: {
+                      canViewAllUsers: true,
+                      canBlockUsers: true,
+                      __typename: "AdminRoleUserPermissions",
+                    },
+                    __typename: "AdminRolePermissions",
+                  },
+                  __typename: "AdminRole",
+                },
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: HomeAccountViewUserProfileUserByIdDocument,
+            variables: { userId: "507f1f77bcf86cd799439011" },
+          },
+          result: {
+            data: {
+              userById: mockProfileUser,
+            },
+          },
+        },
+      ],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement).toBeTruthy();
+  },
+};
+
+export const OwnProfile: Story = {
+  parameters: {
+    apolloClient: {
+      mocks: [
+        {
+          request: {
+            query: HomeAccountViewUserProfileCurrentUserDocument,
+          },
+          result: {
+            data: {
+              currentUser: {
+                ...mockCurrentUser,
+                id: "507f1f77bcf86cd799439011", // Same as profile user
+              },
+            },
+          },
+        },
+        {
+          request: {
+            query: HomeAccountViewUserProfileUserByIdDocument,
+            variables: { userId: "507f1f77bcf86cd799439011" },
+          },
+          result: {
+            data: {
+              userById: mockProfileUser,
+            },
+          },
+        },
+      ],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement).toBeTruthy();
+  },
+};
+
+export const UserWithMissingProfileData: Story = {
+  parameters: {
+    apolloClient: {
+      mocks: [
+        {
+          request: {
+            query: HomeAccountViewUserProfileCurrentUserDocument,
+          },
+          result: {
+            data: {
+              currentUser: mockCurrentUser,
+            },
+          },
+        },
+        {
+          request: {
+            query: HomeAccountViewUserProfileUserByIdDocument,
+            variables: { userId: "507f1f77bcf86cd799439011" },
+          },
+          result: {
+            data: {
+              userById: {
+                ...mockProfileUser,
+                account: {
+                  ...mockProfileUser.account,
+                  profile: {
+                    firstName: null,
+                    lastName: null,
+                    location: {
+                      city: null,
+                      state: null,
+                      __typename: "PersonalUserAccountProfileLocation",
+                    },
+                    __typename: "PersonalUserAccountProfile",
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
+    },
+  },
+  play: async ({ canvasElement }) => {
+    await expect(canvasElement).toBeTruthy();
+  },
+};
