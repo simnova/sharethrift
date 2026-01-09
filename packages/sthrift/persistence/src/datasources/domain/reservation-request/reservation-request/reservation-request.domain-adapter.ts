@@ -145,6 +145,16 @@ export class ReservationRequestDomainAdapter
 		return adapter.entityReference;
 	}
 
+	async loadSharer(): Promise<
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference
+	> {
+		if (!this.listing) {
+			throw new Error('listing is not populated');
+		}
+		return await Promise.resolve(this.listing.sharer);
+	}
+
 	set reserver(user:
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 		| Domain.Contexts.User.AdminUser.AdminUserEntityReference,) {

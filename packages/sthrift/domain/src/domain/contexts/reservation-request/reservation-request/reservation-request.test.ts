@@ -115,6 +115,7 @@ function makeBaseProps(
 		loadListing: async () => makeListing(),
 		reserver: makeUser(),
 		loadReserver: async () => makeUser(),
+		loadSharer: async () => makeListing().sharer,
 		closeRequestedBySharer: false,
 		closeRequestedByReserver: false,
 		...overrides,
@@ -1208,6 +1209,7 @@ describe('ReservationRequest static helper methods', () => {
 				loadListing: async () => testListing,
 				reserver: testReserver,
 				loadReserver: async () => testReserver,
+				loadSharer: async () => testListing.sharer,
 				closeRequestedBySharer: false,
 				closeRequestedByReserver: false,
 			};
@@ -1307,6 +1309,7 @@ describe('Async property loading', () => {
 				loadListing: async () => testListing,
 				reserver: testReserver,
 				loadReserver: async () => testReserver,
+				loadSharer: async () => testListing.sharer,
 				closeRequestedBySharer: false,
 				closeRequestedByReserver: false,
 			};
@@ -1382,6 +1385,7 @@ describe('Async property loading', () => {
 				loadListing: async () => testListing,
 				reserver: testReserver,
 				loadReserver: async () => testReserver,
+				loadSharer: async () => testListing.sharer,
 				closeRequestedBySharer: false,
 				closeRequestedByReserver: false,
 			};

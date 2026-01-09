@@ -24,6 +24,7 @@ function makeReservationRequestProps(overrides?: Partial<ReservationRequestProps
 		loadListing: async () => ({ id: 'test-listing-id' }),
 		reserver: { id: 'test-reserver-id' },
 		loadReserver: async () => ({ id: 'test-reserver-id' }),
+		loadSharer: async () => ({ id: 'test-sharer-id' }),
 		closeRequestedBySharer: false,
 		closeRequestedByReserver: false,
 		...overrides,

@@ -14,6 +14,7 @@ export interface ReservationRequestProps
 	loadListing(): Promise<ItemListingEntityReference>;
 	reserver: Readonly<UserEntityReference>;
 	loadReserver(): Promise<UserEntityReference>;
+	loadSharer(): Promise<UserEntityReference>;
 	closeRequestedBySharer: boolean;
 	closeRequestedByReserver: boolean;
 }
