@@ -27,7 +27,7 @@ export const Default: Story = {
 		onSearchChange: fn(),
 		onSearch: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

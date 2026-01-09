@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent } from 'storybook/test';
 import { SectionLayout } from './section-layout.tsx';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
-import { MockAuthWrapper, withMockApolloClient } from '../../../test-utils/storybook-decorators.tsx';
+import {  withMockApolloClient } from '../../../test-utils/storybook-decorators.tsx';
+import { MockAuthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
 
 const meta: Meta<typeof SectionLayout> = {
 	title: 'Layouts/SectionLayout',

@@ -5,7 +5,7 @@ import { countriesMockData } from '../../layouts/signup/components/countries-moc
 import { CountryFormItem } from './country-form-item.tsx';
 
 const meta: Meta<typeof CountryFormItem> = {
-	title: 'Shared/Payment/CountryFormItem',
+	title: 'Components/Shared/Payment/CountryFormItem',
 	component: CountryFormItem,
 	parameters: {
 		layout: 'padded',

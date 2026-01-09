@@ -146,7 +146,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);

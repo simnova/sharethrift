@@ -30,7 +30,7 @@ type Story = StoryObj<typeof ReservationsTable>;
 
 export const AllReservations: Story = {
 	args: { reservations: storyReservationsAll },
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByRole('table')).toBeInTheDocument();
 	},

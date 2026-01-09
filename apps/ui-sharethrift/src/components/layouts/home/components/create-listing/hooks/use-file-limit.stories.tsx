@@ -90,7 +90,7 @@ type Story = StoryObj<typeof meta>;
 
 export const HookTest: Story = {
 	render: () => <FileLimitTestComponent />,
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(typeof useFileLimit).toBe('function');
 		const container = canvas.getByTestId('file-limit-container');
@@ -100,7 +100,7 @@ export const HookTest: Story = {
 
 export const WithZeroFiles: Story = {
 	render: () => <FileLimitTestComponent maxCount={5} initialCount={0} />,
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const countElement = canvas.getByTestId('current-count');
 		expect(countElement).toHaveTextContent('Current count: 0');
@@ -111,7 +111,7 @@ export const WithZeroFiles: Story = {
 
 export const NearMaxLimit: Story = {
 	render: () => <FileLimitTestComponent maxCount={5} initialCount={4} />,
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const countElement = canvas.getByTestId('current-count');
 		expect(countElement).toHaveTextContent('Current count: 4');
@@ -122,7 +122,7 @@ export const NearMaxLimit: Story = {
 
 export const AtMaxLimit: Story = {
 	render: () => <FileLimitTestComponent maxCount={5} initialCount={5} />,
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const countElement = canvas.getByTestId('current-count');
 		expect(countElement).toHaveTextContent('Current count: 5');
@@ -131,7 +131,7 @@ export const AtMaxLimit: Story = {
 
 export const CustomMaxLimit: Story = {
 	render: () => <FileLimitTestComponent maxCount={10} initialCount={3} />,
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const countElement = canvas.getByTestId('current-count');
 		expect(countElement).toHaveTextContent('Current count: 3');
@@ -148,7 +148,7 @@ export const FileSelectionWithinLimit: Story = {
 			filesToSelect={2}
 		/>
 	),
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await new Promise((resolve) => setTimeout(resolve, 100));
 		const triggered = canvas.getByTestId('triggered');
@@ -164,7 +164,7 @@ export const FileSelectionAtLimit: Story = {
 			filesToSelect={2}
 		/>
 	),
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await new Promise((resolve) => setTimeout(resolve, 100));
 		const triggered = canvas.getByTestId('triggered');
@@ -180,7 +180,7 @@ export const FileSelectionExceedsLimit: Story = {
 			filesToSelect={5}
 		/>
 	),
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await new Promise((resolve) => setTimeout(resolve, 100));
 		const triggered = canvas.getByTestId('triggered');

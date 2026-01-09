@@ -15,7 +15,7 @@ type Story = StoryObj<typeof HeroSection>;
 
 export const Default: Story = {
 	render: () => <HeroSection />,
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		const heading = canvas.getByRole('heading');
@@ -33,7 +33,7 @@ export const Default: Story = {
 
 export const WithInteraction: Story = {
 	render: () => <HeroSection />,
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		const heading = canvas.getByRole('heading');
@@ -42,7 +42,7 @@ export const WithInteraction: Story = {
 		const buttons = canvasElement.querySelectorAll('button, a[class*="button"]');
 		expect(buttons.length).toBeGreaterThanOrEqual(0);
 		
-		const textContent = canvasElement.textContent;
+		const {textContent} = canvasElement;
 		expect(textContent).toBeTruthy();
 	},
 };

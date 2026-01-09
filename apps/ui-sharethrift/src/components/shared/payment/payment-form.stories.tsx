@@ -9,7 +9,7 @@ import { expect, within, userEvent, waitFor } from 'storybook/test';
 const { Text } = Typography;
 
 const meta: Meta<typeof PaymentForm> = {
-	title: 'Shared/Payment/PaymentForm',
+	title: 'Components/Shared/Payment/PaymentForm',
 	component: PaymentForm,
 	parameters: {
 		layout: 'padded',
