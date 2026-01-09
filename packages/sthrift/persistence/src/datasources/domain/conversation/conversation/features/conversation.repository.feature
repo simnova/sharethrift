@@ -45,3 +45,38 @@ And valid Conversation documents exist in the database
 		Then I should receive a new Conversation domain object
 		And the domain object should have a messagingConversationId
 		And the domain object's messages should be empty
+
+	Scenario: Getting conversations by listing ID
+		Given Conversation documents exist with listing "listing-1"
+		When I call getByListingId with "listing-1"
+		Then I should receive an array of Conversation domain objects
+		And each domain object should have the listing id "listing-1"
+
+	Scenario: Getting conversations by nonexistent listing ID
+		When I call getByListingId with "nonexistent-listing"
+		Then I should receive an empty array
+
+	Scenario: Getting expired conversations
+		Given Conversation documents exist with expiresAt in the past
+		When I call getExpired
+		Then I should receive an array of expired Conversation domain objects
+
+	Scenario: Getting expired conversations when none exist
+		Given no Conversation documents have expiresAt in the past
+		When I call getExpired
+		Then I should receive an empty array
+
+	Scenario: Getting expired conversations with limit
+		Given multiple Conversation documents exist with expiresAt in the past
+		When I call getExpired with limit 2
+		Then I should receive at most 2 Conversation domain objects
+
+	Scenario: Getting conversations by reservation request ID
+		Given Conversation documents exist with reservationRequest "request-1"
+		When I call getByReservationRequestId with "request-1"
+		Then I should receive an array of Conversation domain objects
+		And each domain object should have the reservationRequest id "request-1"
+
+	Scenario: Getting conversations by nonexistent reservation request ID
+		When I call getByReservationRequestId with "nonexistent-request"
+		Then I should receive an empty array

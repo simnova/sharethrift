@@ -34,6 +34,13 @@ export interface ConversationReadRepository {
 		listingId: string,
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
+
+	getByListingId: (
+		listingId: string,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
+	>;
 }
 
 export class ConversationReadRepositoryImpl
@@ -136,6 +143,33 @@ export class ConversationReadRepositoryImpl
 		} catch (error) {
 			console.warn('Error with ObjectId in getBySharerReserverListing:', error);
 			return null;
+		}
+	}
+
+	async getByListingId(
+		listingId: string,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
+	> {
+		if (!listingId || listingId.trim() === '') {
+			return [];
+		}
+
+		try {
+			const result = await this.mongoDataSource.find(
+				{
+					listing: new MongooseSeedwork.ObjectId(listingId),
+				},
+				{
+					...options,
+					populateFields: populateFields,
+				},
+			);
+			return result.map((doc) => this.converter.toDomain(doc, this.passport));
+		} catch (error) {
+			console.warn('Error with ObjectId in getByListingId:', error);
+			return [];
 		}
 	}
 }

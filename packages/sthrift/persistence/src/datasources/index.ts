@@ -10,7 +10,10 @@ import {
 	type MessagingDataSource,
 	MessagingDataSourceImplementation,
 } from './messaging/index.ts';
-import { type PaymentDataSource,PaymentDataSourceImplementation } from './payment/index.ts';
+import {
+	type PaymentDataSource,
+	PaymentDataSourceImplementation,
+} from './payment/index.ts';
 import type { PaymentService } from '@cellix/payment-service';
 
 export type DataSources = {
@@ -21,31 +24,48 @@ export type DataSources = {
 };
 
 export type DataSourcesFactory = {
-	withPassport: (passport: Domain.Passport, messagingService: MessagingService, paymentService: PaymentService) => DataSources;
+	withPassport: (
+		passport: Domain.Passport,
+		messagingService: MessagingService,
+		paymentService: PaymentService,
+	) => DataSources;
 	withSystemPassport: () => DataSources;
 };
 
 export const DataSourcesFactoryImpl = (
 	models: ModelsContext,
 ): DataSourcesFactory => {
-	const withPassport = (passport: Domain.Passport, messagingService: MessagingService, paymentService: PaymentService): DataSources => {
+	const withPassport = (
+		passport: Domain.Passport,
+		messagingService: MessagingService,
+		paymentService: PaymentService,
+	): DataSources => {
 		return {
 			domainDataSource: DomainDataSourceImplementation(models, passport),
 			readonlyDataSource: ReadonlyDataSourceImplementation(models, passport),
 			messagingDataSource: MessagingDataSourceImplementation(messagingService),
-      paymentDataSource: PaymentDataSourceImplementation(paymentService, passport),
+			paymentDataSource: PaymentDataSourceImplementation(
+				paymentService,
+				passport,
+			),
 		};
 	};
 
 	const withSystemPassport = (): DataSources => {
 		const systemPassport = Domain.PassportFactory.forSystem({
+			// User permissions
 			// canManageMembers: true,
 			// canManageEndUserRolesAndPermissions: true,
+			// Conversation permissions - required for scheduled cleanup operations
+			canManageConversation: true,
 		});
 
 		return {
 			domainDataSource: DomainDataSourceImplementation(models, systemPassport),
-			readonlyDataSource: ReadonlyDataSourceImplementation(models, systemPassport),
+			readonlyDataSource: ReadonlyDataSourceImplementation(
+				models,
+				systemPassport,
+			),
 		};
 	};
 

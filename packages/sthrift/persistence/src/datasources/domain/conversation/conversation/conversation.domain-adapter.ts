@@ -30,8 +30,8 @@ export class ConversationDomainAdapter
 		}
 		if (this.doc.sharer instanceof MongooseSeedwork.ObjectId) {
 			return {
-        id: this.doc.sharer.toString(),
-      } as Domain.Contexts.User.UserEntityReference;
+				id: this.doc.sharer.toString(),
+			} as Domain.Contexts.User.UserEntityReference;
 		}
 		// Check userType discriminator to determine which adapter to use
 		const sharerDoc = this.doc.sharer as
@@ -165,8 +165,8 @@ export class ConversationDomainAdapter
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
 			return {
-        id: this.doc.listing.toString(),
-      } as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
@@ -199,6 +199,63 @@ export class ConversationDomainAdapter
 		this.doc.set('listing', new MongooseSeedwork.ObjectId(listing.id));
 	}
 
+	get reservationRequest():
+		| Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
+		| undefined {
+		if (!this.doc.reservationRequest) {
+			return undefined;
+		}
+		if (this.doc.reservationRequest instanceof MongooseSeedwork.ObjectId) {
+			return {
+				id: this.doc.reservationRequest.toString(),
+			} as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
+		}
+
+		return {
+			id: (
+				this.doc.reservationRequest as unknown as {
+					_id: { toString: () => string };
+				}
+			)._id.toString(),
+		} as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
+	}
+
+	async loadReservationRequest(): Promise<
+		| Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
+		| undefined
+	> {
+		if (!this.doc.reservationRequest) {
+			return undefined;
+		}
+		if (this.doc.reservationRequest instanceof MongooseSeedwork.ObjectId) {
+			await this.doc.populate('reservationRequest');
+		}
+
+		return {
+			id: (
+				this.doc.reservationRequest as unknown as {
+					_id: { toString: () => string };
+				}
+			)._id.toString(),
+		} as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
+	}
+
+	set reservationRequest(reservationRequest:
+		| Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference
+		| undefined) {
+		if (!reservationRequest) {
+			this.doc.set('reservationRequest', undefined);
+			return;
+		}
+		if (!reservationRequest?.id) {
+			throw new Error('reservationRequest reference is missing id');
+		}
+		this.doc.set(
+			'reservationRequest',
+			new MongooseSeedwork.ObjectId(reservationRequest.id),
+		);
+	}
+
 	get messagingConversationId(): string {
 		return this.doc.messagingConversationId;
 	}
@@ -225,5 +282,13 @@ export class ConversationDomainAdapter
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
 		return Promise.resolve(this._messages);
+	}
+
+	get expiresAt(): Date | undefined {
+		return this.doc.expiresAt;
+	}
+
+	set expiresAt(value: Date | undefined) {
+		this.doc.set('expiresAt', value);
 	}
 }

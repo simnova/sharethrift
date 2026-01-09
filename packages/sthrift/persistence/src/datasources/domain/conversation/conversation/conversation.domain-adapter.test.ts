@@ -4,6 +4,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
+import { Domain } from '@sthrift/domain';
 import { ConversationDomainAdapter } from './conversation.domain-adapter.ts';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
 
@@ -48,14 +49,17 @@ function makeListingDoc(overrides: Partial<Models.Listing.ItemListing> = {}) {
 function makeConversationDoc(
 	overrides: Partial<Models.Conversation.Conversation> = {},
 ) {
+	const setSpy = vi.fn(
+		(key: keyof Models.Conversation.Conversation, value: unknown) => {
+			(base as Models.Conversation.Conversation)[key] = value as never;
+		},
+	);
 	const base = {
 		sharer: overrides.sharer ?? undefined,
 		reserver: overrides.reserver ?? undefined,
 		listing: overrides.listing ?? undefined,
 		messagingConversationId: 'twilio-123',
-		set(key: keyof Models.Conversation.Conversation, value: unknown) {
-			(this as Models.Conversation.Conversation)[key] = value as never;
-		},
+		set: overrides.set ?? setSpy,
 		...overrides,
 	} as Models.Conversation.Conversation;
 	return vi.mocked(base);
@@ -135,18 +139,17 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		({ When, Then }) => {
 			When('I get the sharer property on a doc with sharer as ObjectId', () => {
 				const sharerId = new MongooseSeedwork.ObjectId();
-				doc = makeConversationDoc({ sharer: sharerId as unknown as Models.User.PersonalUser });
+				doc = makeConversationDoc({
+					sharer: sharerId as unknown as Models.User.PersonalUser,
+				});
 				adapter = new ConversationDomainAdapter(doc);
 				result = adapter.sharer;
 			});
-			Then(
-				'it should return a UserEntityReference with id',
-				() => {
-					expect(result).toBeDefined();
-					expect(result).toHaveProperty('id');
-					expect((result as { id: string }).id).toMatch(/^[a-f0-9]{24}$/);
-				},
-			);
+			Then('it should return a UserEntityReference with id', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('id');
+				expect((result as { id: string }).id).toMatch(/^[a-f0-9]{24}$/);
+			});
 		},
 	);
 
@@ -242,18 +245,23 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	Scenario(
 		'Getting the reserver property when it is an ObjectId',
 		({ When, Then }) => {
-			When('I get the reserver property on a doc with reserver as ObjectId', () => {
-				const reserverId = new MongooseSeedwork.ObjectId();
-				doc = makeConversationDoc({ 
-					sharer: sharerDoc,
-					reserver: reserverId as unknown as Models.User.PersonalUser 
-				});
-				adapter = new ConversationDomainAdapter(doc);
-			});
+			When(
+				'I get the reserver property on a doc with reserver as ObjectId',
+				() => {
+					const reserverId = new MongooseSeedwork.ObjectId();
+					doc = makeConversationDoc({
+						sharer: sharerDoc,
+						reserver: reserverId as unknown as Models.User.PersonalUser,
+					});
+					adapter = new ConversationDomainAdapter(doc);
+				},
+			);
 			Then(
 				'an error should be thrown indicating reserver is not populated or is not of the correct type',
 				() => {
-					expect(() => adapter.reserver).toThrow(/reserver is not populated or is not of the correct type/);
+					expect(() => adapter.reserver).toThrow(
+						/reserver is not populated or is not of the correct type/,
+					);
 				},
 			);
 		},
@@ -263,10 +271,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting the listing property when not populated',
 		({ When, Then }) => {
 			When('I get the listing property on a doc with no listing', () => {
-				doc = makeConversationDoc({ 
+				doc = makeConversationDoc({
 					sharer: sharerDoc,
 					reserver: reserverDoc,
-					listing: undefined 
+					listing: undefined,
 				});
 				adapter = new ConversationDomainAdapter(doc);
 			});
@@ -302,21 +310,27 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario('Getting the listing property when it is an ObjectId', ({ When, Then }) => {
-		When('I get the listing property on a doc with listing as ObjectId', () => {
-			const listingId = new MongooseSeedwork.ObjectId();
-			doc = makeConversationDoc({ 
-				listing: listingId as unknown as Models.Listing.ItemListing,
+	Scenario(
+		'Getting the listing property when it is an ObjectId',
+		({ When, Then }) => {
+			When(
+				'I get the listing property on a doc with listing as ObjectId',
+				() => {
+					const listingId = new MongooseSeedwork.ObjectId();
+					doc = makeConversationDoc({
+						listing: listingId as unknown as Models.Listing.ItemListing,
+					});
+					adapter = new ConversationDomainAdapter(doc);
+					result = adapter.listing;
+				},
+			);
+			Then('it should return an ItemListingEntityReference with id', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('id');
+				expect((result as { id: string }).id).toMatch(/^[a-f0-9]{24}$/);
 			});
-			adapter = new ConversationDomainAdapter(doc);
-			result = adapter.listing;
-		});
-		Then('it should return an ItemListingEntityReference with id', () => {
-			expect(result).toBeDefined();
-			expect(result).toHaveProperty('id');
-			expect((result as { id: string }).id).toMatch(/^[a-f0-9]{24}$/);
-		});
-	});
+		},
+	);
 
 	Scenario('Loading listing when already populated', ({ When, Then }) => {
 		When(
@@ -352,81 +366,117 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		When('I set the sharer property to a reference with id', () => {
 			const setSpy = vi.spyOn(doc, 'set');
 			adapter.sharer = { id: '507f1f77bcf86cd799439011' } as never;
-			expect(setSpy).toHaveBeenCalledWith('sharer', expect.any(MongooseSeedwork.ObjectId));
+			expect(setSpy).toHaveBeenCalledWith(
+				'sharer',
+				expect.any(MongooseSeedwork.ObjectId),
+			);
 		});
 		Then("the document's sharer should be set correctly", () => {
 			// Verified in When block
 		});
 	});
 
-	Scenario('Setting sharer property with missing id throws error', ({ When, Then }) => {
-		When('I set the sharer property to a reference missing id', () => {
-			// Test happens in Then block
-		});
-		Then('an error should be thrown indicating sharer reference is missing id', () => {
-			expect(() => {
-				adapter.sharer = {} as never;
-			}).toThrow('sharer reference is missing id');
-		});
-	});
+	Scenario(
+		'Setting sharer property with missing id throws error',
+		({ When, Then }) => {
+			When('I set the sharer property to a reference missing id', () => {
+				// Test happens in Then block
+			});
+			Then(
+				'an error should be thrown indicating sharer reference is missing id',
+				() => {
+					expect(() => {
+						adapter.sharer = {} as never;
+					}).toThrow('sharer reference is missing id');
+				},
+			);
+		},
+	);
 
-	Scenario('Setting reserver property with valid reference', ({ When, Then }) => {
-		When('I set the reserver property to a reference with id', () => {
-			const setSpy = vi.spyOn(doc, 'set');
-			adapter.reserver = { id: '507f1f77bcf86cd799439012' } as never;
-			expect(setSpy).toHaveBeenCalledWith('reserver', expect.any(MongooseSeedwork.ObjectId));
-		});
-		Then("the document's reserver should be set correctly", () => {
-			// Verified in When block
-		});
-	});
+	Scenario(
+		'Setting reserver property with valid reference',
+		({ When, Then }) => {
+			When('I set the reserver property to a reference with id', () => {
+				const setSpy = vi.spyOn(doc, 'set');
+				adapter.reserver = { id: '507f1f77bcf86cd799439012' } as never;
+				expect(setSpy).toHaveBeenCalledWith(
+					'reserver',
+					expect.any(MongooseSeedwork.ObjectId),
+				);
+			});
+			Then("the document's reserver should be set correctly", () => {
+				// Verified in When block
+			});
+		},
+	);
 
-	Scenario('Setting reserver property with missing id throws error', ({ When, Then }) => {
-		When('I set the reserver property to a reference missing id', () => {
-			// Test happens in Then block
-		});
-		Then('an error should be thrown indicating reserver reference is missing id', () => {
-			expect(() => {
-				adapter.reserver = {} as never;
-			}).toThrow('reserver reference is missing id');
-		});
-	});
+	Scenario(
+		'Setting reserver property with missing id throws error',
+		({ When, Then }) => {
+			When('I set the reserver property to a reference missing id', () => {
+				// Test happens in Then block
+			});
+			Then(
+				'an error should be thrown indicating reserver reference is missing id',
+				() => {
+					expect(() => {
+						adapter.reserver = {} as never;
+					}).toThrow('reserver reference is missing id');
+				},
+			);
+		},
+	);
 
-	Scenario('Setting listing property with valid reference', ({ When, Then }) => {
-		When('I set the listing property to a reference with id', () => {
-			const setSpy = vi.spyOn(doc, 'set');
-			adapter.listing = { id: '507f1f77bcf86cd799439013' } as never;
-			expect(setSpy).toHaveBeenCalledWith('listing', expect.any(MongooseSeedwork.ObjectId));
-		});
-		Then("the document's listing should be set correctly", () => {
-			// Verified in When block
-		});
-	});
+	Scenario(
+		'Setting listing property with valid reference',
+		({ When, Then }) => {
+			When('I set the listing property to a reference with id', () => {
+				const setSpy = vi.spyOn(doc, 'set');
+				adapter.listing = { id: '507f1f77bcf86cd799439013' } as never;
+				expect(setSpy).toHaveBeenCalledWith(
+					'listing',
+					expect.any(MongooseSeedwork.ObjectId),
+				);
+			});
+			Then("the document's listing should be set correctly", () => {
+				// Verified in When block
+			});
+		},
+	);
 
-	Scenario('Setting listing property with missing id throws error', ({ When, Then }) => {
-		When('I set the listing property to a reference missing id', () => {
-			// Test happens in Then block
-		});
-		Then('an error should be thrown indicating listing reference is missing id', () => {
-			expect(() => {
-				adapter.listing = {} as never;
-			}).toThrow('listing reference is missing id');
-		});
-	});
+	Scenario(
+		'Setting listing property with missing id throws error',
+		({ When, Then }) => {
+			When('I set the listing property to a reference missing id', () => {
+				// Test happens in Then block
+			});
+			Then(
+				'an error should be thrown indicating listing reference is missing id',
+				() => {
+					expect(() => {
+						adapter.listing = {} as never;
+					}).toThrow('listing reference is missing id');
+				},
+			);
+		},
+	);
 
 	Scenario('Loading reserver when it is an ObjectId', ({ When, Then }) => {
-		When('I call loadReserver on an adapter with reserver as ObjectId', async () => {
-			const oid = new MongooseSeedwork.ObjectId();
-			doc = makeConversationDoc({ 
-				reserver: oid,
-			});
-			doc.populate = vi.fn().mockImplementation(() => {
-				doc.reserver = reserverDoc as never;
-				return Promise.resolve(doc);
-			});
-			adapter = new ConversationDomainAdapter(doc);
-			result = await adapter.loadReserver();
-		});
+		When(
+			'I call loadReserver on an adapter with reserver as ObjectId',
+			async () => {
+				const oid = new MongooseSeedwork.ObjectId();
+				doc = makeConversationDoc({
+					reserver: oid,
+				});
+				doc.populate = vi.fn().mockImplementation(() => {
+					doc.reserver = reserverDoc as never;
+					return Promise.resolve(doc);
+				});
+				adapter = new ConversationDomainAdapter(doc);
+				result = await adapter.loadReserver();
+			},
+		);
 		Then('it should populate and return a PersonalUserDomainAdapter', () => {
 			expect(doc.populate).toHaveBeenCalledWith('reserver');
 			// loadReserver returns an entity reference object, not a domain adapter instance
@@ -436,152 +486,291 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Loading listing when it is an ObjectId', ({ When, Then }) => {
-		When('I call loadListing on an adapter with listing as ObjectId', async () => {
-			const oid = new MongooseSeedwork.ObjectId();
-			doc = makeConversationDoc({ 
-				listing: oid as unknown as Models.Listing.ItemListing,
-				populate: vi.fn().mockResolvedValue({
-					...doc,
-					listing: listingDoc,
-				}),
-			});
-			adapter = new ConversationDomainAdapter(doc);
-			result = await adapter.loadListing();
-		});
+		When(
+			'I call loadListing on an adapter with listing as ObjectId',
+			async () => {
+				const oid = new MongooseSeedwork.ObjectId();
+				doc = makeConversationDoc({
+					listing: oid as unknown as Models.Listing.ItemListing,
+					populate: vi.fn().mockResolvedValue({
+						...doc,
+						listing: listingDoc,
+					}),
+				});
+				adapter = new ConversationDomainAdapter(doc);
+				result = await adapter.loadListing();
+			},
+		);
 		Then('it should populate and return an ItemListingDomainAdapter', () => {
 			expect(doc.populate).toHaveBeenCalledWith('listing');
 			expect(result).toBeDefined();
 		});
 	});
 
-	Scenario('Getting sharer when it is an admin user', ({ Given, When, Then }) => {
-		Given('a conversation with an admin user as sharer', () => {
-			const adminUserDoc = {
-				...makeUserDoc(),
-				userType: 'admin-user',
-			} as never;
-			doc = makeConversationDoc({ sharer: adminUserDoc });
-			adapter = new ConversationDomainAdapter(doc);
-		});
+	Scenario(
+		'Getting sharer when it is an admin user',
+		({ Given, When, Then }) => {
+			Given('a conversation with an admin user as sharer', () => {
+				const adminUserDoc = {
+					...makeUserDoc(),
+					userType: 'admin-user',
+				} as never;
+				doc = makeConversationDoc({ sharer: adminUserDoc });
+				adapter = new ConversationDomainAdapter(doc);
+			});
 
-		When('I access the sharer property', async () => {
-			result = await adapter.loadSharer();
-		});
+			When('I access the sharer property', async () => {
+				result = await adapter.loadSharer();
+			});
 
-		Then('it should return an AdminUserDomainAdapter', () => {
-			expect(result).toBeDefined();
-		});
-	});
+			Then('it should return an AdminUserDomainAdapter', () => {
+				expect(result).toBeDefined();
+			});
+		},
+	);
 
-	Scenario('Setting sharer with PersonalUser domain entity', ({ Given, When, Then }) => {
-		let personalUser: never;
+	Scenario(
+		'Setting sharer with PersonalUser domain entity',
+		({ Given, When, Then }) => {
+			let personalUser: never;
 
-		Given('a PersonalUser domain entity', () => {
-			const userDoc = makeUserDoc();
-			const setSpy = vi.fn();
-			personalUser = { props: { doc: userDoc }, id: userDoc.id } as never;
-			doc = makeConversationDoc({ set: setSpy });
-			adapter = new ConversationDomainAdapter(doc);
-		});
+			Given('a PersonalUser domain entity', () => {
+				const userDoc = makeUserDoc();
+				const setSpy = vi.fn();
+				personalUser = { props: { doc: userDoc }, id: userDoc.id } as never;
+				doc = makeConversationDoc({ set: setSpy });
+				adapter = new ConversationDomainAdapter(doc);
+			});
 
-		When('I set the sharer property with the domain entity', () => {
-			adapter.sharer = personalUser;
-		});
+			When('I set the sharer property with the domain entity', () => {
+				adapter.sharer = personalUser;
+			});
 
-		Then('the sharer should be set correctly', () => {
-			expect(doc.set).toHaveBeenCalledWith('sharer', expect.anything());
-		});
-	});
+			Then('the sharer should be set correctly', () => {
+				expect(doc.set).toHaveBeenCalledWith('sharer', expect.anything());
+			});
+		},
+	);
 
-	Scenario('Setting listing with ItemListing domain entity', ({ Given, When, Then }) => {
-		let itemListing: never;
+	Scenario(
+		'Setting listing with ItemListing domain entity',
+		({ Given, When, Then }) => {
+			let itemListing: never;
 
-		Given('an ItemListing domain entity', () => {
-			const listingId = new MongooseSeedwork.ObjectId();
-			const listing = makeListingDoc({ id: listingId as never });
-			const setSpy = vi.fn();
-			itemListing = { props: { doc: listing }, id: listingId.toString() } as never;
-			doc = makeConversationDoc({ set: setSpy });
-			adapter = new ConversationDomainAdapter(doc);
-		});
+			Given('an ItemListing domain entity', () => {
+				const listingId = new MongooseSeedwork.ObjectId();
+				const listing = makeListingDoc({ id: listingId as never });
+				const setSpy = vi.fn();
+				itemListing = {
+					props: { doc: listing },
+					id: listingId.toString(),
+				} as never;
+				doc = makeConversationDoc({ set: setSpy });
+				adapter = new ConversationDomainAdapter(doc);
+			});
 
-		When('I set the listing property with the domain entity', () => {
-			adapter.listing = itemListing;
-		});
+			When('I set the listing property with the domain entity', () => {
+				adapter.listing = itemListing;
+			});
 
-		Then('the listing should be set correctly', () => {
-			expect(doc.set).toHaveBeenCalledWith('listing', expect.anything());
-		});
-	});
+			Then('the listing should be set correctly', () => {
+				expect(doc.set).toHaveBeenCalledWith('listing', expect.anything());
+			});
+		},
+	);
 
-	Scenario('Getting reserver when it is an admin user', ({ Given, When, Then }) => {
-		Given('a conversation with an admin user as reserver', () => {
-			const adminUserDoc = {
-				...makeUserDoc(),
-				userType: 'admin-user',
-			} as never;
-			doc = makeConversationDoc({ reserver: adminUserDoc, sharer: sharerDoc });
-			adapter = new ConversationDomainAdapter(doc);
-		});
+	Scenario(
+		'Setting sharer with AdminUser domain entity',
+		({ Given, When, Then }) => {
+			let adminUser: never;
 
-		When('I access the reserver property', () => {
-			result = adapter.reserver;
-		});
+			Given('an AdminUser domain entity', () => {
+				const adminUserDoc = {
+					...makeUserDoc(),
+					userType: 'admin-user',
+				} as never;
+				// Create an AdminUser domain entity instance
+				adminUser = {
+					props: { doc: adminUserDoc },
+					id: adminUserDoc.id,
+					constructor: { name: 'AdminUser' },
+				} as never;
+				// Mock instanceof check by ensuring it's recognized as AdminUser
+				Object.setPrototypeOf(
+					adminUser,
+					Domain.Contexts.User.AdminUser.AdminUser.prototype,
+				);
+				doc = makeConversationDoc();
+				adapter = new ConversationDomainAdapter(doc);
+			});
 
-		Then('it should return an AdminUserDomainAdapter for reserver', () => {
-			expect(result).toBeDefined();
-		});
-	});
+			When('I set the sharer property with the AdminUser domain entity', () => {
+				adapter.sharer = adminUser;
+			});
 
-	Scenario('Loading sharer when it is an admin user', ({ Given, When, Then }) => {
-		Given('a conversation with an admin user as sharer', () => {
-			const adminUserDoc = {
-				...makeUserDoc(),
-				userType: 'admin-user',
-			} as never;
-			doc = makeConversationDoc({ sharer: adminUserDoc });
-			adapter = new ConversationDomainAdapter(doc);
-		});
+			Then('the sharer should be set to the admin user doc', () => {
+				expect(doc.set).toHaveBeenCalledWith('sharer', expect.anything());
+			});
+		},
+	);
 
-		When('I call loadSharer on the adapter', async () => {
-			result = await adapter.loadSharer();
-		});
+	Scenario(
+		'Setting reserver with PersonalUser domain entity',
+		({ Given, When, Then }) => {
+			let personalUser: never;
 
-		Then('it should return an AdminUserDomainAdapter for sharer', () => {
-			expect(result).toBeDefined();
-		});
-	});
+			Given('a PersonalUser domain entity', () => {
+				const userDoc = makeUserDoc();
+				// Create a PersonalUser domain entity instance
+				personalUser = {
+					props: { doc: userDoc },
+					id: userDoc.id,
+					constructor: { name: 'PersonalUser' },
+				} as never;
+				// Mock instanceof check
+				Object.setPrototypeOf(
+					personalUser,
+					Domain.Contexts.User.PersonalUser.PersonalUser.prototype,
+				);
+				doc = makeConversationDoc();
+				adapter = new ConversationDomainAdapter(doc);
+			});
 
-	Scenario('Loading reserver when it is an admin user', ({ Given, When, Then }) => {
-		Given('a conversation with an admin user as reserver', () => {
-			const adminUserDoc = {
-				...makeUserDoc(),
-				userType: 'admin-user',
-			} as never;
-			doc = makeConversationDoc({ reserver: adminUserDoc, sharer: sharerDoc });
-			adapter = new ConversationDomainAdapter(doc);
-		});
+			When('I set the reserver property with the domain entity', () => {
+				adapter.reserver = personalUser;
+			});
 
-		When('I call loadReserver on the adapter', async () => {
-			result = await adapter.loadReserver();
-		});
+			Then('the reserver should be set correctly', () => {
+				expect(doc.set).toHaveBeenCalledWith('reserver', expect.anything());
+			});
+		},
+	);
 
-		Then('it should return an AdminUserDomainAdapter for reserver', () => {
-			expect(result).toBeDefined();
-		});
-	});
+	Scenario(
+		'Setting reserver with AdminUser domain entity',
+		({ Given, When, Then }) => {
+			let adminUser: never;
 
-	Scenario('Getting the sharer property when populated as personal user', ({ When, Then }) => {
-		When('I get the sharer property', () => {
-			result = adapter.sharer;
-		});
+			Given('an AdminUser domain entity', () => {
+				const adminUserDoc = {
+					...makeUserDoc(),
+					userType: 'admin-user',
+				} as never;
+				// Create an AdminUser domain entity instance
+				adminUser = {
+					props: { doc: adminUserDoc },
+					id: adminUserDoc.id,
+					constructor: { name: 'AdminUser' },
+				} as never;
+				// Mock instanceof check
+				Object.setPrototypeOf(
+					adminUser,
+					Domain.Contexts.User.AdminUser.AdminUser.prototype,
+				);
+				doc = makeConversationDoc();
+				adapter = new ConversationDomainAdapter(doc);
+			});
 
-		Then('it should return a PersonalUserDomainAdapter entityReference', () => {
-			expect(result).toBeDefined();
-		});
-	});
+			When(
+				'I set the reserver property with the AdminUser domain entity',
+				() => {
+					adapter.reserver = adminUser;
+				},
+			);
 
+			Then('the reserver should be set to the admin user doc', () => {
+				expect(doc.set).toHaveBeenCalledWith('reserver', expect.anything());
+			});
+		},
+	);
 
+	Scenario(
+		'Getting reserver when it is an admin user',
+		({ Given, When, Then }) => {
+			Given('a conversation with an admin user as reserver', () => {
+				const adminUserDoc = {
+					...makeUserDoc(),
+					userType: 'admin-user',
+				} as never;
+				doc = makeConversationDoc({
+					reserver: adminUserDoc,
+					sharer: sharerDoc,
+				});
+				adapter = new ConversationDomainAdapter(doc);
+			});
+
+			When('I access the reserver property', () => {
+				result = adapter.reserver;
+			});
+
+			Then('it should return an AdminUserDomainAdapter for reserver', () => {
+				expect(result).toBeDefined();
+			});
+		},
+	);
+
+	Scenario(
+		'Loading sharer when it is an admin user',
+		({ Given, When, Then }) => {
+			Given('a conversation with an admin user as sharer', () => {
+				const adminUserDoc = {
+					...makeUserDoc(),
+					userType: 'admin-user',
+				} as never;
+				doc = makeConversationDoc({ sharer: adminUserDoc });
+				adapter = new ConversationDomainAdapter(doc);
+			});
+
+			When('I call loadSharer on the adapter', async () => {
+				result = await adapter.loadSharer();
+			});
+
+			Then('it should return an AdminUserDomainAdapter for sharer', () => {
+				expect(result).toBeDefined();
+			});
+		},
+	);
+
+	Scenario(
+		'Loading reserver when it is an admin user',
+		({ Given, When, Then }) => {
+			Given('a conversation with an admin user as reserver', () => {
+				const adminUserDoc = {
+					...makeUserDoc(),
+					userType: 'admin-user',
+				} as never;
+				doc = makeConversationDoc({
+					reserver: adminUserDoc,
+					sharer: sharerDoc,
+				});
+				adapter = new ConversationDomainAdapter(doc);
+			});
+
+			When('I call loadReserver on the adapter', async () => {
+				result = await adapter.loadReserver();
+			});
+
+			Then('it should return an AdminUserDomainAdapter for reserver', () => {
+				expect(result).toBeDefined();
+			});
+		},
+	);
+
+	Scenario(
+		'Getting the sharer property when populated as personal user',
+		({ When, Then }) => {
+			When('I get the sharer property', () => {
+				result = adapter.sharer;
+			});
+
+			Then(
+				'it should return a PersonalUserDomainAdapter entityReference',
+				() => {
+					expect(result).toBeDefined();
+				},
+			);
+		},
+	);
 
 	Scenario('Setting messages property', ({ When, Then }) => {
 		When('I set the messages property to a list', () => {
@@ -606,9 +795,62 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			}
 		});
 
-		Then('an error should be thrown indicating listing is not populated in load', () => {
-			expect(error).toBeDefined();
-			expect(error?.message).toBe('listing is not populated');
+		Then(
+			'an error should be thrown indicating listing is not populated in load',
+			() => {
+				expect(error).toBeDefined();
+				expect(error?.message).toBe('listing is not populated');
+			},
+		);
+	});
+
+	Scenario('Getting expiresAt when not set', ({ When, Then }) => {
+		When('I get the expiresAt property when it is undefined', () => {
+			const doc = makeConversationDoc({ expiresAt: undefined });
+			adapter = new ConversationDomainAdapter(doc);
+			result = adapter.expiresAt;
+		});
+
+		Then('it should return undefined', () => {
+			expect(result).toBeUndefined();
+		});
+	});
+
+	Scenario('Getting expiresAt when set', ({ When, Then }) => {
+		let testDate: Date;
+
+		When('I get the expiresAt property when it is set', () => {
+			testDate = new Date('2026-07-01T00:00:00.000Z');
+			const doc = makeConversationDoc({ expiresAt: testDate });
+			adapter = new ConversationDomainAdapter(doc);
+			result = adapter.expiresAt;
+		});
+
+		Then('it should return the correct date', () => {
+			expect(result).toBe(testDate);
+		});
+	});
+
+	Scenario('Setting expiresAt property', ({ When, Then }) => {
+		let testDate: Date;
+		let doc: ConversationDoc;
+
+		When('I set the expiresAt property to a date', () => {
+			testDate = new Date('2026-07-01T00:00:00.000Z');
+			doc = makeConversationDoc();
+			adapter = new ConversationDomainAdapter(doc);
+
+			// Spy on Mongoose set API to ensure it's being used
+			const setSpy = vi.spyOn(doc, 'set');
+
+			adapter.expiresAt = testDate;
+
+			// Verify Mongoose set API was called correctly
+			expect(setSpy).toHaveBeenCalledWith('expiresAt', testDate);
+		});
+
+		Then("the document's expiresAt should be set correctly", () => {
+			expect(adapter.expiresAt).toBe(testDate);
 		});
 	});
 });

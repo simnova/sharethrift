@@ -65,6 +65,61 @@ export class ConversationRepository
 		return this.typeConverter.toDomain(mongoConversation, this.passport);
 	}
 
+	async getByListingId(
+		listingId: string,
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.Conversation<PropType>[]
+	> {
+		const mongoConversations = await this.model
+			.find({ listing: new MongooseSeedwork.ObjectId(listingId) })
+			.populate('sharer')
+			.populate('reserver')
+			.populate('listing')
+			.exec();
+		return mongoConversations.map((doc) =>
+			this.typeConverter.toDomain(doc, this.passport),
+		);
+	}
+
+	async getByReservationRequestId(
+		reservationRequestId: string,
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.Conversation<PropType>[]
+	> {
+		const mongoConversations = await this.model
+			.find({
+				reservationRequest: new MongooseSeedwork.ObjectId(reservationRequestId),
+			})
+			.populate('sharer')
+			.populate('reserver')
+			.populate('listing')
+			.populate('reservationRequest')
+			.exec();
+		return mongoConversations.map((doc) =>
+			this.typeConverter.toDomain(doc, this.passport),
+		);
+	}
+
+	async getExpired(
+		limit = 100,
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.Conversation<PropType>[]
+	> {
+		const mongoConversations = await this.model
+			.find({
+				expiresAt: { $lte: new Date() },
+			})
+			.sort({ expiresAt: 1 })
+			.limit(limit)
+			.populate('sharer')
+			.populate('reserver')
+			.populate('listing')
+			.exec();
+		return mongoConversations.map((doc) =>
+			this.typeConverter.toDomain(doc, this.passport),
+		);
+	}
+
 	// biome-ignore lint:noRequireAwait
 	async getNewInstance(
 		sharer: Domain.Contexts.User.UserEntityReference,

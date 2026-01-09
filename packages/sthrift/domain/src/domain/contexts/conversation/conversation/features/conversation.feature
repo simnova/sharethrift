@@ -127,3 +127,47 @@ Feature: Conversation aggregate
     When I call loadReserver()
     Then it should return the reserver asynchronously
 
+  Scenario: Getting expiresAt when not set
+    Given a Conversation aggregate without an expiration date
+    When I access the expiresAt property
+    Then it should return undefined
+
+  Scenario: Setting expiresAt with permission
+    Given a Conversation aggregate with permission to manage conversation
+    When I set the expiresAt to a future date
+    Then the expiresAt should be updated to that date
+
+  Scenario: Setting expiresAt without permission
+    Given a Conversation aggregate without permission to manage conversation
+    When I try to set the expiresAt to a future date
+    Then a PermissionError should be thrown
+
+  Scenario: Scheduling a conversation for deletion with permission
+    Given a Conversation aggregate with permission to manage conversation
+    When I call scheduleForDeletion with a retention period
+    Then the expiresAt should be set to current date plus retention period
+
+  Scenario: Scheduling a conversation for deletion without permission
+    Given a Conversation aggregate without permission to manage conversation
+    When I try to call scheduleForDeletion
+    Then a PermissionError should be thrown
+
+  Scenario: Getting reservation request when it exists
+    Given a Conversation aggregate with a reservation request
+    When I get the reservationRequest property
+    Then it should return the reservation request entity reference
+
+  Scenario: Getting reservation request when it doesn't exist
+    Given a Conversation aggregate without a reservation request
+    When I get the reservationRequest property
+    Then it should return undefined
+
+  Scenario: Loading reservation request when loader exists
+    Given a Conversation aggregate with a reservation request loader
+    When I call loadReservationRequest
+    Then it should return the loaded reservation request entity reference
+
+  Scenario: Loading reservation request when loader doesn't exist
+    Given a Conversation aggregate without a reservation request loader
+    When I call loadReservationRequest
+    Then it should return undefined

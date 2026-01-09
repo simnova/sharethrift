@@ -168,7 +168,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		};
 
 		mockModel = {
-			find: vi.fn(() => createMockQuery(mockReservationRequests)),
+			find: vi.fn((filter) => {
+				// Filter mockReservationRequests based on query filter
+				let filteredResults = [...mockReservationRequests];
+				if (filter?.state?.$in) {
+					filteredResults = mockReservationRequests.filter((req) =>
+						filter.state.$in.includes(req.state),
+					);
+				}
+				return createMockQuery(filteredResults);
+			}),
 			findById: vi.fn(() => createMockQuery(mockReservationRequests[0])),
 			findOne: vi.fn(() => createMockQuery(mockReservationRequests[0] || null)),
 			aggregate: vi.fn(() => ({
@@ -513,6 +522,86 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					expect(reservations.length).toBeGreaterThan(0);
 				},
 			);
+		},
+	);
+
+	Scenario(
+		'Getting reservation requests by multiple states',
+		({ Given, When, Then, And }) => {
+			Given(
+				'ReservationRequest documents with states "Closed", "Rejected", and "Cancelled"',
+				() => {
+					mockReservationRequests = [
+						makeMockReservationRequest({ state: 'Closed' }),
+						makeMockReservationRequest({ state: 'Rejected' }),
+						makeMockReservationRequest({ state: 'Cancelled' }),
+						makeMockReservationRequest({ state: 'Accepted' }), // Should be filtered out
+					];
+				},
+			);
+			When(
+				'I call getByStates with ["Closed", "Rejected", "Cancelled"]',
+				async () => {
+					result = await repository.getByStates([
+						'Closed',
+						'Rejected',
+						'Cancelled',
+					]);
+				},
+			);
+			Then('I should receive an array of ReservationRequest entities', () => {
+				expect(Array.isArray(result)).toBe(true);
+			});
+			And(
+				'the array should only contain reservation requests with the specified states',
+				() => {
+					const reservations =
+						result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+					expect(reservations.length).toBe(3);
+					for (const reservation of reservations) {
+						expect(['Closed', 'Rejected', 'Cancelled']).toContain(
+							reservation.state,
+						);
+					}
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Getting reservation requests by states with no matches',
+		({ Given, When, Then }) => {
+			Given('ReservationRequest documents exist in the database', () => {
+				mockReservationRequests = [
+					makeMockReservationRequest({ state: 'Accepted' }),
+					makeMockReservationRequest({ state: 'Requested' }),
+				];
+			});
+			When('I call getByStates with ["NonexistentState"]', async () => {
+				result = await repository.getByStates(['NonexistentState']);
+			});
+			Then('I should receive an empty array', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[]).length).toBe(0);
+			});
+		},
+	);
+	Scenario(
+		'Getting reservation requests by states with empty array',
+		({ Given, When, Then }) => {
+			Given('ReservationRequest documents exist in the database', () => {
+				mockReservationRequests = [
+					makeMockReservationRequest({ state: 'Accepted' }),
+					makeMockReservationRequest({ state: 'Requested' }),
+				];
+			});
+			When('I call getByStates with an empty array', async () => {
+				result = await repository.getByStates([]);
+			});
+			Then('I should receive an empty array', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect(result).toHaveLength(0);
+			});
 		},
 	);
 });

@@ -14,3 +14,13 @@ Feature: Conversation Application Service
     Given a conversation application service
     When I query for conversations by user "user-1"
     Then it should delegate to the queryByUser function
+
+  Scenario: Processing conversations for archived listings through the application service
+    Given a conversation application service
+    When I process conversations for archived listings
+    Then it should delegate to the cleanup function
+
+  Scenario: Processing conversations for archived reservation requests through the application service
+    Given a conversation application service
+    When I process conversations for archived reservation requests
+    Then it should delegate to the cleanup function

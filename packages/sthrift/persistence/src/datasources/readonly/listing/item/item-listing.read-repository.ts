@@ -40,11 +40,16 @@ export interface ItemListingReadRepository {
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
+
+	getByStates: (
+		states: string[],
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	>;
 }
 
-class ItemListingReadRepositoryImpl
-	implements ItemListingReadRepository
-{
+class ItemListingReadRepositoryImpl implements ItemListingReadRepository {
 	private readonly mongoDataSource: ItemListingDataSource;
 	private readonly converter: ItemListingConverter;
 	private readonly passport: Domain.Passport;
@@ -188,6 +193,24 @@ class ItemListingReadRepositoryImpl
 			console.error('Error fetching listings by sharer:', error);
 			return [];
 		}
+	}
+
+	async getByStates(
+		states: string[],
+		options?: FindOptions,
+	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
+		if (!states || states.length === 0) return [];
+
+		const result = await this.mongoDataSource.find(
+			{ state: { $in: states } },
+			{
+				...options,
+			},
+		);
+
+		if (!result || result.length === 0) return [];
+
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
 

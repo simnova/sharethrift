@@ -6,6 +6,7 @@ import { expect, vi } from 'vitest';
 import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { Passport } from '../../passport.ts';
+import type { ReservationRequestEntityReference } from '../../reservation-request/reservation-request/reservation-request.entity.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.ts';
 import type { UserEntityReference } from '../../user/index.ts';
@@ -913,6 +914,231 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(setTwilioIdWithoutPermission).throws(
 					'You do not have permission to change the messagingConversationId of this conversation',
 				);
+			});
+		},
+	);
+
+	Scenario('Getting expiresAt when not set', ({ Given, When, Then }) => {
+		let result: Date | undefined;
+		Given('a Conversation aggregate without an expiration date', () => {
+			passport = makePassport(true);
+			conversation = new Conversation(makeBaseProps(), passport);
+		});
+		When('I access the expiresAt property', () => {
+			result = conversation.expiresAt;
+		});
+		Then('it should return undefined', () => {
+			expect(result).toBeUndefined();
+		});
+	});
+
+	Scenario('Setting expiresAt with permission', ({ Given, When, Then }) => {
+		let expirationDate: Date;
+		Given(
+			'a Conversation aggregate with permission to manage conversation',
+			() => {
+				passport = makePassport(true);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I set the expiresAt to a future date', () => {
+			expirationDate = new Date('2025-07-01T00:00:00.000Z');
+			conversation.expiresAt = expirationDate;
+		});
+		Then('the expiresAt should be updated to that date', () => {
+			expect(conversation.expiresAt).toEqual(expirationDate);
+		});
+	});
+
+	Scenario('Setting expiresAt without permission', ({ Given, When, Then }) => {
+		let setExpiresAtWithoutPermission: () => void;
+		Given(
+			'a Conversation aggregate without permission to manage conversation',
+			() => {
+				passport = makePassport(false);
+				conversation = new Conversation(makeBaseProps(), passport);
+			},
+		);
+		When('I try to set the expiresAt to a future date', () => {
+			setExpiresAtWithoutPermission = () => {
+				conversation.expiresAt = new Date('2025-07-01T00:00:00.000Z');
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(setExpiresAtWithoutPermission).toThrow(
+				DomainSeedwork.PermissionError,
+			);
+			expect(setExpiresAtWithoutPermission).toThrow(
+				'You do not have permission to change the expiration date of this conversation',
+			);
+		});
+	});
+
+	Scenario(
+		'Scheduling a conversation for deletion with permission',
+		({ Given, When, Then }) => {
+			let archivalDate: Date;
+			Given(
+				'a Conversation aggregate with permission to manage conversation',
+				() => {
+					passport = makePassport(true);
+					conversation = new Conversation(makeBaseProps(), passport);
+				},
+			);
+			When('I call scheduleForDeletion with a retention period', () => {
+				archivalDate = new Date('2025-01-15T00:00:00.000Z');
+				conversation.scheduleForDeletion(archivalDate);
+			});
+			Then(
+				'the expiresAt should be set to current date plus retention period',
+				() => {
+					expect(conversation.expiresAt).toBeDefined();
+					// 6 months from archival date
+					const expectedTime =
+						archivalDate.getTime() + Conversation.RETENTION_PERIOD_MS;
+					const actualTime = conversation.expiresAt?.getTime() ?? 0;
+					expect(actualTime).toBe(expectedTime);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Scheduling a conversation for deletion without permission',
+		({ Given, When, Then }) => {
+			let scheduleWithoutPermission: () => void;
+			Given(
+				'a Conversation aggregate without permission to manage conversation',
+				() => {
+					passport = makePassport(false);
+					conversation = new Conversation(makeBaseProps(), passport);
+				},
+			);
+			When('I try to call scheduleForDeletion', () => {
+				scheduleWithoutPermission = () => {
+					conversation.scheduleForDeletion(
+						new Date('2025-01-15T00:00:00.000Z'),
+					);
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(scheduleWithoutPermission).toThrow(
+					DomainSeedwork.PermissionError,
+				);
+				expect(scheduleWithoutPermission).toThrow(
+					'You do not have permission to schedule this conversation for deletion',
+				);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting reservation request when it exists',
+		({ Given, When, Then }) => {
+			let mockReservationRequest: ReservationRequestEntityReference;
+			let result: ReservationRequestEntityReference | undefined;
+
+			Given('a Conversation aggregate with a reservation request', () => {
+				passport = makePassport(true);
+				mockReservationRequest = {} as ReservationRequestEntityReference;
+				const props = {
+					...makeBaseProps(),
+					reservationRequest: mockReservationRequest,
+				};
+				conversation = new Conversation(props, passport);
+			});
+
+			When('I get the reservationRequest property', () => {
+				result = conversation.reservationRequest;
+			});
+
+			Then('it should return the reservation request entity reference', () => {
+				expect(result).toBeDefined();
+				expect(result).toBe(mockReservationRequest);
+			});
+		},
+	);
+
+	Scenario(
+		"Getting reservation request when it doesn't exist",
+		({ Given, When, Then }) => {
+			let result: ReservationRequestEntityReference | undefined;
+
+			Given('a Conversation aggregate without a reservation request', () => {
+				passport = makePassport(true);
+				const props = {
+					...makeBaseProps(),
+					reservationRequest: undefined,
+				};
+				conversation = new Conversation(props, passport);
+			});
+
+			When('I get the reservationRequest property', () => {
+				result = conversation.reservationRequest;
+			});
+
+			Then('it should return undefined', () => {
+				expect(result).toBeUndefined();
+			});
+		},
+	);
+
+	Scenario(
+		'Loading reservation request when loader exists',
+		({ Given, When, Then }) => {
+			let mockReservationRequest: ReservationRequestEntityReference;
+			let result: ReservationRequestEntityReference | undefined;
+
+			Given(
+				'a Conversation aggregate with a reservation request loader',
+				() => {
+					passport = makePassport(true);
+					mockReservationRequest = {} as ReservationRequestEntityReference;
+					const props = {
+						...makeBaseProps(),
+						loadReservationRequest: async () => mockReservationRequest,
+					};
+					conversation = new Conversation(props, passport);
+				},
+			);
+
+			When('I call loadReservationRequest', async () => {
+				result = await conversation.loadReservationRequest();
+			});
+
+			Then(
+				'it should return the loaded reservation request entity reference',
+				() => {
+					expect(result).toBeDefined();
+					expect(result).toBe(mockReservationRequest);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		"Loading reservation request when loader doesn't exist",
+		({ Given, When, Then }) => {
+			let result: ReservationRequestEntityReference | undefined;
+
+			Given(
+				'a Conversation aggregate without a reservation request loader',
+				() => {
+					passport = makePassport(true);
+					const props = {
+						...makeBaseProps(),
+						loadReservationRequest: undefined,
+					};
+					conversation = new Conversation(props, passport);
+				},
+			);
+
+			When('I call loadReservationRequest', async () => {
+				result = await conversation.loadReservationRequest();
+			});
+
+			Then('it should return undefined', () => {
+				expect(result).toBeUndefined();
 			});
 		},
 	);

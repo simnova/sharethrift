@@ -19,4 +19,9 @@ export interface ConversationRepository<props extends ConversationProps>
 		sharer: string,
 		reserver: string,
 	): Promise<Conversation<props> | null>;
+	getByListingId(listingId: string): Promise<Conversation<props>[]>;
+	getByReservationRequestId(
+		reservationRequestId: string,
+	): Promise<Conversation<props>[]>;
+	getExpired(limit?: number): Promise<Conversation<props>[]>;
 }

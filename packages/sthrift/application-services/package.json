@@ -26,7 +26,8 @@
 		"@sthrift/context-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
-		"@cellix/payment-service": "workspace:*"
+		"@cellix/payment-service": "workspace:*",
+		"@opentelemetry/api": "^1.9.0"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

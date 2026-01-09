@@ -70,6 +70,12 @@ export interface ReservationRequestReadRepository {
 	) => Promise<
 		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
 	>;
+	getByStates: (
+		states: string[],
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	>;
 }
 
 /**
@@ -283,6 +289,24 @@ export class ReservationRequestReadRepositoryImpl
 			state: { $in: ACTIVE_STATES },
 		};
 		return await this.queryMany(filter, options);
+	}
+
+	async getByStates(
+		states: string[],
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
+	> {
+		if (!states || states.length === 0) {
+			return [];
+		}
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {
+			state: { $in: states },
+		};
+		return await this.queryMany(filter, {
+			...options,
+			populateFields: PopulatedFields,
+		});
 	}
 }
 

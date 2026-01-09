@@ -121,6 +121,21 @@ Feature: ConversationDomainAdapter
     When I set the listing property with the domain entity
     Then the listing should be set correctly
 
+  Scenario: Setting sharer with AdminUser domain entity
+    Given an AdminUser domain entity
+    When I set the sharer property with the AdminUser domain entity
+    Then the sharer should be set to the admin user doc
+
+  Scenario: Setting reserver with PersonalUser domain entity
+    Given a PersonalUser domain entity
+    When I set the reserver property with the domain entity
+    Then the reserver should be set correctly
+
+  Scenario: Setting reserver with AdminUser domain entity
+    Given an AdminUser domain entity
+    When I set the reserver property with the AdminUser domain entity
+    Then the reserver should be set to the admin user doc
+
   Scenario: Getting reserver when it is an admin user
     Given a conversation with an admin user as reserver
     When I access the reserver property
@@ -147,3 +162,15 @@ Feature: ConversationDomainAdapter
   Scenario: Loading listing when not populated
     When I call loadListing on an adapter with no listing
     Then an error should be thrown indicating listing is not populated in load
+
+  Scenario: Getting expiresAt when not set
+    When I get the expiresAt property when it is undefined
+    Then it should return undefined
+
+  Scenario: Getting expiresAt when set
+    When I get the expiresAt property when it is set
+    Then it should return the correct date
+
+  Scenario: Setting expiresAt property
+    When I set the expiresAt property to a date
+    Then the document's expiresAt should be set correctly

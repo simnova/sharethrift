@@ -2,6 +2,7 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import { ItemListing } from '../../listing/item/item-listing.ts';
 import type { Passport } from '../../passport.ts';
+import type { ReservationRequestEntityReference } from '../../reservation-request/reservation-request/reservation-request.entity.ts';
 import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
 import { AdminUser } from '../../user/admin-user/admin-user.ts';
 import type { UserEntityReference } from '../../user/index.ts';
@@ -19,6 +20,7 @@ export class Conversation<props extends ConversationProps>
 	implements ConversationEntityReference
 {
 	private isNew: boolean = false;
+	public static readonly RETENTION_PERIOD_MS = 180 * 24 * 60 * 60 * 1000; // 6-month (180-day) retention period expressed in milliseconds
 	private readonly visa: ConversationVisa;
 
 	//#region Constructor
@@ -164,6 +166,19 @@ export class Conversation<props extends ConversationProps>
 		this.props.listing = listing;
 	}
 
+	get reservationRequest(): ReservationRequestEntityReference | undefined {
+		return this.props.reservationRequest;
+	}
+
+	async loadReservationRequest(): Promise<
+		ReservationRequestEntityReference | undefined
+	> {
+		if (!this.props.loadReservationRequest) {
+			return undefined;
+		}
+		return await this.props.loadReservationRequest();
+	}
+
 	get messagingConversationId(): string {
 		return this.props.messagingConversationId;
 	}
@@ -191,5 +206,38 @@ export class Conversation<props extends ConversationProps>
 
 	get schemaVersion(): string {
 		return this.props.schemaVersion;
+	}
+
+	get expiresAt(): Date | undefined {
+		return this.props.expiresAt;
+	}
+
+	set expiresAt(value: Date | undefined) {
+		if (
+			!this.isNew &&
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canManageConversation,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to change the expiration date of this conversation',
+			);
+		}
+		this.props.expiresAt = value;
+	}
+
+	public scheduleForDeletion(archivalDate: Date): void {
+		if (
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canManageConversation,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to schedule this conversation for deletion',
+			);
+		}
+		this.props.expiresAt = new Date(
+			archivalDate.getTime() + Conversation.RETENTION_PERIOD_MS,
+		);
 	}
 }
