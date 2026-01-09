@@ -2,7 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Button } from 'antd';
 import { expect, fn, within } from 'storybook/test';
 import { CancelReservationPopconfirm } from './cancel-reservation-popconfirm.tsx';
-import { triggerPopconfirmAnd } from '../../test-utils/popconfirm-test-utils.ts';
+import {
+	triggerPopconfirmAnd,
+	getLoadingIndicators,
+	clickCancelThenConfirm,
+} from '../../test-utils/popconfirm-test-utils.ts';
 
 const meta: Meta<typeof CancelReservationPopconfirm> = {
 	title: 'Components/CancelReservationPopconfirm',
@@ -173,5 +177,85 @@ export const LoadingButtonState: Story = {
 			);
 			expect(loadingIndicator).toBeTruthy();
 		});
+	},
+};
+
+/**
+ * Tests the getLoadingIndicators utility function.
+ * Covers lines: getLoadingIndicators function in test-utils.
+ */
+export const TestGetLoadingIndicators: Story = {
+	args: {
+		onConfirm: fn(),
+		loading: true,
+		children: <Button danger>Cancel Reservation</Button>,
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const { userEvent, waitFor } = await import('storybook/test');
+
+		const button = canvas.getByRole('button', { name: /Cancel Reservation/i });
+		await userEvent.click(button);
+
+		await waitFor(() => {
+			const loadingIndicators = getLoadingIndicators(document.body);
+			expect(loadingIndicators.length).toBeGreaterThan(0);
+		});
+	},
+};
+
+/**
+ * Tests the clickCancelThenConfirm utility function.
+ * Covers lines: clickCancelThenConfirm function in test-utils.
+ */
+export const TestClickCancelThenConfirm: Story = {
+	args: {
+		onConfirm: fn(),
+		loading: false,
+		children: <Button danger>Cancel Reservation</Button>,
+	},
+	play: async ({ canvasElement, args }) => {
+		await clickCancelThenConfirm(canvasElement);
+		expect(args.onConfirm).toHaveBeenCalled();
+	},
+};
+
+/**
+ * Tests triggerPopconfirmAnd with button index instead of label.
+ * Covers lines: triggerButtonIndex branch in test-utils.
+ */
+export const TestTriggerByIndex: Story = {
+	args: {
+		onConfirm: fn(),
+		loading: false,
+		children: <Button danger>Cancel Reservation</Button>,
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+
+		await triggerPopconfirmAnd(canvas, 'confirm', {
+			triggerButtonIndex: 0,
+		});
+
+		expect(args.onConfirm).toHaveBeenCalled();
+	},
+};
+
+/**
+ * Tests triggerPopconfirmAnd without options.
+ * Covers lines: default options branch in test-utils.
+ */
+export const TestTriggerWithoutOptions: Story = {
+	args: {
+		onConfirm: fn(),
+		loading: false,
+		children: <Button danger>Cancel Reservation</Button>,
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+
+		await triggerPopconfirmAnd(canvas, 'confirm');
+
+		expect(args.onConfirm).toHaveBeenCalled();
 	},
 };

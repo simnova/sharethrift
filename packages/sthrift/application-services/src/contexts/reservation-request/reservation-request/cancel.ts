@@ -3,7 +3,6 @@ import type { DataSources } from '@sthrift/persistence';
 
 export interface ReservationRequestCancelCommand {
 	id: string;
-	callerId: string;
 }
 
 export const cancel = (dataSources: DataSources) => {

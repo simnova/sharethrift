@@ -1201,7 +1201,7 @@ test.for(feature, ({ Scenario }) => {
 				expect(
 					context.applicationServices.ReservationRequest.ReservationRequest
 						.cancel,
-				).toHaveBeenCalledWith({ id: 'res-123', callerId: 'user-123' });
+				).toHaveBeenCalledWith({ id: 'res-123' });
 				expect((result as { state: string }).state).toBe('Cancelled');
 			});
 		},
@@ -1256,17 +1256,13 @@ test.for(feature, ({ Scenario }) => {
 									email: 'nonexistent@example.com',
 								},
 							},
-							User: {
-								PersonalUser: {
-									queryByEmail: vi.fn().mockResolvedValue(null),
-								},
-								AdminUser: {
-									queryByEmail: vi.fn().mockResolvedValue(null),
-								},
-							},
 							ReservationRequest: {
 								ReservationRequest: {
-									cancel: vi.fn(),
+									cancel: vi.fn().mockRejectedValue(
+										new Error(
+											'You do not have permission to cancel this reservation request',
+										),
+									),
 								},
 							},
 						},
@@ -1293,7 +1289,8 @@ test.for(feature, ({ Scenario }) => {
 
 			Then("a 'User not found' error should be thrown", () => {
 				expect(error).toBeDefined();
-				expect((error as Error).message).toBe('User not found');
+				// Permission check happens at domain level via visa/passport, not in resolver
+				expect((error as Error).message).toContain('permission');
 			});
 		},
 	);

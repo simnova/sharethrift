@@ -14,13 +14,11 @@ const feature = await loadFeature(
 function buildReservation({
 	id,
 	state,
-	reserverId,
-	callerId,
+	shouldFailPermissionCheck = false,
 }: {
 	id: string;
 	state: 'Requested' | 'Rejected' | 'Accepted';
-	reserverId: string;
-	callerId?: string;
+	shouldFailPermissionCheck?: boolean;
 }) {
 	let currentState: string = state;
 	return {
@@ -30,9 +28,9 @@ function buildReservation({
 		},
 		set state(value: string) {
 			// Simulate domain entity state validation
+			// Permission checks are handled by visa through passport, not explicitly here
 			if (value === 'Cancelled') {
-				// Simulate visa permission check: only reserver can cancel
-				if (callerId && callerId !== reserverId) {
+				if (shouldFailPermissionCheck) {
 					throw new Error(
 						'You do not have permission to cancel this reservation request',
 					);
@@ -43,7 +41,6 @@ function buildReservation({
 			}
 			currentState = value;
 		},
-		loadReserver: vi.fn().mockResolvedValue({ id: reserverId }),
 	};
 }
 
@@ -114,7 +111,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 			// biome-ignore lint/suspicious/noExplicitAny: Test mock type assertion
 		} as any;
 
-		command = { id: 'reservation-123', callerId: 'user-123' };
+		command = { id: 'reservation-123' };
 		result = undefined;
 		error = undefined;
 	});
@@ -123,15 +120,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Successfully cancelling a requested reservation',
 		({ Given, And, When, Then }) => {
 			Given('a valid reservation request ID "reservation-123"', () => {
-				command = { id: 'reservation-123', callerId: 'user-123' };
+				command = { id: 'reservation-123' };
 			});
 
 			And('the reservation request exists and is in requested state', () => {
 				const mockReservationRequest = buildReservation({
 					id: command.id,
 					state: 'Requested',
-					reserverId: command.callerId,
-					callerId: command.callerId,
 				});
 
 				mockTransaction({
@@ -159,15 +154,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Successfully cancelling a rejected reservation',
 		({ Given, And, When, Then }) => {
 			Given('a reservation request ID "reservation-rejected"', () => {
-				command = { id: 'reservation-rejected', callerId: 'user-123' };
+				command = { id: 'reservation-rejected' };
 			});
 
 			And('the reservation request exists and is in rejected state', () => {
 				const mockReservationRequest = buildReservation({
 					id: command.id,
 					state: 'Rejected',
-					reserverId: command.callerId,
-					callerId: command.callerId,
 				});
 
 				mockTransaction({
@@ -195,7 +188,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Attempting to cancel a non-existent reservation request',
 		({ Given, And, When, Then }) => {
 			Given('a reservation request ID "reservation-999"', () => {
-				command = { id: 'reservation-999', callerId: 'user-123' };
+				command = { id: 'reservation-999' };
 			});
 
 			And('the reservation request does not exist', () => {
@@ -223,7 +216,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Cancel fails when save returns undefined',
 		({ Given, And, When, Then }) => {
 			Given('a valid reservation request ID "reservation-456"', () => {
-				command = { id: 'reservation-456', callerId: 'user-123' };
+				command = { id: 'reservation-456' };
 			});
 
 			And('the reservation request exists', () => {
@@ -234,8 +227,6 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				const mockReservationRequest = buildReservation({
 					id: command.id,
 					state: 'Requested',
-					reserverId: command.callerId,
-					callerId: command.callerId,
 				});
 
 				mockTransaction({
@@ -265,15 +256,13 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Cancellation fails when reservation is in Accepted state',
 		({ Given, And, When, Then }) => {
 			Given('a reservation request ID "reservation-accepted"', () => {
-				command = { id: 'reservation-accepted', callerId: 'user-123' };
+				command = { id: 'reservation-accepted' };
 			});
 
 			And('the reservation request is in Accepted state', () => {
 				const mockReservationRequest = buildReservation({
 					id: command.id,
 					state: 'Accepted',
-					reserverId: command.callerId,
-					callerId: command.callerId,
 				});
 
 				mockTransaction({
@@ -305,15 +294,15 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		'Authorization failure when caller is not the reserver',
 		({ Given, And, When, Then }) => {
 			Given('a reservation request ID "reservation-789"', () => {
-				command = { id: 'reservation-789', callerId: 'user-999' };
+				command = { id: 'reservation-789' };
 			});
 
 			And('the reservation request belongs to a different user', () => {
+				// Simulate permission check failure via visa/passport
 				const mockReservationRequest = buildReservation({
 					id: command.id,
 					state: 'Requested',
-					reserverId: 'user-123', // Different from command.callerId
-					callerId: command.callerId,
+					shouldFailPermissionCheck: true,
 				});
 
 				mockTransaction({
