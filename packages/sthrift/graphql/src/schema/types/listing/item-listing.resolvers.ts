@@ -1,6 +1,6 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.js';
-import { PopulateUserFromField } from '../../resolver-helper.ts';
+import { PopulateUserFromField, currentViewerIsAdmin } from '../../resolver-helper.ts';
 
 // Helper type for paged arguments
 export type PagedArgs = {
@@ -10,6 +10,7 @@ export type PagedArgs = {
 	statusFilters?: string[];
 	sorter?: { field: string; order: 'ascend' | 'descend' };
 	sharerId?: string;
+	isAdmin?: boolean;
 };
 
 // Helper function to construct pagedArgs
@@ -23,21 +24,21 @@ function buildPagedArgs(
 	},
 	extra?: Partial<PagedArgs>,
 ): PagedArgs {
-  return {
-    page: args.page,
-    pageSize: args.pageSize,
-    ...(args.searchText == null ? {} : { searchText: args.searchText }),
-    ...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
-    ...(args.sorter
-      ? {
-          sorter: {
-            field: args.sorter.field,
-            order: args.sorter.order as 'ascend' | 'descend',
-          },
-        }
-      : {}),
-    ...extra,
-  };
+	return {
+		page: args.page,
+		pageSize: args.pageSize,
+		...(args.searchText != null ? { searchText: args.searchText } : {}),
+		...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
+		...(args.sorter
+			? {
+					sorter: {
+						field: args.sorter.field,
+						order: args.sorter.order as 'ascend' | 'descend',
+					},
+				}
+			: {}),
+		...extra,
+	};
 }
 
 const itemListingResolvers: Resolvers = {
@@ -48,6 +49,7 @@ const itemListingResolvers: Resolvers = {
 		myListingsAll: async (_parent: unknown, args, context) => {
 			const currentUser = context.applicationServices.verifiedUser;
 			const email = currentUser?.verifiedJwt?.email;
+			const isAdmin = await currentViewerIsAdmin(context);
 			let sharerId: string | undefined;
 			if (email) {
 				sharerId =
@@ -56,7 +58,10 @@ const itemListingResolvers: Resolvers = {
 					}).then((user) => (user ? user.id : undefined));
 			}
 
-			const pagedArgs = buildPagedArgs(args, sharerId ? { sharerId } : {});
+			const pagedArgs = buildPagedArgs(args, { 
+				...(sharerId ? { sharerId } : {}),
+				isAdmin 
+			});
 
 			return await context.applicationServices.Listing.ItemListing.queryPaged(
 				pagedArgs,
@@ -67,13 +72,15 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		itemListing: async (_parent, args, context) => {
+			const isAdmin = await currentViewerIsAdmin(context);
 			return await context.applicationServices.Listing.ItemListing.queryById({
 				id: args.id,
+				isAdmin,
 			});
 		},
 		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			const pagedArgs = buildPagedArgs(args);
+			const pagedArgs = buildPagedArgs(args, { isAdmin: true });
 
 			return await context.applicationServices.Listing.ItemListing.queryPaged(
 				pagedArgs,
@@ -115,28 +122,45 @@ const itemListingResolvers: Resolvers = {
 		},
 
 		unblockListing: async (_parent, args, context) => {
-			// Admin-note: role-based authorization should be implemented here (security)
-			await context.applicationServices.Listing.ItemListing.unblock({
+			// Permission checks are enforced at the domain level via the visa pattern
+			const listing = await context.applicationServices.Listing.ItemListing.unblock({
 				id: args.id,
 			});
-			return true;
+			return {
+				status: { success: true },
+				listing,
+			};
+		},
+		blockListing: async (_parent, args, context) => {
+			// Permission checks are enforced at the domain level via the visa pattern
+			const listing = await context.applicationServices.Listing.ItemListing.block({
+				id: args.id,
+			});
+			return {
+				status: { success: true },
+				listing,
+			};
 		},
 		cancelItemListing: async (
 			_parent: unknown,
 			args: { id: string },
 			context,
-		) => ({
-			status: { success: true },
-			listing: await context.applicationServices.Listing.ItemListing.cancel({
-				id: args.id,
-			}),
-		}),
+		) => {
+			// Permission checks are enforced at the domain level via the visa pattern
+			return {
+				status: { success: true },
+				listing: await context.applicationServices.Listing.ItemListing.cancel({
+					id: args.id,
+				}),
+			};
+		},
 
 		deleteItemListing: async (
 			_parent: unknown,
 			args: { id: string },
 			context: GraphContext,
 		) => {
+			// Permission checks are enforced at the domain level via the visa pattern
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
 				userEmail:

@@ -1,0 +1,25 @@
+mutation BlockListingContainerBlockListing($id: ObjectID!) {
+  blockListing(id: $id) {
+    status {
+      success
+      errorMessage
+    }
+    listing {
+      id
+      state
+    }
+  }
+}
+
+mutation BlockListingContainerUnblockListing($id: ObjectID!) {
+  unblockListing(id: $id) {
+    status {
+      success
+      errorMessage
+    }
+    listing {
+      id
+      state
+    }
+  }
+}

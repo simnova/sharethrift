@@ -3,6 +3,7 @@ import type { DataSources } from '@sthrift/persistence';
 
 export interface ItemListingQueryAllCommand {
 	fields?: string[];
+	isAdmin?: boolean;
 }
 
 export const queryAll = (dataSources: DataSources) => {
@@ -12,7 +13,7 @@ export const queryAll = (dataSources: DataSources) => {
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	> => {
 		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getAll(
-			{ fields: command.fields },
+			{ fields: command.fields, isAdmin: command.isAdmin ?? false },
 		);
 	};
 };

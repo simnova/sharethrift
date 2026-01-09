@@ -8,6 +8,7 @@ interface ItemListingQueryPagedCommand {
 	statusFilters?: string[];
 	sharerId?: string;
 	sorter?: { field: string; order: 'ascend' | 'descend' };
+	isAdmin?: boolean;
 }
 
 export const queryPaged = (dataSources: DataSources) => {
@@ -27,6 +28,7 @@ export const queryPaged = (dataSources: DataSources) => {
 			statusFilters?: string[];
 			sharerId?: string;
 			sorter?: { field: string; order: 'ascend' | 'descend' };
+			isAdmin?: boolean;
 		} = { 
 			page: command.page, 
 			pageSize: command.pageSize 
@@ -36,13 +38,8 @@ export const queryPaged = (dataSources: DataSources) => {
 			args.searchText = command.searchText;
 		}
 		
-		// Apply status filters with admin defaults
-		// If no sharerId (admin query) and no explicit filters, default to admin-relevant statuses
 		if (command.statusFilters) {
 			args.statusFilters = command.statusFilters;
-		} else if (!command.sharerId) {
-			// Admin query without explicit filters: default to showing items needing attention
-			args.statusFilters = ['Blocked'];
 		}
 		
 		if (command.sharerId) {
@@ -50,6 +47,9 @@ export const queryPaged = (dataSources: DataSources) => {
 		}
 		if (command.sorter) {
 			args.sorter = command.sorter;
+		}
+		if (command.isAdmin) {
+			args.isAdmin = command.isAdmin;
 		}
 
 		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getPaged(args);

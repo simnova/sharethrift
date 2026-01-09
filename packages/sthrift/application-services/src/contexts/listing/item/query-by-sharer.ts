@@ -4,6 +4,7 @@ import type { DataSources } from '@sthrift/persistence';
 export interface ItemListingQueryBySharerCommand {
 	personalUser: string;
 	fields?: string[];
+	isAdmin?: boolean;
 }
 
 export const queryBySharer = (dataSources: DataSources) => {
@@ -14,6 +15,7 @@ export const queryBySharer = (dataSources: DataSources) => {
 	> => {
 		return await dataSources.readonlyDataSource.Listing.ItemListing.ItemListingReadRepo.getBySharer(
 			command.personalUser,
+			{ isAdmin: command.isAdmin ?? false },
 		);
 	};
 };

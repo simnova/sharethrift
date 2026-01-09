@@ -40,7 +40,6 @@ describe('ItemListing queryPaged', () => {
 		expect(mockGetPaged).toHaveBeenCalledWith({
 			page: 1,
 			pageSize: 20,
-			statusFilters: ['Blocked'],
 		});
 	});
 
@@ -56,7 +55,6 @@ describe('ItemListing queryPaged', () => {
 			page: 1,
 			pageSize: 10,
 			searchText: 'test search',
-			statusFilters: ['Blocked'],
 		});
 	});
 
@@ -102,7 +100,6 @@ describe('ItemListing queryPaged', () => {
 			page: 1,
 			pageSize: 10,
 			sorter: { field: 'createdAt', order: 'descend' },
-			statusFilters: ['Blocked'],
 		});
 	});
 
@@ -154,13 +151,14 @@ describe('ItemListing queryPaged', () => {
 		await query({
 			page: 1,
 			pageSize: 10,
+			isAdmin: true,
 		});
 
-		expect(mockGetPaged).toHaveBeenCalledWith(
-			expect.objectContaining({
-				statusFilters: ['Blocked'],
-			}),
-		);
+		expect(mockGetPaged).toHaveBeenCalledWith({
+			page: 1,
+			pageSize: 10,
+			isAdmin: true,
+		});
 	});
 
 	it('should not include default statusFilters when sharerId is provided', async () => {

@@ -8,9 +8,12 @@ import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
+export type ItemListingFindOneOptions = FindOneOptions & { isAdmin?: boolean };
+export type ItemListingFindOptions = FindOptions & { isAdmin?: boolean };
+
 export interface ItemListingReadRepository {
 	getAll: (
-		options?: FindOptions,
+		options?: ItemListingFindOptions,
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
@@ -22,6 +25,7 @@ export interface ItemListingReadRepository {
 		statusFilters?: string[];
 		sharerId?: string;
 		sorter?: { field: string; order: 'ascend' | 'descend' };
+		isAdmin?: boolean;
 	}) => Promise<{
 		items: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
 		total: number;
@@ -31,12 +35,12 @@ export interface ItemListingReadRepository {
 
 	getById: (
 		id: string,
-		options?: FindOneOptions,
+		options?: ItemListingFindOneOptions,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null>;
 
 	getBySharer: (
 		sharerId: string,
-		options?: FindOptions,
+		options?: ItemListingFindOptions,
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
@@ -58,13 +62,22 @@ class ItemListingReadRepositoryImpl
 	}
 
 	async getAll(
-		options?: FindOptions,
+		options?: ItemListingFindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
+		const isAdmin = options?.isAdmin ?? false;
+		const { isAdmin: _, ...mongoOptions } = options ?? {};
+
+		const query: Record<string, unknown> = {};
+		
+		// Filter out blocked listings unless user is admin
+		if (!isAdmin) {
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+			query['state'] = { $ne: 'Blocked' };
+		}
+
 		const result = await this.mongoDataSource.find(
-			{},
-			{
-				...options,
-			},
+			query,
+			mongoOptions,
 		);
 		if (!result || result.length === 0) return [];
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
@@ -77,12 +90,15 @@ class ItemListingReadRepositoryImpl
 		statusFilters?: string[];
 		sharerId?: string;
 		sorter?: { field: string; order: 'ascend' | 'descend' };
+		isAdmin?: boolean;
 	}): Promise<{
 		items: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[];
 		total: number;
 		page: number;
 		pageSize: number;
 	}> {
+		const isAdmin = args.isAdmin ?? false;
+		
 		// Build MongoDB query
 		const query: Record<string, unknown> = {};
 
@@ -117,6 +133,10 @@ class ItemListingReadRepositoryImpl
 		if (args.statusFilters && args.statusFilters.length > 0) {
 			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
 			query['state'] = { $in: args.statusFilters };
+		} else if (!isAdmin) {
+			// If no explicit status filters and user is not admin, exclude blocked listings
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+			query['state'] = { $ne: 'Blocked' };
 		}
 
 		// Build sort criteria
@@ -161,27 +181,42 @@ class ItemListingReadRepositoryImpl
 
 	async getById(
 		id: string,
-		options?: FindOneOptions,
+		options?: ItemListingFindOneOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {
-		const result = await this.mongoDataSource.findById(id, {
-			...options,
-		});
+		const isAdmin = options?.isAdmin ?? false;
+		const { isAdmin: _, ...mongoOptions } = options ?? {};
+
+		const result = await this.mongoDataSource.findById(id, mongoOptions);
 		if (!result) return null;
+
+		// Filter out blocked listings unless user is admin
+		if (!isAdmin && result.state === 'Blocked') {
+			return null;
+		}
+
 		return this.converter.toDomain(result, this.passport);
 	}
 
 	async getBySharer(
 		sharerId: string,
-		options?: FindOptions,
+		options?: ItemListingFindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
 		if (!sharerId || sharerId.trim() === '') return [];
 		try {
-			const result = await this.mongoDataSource.find(
-				{ sharer: new MongooseSeedwork.ObjectId(sharerId) },
-				{
-					...options,
-				},
-			);
+			const isAdmin = options?.isAdmin ?? false;
+			const { isAdmin: _, ...mongoOptions } = options ?? {};
+
+			const query: Record<string, unknown> = {
+				sharer: new MongooseSeedwork.ObjectId(sharerId),
+			};
+
+			// Filter out blocked listings unless user is admin
+			if (!isAdmin) {
+				// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+				query['state'] = { $ne: 'Blocked' };
+			}
+
+			const result = await this.mongoDataSource.find(query, mongoOptions);
 			if (!result || result.length === 0) return [];
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
 		} catch (error) {
