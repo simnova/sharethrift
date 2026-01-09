@@ -15,6 +15,7 @@ __*
 
 # Serenity reports copied to Docusaurus static folder (build artifacts)
 apps/docs/static/serenity-reports
+apps/docs/apps/docs/static/serenity-reports
 
 # Generated GraphQL files
 **/generated.ts
