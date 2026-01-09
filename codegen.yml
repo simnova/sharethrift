@@ -108,6 +108,6 @@ generates:
       - 'typescript-operations'
       - 'typed-document-node'
 
-hooks:
-  afterAllFileWrite:
-    - npx prettier --write
+# hooks:
+#   afterAllFileWrite:
+#     - npx prettier --write
