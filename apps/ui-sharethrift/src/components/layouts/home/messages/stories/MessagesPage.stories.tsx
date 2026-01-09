@@ -29,8 +29,6 @@ DefaultView.play = async ({ canvasElement }) => {
 };
 
 DefaultView.parameters = {
-	// Disable automatic a11y checks to prevent flaky dynamic import failures in CI
-	a11y: { disable: true },
 	apolloClient: {
 		mocks: [
 			{
