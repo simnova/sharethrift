@@ -387,15 +387,42 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					createValidObjectId('sharer-1'),
 				);
 			});
-			Then('I should receive an array of ReservationRequest entities', () => {
-				expect(Array.isArray(result)).toBe(true);
+			Then('I should receive a paginated result with items', () => {
+				const paginatedResult = result as {
+					items: unknown[];
+					total: number;
+					page: number;
+					pageSize: number;
+				};
+				expect(paginatedResult).toHaveProperty('items');
+				expect(paginatedResult).toHaveProperty('total');
+				expect(paginatedResult).toHaveProperty('page');
+				expect(paginatedResult).toHaveProperty('pageSize');
+				expect(Array.isArray(paginatedResult.items)).toBe(true);
 			});
 			And(
-				'the array should contain reservation requests for listings owned by "sharer-1"',
+				'the result should contain formatted listing request data',
 				() => {
-					const reservations =
-						result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
-					expect(reservations.length).toBeGreaterThan(0);
+					const paginatedResult = result as {
+						items: {
+							id: string;
+							title: string;
+							image: string;
+							requestedBy: string;
+							requestedOn: string;
+							reservationPeriod: string;
+							status: string;
+						}[];
+					};
+					expect(paginatedResult.items.length).toBeGreaterThan(0);
+					const firstItem = paginatedResult.items[0];
+					expect(firstItem).toHaveProperty('id');
+					expect(firstItem).toHaveProperty('title');
+					expect(firstItem).toHaveProperty('image');
+					expect(firstItem).toHaveProperty('requestedBy');
+					expect(firstItem).toHaveProperty('requestedOn');
+					expect(firstItem).toHaveProperty('reservationPeriod');
+					expect(firstItem).toHaveProperty('status');
 				},
 			);
 		},

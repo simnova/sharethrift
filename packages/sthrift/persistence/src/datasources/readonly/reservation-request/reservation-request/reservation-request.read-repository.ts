@@ -47,10 +47,19 @@ export interface ReservationRequestReadRepository {
 	// Returns reservation requests for listings owned by the sharer (listing owner dashboard)
 	getListingRequestsBySharerId: (
 		sharerId: string,
-		options?: FindOptions,
-	) => Promise<
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
-	>;
+		options?: {
+			page?: number;
+			pageSize?: number;
+			searchText?: string;
+			statusFilters?: string[];
+			sorter?: { field: string | null; order: 'ascend' | 'descend' | null };
+		},
+	) => Promise<{
+		items: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+		total: number;
+		page: number;
+		pageSize: number;
+	}>;
 	getActiveByReserverIdAndListingId: (
 		reserverId: string,
 		listingId: string,
@@ -181,54 +190,139 @@ export class ReservationRequestReadRepositoryImpl
 		};
 		return await this.queryMany(filter, {
 			...options,
-			populateFields: ['listing', 'reserver'],
+			populateFields: PopulatedFields,
 		});
 	}
 
 	async getListingRequestsBySharerId(
 		sharerId: string,
-		options?: FindOptions,
-	): Promise<
-		Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]
-	> {
-		// Use aggregation pipeline to join listings and filter by sharerId
-		const pipeline: PipelineStage[] = [
-			{
-				$lookup: {
-					from: this.models.Listing.ItemListingModel.collection.name,
-					localField: 'listing',
-					foreignField: '_id',
-					as: 'listingDoc',
-				},
-			},
-			{ $unwind: '$listingDoc' },
-			{
-				$match: {
-					'listingDoc.sharer': new MongooseSeedwork.ObjectId(sharerId),
-				},
-			},
-		];
+		options?: {
+			page?: number;
+			pageSize?: number;
+			searchText?: string;
+			statusFilters?: string[];
+			sorter?: { field: string | null; order: 'ascend' | 'descend' | null };
+		},
+	): Promise<{
+		items: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+		total: number;
+		page: number;
+		pageSize: number;
+	}> {
+		const page = options?.page ?? 1;
+		const pageSize = options?.pageSize ?? 10;
 
-		// Apply additional options if provided (e.g., limit, sort)
-		if (options?.limit) {
-			pipeline.push({ $limit: options.limit } as PipelineStage);
+		// Build filter for sharerId and optional filters
+		const filter: FilterQuery<Models.ReservationRequest.ReservationRequest> = {};
+
+		// First, we need to find listings owned by the sharer
+		const sharerListings = await this.models.Listing.ItemListingModel.find({
+			sharer: new MongooseSeedwork.ObjectId(sharerId),
+		}).select('_id').exec();
+
+		const listingIds = sharerListings.map(listing => listing._id);
+		filter.listing = { $in: listingIds };
+
+		// Apply status filters
+		if (options?.statusFilters?.length) {
+			filter.state = { $in: options.statusFilters };
 		}
-		if (options?.sort) {
-			pipeline.push({ $sort: options.sort } as PipelineStage);
+
+		// Apply search filter (on listing title via join)
+		if (options?.searchText) {
+			const searchTerm = options.searchText;
+			// For search, we need to use aggregation to join with listings
+			const searchPipeline: PipelineStage[] = [
+				{ $match: filter },
+				{
+					$lookup: {
+						from: this.models.Listing.ItemListingModel.collection.name,
+						localField: 'listing',
+						foreignField: '_id',
+						as: 'listingDoc',
+					},
+				},
+				{ $unwind: '$listingDoc' },
+				{
+					$match: {
+						'listingDoc.title': { $regex: searchTerm, $options: 'i' },
+					},
+				},
+			];
+
+			// Get total count for search
+			const countPipeline = [...searchPipeline, { $count: 'total' }];
+			const countResult = await this.models.ReservationRequest.ReservationRequest.aggregate(countPipeline).exec();
+			const total = countResult[0]?.total ?? 0;
+
+			// Apply sorting
+			if (options?.sorter?.field) {
+				const sortOrder = options.sorter.order === 'descend' ? -1 : 1;
+				let sortField = options.sorter.field;
+				// Map UI field names to database field names
+				if (sortField === 'requestedOn') sortField = 'createdAt';
+				if (sortField === 'title') {
+					// For title sorting, we need to sort by the joined field
+					searchPipeline.push({
+						$sort: { 'listingDoc.title': sortOrder },
+					} as PipelineStage);
+				} else {
+					searchPipeline.push({
+						$sort: { [sortField]: sortOrder },
+					} as PipelineStage);
+				}
+			} else {
+				// Default sort by createdAt desc
+				searchPipeline.push({ $sort: { createdAt: -1 } } as PipelineStage);
+			}
+
+			// Apply pagination
+			const skip = (page - 1) * pageSize;
+			searchPipeline.push({ $skip: skip } as PipelineStage);
+			searchPipeline.push({ $limit: pageSize } as PipelineStage);
+
+			// Execute search aggregation and convert to domain entities
+			const docs = await this.models.ReservationRequest.ReservationRequest.aggregate(searchPipeline).exec();
+			const items = docs.map((doc) => this.converter.toDomain(doc, this.passport));
+
+			return {
+				items,
+				total,
+				page,
+				pageSize,
+			};
+		} else {
+			// No search - use regular query with population
+			const sortOptions: Record<string, 1 | -1> = {};
+			if (options?.sorter?.field) {
+				const sortOrder = options.sorter.order === 'descend' ? -1 : 1;
+				let sortField = options.sorter.field;
+				if (sortField === 'requestedOn') sortField = 'createdAt';
+				sortOptions[sortField] = sortOrder;
+			} else {
+				sortOptions['createdAt'] = -1;
+			}
+
+			// Get total count
+			const total = await this.models.ReservationRequest.ReservationRequest.countDocuments(filter).exec();
+
+			// Get paginated results with population
+			const docs = await this.mongoDataSource.find(filter, {
+				populateFields: PopulatedFields,
+				sort: sortOptions,
+				skip: (page - 1) * pageSize,
+				limit: pageSize,
+			});
+
+			const items = docs.map((doc) => this.converter.toDomain(doc, this.passport));
+
+			return {
+				items,
+				total,
+				page,
+				pageSize,
+			};
 		}
-
-		const docs =
-			await this.models.ReservationRequest.ReservationRequest.aggregate(
-				pipeline,
-			).exec();
-
-		// Convert to domain entities
-		return docs.map((doc) =>
-			this.converter.toDomain(
-				doc as Models.ReservationRequest.ReservationRequest,
-				this.passport,
-			),
-		);
 	}
 
 	async getActiveByReserverIdAndListingId(

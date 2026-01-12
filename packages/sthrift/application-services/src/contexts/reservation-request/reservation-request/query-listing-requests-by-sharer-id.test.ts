@@ -53,29 +53,90 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					{
 						id: 'req-1',
 						state: 'Requested',
-						listing: { id: 'listing-1', sharer: { id: 'sharer-123' } },
+						createdAt: new Date('2024-01-01'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-05'),
+						listing: {
+							id: 'listing-1',
+							title: 'Test Listing 1',
+							images: ['image1.jpg'],
+							sharer: { id: 'sharer-123' }
+						},
+						reserver: {
+							id: 'reserver-1',
+							account: {
+								username: 'johndoe'
+							}
+						}
 					},
 					{
 						id: 'req-2',
-						state: 'Requested',
-						listing: { id: 'listing-1', sharer: { id: 'sharer-123' } },
+						state: 'Approved',
+						createdAt: new Date('2024-01-02'),
+						reservationPeriodStart: new Date('2024-02-10'),
+						reservationPeriodEnd: new Date('2024-02-15'),
+						listing: {
+							id: 'listing-1',
+							title: 'Test Listing 1',
+							images: ['image1.jpg'],
+							sharer: { id: 'sharer-123' }
+						},
+						reserver: {
+							id: 'reserver-2',
+							account: {
+								username: 'janesmith'
+							}
+						}
 					},
 					{
 						id: 'req-3',
 						state: 'Requested',
-						listing: { id: 'listing-2', sharer: { id: 'sharer-123' } },
+						createdAt: new Date('2024-01-03'),
+						reservationPeriodStart: new Date('2024-03-01'),
+						reservationPeriodEnd: new Date('2024-03-03'),
+						listing: {
+							id: 'listing-2',
+							title: 'Test Listing 2',
+							images: ['image2.jpg'],
+							sharer: { id: 'sharer-123' }
+						},
+						reserver: {
+							id: 'reserver-3',
+							account: {
+								username: 'bobjohnson'
+							}
+						}
 					},
 					{
 						id: 'req-4',
-						state: 'Requested',
-						listing: { id: 'listing-2', sharer: { id: 'sharer-123' } },
+						state: 'Rejected',
+						createdAt: new Date('2024-01-04'),
+						reservationPeriodStart: new Date('2024-03-10'),
+						reservationPeriodEnd: new Date('2024-03-12'),
+						listing: {
+							id: 'listing-2',
+							title: 'Test Listing 2',
+							images: [],
+							sharer: { id: 'sharer-123' }
+						},
+						reserver: {
+							id: 'reserver-4',
+							account: {
+								username: 'alicebrown'
+							}
+						}
 					},
 				];
 				(
 					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getListingRequestsBySharerId.mockResolvedValue(
-					mockRequests,
+					{
+						items: mockRequests,
+						total: 4,
+						page: 1,
+						pageSize: 10,
+					},
 				);
 			});
 
@@ -87,9 +148,95 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				},
 			);
 
-			Then('4 reservation requests should be returned', () => {
+			Then('a paginated result should be returned', () => {
 				expect(result).toBeDefined();
-				expect(result.length).toBe(4);
+				expect(result).toHaveProperty('items');
+				expect(result).toHaveProperty('total');
+				expect(result).toHaveProperty('page');
+				expect(result).toHaveProperty('pageSize');
+				expect(Array.isArray(result.items)).toBe(true);
+				expect(result.items.length).toBe(4);
+				expect(result.total).toBe(4);
+				expect(result.page).toBe(1);
+				expect(result.pageSize).toBe(10);
+
+				// Check that items are domain entities (not formatted)
+				expect(result.items[0]).toEqual({
+					id: 'req-1',
+					state: 'Requested',
+					createdAt: new Date('2024-01-01'),
+					reservationPeriodStart: new Date('2024-02-01'),
+					reservationPeriodEnd: new Date('2024-02-05'),
+					listing: {
+						id: 'listing-1',
+						title: 'Test Listing 1',
+						images: ['image1.jpg'],
+						sharer: { id: 'sharer-123' }
+					},
+					reserver: {
+						id: 'reserver-1',
+						account: {
+							username: 'johndoe'
+						}
+					}
+				});
+				expect(result.items[1]).toEqual({
+					id: 'req-2',
+					state: 'Approved',
+					createdAt: new Date('2024-01-02'),
+					reservationPeriodStart: new Date('2024-02-10'),
+					reservationPeriodEnd: new Date('2024-02-15'),
+					listing: {
+						id: 'listing-1',
+						title: 'Test Listing 1',
+						images: ['image1.jpg'],
+						sharer: { id: 'sharer-123' }
+					},
+					reserver: {
+						id: 'reserver-2',
+						account: {
+							username: 'janesmith'
+						}
+					}
+				});
+				expect(result.items[2]).toEqual({
+					id: 'req-3',
+					state: 'Requested',
+					createdAt: new Date('2024-01-03'),
+					reservationPeriodStart: new Date('2024-03-01'),
+					reservationPeriodEnd: new Date('2024-03-03'),
+					listing: {
+						id: 'listing-2',
+						title: 'Test Listing 2',
+						images: ['image2.jpg'],
+						sharer: { id: 'sharer-123' }
+					},
+					reserver: {
+						id: 'reserver-3',
+						account: {
+							username: 'bobjohnson'
+						}
+					}
+				});
+				expect(result.items[3]).toEqual({
+					id: 'req-4',
+					state: 'Rejected',
+					createdAt: new Date('2024-01-04'),
+					reservationPeriodStart: new Date('2024-03-10'),
+					reservationPeriodEnd: new Date('2024-03-12'),
+					listing: {
+						id: 'listing-2',
+						title: 'Test Listing 2',
+						images: [],
+						sharer: { id: 'sharer-123' }
+					},
+					reserver: {
+						id: 'reserver-4',
+						account: {
+							username: 'alicebrown'
+						}
+					}
+				});
 			});
 		},
 	);
@@ -106,7 +253,12 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 					// biome-ignore lint/suspicious/noExplicitAny: Test mock access
 					mockDataSources.readonlyDataSource as any
 				).ReservationRequest.ReservationRequest.ReservationRequestReadRepo.getListingRequestsBySharerId.mockResolvedValue(
-					[],
+					{
+						items: [],
+						total: 0,
+						page: 1,
+						pageSize: 10,
+					},
 				);
 			});
 
@@ -118,9 +270,17 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				},
 			);
 
-			Then('an empty array should be returned', () => {
+			Then('an empty paginated result should be returned', () => {
 				expect(result).toBeDefined();
-				expect(result.length).toBe(0);
+				expect(result).toHaveProperty('items');
+				expect(result).toHaveProperty('total');
+				expect(result).toHaveProperty('page');
+				expect(result).toHaveProperty('pageSize');
+				expect(Array.isArray(result.items)).toBe(true);
+				expect(result.items.length).toBe(0);
+				expect(result.total).toBe(0);
+				expect(result.page).toBe(1);
+				expect(result.pageSize).toBe(10);
 			});
 		},
 	);

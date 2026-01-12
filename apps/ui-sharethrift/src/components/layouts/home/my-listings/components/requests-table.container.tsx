@@ -36,7 +36,15 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		},
 	);
 
-	const requests = data?.myListingsRequests?.items ?? [];
+	const requests = (data?.myListingsRequests?.items ?? []).map((request) => ({
+		id: request.id,
+		title: request.listing?.title || 'Unknown',
+		image: request.listing?.images?.[0] || null,
+		requestedBy: `@${request.reserver?.account?.username || 'unknown'}`,
+		requestedOn: request.createdAt,
+		reservationPeriod: `${request.reservationPeriodStart.toISOString().split('T')[0]} to ${request.reservationPeriodEnd.toISOString().split('T')[0]}`,
+		status: request.state || 'Unknown',
+	}));
 	const total = data?.myListingsRequests?.total ?? 0;
 
 	const handleSearch = (value: string) => {
