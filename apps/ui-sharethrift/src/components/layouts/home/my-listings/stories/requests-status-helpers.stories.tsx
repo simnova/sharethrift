@@ -32,7 +32,7 @@ const RequestsHelpersTest = (): React.ReactElement => {
 };
 
 const meta: Meta<typeof RequestsHelpersTest> = {
-	title: 'Layouts/Home/MyListings/Utilities/RequestsHelpers',
+	title: 'Components/Layouts/Home/MyListings/Utilities/RequestsHelpers',
 	component: RequestsHelpersTest,
 	parameters: {
 		layout: 'centered',

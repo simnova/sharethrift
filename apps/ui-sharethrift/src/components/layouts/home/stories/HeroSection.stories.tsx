@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof HeroSection> = {
-	title: 'Listing/Hero',
+	title: 'Components/Hero',
 	component: HeroSection,
 	parameters: {
 		layout: 'fullscreen',
@@ -32,6 +32,7 @@ export const Default: Story = {
 };
 
 export const WithInteraction: Story = {
+  tags:['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	render: () => <HeroSection />,
 	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);

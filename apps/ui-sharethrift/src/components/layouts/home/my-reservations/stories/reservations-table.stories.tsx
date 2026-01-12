@@ -12,7 +12,7 @@ import {
 import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof ReservationsTable> = {
-	title: 'Organisms/ReservationsTable',
+	title: 'Components/Organisms/ReservationsTable',
 	component: ReservationsTable,
 	parameters: { layout: 'padded' },
 	tags: ['autodocs'],

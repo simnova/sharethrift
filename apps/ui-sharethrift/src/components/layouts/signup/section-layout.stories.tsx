@@ -6,7 +6,7 @@ import {  withMockApolloClient } from '../../../test-utils/storybook-decorators.
 import { MockAuthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
 
 const meta: Meta<typeof SectionLayout> = {
-	title: 'Layouts/SectionLayout',
+	title: 'Components/Layouts/SectionLayout',
 	component: SectionLayout,
 	parameters: {
 		layout: 'fullscreen',

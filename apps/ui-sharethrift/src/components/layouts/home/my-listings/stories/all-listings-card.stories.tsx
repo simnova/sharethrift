@@ -73,7 +73,7 @@ const MOCK_LISTING_NO_IMAGE = {
 };
 
 const meta: Meta<typeof AllListingsCard> = {
-	title: 'My Listings/All Listings Card',
+	title: 'Components/My Listings/All Listings Card',
 	component: AllListingsCard,
 	args: {
 		listing: MOCK_LISTING_ACTIVE,

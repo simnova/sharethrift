@@ -10,7 +10,7 @@ import {
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
 const meta: Meta<typeof ReservationsView> = {
-	title: 'Organisms/ReservationsView',
+	title: 'Components/Organisms/ReservationsView',
 	component: ReservationsView,
 	parameters: {
 		layout: 'padded',

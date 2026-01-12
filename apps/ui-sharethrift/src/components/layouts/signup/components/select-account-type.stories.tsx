@@ -61,7 +61,7 @@ const mockAccountPlans: AccountPlan[] = [
 ];
 
 const meta: Meta<typeof SelectAccountType> = {
-	title: 'Signup/SelectAccountType',
+	title: 'Components/Signup/SelectAccountType',
 	component: SelectAccountType,
 	parameters: {
 		layout: 'fullscreen',

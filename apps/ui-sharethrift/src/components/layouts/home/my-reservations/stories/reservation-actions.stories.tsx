@@ -3,7 +3,7 @@ import { ReservationActions } from '../components/reservation-actions.js';
 import { expect, fn, userEvent, within } from 'storybook/test';
 
 const meta: Meta<typeof ReservationActions> = {
-  title: 'Molecules/ReservationActions',
+  title: 'Components/Molecules/ReservationActions',
   component: ReservationActions,
   parameters: {
     layout: 'centered',

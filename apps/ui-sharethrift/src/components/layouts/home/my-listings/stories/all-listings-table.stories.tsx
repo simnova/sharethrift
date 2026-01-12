@@ -38,7 +38,7 @@ const ALL_STATUS_LISTINGS = [
 ];
 
 const meta: Meta<typeof AllListingsTable> = {
-	title: 'My Listings/All Listings Table',
+	title: 'Components/My Listings/All Listings Table',
 	component: AllListingsTable,
 	args: {
 		data: MOCK_LISTINGS,

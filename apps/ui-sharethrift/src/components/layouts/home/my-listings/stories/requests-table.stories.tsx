@@ -23,7 +23,7 @@ const MOCK_REQUESTS = [
 ];
 
 const meta: Meta<typeof RequestsTable> = {
-	title: 'My Listings/Requests Table',
+	title: 'Components/My Listings/Requests Table',
 	component: RequestsTable,
 	args: {
 		data: MOCK_REQUESTS,

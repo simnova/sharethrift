@@ -47,7 +47,7 @@ const StatusTagClassTest = (): React.ReactElement => {
 };
 
 const meta: Meta<typeof StatusTagClassTest> = {
-	title: 'Layouts/Home/MyListings/Utilities/StatusTagClass',
+	title: 'Components/Layouts/Home/MyListings/Utilities/StatusTagClass',
 	component: StatusTagClassTest,
 	parameters: {
 		layout: 'centered',

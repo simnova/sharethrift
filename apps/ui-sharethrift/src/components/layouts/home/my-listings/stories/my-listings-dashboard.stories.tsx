@@ -38,7 +38,7 @@ const mockRequests = {
 };
 
 const meta: Meta<typeof MyListingsDashboard> = {
-	title: 'My Listings/Dashboard',
+	title: 'Components/My Listings/Dashboard',
 	component: MyListingsDashboard,
 	parameters: {
 		layout: 'fullscreen',

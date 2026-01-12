@@ -33,7 +33,7 @@ const ReservationStateUtilsTest = (): React.ReactElement => {
 };
 
 const meta: Meta<typeof ReservationStateUtilsTest> = {
-	title: 'Layouts/Home/MyReservations/Utilities/ReservationStateUtils',
+	title: 'Components/Layouts/Home/MyReservations/Utilities/ReservationStateUtils',
 	component: ReservationStateUtilsTest,
 	parameters: {
 		layout: 'centered',
