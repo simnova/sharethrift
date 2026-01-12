@@ -60,7 +60,8 @@
             ]
         },
         "overrides": {
-            "@pnpm/npm-conf": ">=3.0.2"
+            "@pnpm/npm-conf": ">=3.0.2",
+            "@types/node": "^24.10.7"
         }
     },
     "devDependencies": {
