@@ -6,7 +6,7 @@
  */
 
 import { execSync } from 'node:child_process';
-import { existsSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, renameSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 
@@ -27,7 +27,9 @@ function exec(command, options = {}) {
 
 function checkCommand(command) {
 	try {
-		execSync(`command -v ${command}`, { stdio: 'ignore' });
+		const platform = process.platform;
+		const checkCmd = platform === 'win32' ? `where ${command}` : `command -v ${command}`;
+		execSync(checkCmd, { stdio: 'ignore' });
 		return true;
 	} catch {
 		return false;
@@ -100,20 +102,23 @@ function main() {
 
 	// Generate wildcard certificate
 	console.log(' Generating wildcard certificate for *.sharethrift.localhost...');
+	
+	// Ensure certificate directory exists
+	mkdirSync(CERT_DIR, { recursive: true });
+	
 	process.chdir(CERT_DIR);
 	exec('mkcert "*.sharethrift.localhost" "sharethrift.localhost" localhost 127.0.0.1 ::1');
 
 	// Rename files to standard names
-	const generatedFiles = execSync('ls *.localhost+4*.pem 2>/dev/null || true', { 
-		encoding: 'utf-8',
-		cwd: CERT_DIR 
-	}).trim().split('\n').filter(Boolean);
+	const generatedFiles = readdirSync(CERT_DIR)
+		.filter(file => file.includes('.localhost+4') && file.endsWith('.pem'));
 
 	for (const file of generatedFiles) {
+		const oldPath = join(CERT_DIR, file);
 		if (file.includes('-key.pem')) {
-			execSync(`mv "${file}" sharethrift.localhost-key.pem`, { cwd: CERT_DIR });
+			renameSync(oldPath, KEY_FILE);
 		} else if (file.includes('.pem')) {
-			execSync(`mv "${file}" sharethrift.localhost.pem`, { cwd: CERT_DIR });
+			renameSync(oldPath, CERT_FILE);
 		}
 	}
 
@@ -122,7 +127,7 @@ function main() {
 	console.log(`   ${CERT_DIR}\n`);
 	console.log(' Your local domains are now trusted for HTTPS:');
 	console.log('   • https://sharethrift.localhost:3000 (UI)');
-	console.log('   • https://data-access.sharethrift.localhost:8443 (API)');
+	console.log('   • https://data-access.sharethrift.localhost:7072 (API)');
 	console.log('   • https://docs.sharethrift.localhost:3002 (Docs)');
 	console.log('   • https://mock-auth.sharethrift.localhost:4000 (Auth)');
 	console.log('   • https://mock-payment.sharethrift.localhost:3001 (Payment)');
