@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within } from 'storybook/test';
 import {
 	ConversationBoxContainerConversationDocument,
@@ -18,10 +18,9 @@ const meta: Meta<typeof HomeRoutes> = {
 };
 
 export default meta;
+type Story = StoryObj<typeof meta>;
 
-const Template: StoryFn<typeof HomeRoutes> = () => <HomeRoutes />;
-
-export const DefaultView: StoryFn<typeof HomeRoutes> = Template.bind({});
+export const DefaultView: Story = {}
 
 DefaultView.play = async ({ canvasElement }) => {
 	const canvas = within(canvasElement);
