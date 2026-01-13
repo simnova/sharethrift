@@ -91,12 +91,13 @@ const cacheUpdateMocks = [
 // #endregion Shared Mock Data
 
 const meta: Meta<typeof ConversationBoxContainer> = {
-	title: 'Pages/Home/Messages/ConversationBoxContainer',
+	title: 'Components/Messages/ConversationBoxContainer',
 	component: ConversationBoxContainer,
 	decorators: [withMockApolloClient, withMockUserId('user-1')],
 	parameters: {
 		layout: 'fullscreen',
 	},
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 export default meta;
 type Story = StoryObj<typeof ConversationBoxContainer>;
