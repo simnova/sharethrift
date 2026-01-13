@@ -1339,12 +1339,62 @@ app.post(
 	},
 );
 
+const resolveWorkspaceRootForCerts = (): string => {
+	// Prefer an explicit workspace root if provided
+	const envRoot = process.env['WORKSPACE_ROOT'];
+	if (envRoot && path.isAbsolute(envRoot)) {
+		return envRoot;
+	}
+
+	// Walk up from this file's directory looking for either:
+	// - a ".certs" directory, or
+	// - a "package.json" file with "workspaces" field (monorepo root marker)
+	let currentDir = __dirname;
+	for (let i = 0; i < 10; i += 1) {
+		const certsDir = path.join(currentDir, '.certs');
+		const packageJsonPath = path.join(currentDir, 'package.json');
+
+		// Check for .certs directory
+		if (fs.existsSync(certsDir)) {
+			return currentDir;
+		}
+
+		// Check for workspace root package.json
+		if (fs.existsSync(packageJsonPath)) {
+			try {
+				const packageJson = JSON.parse(
+					fs.readFileSync(packageJsonPath, 'utf-8'),
+				);
+				if (packageJson.workspaces || packageJson.name === 'sharethrift') {
+					return currentDir;
+				}
+			} catch {
+				// Ignore JSON parse errors, continue searching
+			}
+		}
+
+		const parentDir = path.dirname(currentDir);
+		if (parentDir === currentDir) {
+			break;
+		}
+		currentDir = parentDir;
+	}
+
+	// Fallback: use this file's directory if no better root is found
+	return __dirname;
+};
+
 const startServer = (portToTry: number, attempt = 0): void => {
-	// From dist/src/index.js, go up 5 levels to workspace root
-	// dist/src -> dist -> mock-payment-server -> cellix -> packages -> workspace root
-	const workspaceRoot = path.join(__dirname, '../../../../..');
-	const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
-	const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
+	// Resolve workspace root in a way that does not depend on build output structure
+	const workspaceRoot = resolveWorkspaceRootForCerts();
+	const certKeyPath = path.join(
+		workspaceRoot,
+		'.certs/sharethrift.localhost-key.pem',
+	);
+	const certPath = path.join(
+		workspaceRoot,
+		'.certs/sharethrift.localhost.pem',
+	);
 	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
 
 	if (hasCerts) {
@@ -1358,17 +1408,19 @@ const startServer = (portToTry: number, attempt = 0): void => {
 		});
 
 		server.on('error', (error: NodeJS.ErrnoException) => {
-		if (error.code === 'EADDRINUSE' && attempt < 5) {
-			const nextPort = portToTry + 1;
-			console.warn(
-				`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
-			);
-			startServer(nextPort, attempt + 1);
-			return;
-		}
+			if (error.code === 'EADDRINUSE' && attempt < 5) {
+				const nextPort = portToTry + 1;
+				console.warn(
+					`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
+				);
+				server.close(() => {
+					startServer(nextPort, attempt + 1);
+				});
+				return;
+			}
 
-		console.error('Failed to start mock-payment-server', error);
-	});
+			console.error('Failed to start mock-payment-server', error);
+		});
 	} else {
 		// Fallback to HTTP when certs don't exist (CI/CD)
 		const server = app.listen(portToTry, () => {
@@ -1381,7 +1433,9 @@ const startServer = (portToTry: number, attempt = 0): void => {
 				console.warn(
 					`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
 				);
-				startServer(nextPort, attempt + 1);
+				server.close(() => {
+					startServer(nextPort, attempt + 1);
+				});
 				return;
 			}
 
