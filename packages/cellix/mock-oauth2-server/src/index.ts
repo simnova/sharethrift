@@ -3,16 +3,19 @@ import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
 import express from 'express';
 import https from 'node:https';
 import fs from 'node:fs';
-import path from 'node:path';
+import path, { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { exportJWK, generateKeyPair, SignJWT, type JWK } from 'jose';
 import { exportPKCS8 } from 'jose';
 
 setupEnvironment();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
-const BASE_URL = 'https://mock-auth.sharethrift.localhost:4000';
 
 function normalizeUrl(urlString: string): string {
 	try {
@@ -62,6 +65,7 @@ async function buildTokenResponse(
 	profile: TokenProfile,
 	privateKey: webcrypto.CryptoKey | KeyObject | JWK | Uint8Array,
 	jwk: { alg?: string; kid?: string },
+	baseUrl: string,
 	existingRefreshToken?: string,
 ) {
 	const now = Math.floor(Date.now() / 1000);
@@ -70,7 +74,7 @@ async function buildTokenResponse(
 
 	// Manually sign the id_token as a JWT with all claims using jose
 	const idTokenPayload = {
-		iss: BASE_URL,
+		iss: baseUrl,
 		sub: profile.sub,
 		aud: profile.aud,
 		email: profile.email,
@@ -90,7 +94,7 @@ async function buildTokenResponse(
 
 	// Manually sign the access_token as a JWT with all claims using jose
 	const accessTokenPayload = {
-		iss: BASE_URL,
+		iss: baseUrl,
 		sub: profile.sub,
 		aud: profile.aud,
 		email: profile.email,
@@ -119,7 +123,7 @@ async function buildTokenResponse(
 		profile: {
 			exp,
 			ver: '1.0',
-			iss: BASE_URL,
+			iss: baseUrl,
 			sub: profile.sub,
 			aud: profile.aud,
 			iat: now,
@@ -134,6 +138,19 @@ async function buildTokenResponse(
 
 // Main async startup
 async function main() {
+	// Check for certificates early to determine BASE_URL
+	// Use __dirname to reliably find workspace root regardless of where script is invoked from
+	// File is at packages/cellix/mock-oauth2-server/src/index.ts, so go up 4 levels
+	const workspaceRoot = path.join(__dirname, '../../../..');
+	const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
+	const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
+	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
+
+	// Set BASE_URL based on whether we have certificates
+	const BASE_URL = hasCerts
+		? `https://mock-auth.sharethrift.localhost:${port}`
+		: `http://localhost:${port}`;
+
 	// Generate signing keypair with jose
 	const { publicKey, privateKey } = await generateKeyPair('RS256');
 	const publicJwk = await exportJWK(publicKey);
@@ -221,6 +238,7 @@ async function main() {
 			profile,
 			keyObject,
 			publicJwk,
+			BASE_URL,
 		);
 		res.json(tokenResponse);
 	});
@@ -283,13 +301,6 @@ async function main() {
 	});
 
 	// Load SSL certificates for HTTPS
-	// Find workspace root by going up from current package directory
-	// When run via turbo/pnpm, cwd is the package directory, so we go up 3 levels to reach project root
-	const workspaceRoot = path.join(process.cwd(), '../../..');
-	const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
-	const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
-	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
-
 	if (hasCerts) {
 		const httpsOptions = {
 			key: fs.readFileSync(certKeyPath),
@@ -299,10 +310,10 @@ async function main() {
 		https.createServer(httpsOptions, app).listen(port, 'mock-auth.sharethrift.localhost', () => {
 			// eslint-disable-next-line no-console
 			console.log(
-				`Mock OAuth2 server running on https://mock-auth.sharethrift.localhost:${port}`,
+				`Mock OAuth2 server running on ${BASE_URL}`,
 			);
 			console.log(
-				`JWKS endpoint running on https://mock-auth.sharethrift.localhost:${port}/.well-known/jwks.json`,
+				`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`,
 			);
 		});
 	} else {
@@ -310,10 +321,10 @@ async function main() {
 		app.listen(port, () => {
 			// eslint-disable-next-line no-console
 			console.log(
-				`Mock OAuth2 server running on http://localhost:${port} (no certs found)`,
+				`Mock OAuth2 server running on ${BASE_URL} (no certs found)`,
 			);
 			console.log(
-				`JWKS endpoint running on http://localhost:${port}/.well-known/jwks.json`,
+				`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`,
 			);
 		});
 	}
