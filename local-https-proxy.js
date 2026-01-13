@@ -3,6 +3,7 @@ import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import net from 'node:net';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +13,45 @@ const TARGET_PORT = 7071; // Azure Functions default port
 
 const certPath = path.join(__dirname, '.certs', 'sharethrift.localhost.pem');
 const keyPath = path.join(__dirname, '.certs', 'sharethrift.localhost-key.pem');
+
+// Validate certificate files exist
+if (!fs.existsSync(certPath)) {
+	console.error(`Error: Certificate file not found: ${certPath}`);
+	console.error('Run: pnpm run setup:certs');
+	process.exit(1);
+}
+
+if (!fs.existsSync(keyPath)) {
+	console.error(`Error: Certificate key file not found: ${keyPath}`);
+	console.error('Run: pnpm run setup:certs');
+	process.exit(1);
+}
+
+// Check if port is already in use before starting
+function checkPortInUse(port) {
+	return new Promise((resolve) => {
+		const tester = net.createServer()
+			.once('error', (err) => {
+				if (err.code === 'EADDRINUSE') {
+					resolve(true);
+				} else {
+					resolve(false);
+				}
+			})
+			.once('listening', () => {
+				tester.close();
+				resolve(false);
+			})
+			.listen(port);
+	});
+}
+
+const portInUse = await checkPortInUse(PROXY_PORT);
+
+if (portInUse) {
+	console.log(`HTTPS proxy already running on port ${PROXY_PORT} - skipping startup`);
+	process.exit(0);
+}
 
 const server = https.createServer({
 	cert: fs.readFileSync(certPath),
@@ -44,6 +84,37 @@ const server = https.createServer({
 		console.error('Proxy error:', err);
 		res.writeHead(502);
 		res.end('Bad Gateway');
+	});
+});
+
+// Handle server startup errors
+server.on('error', (err) => {
+	if (err.code === 'EADDRINUSE') {
+		console.error(`Error: Port ${PROXY_PORT} is already in use`);
+		console.error('Another instance may be running. Stop it or use a different port.');
+	} else if (err.code === 'EACCES') {
+		console.error(`Error: Permission denied to bind to port ${PROXY_PORT}`);
+		console.error('Try using a port > 1024 or run with elevated privileges.');
+	} else {
+		console.error('Server error:', err);
+	}
+	process.exit(1);
+});
+
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+	console.log('\nShutting down HTTPS proxy...');
+	server.close(() => {
+		console.log('HTTPS proxy stopped');
+		process.exit(0);
+	});
+});
+
+process.on('SIGTERM', () => {
+	console.log('\nShutting down HTTPS proxy...');
+	server.close(() => {
+		console.log('HTTPS proxy stopped');
+		process.exit(0);
 	});
 });
 
