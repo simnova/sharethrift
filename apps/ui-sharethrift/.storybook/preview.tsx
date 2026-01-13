@@ -18,7 +18,10 @@ const preview: Preview = {
 			storySort: {
 				order: [
 					'Pages', 
-            ['Signup', ['Select Account Type', 'Account Setup', 'Profile Setup', 'Terms', 'Payment']],
+            ['Signup', ['Select Account Type', 'Account Setup', 'Profile Setup', 'Terms', 'Payment'],
+            'Home',
+            'My Listings',
+            'My Reservations'],
 					'Components',
           'Containers'
 				],
@@ -26,5 +29,11 @@ const preview: Preview = {
 		},
 	},
 };
-
+const style = document.createElement("style");
+style.innerHTML = `
+  .sb-show-main.sb-main-padded {
+    padding: 0 !important;
+  }
+`;
+document.head.appendChild(style);
 export default preview;
