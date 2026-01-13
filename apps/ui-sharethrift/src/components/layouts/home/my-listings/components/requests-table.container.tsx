@@ -41,8 +41,10 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		title: request.listing?.title || 'Unknown',
 		image: request.listing?.images?.[0] || null,
 		requestedBy: `@${request.reserver?.account?.username || 'unknown'}`,
-		requestedOn: request.createdAt,
-		reservationPeriod: `${request.reservationPeriodStart.toISOString().split('T')[0]} to ${request.reservationPeriodEnd.toISOString().split('T')[0]}`,
+		requestedOn: request.createdAt?.toISOString(),
+		reservationPeriod: request.reservationPeriodStart && request.reservationPeriodEnd
+			? `${request.reservationPeriodStart.toISOString().split('T')[0]} to ${request.reservationPeriodEnd.toISOString().split('T')[0]}`
+			: 'Unknown',
 		status: request.state || 'Unknown',
 	}));
 	const total = data?.myListingsRequests?.total ?? 0;

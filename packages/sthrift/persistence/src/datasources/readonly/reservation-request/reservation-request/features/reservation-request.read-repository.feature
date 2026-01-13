@@ -41,8 +41,8 @@ And valid ReservationRequest documents exist in the database
 	Scenario: Getting listing requests by sharer ID
 		Given a ReservationRequest document with listing owned by "sharer-1"
 		When I call getListingRequestsBySharerId with "sharer-1"
-		Then I should receive an array of ReservationRequest entities
-		And the array should contain reservation requests for listings owned by "sharer-1"
+		Then I should receive a paginated result with items
+		And the items array should contain reservation requests for listings owned by "sharer-1"
 
 	Scenario: Getting active reservation by reserver ID and listing ID
 		Given a ReservationRequest document with reserver "user-1", listing "listing-1", and state "Accepted"

@@ -10,24 +10,44 @@ import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../.
 const mockRequests = {
 	items: [
 		{
-			__typename: 'MyListingRequest',
+			__typename: 'ReservationRequest',
 			id: '1',
-			title: 'Cordless Drill',
-			image: '/assets/item-images/projector.png',
-			requestedOn: '2025-01-15',
-			reservationPeriod: '2025-01-20 - 2025-01-25',
-			status: 'Pending',
-			requestedBy: 'John Doe',
+			createdAt: new Date('2025-01-15T10:00:00.000Z'),
+			reservationPeriodStart: new Date('2025-01-20T00:00:00.000Z'),
+			reservationPeriodEnd: new Date('2025-01-25T00:00:00.000Z'),
+			state: 'Pending',
+			listing: {
+				__typename: 'ItemListing',
+				title: 'Cordless Drill',
+				images: ['/assets/item-images/projector.png'],
+			},
+			reserver: {
+				__typename: 'PersonalUser',
+				account: {
+					__typename: 'PersonalUserAccount',
+					username: 'johndoe',
+				},
+			},
 		},
 		{
-			__typename: 'MyListingRequest',
+			__typename: 'ReservationRequest',
 			id: '2',
-			title: 'Electric Guitar',
-			image: '/assets/item-images/projector.png',
-			requestedOn: '2025-02-01',
-			reservationPeriod: '2025-02-10 - 2025-02-15',
-			status: 'Accepted',
-			requestedBy: 'Jane Smith',
+			createdAt: new Date('2025-02-01T14:30:00.000Z'),
+			reservationPeriodStart: new Date('2025-02-10T00:00:00.000Z'),
+			reservationPeriodEnd: new Date('2025-02-15T00:00:00.000Z'),
+			state: 'Accepted',
+			listing: {
+				__typename: 'ItemListing',
+				title: 'Electric Guitar',
+				images: ['/assets/item-images/projector.png'],
+			},
+			reserver: {
+				__typename: 'PersonalUser',
+				account: {
+					__typename: 'PersonalUserAccount',
+					username: 'janesmith',
+				},
+			},
 		},
 	],
 	total: 2,
@@ -209,7 +229,14 @@ export const WithSearchFilter: Story = {
 				{
 					request: {
 						query: HomeRequestsTableContainerMyListingsRequestsDocument,
-						variables: () => true,
+						variables: {
+							page: 1,
+							pageSize: 6,
+							searchText: '',
+							statusFilters: [],
+							sorter: { field: '', order: '' },
+							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
+						},
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
@@ -253,7 +280,14 @@ export const WithStatusFilter: Story = {
 				{
 					request: {
 						query: HomeRequestsTableContainerMyListingsRequestsDocument,
-						variables: () => true,
+						variables: {
+							page: 1,
+							pageSize: 6,
+							searchText: '',
+							statusFilters: [],
+							sorter: { field: '', order: '' },
+							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
+						},
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
@@ -292,7 +326,14 @@ export const WithSorting: Story = {
 				{
 					request: {
 						query: HomeRequestsTableContainerMyListingsRequestsDocument,
-						variables: () => true,
+						variables: {
+							page: 1,
+							pageSize: 6,
+							searchText: '',
+							statusFilters: [],
+							sorter: { field: '', order: '' },
+							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
+						},
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {

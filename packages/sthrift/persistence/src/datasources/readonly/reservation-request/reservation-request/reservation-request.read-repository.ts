@@ -299,11 +299,10 @@ export class ReservationRequestReadRepositoryImpl
 				let sortField = options.sorter.field;
 				if (sortField === 'requestedOn') sortField = 'createdAt';
 				sortOptions[sortField] = sortOrder;
-			} else {
-				sortOptions['createdAt'] = -1;
-			}
-
-			// Get total count
+						} else {
+							// biome-ignore lint/complexity/useLiteralKeys: Index signature requires bracket notation
+							sortOptions['createdAt'] = -1;
+						}			// Get total count
 			const total = await this.models.ReservationRequest.ReservationRequest.countDocuments(filter).exec();
 
 			// Get paginated results with population

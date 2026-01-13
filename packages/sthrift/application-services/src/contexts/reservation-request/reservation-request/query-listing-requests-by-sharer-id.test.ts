@@ -148,7 +148,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				},
 			);
 
-			Then('a paginated result should be returned', () => {
+			Then('4 reservation requests should be returned', () => {
 				expect(result).toBeDefined();
 				expect(result).toHaveProperty('items');
 				expect(result).toHaveProperty('total');
@@ -270,7 +270,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 				},
 			);
 
-			Then('an empty paginated result should be returned', () => {
+			Then('an empty array should be returned', () => {
 				expect(result).toBeDefined();
 				expect(result).toHaveProperty('items');
 				expect(result).toHaveProperty('total');

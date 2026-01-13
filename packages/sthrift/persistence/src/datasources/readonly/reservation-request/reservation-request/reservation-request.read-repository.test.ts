@@ -150,6 +150,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				populate: vi.fn(),
 				sort: vi.fn(),
 				limit: vi.fn(),
+				select: vi.fn(),
 				exec: vi.fn().mockResolvedValue(result),
 				catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
 			};
@@ -158,6 +159,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			mockQuery.populate.mockReturnValue(mockQuery);
 			mockQuery.sort.mockReturnValue(mockQuery);
 			mockQuery.limit.mockReturnValue(mockQuery);
+			mockQuery.select.mockReturnValue(mockQuery);
 
 			// Make the query thenable (like Mongoose queries are) by adding then as property
 			Object.defineProperty(mockQuery, 'then', {
@@ -171,6 +173,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			find: vi.fn(() => createMockQuery(mockReservationRequests)),
 			findById: vi.fn(() => createMockQuery(mockReservationRequests[0])),
 			findOne: vi.fn(() => createMockQuery(mockReservationRequests[0] || null)),
+			countDocuments: vi.fn(() => ({
+				exec: vi.fn().mockResolvedValue(mockReservationRequests.length),
+			})),
 			aggregate: vi.fn(() => ({
 				exec: vi.fn().mockResolvedValue(mockReservationRequests),
 			})),
@@ -180,6 +185,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			collection: {
 				name: 'item-listings',
 			},
+			find: vi.fn(() => ({
+				select: vi.fn(() => ({
+					exec: vi.fn().mockResolvedValue([makeMockListing('listing-1', 'sharer-1')]),
+				})),
+			})),
 		} as unknown as Models.Listing.ItemListingModelType;
 
 		const modelsContext = {
@@ -388,41 +398,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				);
 			});
 			Then('I should receive a paginated result with items', () => {
-				const paginatedResult = result as {
-					items: unknown[];
-					total: number;
-					page: number;
-					pageSize: number;
-				};
-				expect(paginatedResult).toHaveProperty('items');
-				expect(paginatedResult).toHaveProperty('total');
-				expect(paginatedResult).toHaveProperty('page');
-				expect(paginatedResult).toHaveProperty('pageSize');
-				expect(Array.isArray(paginatedResult.items)).toBe(true);
+				expect(result).toBeDefined();
+				expect(typeof result).toBe('object');
+				expect(result).toHaveProperty('items');
+				expect(result).toHaveProperty('total');
+				expect(result).toHaveProperty('page');
+				expect(result).toHaveProperty('pageSize');
 			});
 			And(
-				'the result should contain formatted listing request data',
+				'the items array should contain reservation requests for listings owned by "sharer-1"',
 				() => {
 					const paginatedResult = result as {
-						items: {
-							id: string;
-							title: string;
-							image: string;
-							requestedBy: string;
-							requestedOn: string;
-							reservationPeriod: string;
-							status: string;
-						}[];
+						items: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+						total: number;
+						page: number;
+						pageSize: number;
 					};
+					expect(paginatedResult.items).toBeDefined();
+					expect(Array.isArray(paginatedResult.items)).toBe(true);
 					expect(paginatedResult.items.length).toBeGreaterThan(0);
-					const firstItem = paginatedResult.items[0];
-					expect(firstItem).toHaveProperty('id');
-					expect(firstItem).toHaveProperty('title');
-					expect(firstItem).toHaveProperty('image');
-					expect(firstItem).toHaveProperty('requestedBy');
-					expect(firstItem).toHaveProperty('requestedOn');
-					expect(firstItem).toHaveProperty('reservationPeriod');
-					expect(firstItem).toHaveProperty('status');
+					expect(paginatedResult.items[0].listing.sharer.id).toBeDefined();
 				},
 			);
 		},
