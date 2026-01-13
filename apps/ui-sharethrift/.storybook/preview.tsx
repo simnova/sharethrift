@@ -29,6 +29,8 @@ const preview: Preview = {
 		},
 	},
 };
+
+// Remove Storybook's default 1rem padding from .sb-show-main.sb-main-padded
 const style = document.createElement("style");
 style.innerHTML = `
   .sb-show-main.sb-main-padded {
