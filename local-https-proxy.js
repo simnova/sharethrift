@@ -4,12 +4,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import net from 'node:net';
+import { spawn } from 'node:child_process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PROXY_PORT = 7072;
 const TARGET_PORT = 7071; // Azure Functions default port
+const IS_DAEMON_MODE = process.env.DAEMON_MODE === 'true';
 
 const certPath = path.join(__dirname, '.certs', 'sharethrift.localhost.pem');
 const keyPath = path.join(__dirname, '.certs', 'sharethrift.localhost-key.pem');
@@ -49,7 +51,20 @@ function checkPortInUse(port) {
 const portInUse = await checkPortInUse(PROXY_PORT);
 
 if (portInUse) {
-	console.log(`HTTPS proxy already running on port ${PROXY_PORT} - skipping startup`);
+	console.log(`✓ HTTPS proxy already running on port ${PROXY_PORT}`);
+	process.exit(0);
+}
+
+// If not in daemon mode, spawn self as daemon and exit
+if (!IS_DAEMON_MODE) {
+	console.log('Starting HTTPS proxy in background...');
+	const child = spawn(process.execPath, [__filename], {
+		detached: true,
+		stdio: 'ignore',
+		env: { ...process.env, DAEMON_MODE: 'true' },
+	});
+	child.unref();
+	console.log(`✓ HTTPS proxy started on https://data-access.sharethrift.localhost:${PROXY_PORT}`);
 	process.exit(0);
 }
 
@@ -119,6 +134,6 @@ process.on('SIGTERM', () => {
 });
 
 server.listen(PROXY_PORT, () => {
-	console.log(`HTTPS proxy listening on https://data-access.sharethrift.localhost:${PROXY_PORT}`);
+	console.log(`HTTPS proxy daemon listening on https://data-access.sharethrift.localhost:${PROXY_PORT}`);
 	console.log(`Proxying to http://localhost:${TARGET_PORT}`);
 });
