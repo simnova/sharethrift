@@ -141,37 +141,19 @@ mv _wildcard.sharethrift.localhost+4-key.pem sharethrift-localhost-key.pem
 
 ### Certificate Location
 
-Store certificates in the project root `/certs` directory. Add `/certs` to `.gitignore` to avoid committing private keys:
+Store certificates in the project root `/.certs` directory. Add `/.certs` to `.gitignore` to avoid committing private keys:
 
 ```gitignore
 # Local HTTPS certificates
-/certs/*.pem
-/certs/*.key
+/.certs/*.pem
+/.certs/*.key
 ```
 
-## Azure Functions HTTPS Configuration
-
-Azure Functions Core Tools includes built-in HTTPS support that automatically creates and trusts certificates. This eliminates the need for a separate reverse proxy for the backend API.
-
-### Backend API (Azure Functions)
-
-The backend automatically runs with HTTPS when using the `--useHttps` flag:
-
-```bash
-func start --typescript --useHttps --cors * --cors-credentials
-```
-
-This command:
-- Binds to `https://localhost:7071` 
-- Automatically creates and trusts a certificate
-- Enables CORS for all origins with credentials support
-- Supports WebSocket upgrades for real-time communication
-
-The backend will be accessible at `https://localhost:7071` without additional configuration.
+## Frontend Configuration
 
 ### Frontend Proxy Configuration (Vite)
 
-For the frontend UI to connect to the HTTPS backend, configure Vite's dev server proxy.
+For the frontend UI to connect to the HTTPS-proxied backend, configure Vite's dev server proxy.
 
 Update `vite.config.ts` in your frontend package:
 
@@ -180,13 +162,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://localhost:7071',
+        target: 'https://data-access.sharethrift.localhost:7072',
         changeOrigin: true,
         secure: false, // Accept self-signed certificates
         ws: true, // Enable WebSocket proxying
       },
       '/graphql': {
-        target: 'https://localhost:7071',
+        target: 'https://data-access.sharethrift.localhost:7072',
         changeOrigin: true,
         secure: false,
         ws: true,
@@ -277,7 +259,7 @@ server {
     ssl_certificate_key /path/to/project/certs/sharethrift-localhost-key.pem;
 
     location / {
-        proxy_pass http://localhost:3001;
+        proxy_pass http://localhost:3002;
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection 'upgrade';
@@ -418,7 +400,7 @@ data-access.sharethrift.localhost {
 
 docs.sharethrift.localhost {
     tls /path/to/project/certs/sharethrift-localhost.pem /path/to/project/certs/sharethrift-localhost-key.pem
-    reverse_proxy localhost:3001
+    reverse_proxy localhost:3002
 }
 
 mock-payment.sharethrift.localhost {
@@ -483,7 +465,8 @@ pnpm run dev
 This single command:
 - Builds all workspace packages
 - Starts mock services (Azurite, MongoDB)
-- Launches Azure Functions backend with HTTPS on port 7071
+- Launches Azure Functions backend on HTTP port 7071
+- Starts the custom HTTPS proxy on port 7072
 - Starts the Vite development server with proxy configuration
 - All services become accessible via HTTPS
 
@@ -492,16 +475,19 @@ This single command:
 The dev command orchestrates:
 
 1. **Package builds**: Compiles TypeScript across all workspaces
-2. **Service startup**: Azurite for blob/queue/table storage
-3. **Backend**: Azure Functions runtime with built-in HTTPS on port 7071
-4. **Frontend**: Vite dev server with HTTPS proxy configuration
-5. **Docs**: Docusaurus on port 3001 (if enabled)
-6. **Mocks**: Mock services on ports 8001-8003 (when configured)
+2. **Certificate setup**: Generates mkcert certificates if needed
+3. **HTTPS Proxy**: Starts background daemon on port 7072
+4. **Service startup**: Azurite for blob/queue/table storage
+5. **Backend**: Azure Functions runtime with HTTP on port 7071 (proxied to HTTPS)
+6. **Frontend**: Vite dev server with HTTPS proxy configuration
+7. **Docs**: Docusaurus on port 3002 (if enabled)
+8. **Mocks**: Mock services with HTTPS on their respective ports
 
 Services are accessible at:
-- Backend API: `https://localhost:7071`
-- Frontend UI: `http://localhost:3000` (proxies to HTTPS backend)
-- GraphQL Playground: `https://localhost:7071/api/graphql`
+- Backend API (HTTPS proxy): `https://data-access.sharethrift.localhost:7072`
+- Backend API (HTTP direct): `http://localhost:7071`
+- Frontend UI: `https://sharethrift.localhost:3000`
+- GraphQL Playground: `https://data-access.sharethrift.localhost:7072/api/graphql`
 
 ## Authentication & Cookies
 
