@@ -139,7 +139,6 @@ async function buildTokenResponse(
 // Main async startup
 async function main() {
 	// Check for certificates early to determine BASE_URL
-	// Use __dirname to reliably find workspace root regardless of where script is invoked from
 	// File is at packages/cellix/mock-oauth2-server/src/index.ts, so go up 4 levels
 	const workspaceRoot = path.join(__dirname, '../../../..');
 	const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');

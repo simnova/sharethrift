@@ -75,7 +75,7 @@ app.get('/pts/v2/public-key', async (_req, res) => {
 		flx: {
 			path: '/flex/v2/tokens',
 			data: 'qTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
-			origin: 'https://mock-payment.sharethrift.localhost:3001',
+			origin: process.env['PAYMENT_MOCK_ORIGIN'] ?? 'https://mock-payment.sharethrift.localhost:3001',
 			jwk: mockJwk,
 		},
 		ctx: [

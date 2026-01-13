@@ -13,7 +13,7 @@ export class ServiceMessagingMock implements MessagingService {
 
 	constructor(mockBaseUrl?: string) {
 		// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-		this.mockBaseUrl = mockBaseUrl ?? process.env['MESSAGING_MOCK_URL'] ?? 'https://mock-messaging.sharethrift.localhost:10000';
+		this.mockBaseUrl = mockBaseUrl ?? process.env['MESSAGING_MOCK_URL'] ?? 'http://localhost:10000';
 	}
 
 	public async startUp(): Promise<Exclude<ServiceMessagingMock, ServiceBase>> {
