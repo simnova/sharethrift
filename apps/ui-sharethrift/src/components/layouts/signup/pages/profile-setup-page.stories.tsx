@@ -7,15 +7,15 @@ import {
 	ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	type PersonalUser,
 } from '../../../../generated.tsx';
-import { App } from '../../../../App.tsx';
+import { SignupRoutes } from '../Index.tsx';
 
-const meta: Meta<typeof App> = {
+const meta: Meta<typeof SignupRoutes> = {
 	title: 'Pages/Signup/Profile Setup',
-	component: App,
+	component: SignupRoutes,
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [withMockApolloClient, withMockRouter('/signup/profile-setup')],
+	decorators: [withMockApolloClient, withMockRouter('/profile-setup')],
 };
 
 export default meta;

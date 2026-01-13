@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { MyListingsMain } from './my-listings.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
@@ -9,6 +8,7 @@ import {
 	HomeAllListingsTableContainerMyListingsAllDocument,
 	HomeRequestsTableContainerMyListingsRequestsDocument,
 } from '../../../../../generated.tsx';
+import { HomeRoutes } from '../../index.tsx';
 
 const mockListings = {
 	__typename: 'MyListingsAllResult',
@@ -47,9 +47,9 @@ const mockRequests = {
 	pageSize: 6,
 };
 
-const meta: Meta<typeof MyListingsMain> = {
-	title: 'Pages/My Listings/Main',
-	component: MyListingsMain,
+const meta: Meta<typeof HomeRoutes> = {
+	title: 'Pages/My Listings',
+	component: HomeRoutes,
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {
@@ -85,7 +85,7 @@ const meta: Meta<typeof MyListingsMain> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof MyListingsMain>;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	play: async ({ canvasElement }) => {
@@ -143,6 +143,7 @@ export const EmptyListings: Story = {
 
 export const FileExports: Story = {
 	name: 'File Exports',
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	render: () => (
 		<div data-testid="file-export-test">
 			<p>MyListingsMain component file exists and exports correctly</p>

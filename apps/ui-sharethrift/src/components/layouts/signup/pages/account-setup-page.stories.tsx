@@ -4,15 +4,15 @@ import {
 	withMockRouter,
 } from '../../../../test-utils/storybook-decorators.tsx';
 import  { AccountSetUpContainerCurrentPersonalUserAndCreateIfNotExistsDocument, type PersonalUser } from '../../../../generated.tsx';
-import { App } from '../../../../App.tsx';
+import { SignupRoutes } from '../Index.tsx';
 
-const meta: Meta<typeof App> = {
+const meta: Meta<typeof SignupRoutes> = {
 	title: 'Pages/Signup/Account Setup',
-	component: App,
+	component: SignupRoutes,
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [withMockApolloClient, withMockRouter('/signup/account-setup')],
+	decorators: [withMockApolloClient, withMockRouter('/account-setup')],
 };
 
 export default meta;

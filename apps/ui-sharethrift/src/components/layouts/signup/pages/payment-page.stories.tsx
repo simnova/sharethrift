@@ -10,15 +10,15 @@ import {
 	type PersonalUser,
 	type AccountPlan,
 } from '../../../../generated.tsx';
-import { App } from '../../../../App.tsx';
+import { SignupRoutes } from '../Index.tsx';
 
-const meta: Meta<typeof App> = {
+const meta: Meta<typeof SignupRoutes> = {
 	title: 'Pages/Signup/Payment',
-	component: App,
+	component: SignupRoutes,
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [withMockApolloClient, withMockRouter('/signup/payment')],
+	decorators: [withMockApolloClient, withMockRouter('/payment')],
 };
 
 export default meta;
