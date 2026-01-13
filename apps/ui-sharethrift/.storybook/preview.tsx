@@ -21,7 +21,8 @@ const preview: Preview = {
             ['Signup', ['Select Account Type', 'Account Setup', 'Profile Setup', 'Terms', 'Payment'],
             'Home',
             'My Listings',
-            'My Reservations'],
+            'My Reservations',
+            'Messages'],
 					'Components',
           'Containers'
 				],
