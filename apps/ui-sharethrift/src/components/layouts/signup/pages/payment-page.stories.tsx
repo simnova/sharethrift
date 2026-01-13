@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { PaymentPage } from './payment-page.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
@@ -11,18 +10,19 @@ import {
 	type PersonalUser,
 	type AccountPlan,
 } from '../../../../generated.tsx';
+import { App } from '../../../../App.tsx';
 
-const meta: Meta<typeof PaymentPage> = {
+const meta: Meta<typeof App> = {
 	title: 'Pages/Signup/Payment',
-	component: PaymentPage,
+	component: App,
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [withMockApolloClient, withMockRouter('/signup/account-setup')],
+	decorators: [withMockApolloClient, withMockRouter('/signup/payment')],
 };
 
 export default meta;
-type Story = StoryObj<typeof PaymentPage>;
+type Story = StoryObj<typeof App>;
 
 const mockUserSarah: PersonalUser = {
 	id: '507f1f77bcf86cd799439099',

@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ProfileSetupPage } from './profile-setup-page.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
@@ -8,10 +7,11 @@ import {
 	ProfileSetupContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	type PersonalUser,
 } from '../../../../generated.tsx';
+import { App } from '../../../../App.tsx';
 
-const meta: Meta<typeof ProfileSetupPage> = {
-	title: 'Pages/Signup/ProfileSetup',
-	component: ProfileSetupPage,
+const meta: Meta<typeof App> = {
+	title: 'Pages/Signup/Profile Setup',
+	component: App,
 	parameters: {
 		layout: 'fullscreen',
 	},

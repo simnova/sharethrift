@@ -1,21 +1,40 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SelectAccountTypePage } from './select-account-type-page.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../test-utils/storybook-decorators.tsx';
-import { SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument, SelectAccountTypeContainerAccountPlansDocument } from '../../../../generated.tsx';
+import {
+	SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+	SelectAccountTypeContainerAccountPlansDocument,
+} from '../../../../generated.tsx';
+import { App } from '../../../../App.tsx';
 
-const meta: Meta<typeof SelectAccountTypePage> = {
-	title: 'Pages/Signup/SelectAccountTypePage',
-	component: SelectAccountTypePage,
+const meta: Meta<typeof App> = {
+	title: 'Pages/Signup/Select Account Type',
+	component: App,
+  parameters: {
+    layout: 'fullscreen',
+  },
+	decorators: [
+		withMockApolloClient,
+		withMockRouter('/signup/select-account-type'),
+	],
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+// Simple story that renders the page wrapper component
+// The page just returns <SelectAccountTypeContainer />, so this will test the wrapper's return statement
+export const Default: Story = {
 	parameters: {
-		layout: 'fullscreen',
+		
 		apolloClient: {
 			mocks: [
 				{
 					request: {
-						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query:
+							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -113,13 +132,4 @@ const meta: Meta<typeof SelectAccountTypePage> = {
 			],
 		},
 	},
-	decorators: [withMockApolloClient, withMockRouter('/signup/profile-setup')],
 };
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-
-// Simple story that renders the page wrapper component
-// The page just returns <SelectAccountTypeContainer />, so this will test the wrapper's return statement
-export const Default: Story = {};
