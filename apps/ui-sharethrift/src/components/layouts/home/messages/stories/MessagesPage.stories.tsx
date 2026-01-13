@@ -4,6 +4,7 @@ import {
 	ConversationBoxContainerConversationDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	HomeConversationListContainerCurrentUserDocument,
+	UseUserIsAdminDocument,
 } from '../../../../../generated.tsx';
 import {
 	withMockApolloClient,
@@ -20,7 +21,7 @@ const meta: Meta<typeof HomeRoutes> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const DefaultView: Story = {}
+export const DefaultView: Story = {};
 
 DefaultView.play = async ({ canvasElement }) => {
 	const canvas = within(canvasElement);
@@ -30,6 +31,21 @@ DefaultView.play = async ({ canvasElement }) => {
 DefaultView.parameters = {
 	apolloClient: {
 		mocks: [
+			{
+				request: {
+					query: UseUserIsAdminDocument,
+					variables: {},
+				},
+				maxUsageCount: Number.POSITIVE_INFINITY,
+				result: {
+					data: {
+						currentUser: {
+							id: '507f1f77bcf86cd799439011',
+							useUserIsAdmin: false,
+						},
+					},
+				},
+			},
 			{
 				request: {
 					query: HomeConversationListContainerCurrentUserDocument,
@@ -65,6 +81,7 @@ DefaultView.parameters = {
 									id: '507f1f77bcf86cd799439011',
 									account: {
 										__typename: 'PersonalUserAccount',
+										username: 'alice_johnson',
 										profile: {
 											__typename: 'PersonalUserAccountProfile',
 											firstName: 'Alice',
@@ -77,6 +94,7 @@ DefaultView.parameters = {
 									id: '507f1f77bcf86cd799439099',
 									account: {
 										__typename: 'PersonalUserAccount',
+										username: 'current_user',
 										profile: {
 											__typename: 'PersonalUserAccountProfile',
 											firstName: 'Current',
@@ -102,6 +120,7 @@ DefaultView.parameters = {
 									id: '507f1f77bcf86cd799439022',
 									account: {
 										__typename: 'PersonalUserAccount',
+										username: 'bob_smith',
 										profile: {
 											__typename: 'PersonalUserAccountProfile',
 											firstName: 'Bob',
@@ -114,6 +133,7 @@ DefaultView.parameters = {
 									id: '507f1f77bcf86cd799439011',
 									account: {
 										__typename: 'PersonalUserAccount',
+										username: 'alice_johnson',
 										profile: {
 											__typename: 'PersonalUserAccountProfile',
 											firstName: 'Alice',
