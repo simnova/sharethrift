@@ -424,6 +424,217 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	);
 
 	Scenario(
+		'Getting listing requests by sharer ID with pagination',
+		({ Given, When, Then, And }) => {
+			Given(
+				'multiple ReservationRequest documents for listings owned by "sharer-1"',
+				() => {
+					mockReservationRequests = [
+						makeMockReservationRequest({
+							id: 'req-1',
+							listing: makeMockListing('listing-1', 'sharer-1'),
+						}),
+						makeMockReservationRequest({
+							id: 'req-2',
+							listing: makeMockListing('listing-2', 'sharer-1'),
+						}),
+						makeMockReservationRequest({
+							id: 'req-3',
+							listing: makeMockListing('listing-3', 'sharer-1'),
+						}),
+						makeMockReservationRequest({
+							id: 'req-4',
+							listing: makeMockListing('listing-4', 'sharer-1'),
+						}),
+					];
+					// Mock countDocuments to return 4
+					mockModel.countDocuments = vi.fn(() => ({
+						exec: vi.fn().mockResolvedValue(4),
+					})) as any;
+				},
+			);
+			When(
+				'I call getListingRequestsBySharerId with "sharer-1", page 2, and pageSize 2',
+				async () => {
+					result = await repository.getListingRequestsBySharerId(
+						createValidObjectId('sharer-1'),
+						{ page: 2, pageSize: 2 },
+					);
+				},
+			);
+			Then(
+				'I should receive a paginated result with page 2 and pageSize 2',
+				() => {
+					const paginatedResult = result as {
+						items: unknown[];
+						total: number;
+						page: number;
+						pageSize: number;
+					};
+					expect(paginatedResult.page).toBe(2);
+					expect(paginatedResult.pageSize).toBe(2);
+					expect(paginatedResult.total).toBe(4);
+				},
+			);
+			And('the items array should contain 2 reservation requests', () => {
+				const paginatedResult = result as {
+					items: unknown[];
+					total: number;
+					page: number;
+					pageSize: number;
+				};
+				expect(paginatedResult.items).toHaveLength(2);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting listing requests by sharer ID with search',
+		({ Given, When, Then, And }) => {
+			Given(
+				'ReservationRequest documents with different listing titles',
+				() => {
+					mockReservationRequests = [
+						makeMockReservationRequest({
+							id: 'req-1',
+							listing: { ...makeMockListing('listing-1', 'sharer-1'), title: 'Camera' },
+						}),
+						makeMockReservationRequest({
+							id: 'req-2',
+							listing: { ...makeMockListing('listing-2', 'sharer-1'), title: 'Drone' },
+						}),
+					];
+					// Mock aggregate for search
+					mockModel.aggregate = vi.fn(() => ({
+						exec: vi.fn().mockResolvedValue([
+							{
+								_id: 'req-1',
+								listing: { title: 'Camera' },
+								state: 'Requested',
+								createdAt: new Date(),
+								reservationPeriodStart: new Date(),
+								reservationPeriodEnd: new Date(),
+								reserver: makeMockUser('user-1'),
+							},
+						]),
+					})) as any;
+				},
+			);
+			When(
+				'I call getListingRequestsBySharerId with "sharer-1" and searchText "camera"',
+				async () => {
+					result = await repository.getListingRequestsBySharerId(
+						createValidObjectId('sharer-1'),
+						{ searchText: 'camera' },
+					);
+				},
+			);
+			Then('I should receive a paginated result with items', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('items');
+			});
+			And(
+				'only items with listing titles containing "camera" should be included',
+				() => {
+					const paginatedResult = result as {
+						items: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+					};
+					expect(paginatedResult.items).toHaveLength(1);
+					expect(paginatedResult.items[0].listing.title).toBe('Camera');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Getting listing requests by sharer ID with status filters',
+		({ Given, When, Then, And }) => {
+			Given('ReservationRequest documents with different states', () => {
+				mockReservationRequests = [
+					makeMockReservationRequest({
+						id: 'req-1',
+						state: 'Approved',
+						listing: makeMockListing('listing-1', 'sharer-1'),
+					}),
+					makeMockReservationRequest({
+						id: 'req-2',
+						state: 'Requested',
+						listing: makeMockListing('listing-2', 'sharer-1'),
+					}),
+				];
+			});
+			When(
+				'I call getListingRequestsBySharerId with "sharer-1" and statusFilters ["Approved"]',
+				async () => {
+					result = await repository.getListingRequestsBySharerId(
+						createValidObjectId('sharer-1'),
+						{ statusFilters: ['Approved'] },
+					);
+				},
+			);
+			Then('I should receive a paginated result with items', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('items');
+			});
+			And('only items with state "Approved" should be included', () => {
+				const paginatedResult = result as {
+					items: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+				};
+				expect(paginatedResult.items).toHaveLength(1);
+				expect(paginatedResult.items[0].state).toBe('Approved');
+			});
+		},
+	);
+
+	Scenario(
+		'Getting listing requests by sharer ID with sorting',
+		({ Given, When, Then, And }) => {
+			Given(
+				'ReservationRequest documents with different createdAt dates',
+				() => {
+					mockReservationRequests = [
+						makeMockReservationRequest({
+							id: 'req-1',
+							createdAt: new Date('2024-01-01'),
+							listing: makeMockListing('listing-1', 'sharer-1'),
+						}),
+						makeMockReservationRequest({
+							id: 'req-2',
+							createdAt: new Date('2024-01-02'),
+							listing: makeMockListing('listing-2', 'sharer-1'),
+						}),
+					];
+				},
+			);
+			When(
+				'I call getListingRequestsBySharerId with "sharer-1" and sorter field "createdAt" order "descend"',
+				async () => {
+					result = await repository.getListingRequestsBySharerId(
+						createValidObjectId('sharer-1'),
+						{ sorter: { field: 'createdAt', order: 'descend' } },
+					);
+				},
+			);
+			Then('I should receive a paginated result with items', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('items');
+			});
+			And(
+				'the items should be sorted by createdAt in descending order',
+				() => {
+					const paginatedResult = result as {
+						items: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+					};
+					expect(paginatedResult.items).toHaveLength(2);
+					expect(paginatedResult.items[0].createdAt.getTime()).toBeGreaterThan(
+						paginatedResult.items[1].createdAt.getTime(),
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
 		'Getting active reservation by reserver ID and listing ID',
 		({ Given, When, Then, And }) => {
 			Given(
