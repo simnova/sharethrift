@@ -3,7 +3,7 @@ import { expect } from 'storybook/test';
 import { EditListing } from './edit-listing.tsx';
 
 const meta: Meta<typeof EditListing> = {
-	title: 'Pages/MyListings/EditListing',
+	title: 'Pages/My Listings/EditListing',
 	component: EditListing,
 	parameters: {
 		layout: 'fullscreen',

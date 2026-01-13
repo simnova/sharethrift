@@ -48,7 +48,7 @@ const mockRequests = {
 };
 
 const meta: Meta<typeof MyListingsMain> = {
-	title: 'Pages/MyListings/Main',
+	title: 'Pages/My Listings/Main',
 	component: MyListingsMain,
 	parameters: {
 		layout: 'fullscreen',
