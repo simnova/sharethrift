@@ -22,7 +22,7 @@ const meta: Meta<typeof App> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof App>;
+type Story = StoryObj<typeof meta>;
 
 const mockUserSarah: PersonalUser = {
 	id: '507f1f77bcf86cd799439099',
