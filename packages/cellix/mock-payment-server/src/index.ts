@@ -34,9 +34,74 @@ app.disable('x-powered-by');
 const DEFAULT_PORT = Number(process.env['PORT'] ?? 3001);
 const HOST = 'mock-payment.sharethrift.localhost';
 
+// Detect certificate availability to determine protocol (HTTPS vs HTTP)
+const resolveWorkspaceRootForCerts = (): string => {
+	// Prefer an explicit workspace root if provided
+	const envRoot = process.env['WORKSPACE_ROOT'];
+	if (envRoot && path.isAbsolute(envRoot)) {
+		return envRoot;
+	}
+
+	// Walk up from this file's directory looking for either:
+	// - a ".certs" directory, or
+	// - a "package.json" file with "workspaces" field (monorepo root marker)
+	let currentDir = __dirname;
+	for (let i = 0; i < 10; i += 1) {
+		const certsDir = path.join(currentDir, '.certs');
+		const packageJsonPath = path.join(currentDir, 'package.json');
+
+		// Check for .certs directory
+		if (fs.existsSync(certsDir)) {
+			return currentDir;
+		}
+
+		// Check for workspace root package.json
+		if (fs.existsSync(packageJsonPath)) {
+			try {
+				const packageJson = JSON.parse(
+					fs.readFileSync(packageJsonPath, 'utf-8'),
+				);
+				if (packageJson.workspaces || packageJson.name === 'sharethrift') {
+					return currentDir;
+				}
+			} catch {
+				// Ignore JSON parse errors, continue searching
+			}
+		}
+
+		const parentDir = path.dirname(currentDir);
+		if (parentDir === currentDir) {
+			break;
+		}
+		currentDir = parentDir;
+	}
+
+	// Fallback: use this file's directory if no better root is found
+	return __dirname;
+};
+
+const workspaceRoot = resolveWorkspaceRootForCerts();
+const certKeyPath = path.join(
+	workspaceRoot,
+	'.certs/sharethrift.localhost-key.pem',
+);
+const certPath = path.join(
+	workspaceRoot,
+	'.certs/sharethrift.localhost.pem',
+);
+const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
+
+// Derive protocol and base URLs based on cert availability
+const PROTOCOL = hasCerts ? 'https' : 'http';
+const FRONTEND_HOST = hasCerts ? 'sharethrift.localhost:3000' : 'localhost:3000';
+const PAYMENT_HOST = hasCerts ? `${HOST}:${DEFAULT_PORT}` : `localhost:${DEFAULT_PORT}`;
+
+const FRONTEND_BASE_URL = `${PROTOCOL}://${FRONTEND_HOST}`;
+const PAYMENT_BASE_URL = `${PROTOCOL}://${PAYMENT_HOST}`;
+
 // Enable CORS for all origins (or restrict to 'https://sharethrift.localhost:3000' if needed)
 app.use((req, res, next) => {
-	res.header('Access-Control-Allow-Origin', 'https://sharethrift.localhost:3000');
+	res.header('Access-Control-Allow-Origin', FRONTEND_BASE_URL);
 	res.header(
 		'Access-Control-Allow-Methods',
 		'GET,POST,PUT,PATCH,DELETE,OPTIONS',
@@ -75,7 +140,7 @@ app.get('/pts/v2/public-key', async (_req, res) => {
 		flx: {
 			path: '/flex/v2/tokens',
 			data: 'qTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
-			origin: process.env['PAYMENT_MOCK_ORIGIN'] ?? 'https://mock-payment.sharethrift.localhost:3001',
+			origin: process.env['PAYMENT_MOCK_ORIGIN'] ?? PAYMENT_BASE_URL,
 			jwk: mockJwk,
 		},
 		ctx: [
@@ -84,8 +149,8 @@ app.get('/pts/v2/public-key', async (_req, res) => {
 				data: {
 					clientLibrary:
 						'https://testflex.cybersource.com/microform/bundle/v2/flex-microform.min.js',
-					targetOrigins: ['https://sharethrift.localhost:3000'],
-					mfOrigin: 'https://mock-payment.sharethrift.localhost:3001',
+					targetOrigins: [FRONTEND_BASE_URL],
+					mfOrigin: PAYMENT_BASE_URL,
 				},
 			},
 		],
@@ -1339,64 +1404,7 @@ app.post(
 	},
 );
 
-const resolveWorkspaceRootForCerts = (): string => {
-	// Prefer an explicit workspace root if provided
-	const envRoot = process.env['WORKSPACE_ROOT'];
-	if (envRoot && path.isAbsolute(envRoot)) {
-		return envRoot;
-	}
-
-	// Walk up from this file's directory looking for either:
-	// - a ".certs" directory, or
-	// - a "package.json" file with "workspaces" field (monorepo root marker)
-	let currentDir = __dirname;
-	for (let i = 0; i < 10; i += 1) {
-		const certsDir = path.join(currentDir, '.certs');
-		const packageJsonPath = path.join(currentDir, 'package.json');
-
-		// Check for .certs directory
-		if (fs.existsSync(certsDir)) {
-			return currentDir;
-		}
-
-		// Check for workspace root package.json
-		if (fs.existsSync(packageJsonPath)) {
-			try {
-				const packageJson = JSON.parse(
-					fs.readFileSync(packageJsonPath, 'utf-8'),
-				);
-				if (packageJson.workspaces || packageJson.name === 'sharethrift') {
-					return currentDir;
-				}
-			} catch {
-				// Ignore JSON parse errors, continue searching
-			}
-		}
-
-		const parentDir = path.dirname(currentDir);
-		if (parentDir === currentDir) {
-			break;
-		}
-		currentDir = parentDir;
-	}
-
-	// Fallback: use this file's directory if no better root is found
-	return __dirname;
-};
-
 const startServer = (portToTry: number, attempt = 0): void => {
-	// Resolve workspace root in a way that does not depend on build output structure
-	const workspaceRoot = resolveWorkspaceRootForCerts();
-	const certKeyPath = path.join(
-		workspaceRoot,
-		'.certs/sharethrift.localhost-key.pem',
-	);
-	const certPath = path.join(
-		workspaceRoot,
-		'.certs/sharethrift.localhost.pem',
-	);
-	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
-
 	if (hasCerts) {
 		const httpsOptions = {
 			key: fs.readFileSync(certKeyPath),
@@ -1405,6 +1413,8 @@ const startServer = (portToTry: number, attempt = 0): void => {
 		
 		const server = https.createServer(httpsOptions, app).listen(portToTry, HOST, () => {
 			console.log(` Mock Payment Server listening on https://${HOST}:${portToTry}`);
+			console.log(`   CORS origin: ${FRONTEND_BASE_URL}`);
+			console.log(`   Microform origin: ${PAYMENT_BASE_URL}`);
 		});
 
 		server.on('error', (error: NodeJS.ErrnoException) => {
@@ -1425,6 +1435,8 @@ const startServer = (portToTry: number, attempt = 0): void => {
 		// Fallback to HTTP when certs don't exist (CI/CD)
 		const server = app.listen(portToTry, () => {
 			console.log(` Mock Payment Server listening on http://localhost:${portToTry} (no certs found)`);
+			console.log(`   CORS origin: ${FRONTEND_BASE_URL}`);
+			console.log(`   Microform origin: ${PAYMENT_BASE_URL}`);
 		});
 
 		server.on('error', (error: NodeJS.ErrnoException) => {

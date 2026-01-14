@@ -80,12 +80,18 @@ const server = https.createServer({
 		return;
 	}
 
+	// Forward with X-Forwarded headers for protocol-aware handling
 	const options = {
 		hostname: 'localhost',
 		port: TARGET_PORT,
 		path: req.url,
 		method: req.method,
-		headers: req.headers,
+		headers: {
+			...req.headers,
+			'X-Forwarded-Proto': 'https',
+			'X-Forwarded-Host': req.headers.host || 'data-access.sharethrift.localhost:7072',
+			'X-Forwarded-For': req.socket.remoteAddress || '127.0.0.1',
+		},
 	};
 
 	const proxy = http.request(options, (proxyRes) => {
