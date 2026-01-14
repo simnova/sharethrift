@@ -18,28 +18,32 @@ async function deleteListingImages(
 	images: string[],
 	containerName: string,
 ): Promise<number> {
+	const CHUNK_SIZE = 5; // Process 5 images at a time to avoid throttling
 	let deletedCount = 0;
-	// Process all images concurrently (unbounded parallelism) for maximum throughput
-	const imagePromises = images.map((imagePath) =>
-		blobStorage
-			.deleteBlob(containerName, imagePath)
-			.then(() => ({ success: true as const, imagePath }))
-			.catch((error) => ({
-				success: false as const,
-				imagePath,
-				error: error instanceof Error ? error.message : String(error),
-			})),
-	);
 
-	const results = await Promise.allSettled(imagePromises);
-	for (const result of results) {
-		if (result.status === 'fulfilled') {
-			if (result.value.success) {
-				deletedCount++;
-			} else {
-				console.warn(
-					`[ExpiredDeletion] Failed to delete image ${result.value.imagePath}: ${result.value.error}`,
-				);
+	for (let i = 0; i < images.length; i += CHUNK_SIZE) {
+		const chunk = images.slice(i, i + CHUNK_SIZE);
+		const chunkPromises = chunk.map((imagePath) =>
+			blobStorage
+				.deleteBlob(containerName, imagePath)
+				.then(() => ({ success: true as const, imagePath }))
+				.catch((error) => ({
+					success: false as const,
+					imagePath,
+					error: error instanceof Error ? error.message : String(error),
+				})),
+		);
+
+		const results = await Promise.allSettled(chunkPromises);
+		for (const result of results) {
+			if (result.status === 'fulfilled') {
+				if (result.value.success) {
+					deletedCount++;
+				} else {
+					console.warn(
+						`[ExpiredDeletion] Failed to delete image ${result.value.imagePath}: ${result.value.error}`,
+					);
+				}
 			}
 		}
 	}
