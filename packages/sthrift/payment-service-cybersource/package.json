@@ -19,7 +19,7 @@
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
 		"@cellix/payment-service": "workspace:*",
-		"axios": "^1.6.0",
+		"axios": "^1.13.2",
 		"cybersource-rest-client": "^0.0.73"
 	},
 	"devDependencies": {

@@ -17,9 +17,9 @@
 		"build": "tsc --project tsconfig.json"
 	},
 	"dependencies": {
-		"axios": "^1.6.0",
 		"@cellix/api-services-spec": "workspace:*",
-		"@cellix/payment-service": "workspace:*"
+		"@cellix/payment-service": "workspace:*",
+		"axios": "^1.13.2"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
