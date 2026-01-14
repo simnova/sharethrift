@@ -54,6 +54,32 @@ function createNullPopulateChain<T>(result: T) {
 	return { populate: vi.fn(() => innerPopulate) };
 }
 
+// Helper function to create a mock query that supports chaining and is thenable
+function createMockQuery(result: unknown) {
+	const mockQuery = {
+		lean: vi.fn(),
+		populate: vi.fn(),
+		sort: vi.fn(),
+		limit: vi.fn(),
+		select: vi.fn(),
+		exec: vi.fn().mockResolvedValue(result),
+		catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
+	};
+	// Configure methods to return the query object for chaining
+	mockQuery.lean.mockReturnValue(mockQuery);
+	mockQuery.populate.mockReturnValue(mockQuery);
+	mockQuery.sort.mockReturnValue(mockQuery);
+	mockQuery.limit.mockReturnValue(mockQuery);
+	mockQuery.select.mockReturnValue(mockQuery);
+
+	// Make the query thenable (like Mongoose queries are) by adding then as property
+	Object.defineProperty(mockQuery, 'then', {
+		value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
+		enumerable: false,
+	});
+	return mockQuery;
+}
+
 function makeMockUser(id: string): Models.User.PersonalUser {
 	return {
 		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
@@ -142,32 +168,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	BeforeEachScenario(() => {
 		passport = makePassport();
 		mockReservationRequests = [makeMockReservationRequest()];
-
-		// Create mock query that supports chaining and is thenable
-		const createMockQuery = (result: unknown) => {
-			const mockQuery = {
-				lean: vi.fn(),
-				populate: vi.fn(),
-				sort: vi.fn(),
-				limit: vi.fn(),
-				select: vi.fn(),
-				exec: vi.fn().mockResolvedValue(result),
-				catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
-			};
-			// Configure methods to return the query object for chaining
-			mockQuery.lean.mockReturnValue(mockQuery);
-			mockQuery.populate.mockReturnValue(mockQuery);
-			mockQuery.sort.mockReturnValue(mockQuery);
-			mockQuery.limit.mockReturnValue(mockQuery);
-			mockQuery.select.mockReturnValue(mockQuery);
-
-			// Make the query thenable (like Mongoose queries are) by adding then as property
-			Object.defineProperty(mockQuery, 'then', {
-				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
-				enumerable: false,
-			});
-			return mockQuery;
-		};
 
 		mockModel = {
 			find: vi.fn(() => createMockQuery(mockReservationRequests)),
@@ -450,7 +450,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					// Mock countDocuments to return 4
 					mockModel.countDocuments = vi.fn(() => ({
 						exec: vi.fn().mockResolvedValue(4),
-					})) as any;
+					})) as unknown as typeof mockModel.countDocuments;
+
+					// Mock find to return paginated results (page 2, pageSize 2 should return items 3-4)
+					mockModel.find = vi.fn(() => createMockQuery([
+						mockReservationRequests[2], // req-3
+						mockReservationRequests[3], // req-4
+					]));
 				},
 			);
 			When(
@@ -517,7 +523,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 								reserver: makeMockUser('user-1'),
 							},
 						]),
-					})) as any;
+					})) as unknown as typeof mockModel.aggregate;
 				},
 			);
 			When(
@@ -562,6 +568,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						listing: makeMockListing('listing-2', 'sharer-1'),
 					}),
 				];
+				// Mock countDocuments to return 1 (only approved items)
+				mockModel.countDocuments = vi.fn(() => ({
+					exec: vi.fn().mockResolvedValue(1),
+				})) as unknown as typeof mockModel.countDocuments;
+
+				// Mock find to return only approved items
+				mockModel.find = vi.fn(() => createMockQuery([
+					mockReservationRequests[0], // Only the approved one
+				]));
 			});
 			When(
 				'I call getListingRequestsBySharerId with "sharer-1" and statusFilters ["Approved"]',
@@ -604,6 +619,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 							listing: makeMockListing('listing-2', 'sharer-1'),
 						}),
 					];
+					// Mock countDocuments to return 2
+					mockModel.countDocuments = vi.fn(() => ({
+						exec: vi.fn().mockResolvedValue(2),
+					})) as unknown as typeof mockModel.countDocuments;
+
+					// Mock find to return items sorted by createdAt descending (newest first)
+					mockModel.find = vi.fn(() => createMockQuery([
+						mockReservationRequests[1], // req-2 (newer date)
+						mockReservationRequests[0], // req-1 (older date)
+					]));
 				},
 			);
 			When(
