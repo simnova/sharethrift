@@ -21,8 +21,8 @@ const itemListingResolvers: Resolvers = {
 			const command: Parameters<typeof context.applicationServices.Listing.ItemListing.queryPaged>[0] = {
 				page: args.page,
 				pageSize: args.pageSize,
-				searchText: args.searchText ?? "",
-				statusFilters: [...(args.statusFilters ?? [])],
+				...(args.searchText ? { searchText: args.searchText } : {}),
+				...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
 			};
 
 			if (args.sorter) {
@@ -52,8 +52,8 @@ const itemListingResolvers: Resolvers = {
 			const command: Parameters<typeof context.applicationServices.Listing.ItemListing.queryPaged>[0] = {
 				page: args.page,
 				pageSize: args.pageSize,
-				searchText: args.searchText ?? "",
-				statusFilters: [...(args.statusFilters ?? [])],
+				...(args.searchText ? { searchText: args.searchText } : {}),
+				...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
 			};
 
 			if (args.sorter) {
