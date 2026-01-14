@@ -22,7 +22,8 @@ const preview: Preview = {
             'Home',
             'My Listings',
             'My Reservations',
-            'Messages'],
+            'Messages',
+            'Account', ['Profile', 'Settings']],
 					'Components',
           'Containers'
 				],

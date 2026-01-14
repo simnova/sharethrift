@@ -7,52 +7,60 @@ import {
 import {
 	HomeAccountProfileViewContainerCurrentUserDocument,
 	HomeAccountProfileViewContainerUserListingsDocument,
-	UseUserIsAdminDocument,
 	type ItemListing,
 	type PersonalUser,
 } from '../../../../../../generated.tsx';
 import { expect, within } from 'storybook/test';
+import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers.ts';
 
 const mockUserSarah: PersonalUser = {
+	__typename: 'PersonalUser',
 	id: '507f1f77bcf86cd799439099',
+	userIsAdmin: false,
 	userType: 'personal-user',
-	account: {
-		accountType: 'verified-personal',
+	createdAt: '2024-08-01T00:00:00Z',
 
-		username: 'sarah_williams',
+	account: {
+		__typename: 'PersonalUserAccount',
+		accountType: 'verified-personal',
 		email: 'sarah.williams@example.com',
+		username: 'sarah_williams',
 		profile: {
+			__typename: 'PersonalUserAccountProfile',
 			firstName: 'Sarah',
 			lastName: 'Williams',
 			location: {
+				__typename: 'PersonalUserAccountProfileLocation',
 				city: 'Philadelphia',
 				state: 'PA',
 			},
 		},
 	},
-
-	createdAt: '2024-08-01T00:00:00Z',
-	updatedAt: '2024-08-15T12:00:00Z',
 };
 
 const mockUserAlex: PersonalUser = {
+	__typename: 'PersonalUser',
 	id: '507f1f77bcf86cd799439102',
+	userIsAdmin: false,
 	userType: 'personal-user',
+	createdAt: '2025-10-01T08:00:00Z',
+
 	account: {
+		__typename: 'PersonalUserAccount',
+		username: 'new_user',
+		email: 'new.user@example.com',
+		accountType: 'non-verified-personal',
 		profile: {
+			__typename: 'PersonalUserAccountProfile',
 			firstName: 'Alex',
 			lastName: '',
 			location: {
+				__typename: 'PersonalUserAccountProfileLocation',
 				city: 'Boston',
 				state: 'MA',
 			},
 		},
-		username: 'new_user',
-		email: 'new.user@example.com',
-		accountType: 'non-verified-personal',
 	},
-	createdAt: '2025-10-01T08:00:00Z',
-	updatedAt: '2025-10-01T08:00:00Z',
 };
 
 const mockTwoListings: ItemListing[] = [
@@ -87,19 +95,6 @@ const mockTwoListings: ItemListing[] = [
 	},
 ];
 
-const userIsAdminMockRequest = (userId: string) => {
-	return {
-		request: {
-			query: UseUserIsAdminDocument,
-		},
-		result: {
-			data: {
-				currentUser: {id: userId, userIsAdmin: false },
-			},
-		},
-	};
-};
-
 const meta: Meta<typeof HomeRoutes> = {
 	title: 'Pages/Account/Profile',
 	component: HomeRoutes,
@@ -114,10 +109,6 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const DefaultView: Story = {
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvas.getByRole('main')).toBeInTheDocument();
-	},
 	parameters: {
 		apolloClient: {
 			mocks: [
@@ -125,6 +116,7 @@ export const DefaultView: Story = {
 					request: {
 						query: HomeAccountProfileViewContainerCurrentUserDocument,
 					},
+					delay: 100, // give this a slight delay to have cache merge work properly for the other query (UseUserIsAdminDocument) overriding this user data
 					result: {
 						data: {
 							currentUser: mockUserSarah,
@@ -152,6 +144,10 @@ export const DefaultView: Story = {
 			],
 		},
 	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByRole('main')).toBeInTheDocument();
+	},
 };
 
 export const NoListings: Story = {
@@ -162,6 +158,7 @@ export const NoListings: Story = {
 					request: {
 						query: HomeAccountProfileViewContainerCurrentUserDocument,
 					},
+					delay: 100, // give this a slight delay to have cache merge work properly for the other query (UseUserIsAdminDocument) overriding this user data
 					result: {
 						data: {
 							currentUser: mockUserAlex,
@@ -175,7 +172,7 @@ export const NoListings: Story = {
 					},
 					result: {
 						data: {
-							myListingsAll:  { items: [], total: 0, page: 1, pageSize: 100 },
+							myListingsAll: { items: [], total: 0, page: 1, pageSize: 100 },
 						},
 					},
 				},

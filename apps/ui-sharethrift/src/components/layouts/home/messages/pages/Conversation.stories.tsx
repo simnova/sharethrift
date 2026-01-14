@@ -13,6 +13,7 @@ const meta: Meta<typeof Conversation> = {
 			},
 		},
 	},
+  tags: ['!dev'], // temporarily hidden until the component is ready - https://storybook.js.org/docs/writing-stories/tags
 } satisfies Meta<typeof Conversation>;
 
 export default meta;
