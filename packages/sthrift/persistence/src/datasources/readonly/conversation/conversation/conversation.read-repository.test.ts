@@ -145,10 +145,6 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			mockQuery.lean.mockReturnValue(mockQuery);
 			mockQuery.populate.mockReturnValue(mockQuery);
 			
-			// SONARQUBE SUPPRESSION: S7739 - Intentional thenable mock
-			// This object intentionally implements the 'then' property to mock Mongoose
-			// query behavior. Mongoose queries are thenable and can be awaited.
-			// biome-ignore lint/suspicious/noThenProperty: Intentional thenable mock for Mongoose queries
 			Object.defineProperty(mockQuery, 'then', {
 				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
 				enumerable: false,
