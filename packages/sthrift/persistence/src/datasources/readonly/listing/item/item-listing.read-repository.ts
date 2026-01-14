@@ -40,6 +40,13 @@ export interface ItemListingReadRepository {
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
+
+	getExpiredForDeletion: (
+		archivalMonths: number,
+		limit?: number,
+	) => Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	>;
 }
 
 class ItemListingReadRepositoryImpl
@@ -188,6 +195,37 @@ class ItemListingReadRepositoryImpl
 			console.error('Error fetching listings by sharer:', error);
 			return [];
 		}
+	}
+
+	async getExpiredForDeletion(
+		archivalMonths: number,
+		limit = 100,
+	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
+		// Validate archivalMonths to avoid unexpected date calculation when misconfigured
+		if (!Number.isFinite(archivalMonths) || archivalMonths <= 0) {
+			console.error(
+				'[ItemListingReadRepository] Invalid archivalMonths value:',
+				{
+					archivalMonths,
+					isFinite: Number.isFinite(archivalMonths),
+				},
+			);
+			return [];
+		}
+
+		const cutoffDate = new Date();
+		cutoffDate.setMonth(cutoffDate.getMonth() - archivalMonths);
+
+		const result = await this.mongoDataSource.find(
+			{
+				state: { $in: ['Expired', 'Cancelled'] },
+				updatedAt: { $lt: cutoffDate },
+			},
+			{ limit },
+		);
+
+		if (!result || result.length === 0) return [];
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
 

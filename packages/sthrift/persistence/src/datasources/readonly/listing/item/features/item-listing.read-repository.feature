@@ -76,3 +76,17 @@ Given an ItemListingReadRepository instance with models and passport
 	Scenario: Getting paged listings when count query returns null
 		When I call getPaged and count query returns null
 		Then I should receive result with total 0
+
+	Scenario: Getting expired listings for deletion
+		Given expired listings exist past the archival period
+		When I call getExpiredForDeletion with 6 months archival period
+		Then I should receive expired listings
+
+	Scenario: Getting expired listings for deletion when none exist
+		When I call getExpiredForDeletion and no expired listings exist
+		Then I should receive empty array for expired
+
+	Scenario: Getting expired listings for deletion with custom limit
+		Given more expired listings exist than the limit
+		When I call getExpiredForDeletion with limit 5
+		Then I should receive at most 5 listings

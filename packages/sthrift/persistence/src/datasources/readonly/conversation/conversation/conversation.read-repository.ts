@@ -34,6 +34,13 @@ export interface ConversationReadRepository {
 		listingId: string,
 		options?: FindOneOptions,
 	) => Promise<Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null>;
+
+	getByListingId: (
+		listingId: string,
+		options?: FindOptions,
+	) => Promise<
+		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
+	>;
 }
 
 export class ConversationReadRepositoryImpl
@@ -87,24 +94,30 @@ export class ConversationReadRepositoryImpl
 			return [];
 		}
 
+		let userObjectId: MongooseSeedwork.ObjectId;
 		try {
-			const result = await this.mongoDataSource.find(
-				{
-					$or: [
-						{ sharer: new MongooseSeedwork.ObjectId(userId) },
-						{ reserver: new MongooseSeedwork.ObjectId(userId) },
-					],
-				},
-				{
-					...options,
-					populateFields: populateFields,
-				},
-			);
-			return result.map((doc) => this.converter.toDomain(doc, this.passport));
+			userObjectId = new MongooseSeedwork.ObjectId(userId);
 		} catch (error) {
-			console.warn('Error with ObjectId:', error);
+			console.error('[ConversationReadRepository] Invalid ObjectId format for userId:', {
+				userId,
+				error: error instanceof Error ? error.message : String(error),
+			});
 			return [];
 		}
+
+		const result = await this.mongoDataSource.find(
+			{
+				$or: [
+					{ sharer: userObjectId },
+					{ reserver: userObjectId },
+				],
+			},
+			{
+				...options,
+				populateFields: populateFields,
+			},
+		);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 
 	async getBySharerReserverListing(
@@ -117,12 +130,30 @@ export class ConversationReadRepositoryImpl
 			return null;
 		}
 
+		let sharerObjectId: MongooseSeedwork.ObjectId;
+		let reserverObjectId: MongooseSeedwork.ObjectId;
+		let listingObjectId: MongooseSeedwork.ObjectId;
+		
+		try {
+			sharerObjectId = new MongooseSeedwork.ObjectId(sharerId);
+			reserverObjectId = new MongooseSeedwork.ObjectId(reserverId);
+			listingObjectId = new MongooseSeedwork.ObjectId(listingId);
+		} catch (error) {
+			console.error('[ConversationReadRepository] Invalid ObjectId format in getBySharerReserverListing:', {
+				sharerId,
+				reserverId,
+				listingId,
+				error: error instanceof Error ? error.message : String(error),
+			});
+			return null;
+		}
+
 		try {
 			const result = await this.mongoDataSource.findOne(
 				{
-					sharer: new MongooseSeedwork.ObjectId(sharerId),
-					reserver: new MongooseSeedwork.ObjectId(reserverId),
-					listing: new MongooseSeedwork.ObjectId(listingId),
+					sharer: sharerObjectId,
+					reserver: reserverObjectId,
+					listing: listingObjectId,
 				},
 				{
 					...options,
@@ -134,9 +165,42 @@ export class ConversationReadRepositoryImpl
 			}
 			return this.converter.toDomain(result, this.passport);
 		} catch (error) {
-			console.warn('Error with ObjectId in getBySharerReserverListing:', error);
+			console.error('[ConversationReadRepository] Error in getBySharerReserverListing:', {
+				sharerId,
+				reserverId,
+				listingId,
+				error: error instanceof Error ? error.message : String(error),
+			});
 			return null;
 		}
+	}
+
+	async getByListingId(
+		listingId: string,
+		options?: FindOptions,
+	): Promise<
+		Domain.Contexts.Conversation.Conversation.ConversationEntityReference[]
+	> {
+		if (!listingId || listingId.trim() === '') {
+			return [];
+		}
+
+		let objectId: MongooseSeedwork.ObjectId;
+		try {
+			objectId = new MongooseSeedwork.ObjectId(listingId);
+		} catch (error) {
+			console.error('[ConversationReadRepository] Invalid ObjectId format for listingId:', {
+				listingId,
+				error: error instanceof Error ? error.message : String(error),
+			});
+			return [];
+		}
+
+		const result = await this.mongoDataSource.find(
+			{ listing: objectId },
+			{ ...options, populateFields: populateFields },
+		);
+		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
 }
 

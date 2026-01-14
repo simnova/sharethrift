@@ -58,11 +58,18 @@ export interface VerifiedUser {
 
 export type PrincipalHints = Record<string, unknown>;
 
+export interface SystemTaskServices {
+	Listing: ListingContextApplicationService;
+	Conversation: ConversationContextApplicationService;
+}
+
 export interface AppServicesHost<S> {
 	forRequest(rawAuthHeader?: string, hints?: PrincipalHints): Promise<S>;
 }
 
-export type ApplicationServicesFactory = AppServicesHost<ApplicationServices>;
+export interface ApplicationServicesFactory extends AppServicesHost<ApplicationServices> {
+	forSystemTask(): SystemTaskServices;
+}
 
 export const buildApplicationServicesFactory = (
 	infrastructureServicesRegistry: ApiContextSpec,
@@ -126,6 +133,15 @@ export const buildApplicationServicesFactory = (
 
 	return {
 		forRequest,
+		forSystemTask: (): SystemTaskServices => {
+			const { dataSourcesFactory, blobStorageService, listingDeletionConfig } =
+				infrastructureServicesRegistry;
+			const dataSources = dataSourcesFactory.withSystemPassport();
+			return {
+				Listing: Listing({ dataSources, blobStorage: blobStorageService, listingDeletionConfig }),
+				Conversation: Conversation(dataSources),
+			};
+		},
 	};
 };
 

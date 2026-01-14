@@ -10,6 +10,10 @@ import {
 	type ConversationSendMessageCommand,
 	sendMessage,
 } from './send-message.ts';
+import {
+	type DeleteByListingResult,
+	deleteByListing,
+} from './delete-by-listing.ts';
 
 export interface ConversationApplicationService {
 	create: (
@@ -26,6 +30,7 @@ export interface ConversationApplicationService {
 	sendMessage: (
 		command: ConversationSendMessageCommand,
 	) => Promise<Domain.Contexts.Conversation.Conversation.MessageEntityReference>;
+	deleteByListing: (listingId: string) => Promise<DeleteByListingResult>;
 }
 
 export const Conversation = (
@@ -36,5 +41,6 @@ export const Conversation = (
 		queryById: queryById(dataSources),
 		queryByUser: queryByUser(dataSources),
 		sendMessage: sendMessage(dataSources),
+		deleteByListing: deleteByListing(dataSources),
 	};
 };

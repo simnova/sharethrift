@@ -1,12 +1,12 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import { expect, vi } from 'vitest';
-import type { Models } from '@sthrift/data-sources-mongoose-models';
-import type { ModelsContext } from '../../../../models-context.ts';
-import type { Domain } from '@sthrift/domain';
-import { ReservationRequestReadRepositoryImpl } from './reservation-request.read-repository.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
+import type { Domain } from '@sthrift/domain';
+import { expect, vi } from 'vitest';
+import type { ModelsContext } from '../../../../models-context.ts';
+import { ReservationRequestReadRepositoryImpl } from './reservation-request.read-repository.ts';
 
 // Helper to create a valid 24-character hex string from a simple ID
 function createValidObjectId(id: string): string {
@@ -48,10 +48,26 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
-function createNullPopulateChain<T>(result: T) {
-	const innerLean = { lean: vi.fn(async () => result) };
-	const innerPopulate = { populate: vi.fn(() => innerLean) };
-	return { populate: vi.fn(() => innerPopulate) };
+function createQueryChain<T>(result: T) {
+	const mockQuery = {
+		lean: vi.fn(),
+		populate: vi.fn(),
+		exec: vi.fn().mockResolvedValue(result),
+		catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
+	};
+
+	mockQuery.lean.mockReturnValue(mockQuery);
+	mockQuery.populate.mockReturnValue(mockQuery);
+
+	Object.defineProperty(mockQuery, 'then', {
+		value: vi.fn((onResolve, onReject) =>
+			Promise.resolve(result).then(onResolve, onReject),
+		),
+		enumerable: false,
+		configurable: true,
+	});
+
+	return mockQuery;
 }
 
 function makeMockUser(id: string): Models.User.PersonalUser {
@@ -143,34 +159,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		passport = makePassport();
 		mockReservationRequests = [makeMockReservationRequest()];
 
-		// Create mock query that supports chaining and is thenable
-		const createMockQuery = (result: unknown) => {
-			const mockQuery = {
-				lean: vi.fn(),
-				populate: vi.fn(),
-				sort: vi.fn(),
-				limit: vi.fn(),
-				exec: vi.fn().mockResolvedValue(result),
-				catch: vi.fn((onReject) => Promise.resolve(result).catch(onReject)),
-			};
-			// Configure methods to return the query object for chaining
-			mockQuery.lean.mockReturnValue(mockQuery);
-			mockQuery.populate.mockReturnValue(mockQuery);
-			mockQuery.sort.mockReturnValue(mockQuery);
-			mockQuery.limit.mockReturnValue(mockQuery);
-
-			// Make the query thenable (like Mongoose queries are) by adding then as property
-			Object.defineProperty(mockQuery, 'then', {
-				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
-				enumerable: false,
-			});
-			return mockQuery;
-		};
-
 		mockModel = {
-			find: vi.fn(() => createMockQuery(mockReservationRequests)),
-			findById: vi.fn(() => createMockQuery(mockReservationRequests[0])),
-			findOne: vi.fn(() => createMockQuery(mockReservationRequests[0] || null)),
+			find: vi.fn(() => createQueryChain(mockReservationRequests)),
+			findById: vi.fn(() => createQueryChain(mockReservationRequests[0])),
+			findOne: vi.fn(() =>
+				createQueryChain(mockReservationRequests[0] || null),
+			),
 			aggregate: vi.fn(() => ({
 				exec: vi.fn().mockResolvedValue(mockReservationRequests),
 			})),
@@ -260,7 +254,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
 				mockModel.findById = vi.fn(() =>
-					createNullPopulateChain(null),
+					createQueryChain(null),
 				) as unknown as typeof mockModel.findById;
 
 				result = await repository.getById('nonexistent-id');
