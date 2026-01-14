@@ -136,3 +136,40 @@ So that I can view my reservations and make new ones through the GraphQL API
     And sorter field "title" with order "ascend"
     When the myListingsRequests query is executed
     Then the results should be sorted alphabetically by title
+
+  Scenario: Sorting myListingsRequests by state descending
+    Given reservation requests with different states
+    And sorter field "state" with order "descend"
+    When the myListingsRequests query is executed
+    Then results should be sorted by state in descending order
+
+  Scenario: Sorting myListingsRequests by createdAt ascending
+    Given reservation requests with different creation dates
+    And sorter field "createdAt" with order "ascend"
+    When the myListingsRequests query is executed
+    Then results should be sorted by createdAt in ascending order
+
+  Scenario: myListingsRequests with invalid sorter order defaults to null
+    Given reservation requests for a sharer
+    And a sorter with invalid order value
+    When the myListingsRequests query is executed
+    Then it should call queryListingRequestsBySharerId with sorter order set to null
+
+  Scenario: myListingsRequests with combined search, filters, and sorting
+    Given reservation requests with mixed properties
+    And search text "camera", status filters ["Accepted"], and sorter by title ascending
+    When the myListingsRequests query is executed
+    Then it should call queryListingRequestsBySharerId with all combined parameters
+    And it should return filtered and sorted results
+
+  Scenario: myListingsRequests with no matching results after filtering
+    Given reservation requests for a sharer
+    And no requests match the strict filter criteria
+    When the myListingsRequests query is executed
+    Then it should return empty results with total 0
+
+  Scenario: myListingsRequests with null sorter field
+    Given reservation requests for a sharer
+    And a sorter with null field
+    When the myListingsRequests query is executed
+    Then it should call queryListingRequestsBySharerId with sorter field set to null

@@ -7,16 +7,6 @@ import type { GraphContext } from '../../../init/context.ts';
 import reservationRequestResolvers from './reservation-request.resolvers.ts';
 
 // Generic GraphQL resolver type for tests
-type TestResolver<
-	Args extends object = Record<string, unknown>,
-	Return = unknown,
-> = (
-	parent: unknown,
-	args: Args,
-	context: GraphContext,
-	info: unknown,
-) => Promise<Return>;
-
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
@@ -46,6 +36,17 @@ interface ReservationRequestPage {
 	page: number;
 	pageSize: number;
 }
+
+// Generic GraphQL resolver type for tests
+type TestResolver<
+	Args extends object = Record<string, unknown>,
+	Return = unknown,
+> = (
+	parent: unknown,
+	args: Args,
+	context: GraphContext,
+	info: unknown,
+) => Promise<Return>;
 
 // Helper function to create mock reservation request
 function createMockReservationRequest(
@@ -135,7 +136,8 @@ test.for(feature, ({ Scenario }) => {
 			});
 			When('the myActiveReservations query is executed', async () => {
 				const resolver = reservationRequestResolvers.Query
-					?.myActiveReservations as TestResolver<{ userId: string }>;
+					// biome-ignore lint/suspicious/noExplicitAny: GraphQL resolver testing requires any type
+					?.myActiveReservations as any;
 				result = await resolver({}, { userId }, context, {} as never);
 			});
 			Then(
@@ -172,7 +174,8 @@ test.for(feature, ({ Scenario }) => {
 			);
 			When('the myActiveReservations query is executed', async () => {
 				const resolver = reservationRequestResolvers.Query
-					?.myActiveReservations as TestResolver<{ userId: string }>;
+					// biome-ignore lint/suspicious/noExplicitAny: GraphQL resolver testing requires any type
+					?.myActiveReservations as any;
 				result = await resolver({}, { userId }, context, {} as never);
 			});
 			Then('it should return an empty array', () => {
@@ -199,7 +202,8 @@ test.for(feature, ({ Scenario }) => {
 			When('the myActiveReservations query is executed', async () => {
 				try {
 					const resolver = reservationRequestResolvers.Query
-						?.myActiveReservations as TestResolver<{ userId: string }>;
+						// biome-ignore lint/suspicious/noExplicitAny: GraphQL resolver testing requires any type
+						?.myActiveReservations as any;
 					await resolver({}, { userId }, context, {} as never);
 				} catch (e) {
 					error = e as Error;
@@ -228,7 +232,8 @@ test.for(feature, ({ Scenario }) => {
 			});
 			When('the myPastReservations query is executed', async () => {
 				const resolver = reservationRequestResolvers.Query
-					?.myPastReservations as TestResolver<{ userId: string }>;
+					// biome-ignore lint/suspicious/noExplicitAny: GraphQL resolver testing requires any type
+					?.myPastReservations as any;
 				result = await resolver({}, { userId }, context, {} as never);
 			});
 			Then(
@@ -263,7 +268,8 @@ test.for(feature, ({ Scenario }) => {
 		);
 		When('the myPastReservations query is executed', async () => {
 			const resolver = reservationRequestResolvers.Query
-				?.myPastReservations as TestResolver<{ userId: string }>;
+				// biome-ignore lint/suspicious/noExplicitAny: GraphQL resolver testing requires any type
+				?.myPastReservations as any;
 			result = await resolver({}, { userId }, context, {} as never);
 		});
 		Then('it should return an empty array', () => {
@@ -286,7 +292,8 @@ test.for(feature, ({ Scenario }) => {
 			When('the myPastReservations query is executed', async () => {
 				try {
 					const resolver = reservationRequestResolvers.Query
-						?.myPastReservations as TestResolver<{ userId: string }>;
+						// biome-ignore lint/suspicious/noExplicitAny: GraphQL resolver testing requires any type
+						?.myPastReservations as any;
 					await resolver({}, { userId }, context, {} as never);
 				} catch (e) {
 					error = e as Error;
@@ -1095,6 +1102,407 @@ test.for(feature, ({ Scenario }) => {
 				expect(items[1]?.listing.title).toBe('Microphone Beta');
 				expect(items[2]?.listing.title).toBe('Zebra Camera');
 			});
+		},
+	);
+
+	Scenario(
+		'Sorting myListingsRequests by state descending',
+		({ Given, And, When, Then }) => {
+			Given('reservation requests with different states', () => {
+				context = makeMockGraphContext();
+				const mockEntities = [
+					createMockReservationRequest({
+						id: '3',
+						listing: { id: 'listing-3', title: 'Item 3' } as ItemListingEntity,
+						reserver: { id: 'user-3', account: { username: 'user3' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-01T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Requested',
+					}),
+					createMockReservationRequest({
+						id: '2',
+						listing: { id: 'listing-2', title: 'Item 2' } as ItemListingEntity,
+						reserver: { id: 'user-2', account: { username: 'user2' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-01T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Pending',
+					}),
+					createMockReservationRequest({
+						id: '1',
+						listing: { id: 'listing-1', title: 'Item 1' } as ItemListingEntity,
+						reserver: { id: 'user-1', account: { username: 'user1' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-01T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Accepted',
+					}),
+				];
+				const mockPaginatedResult = createMockPaginatedResult(mockEntities, 3, 1, 10);
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.queryListingRequestsBySharerId,
+				).mockResolvedValue(mockPaginatedResult);
+			});
+			And('sorter field "state" with order "descend"', () => {
+				// Sorter will be used in the When step
+			});
+			When('the myListingsRequests query is executed', async () => {
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+					sorter?: { field: string; order: 'ascend' | 'descend' };
+				}>;
+				result = await resolver(
+					{},
+					{
+						sharerId: 'sharer-123',
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'state', order: 'descend' },
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then('results should be sorted by state in descending order', () => {
+				const items = (result as { items: { state?: string }[] }).items;
+				expect(items.length).toBe(3);
+				// Verify items are in descending order by state
+				expect(items[0]?.state).toBe('Requested');
+				expect(items[1]?.state).toBe('Pending');
+				expect(items[2]?.state).toBe('Accepted');
+			});
+		},
+	);
+
+	Scenario(
+		'Sorting myListingsRequests by createdAt ascending',
+		({ Given, And, When, Then }) => {
+			Given('reservation requests with different creation dates', () => {
+				context = makeMockGraphContext();
+				const mockEntities = [
+					createMockReservationRequest({
+						id: '1',
+						listing: { id: 'listing-1', title: 'Item 1' } as ItemListingEntity,
+						reserver: { id: 'user-1', account: { username: 'user1' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-01T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Requested',
+					}),
+					createMockReservationRequest({
+						id: '3',
+						listing: { id: 'listing-3', title: 'Item 3' } as ItemListingEntity,
+						reserver: { id: 'user-3', account: { username: 'user3' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-02T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Requested',
+					}),
+					createMockReservationRequest({
+						id: '2',
+						listing: { id: 'listing-2', title: 'Item 2' } as ItemListingEntity,
+						reserver: { id: 'user-2', account: { username: 'user2' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-03T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Requested',
+					}),
+				];
+				const mockPaginatedResult = createMockPaginatedResult(mockEntities, 3, 1, 10);
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.queryListingRequestsBySharerId,
+				).mockResolvedValue(mockPaginatedResult);
+			});
+			And('sorter field "createdAt" with order "ascend"', () => {
+				// Sorter will be used in the When step
+			});
+			When('the myListingsRequests query is executed', async () => {
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+					sorter?: { field: string; order: 'ascend' | 'descend' };
+				}>;
+				result = await resolver(
+					{},
+					{
+						sharerId: 'sharer-123',
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'createdAt', order: 'ascend' },
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then('results should be sorted by createdAt in ascending order', () => {
+				const items = (result as { items: { createdAt?: Date }[] }).items;
+				expect(items.length).toBe(3);
+				// Verify items are in ascending order by createdAt
+				expect(items[0]?.createdAt).toEqual(new Date('2024-01-01T00:00:00.000Z'));
+				expect(items[1]?.createdAt).toEqual(new Date('2024-01-02T00:00:00.000Z'));
+				expect(items[2]?.createdAt).toEqual(new Date('2024-01-03T00:00:00.000Z'));
+			});
+		},
+	);
+
+	Scenario(
+		'myListingsRequests with invalid sorter order defaults to null',
+		({ Given, And, When, Then }) => {
+			Given('reservation requests for a sharer', () => {
+				context = makeMockGraphContext();
+				const mockEntities = [
+					createMockReservationRequest({
+						id: '1',
+						listing: { id: 'listing-1', title: 'Item 1' } as ItemListingEntity,
+						reserver: { id: 'user-1', account: { username: 'user1' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-01T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Requested',
+					}),
+				];
+				const mockPaginatedResult = createMockPaginatedResult(mockEntities, 1, 1, 10);
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.queryListingRequestsBySharerId,
+				).mockResolvedValue(mockPaginatedResult);
+			});
+			And('a sorter with invalid order value', () => {
+				// Invalid sorter will be used in the When step
+			});
+			When('the myListingsRequests query is executed', async () => {
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+					sorter?: { field: string; order: string };
+				}>;
+				result = await resolver(
+					{},
+					{
+						sharerId: 'sharer-123',
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'title', order: 'invalid' },
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then(
+				'it should call queryListingRequestsBySharerId with sorter order set to null',
+				() => {
+					expect(
+						context.applicationServices.ReservationRequest.ReservationRequest
+							.queryListingRequestsBySharerId,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							sharerId: 'sharer-123',
+							page: 1,
+							pageSize: 10,
+							sorter: { field: 'title', order: null },
+						}),
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'myListingsRequests with combined search, filters, and sorting',
+		({ Given, And, When, Then }) => {
+			Given('reservation requests with mixed properties', () => {
+				context = makeMockGraphContext();
+				const mockEntities = [
+					createMockReservationRequest({
+						id: '1',
+						listing: { id: 'listing-1', title: 'Camera Alpha' } as ItemListingEntity,
+						reserver: { id: 'user-1', account: { username: 'user1' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-01T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Accepted',
+					}),
+					createMockReservationRequest({
+						id: '2',
+						listing: { id: 'listing-2', title: 'Camera Beta' } as ItemListingEntity,
+						reserver: { id: 'user-2', account: { username: 'user2' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-02T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Accepted',
+					}),
+				];
+				const mockPaginatedResult = createMockPaginatedResult(mockEntities, 2, 1, 10);
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.queryListingRequestsBySharerId,
+				).mockResolvedValue(mockPaginatedResult);
+			});
+			And('search text "camera", status filters ["Accepted"], and sorter by title ascending', () => {
+				// Combined parameters will be used in the When step
+			});
+			When('the myListingsRequests query is executed', async () => {
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+					searchText: string;
+					statusFilters: string[];
+					sorter?: { field: string; order: 'ascend' | 'descend' };
+				}>;
+				result = await resolver(
+					{},
+					{
+						sharerId: 'sharer-123',
+						page: 1,
+						pageSize: 10,
+						searchText: 'camera',
+						statusFilters: ['Accepted'],
+						sorter: { field: 'title', order: 'ascend' },
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then(
+				'it should call queryListingRequestsBySharerId with all combined parameters',
+				() => {
+					expect(
+						context.applicationServices.ReservationRequest.ReservationRequest
+							.queryListingRequestsBySharerId,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							sharerId: 'sharer-123',
+							page: 1,
+							pageSize: 10,
+							searchText: 'camera',
+							statusFilters: ['Accepted'],
+							sorter: { field: 'title', order: 'ascend' },
+						}),
+					);
+				},
+			);
+			And('it should return filtered and sorted results', () => {
+				const items = (result as { items: { listing: { title: string }; state?: string }[] }).items;
+				expect(items.length).toBe(2);
+				expect(items[0]?.listing.title).toBe('Camera Alpha');
+				expect(items[1]?.listing.title).toBe('Camera Beta');
+				expect(items[0]?.state).toBe('Accepted');
+				expect(items[1]?.state).toBe('Accepted');
+			});
+		},
+	);
+
+	Scenario(
+		'myListingsRequests with no matching results after filtering',
+		({ Given, And, When, Then }) => {
+			Given('reservation requests for a sharer', () => {
+				context = makeMockGraphContext();
+			});
+			And('no requests match the strict filter criteria', () => {
+				const mockPaginatedResult = createMockPaginatedResult([], 0, 1, 10);
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.queryListingRequestsBySharerId,
+				).mockResolvedValue(mockPaginatedResult);
+			});
+			When('the myListingsRequests query is executed', async () => {
+				const resolver = reservationRequestResolvers.Query
+					// biome-ignore lint/suspicious/noExplicitAny: GraphQL resolver testing requires any type
+					?.myListingsRequests as any;
+				result = await resolver(
+					{},
+					{
+						sharerId: 'sharer-123',
+						page: 1,
+						pageSize: 10,
+						searchText: 'nonexistent-item',
+						statusFilters: ['Accepted'],
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then('it should return empty results with total 0', () => {
+				const paginatedResult = result as { items: unknown[]; total: number };
+				expect(paginatedResult.items).toEqual([]);
+				expect(paginatedResult.total).toBe(0);
+			});
+		},
+	);
+
+	Scenario(
+		'myListingsRequests with null sorter field',
+		({ Given, And, When, Then }) => {
+			Given('reservation requests for a sharer', () => {
+				context = makeMockGraphContext();
+				const mockEntities = [
+					createMockReservationRequest({
+						id: '1',
+						listing: { id: 'listing-1', title: 'Item 1' } as ItemListingEntity,
+						reserver: { id: 'user-1', account: { username: 'user1' } } as PersonalUserEntity,
+						createdAt: new Date('2024-01-01T00:00:00.000Z'),
+						reservationPeriodStart: new Date('2024-02-01'),
+						reservationPeriodEnd: new Date('2024-02-10'),
+						state: 'Requested',
+					}),
+				];
+				const mockPaginatedResult = createMockPaginatedResult(mockEntities, 1, 1, 10);
+				vi.mocked(
+					context.applicationServices.ReservationRequest.ReservationRequest
+						.queryListingRequestsBySharerId,
+				).mockResolvedValue(mockPaginatedResult);
+			});
+			And('a sorter with null field', () => {
+				// Null field sorter will be used in the When step
+			});
+			When('the myListingsRequests query is executed', async () => {
+				const resolver = reservationRequestResolvers.Query
+					?.myListingsRequests as TestResolver<{
+					sharerId: string;
+					page: number;
+					pageSize: number;
+					sorter?: { field: string | null; order: 'ascend' | 'descend' };
+				}>;
+				result = await resolver(
+					{},
+					{
+						sharerId: 'sharer-123',
+						page: 1,
+						pageSize: 10,
+						sorter: { field: null, order: 'ascend' },
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then(
+				'it should call queryListingRequestsBySharerId with sorter field set to null',
+				() => {
+					expect(
+						context.applicationServices.ReservationRequest.ReservationRequest
+							.queryListingRequestsBySharerId,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							sharerId: 'sharer-123',
+							page: 1,
+							pageSize: 10,
+							sorter: { field: null, order: 'ascend' },
+						}),
+					);
+				},
+			);
 		},
 	);
 });
