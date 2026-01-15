@@ -27,6 +27,7 @@ export class PersonalUserListingVisa<root extends ItemListingEntityReference>
 			canViewItemListing: true, // All users can view listings
 			canPublishItemListing: isOwner,
 			canUnpublishItemListing: isOwner,
+            canViewBlockedItemListing: isOwner
 		};
 
 		return func(permissions);

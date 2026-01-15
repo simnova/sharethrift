@@ -8,6 +8,7 @@ import type {
 	CreateConversationMutation,
 	CreateConversationMutationVariables,
 } from '../../../../../../generated.tsx';
+import { BlockListingButton } from '../block-listing.container.tsx';
 
 type Sharer = {
 	id: string;
@@ -22,6 +23,10 @@ interface SharerInformationProps {
 	sharedTimeAgo?: string;
 	className?: string;
 	currentUserId?: string | null;
+	isAdmin?: boolean;
+    isBlocked?: boolean;
+    sharerName?: string;
+    listingTitle?: string;
 }
 
 export const SharerInformation: React.FC<SharerInformationProps> = ({
@@ -31,7 +36,13 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
 	sharedTimeAgo = '2 days ago',
 	className = '',
 	currentUserId,
+	isAdmin,
+    isBlocked = false,
+    sharerName,
+    listingTitle = ''
+
 }) => {
+    console.log('Rendering SharerInformation with isBlocked:', isBlocked, isBlocked);
 	const [isMobile, setIsMobile] = useState(false);
 	const navigate = useNavigate();
 
@@ -151,6 +162,17 @@ export const SharerInformation: React.FC<SharerInformationProps> = ({
 					>
 						{!isMobile && 'Message Sharer'}
 					</Button>
+				)}
+			</Col>
+			<Col>
+				{isAdmin && (
+					<BlockListingButton
+						listingId={listingId}
+						listingTitle={listingTitle}
+						isBlocked={isBlocked}
+						sharerName={sharerName}
+						renderModals={true}
+					/>
 				)}
 			</Col>
 		</Row>

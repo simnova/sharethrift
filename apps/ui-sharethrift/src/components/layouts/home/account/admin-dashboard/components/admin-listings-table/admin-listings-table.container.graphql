@@ -1,12 +1,12 @@
 # Inline fragment (previously in admin-listings-table.fragment.graphql)
 fragment AdminListingFields on ListingAll {
-    id
-    title
-    state
-    images
-    createdAt
-    sharingPeriodStart
-    sharingPeriodEnd
+  id
+  title
+  state
+  images
+  createdAt
+  sharingPeriodStart
+  sharingPeriodEnd
 }
 
 query AdminListingsTableContainerAdminListings(
@@ -42,5 +42,19 @@ mutation AdminListingsTableContainerDeleteListing($id: ObjectID!) {
 }
 
 mutation AdminListingsTableContainerUnblockListing($id: ObjectID!) {
-  unblockListing(id: $id)
+  unblockListing(id: $id) {
+    status {
+      success
+      errorMessage
+    }
+    listing {
+      id
+      title
+      state
+      images
+      createdAt
+      sharingPeriodStart
+      sharingPeriodEnd
+    }
+  }
 }

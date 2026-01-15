@@ -113,7 +113,8 @@ function createMockUser(
 function makeMockGraphContext(
 	overrides: Partial<GraphContext> = {},
 ): GraphContext {
-	return {
+	// biome-ignore lint/suspicious/noExplicitAny: Test utility requires flexible typing
+	const baseContext: any = {
 		applicationServices: {
 			Listing: {
 				ItemListing: {
@@ -123,11 +124,16 @@ function makeMockGraphContext(
 					queryPaged: vi.fn(),
 					create: vi.fn(),
 					update: vi.fn(),
+					block: vi.fn(),
+					unblock: vi.fn(),
 				},
 			},
 			User: {
 				PersonalUser: {
 					queryByEmail: vi.fn().mockResolvedValue(createMockUser()),
+				},
+				AdminUser: {
+					queryByEmail: vi.fn().mockRejectedValue(new Error('Not found')),
 				},
 			},
 			verifiedUser: {
@@ -137,8 +143,44 @@ function makeMockGraphContext(
 				},
 			},
 		},
-		...overrides,
-	} as unknown as GraphContext;
+	};
+
+	// Deep merge applicationServices from overrides
+	if (overrides.applicationServices) {
+		// biome-ignore lint/suspicious/noExplicitAny: Test utility requires flexible typing
+		const appServicesOverride = overrides.applicationServices as any;
+
+		if (appServicesOverride.Listing?.ItemListing) {
+			Object.assign(
+				baseContext.applicationServices.Listing.ItemListing,
+				appServicesOverride.Listing.ItemListing,
+			);
+		}
+
+		if (appServicesOverride.User?.PersonalUser) {
+			Object.assign(
+				baseContext.applicationServices.User.PersonalUser,
+				appServicesOverride.User.PersonalUser,
+			);
+		}
+
+		if (appServicesOverride.User?.AdminUser) {
+			Object.assign(
+				baseContext.applicationServices.User.AdminUser,
+				appServicesOverride.User.AdminUser,
+			);
+		}
+
+		// Handle verifiedUser - check if property exists, even if null
+		if ('verifiedUser' in appServicesOverride) {
+			baseContext.applicationServices.verifiedUser =
+				appServicesOverride.verifiedUser;
+		}
+	}
+
+	// Merge other properties (not applicationServices)
+	const { applicationServices: _appServices, ...otherOverrides } = overrides;
+	return { ...baseContext, ...otherOverrides } as unknown as GraphContext;
 }
 
 test.for(feature, ({ Scenario }) => {
@@ -245,7 +287,7 @@ test.for(feature, ({ Scenario }) => {
 				() => {
 					expect(
 						context.applicationServices.Listing.ItemListing.queryById,
-					).toHaveBeenCalledWith({ id: 'listing-1' });
+					).toHaveBeenCalledWith({ id: 'listing-1', isAdmin: false });
 				},
 			);
 			And('it should return the corresponding listing', () => {
@@ -1155,28 +1197,35 @@ test.for(feature, ({ Scenario }) => {
 					pageSize: 20,
 				});
 			});
-			When('the adminListings query is executed with only page and pageSize', async () => {
-				const resolver = itemListingResolvers.Query?.adminListings as TestResolver<{
-					page: number;
-					pageSize: number;
-				}>;
-				result = await resolver(
-					{},
-					{ page: 1, pageSize: 20 },
-					context,
-					{} as never,
-				);
-			});
-			Then('it should call Listing.ItemListing.queryPaged with minimal parameters', () => {
-				expect(
-					context.applicationServices.Listing.ItemListing.queryPaged,
-				).toHaveBeenCalledWith(
-					expect.objectContaining({
-						page: 1,
-						pageSize: 20,
-					}),
-				);
-			});
+			When(
+				'the adminListings query is executed with only page and pageSize',
+				async () => {
+					const resolver = itemListingResolvers.Query
+						?.adminListings as TestResolver<{
+						page: number;
+						pageSize: number;
+					}>;
+					result = await resolver(
+						{},
+						{ page: 1, pageSize: 20 },
+						context,
+						{} as never,
+					);
+				},
+			);
+			Then(
+				'it should call Listing.ItemListing.queryPaged with minimal parameters',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							page: 1,
+							pageSize: 20,
+						}),
+					);
+				},
+			);
 			And('it should return all listings', () => {
 				expect(result).toBeDefined();
 				expect(result).toHaveProperty('items');
@@ -1184,99 +1233,211 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
-	Scenario('Unblocking a listing successfully', ({ Given, When, Then, And }) => {
-		Given('a valid listing ID to unblock', () => {
-			context = makeMockGraphContext({
-				applicationServices: {
-					...makeMockGraphContext().applicationServices,
-					Listing: {
-						ItemListing: {
-							...makeMockGraphContext().applicationServices.Listing.ItemListing,
-							unblock: vi.fn().mockResolvedValue(undefined),
+	Scenario(
+		'Unblocking a listing successfully',
+		({ Given, When, Then, And }) => {
+			Given('a valid listing ID to unblock', () => {
+				result = undefined;
+				context = makeMockGraphContext({
+					applicationServices: {
+						Listing: {
+							ItemListing: {
+								queryAll: vi.fn(),
+								queryById: vi.fn(),
+								queryBySharer: vi.fn(),
+								queryPaged: vi.fn(),
+								create: vi.fn(),
+								update: vi.fn(),
+								block: vi.fn(),
+								unblock: vi.fn().mockResolvedValue(createMockListing({ state: 'Published' })),
+							},
+						},
+						User: {
+							PersonalUser: {
+								queryByEmail: vi.fn().mockResolvedValue(createMockUser()),
+							},
+							AdminUser: {
+								queryByEmail: vi.fn().mockResolvedValue({
+									userType: 'admin-user',
+									role: { roleName: 'Admin' },
+								} as never),
+							},
+						},
+						verifiedUser: {
+							verifiedJwt: { email: 'admin@example.com' },
 						},
 					},
-				},
+				} as unknown as GraphContext);
 			});
+			When('the unblockListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.unblockListing as TestResolver<{
+					id: string;
+				}>;
+				result = await resolver({}, { id: 'listing-1' }, context, {} as never);
+			});
+			Then('it should call Listing.ItemListing.unblock with the ID', () => {
+				expect(
+					context.applicationServices.Listing.ItemListing.unblock,
+				).toHaveBeenCalledWith({
+					id: 'listing-1',
+				});
+			});
+			And('it should return the ItemListingMutationResult with success', () => {
+				expect(result).toEqual({
+					status: { success: true },
+					listing: expect.objectContaining({
+						id: 'listing-1',
+						state: 'Published',
+					}),
+				});
+			});
+		},
+	);
+
+	Scenario('Blocking a listing successfully', ({ Given, When, Then, And }) => {
+		Given('a valid listing ID to block', () => {
+			result = undefined;
+			context = makeMockGraphContext({
+				applicationServices: {
+					Listing: {
+						ItemListing: {
+							queryAll: vi.fn(),
+							queryById: vi.fn(),
+							queryBySharer: vi.fn(),
+							queryPaged: vi.fn(),
+							create: vi.fn(),
+							update: vi.fn(),
+							block: vi.fn().mockResolvedValue(createMockListing({ state: 'Blocked' })),
+							unblock: vi.fn(),
+						},
+					},
+					User: {
+						PersonalUser: {
+							queryByEmail: vi.fn().mockResolvedValue(createMockUser()),
+						},
+						AdminUser: {
+							queryByEmail: vi.fn().mockResolvedValue({
+								userType: 'admin-user',
+								role: { roleName: 'Admin' },
+							} as never),
+						},
+					},
+					verifiedUser: {
+						verifiedJwt: { email: 'admin@example.com' },
+					},
+				},
+			} as unknown as GraphContext);
 		});
-		When('the unblockListing mutation is executed', async () => {
-			const resolver = itemListingResolvers.Mutation?.unblockListing as TestResolver<{
+		When('the blockListing mutation is executed', async () => {
+			const resolver = itemListingResolvers.Mutation
+				?.blockListing as TestResolver<{
 				id: string;
 			}>;
 			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
 		});
-		Then('it should call Listing.ItemListing.unblock with the ID', () => {
-			expect(context.applicationServices.Listing.ItemListing.unblock).toHaveBeenCalledWith({
+		Then('it should call Listing.ItemListing.block with the ID', () => {
+			expect(
+				context.applicationServices.Listing.ItemListing.block,
+			).toHaveBeenCalledWith({
 				id: 'listing-1',
 			});
 		});
-		And('it should return true', () => {
-			expect(result).toBe(true);
+		And('it should return the ItemListingMutationResult with success', () => {
+			expect(result).toEqual({
+				status: { success: true },
+				listing: expect.objectContaining({
+					id: 'listing-1',
+					state: 'Blocked',
+				}),
+			});
 		});
 	});
 
-	Scenario('Canceling an item listing successfully', ({ Given, When, Then, And }) => {
-		Given('a valid listing ID to cancel', () => {
-			context = makeMockGraphContext({
-				applicationServices: {
-					...makeMockGraphContext().applicationServices,
-					Listing: {
-						ItemListing: {
-							...makeMockGraphContext().applicationServices.Listing.ItemListing,
-							cancel: vi.fn().mockResolvedValue(createMockListing()),
+	Scenario(
+		'Canceling an item listing successfully',
+		({ Given, When, Then, And }) => {
+			Given('a valid listing ID to cancel', () => {
+				context = makeMockGraphContext({
+					applicationServices: {
+						...makeMockGraphContext().applicationServices,
+						Listing: {
+							ItemListing: {
+								...makeMockGraphContext().applicationServices.Listing
+									.ItemListing,
+								cancel: vi.fn().mockResolvedValue(createMockListing()),
+							},
 						},
 					},
-				},
+				});
 			});
-		});
-		When('the cancelItemListing mutation is executed', async () => {
-			const resolver = itemListingResolvers.Mutation?.cancelItemListing as TestResolver<{
-				id: string;
-			}>;
-			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
-		});
-		Then('it should call Listing.ItemListing.cancel with the ID', () => {
-			expect(context.applicationServices.Listing.ItemListing.cancel).toHaveBeenCalledWith({
-				id: 'listing-1',
+			When('the cancelItemListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.cancelItemListing as TestResolver<{
+					id: string;
+				}>;
+				result = await resolver({}, { id: 'listing-1' }, context, {} as never);
 			});
-		});
-		And('it should return success status and the canceled listing', () => {
-			expect(result).toBeDefined();
-			expect(result).toHaveProperty('status');
-			expect((result as { status: { success: boolean } }).status.success).toBe(true);
-			expect(result).toHaveProperty('listing');
-		});
-	});
+			Then('it should call Listing.ItemListing.cancel with the ID', () => {
+				expect(
+					context.applicationServices.Listing.ItemListing.cancel,
+				).toHaveBeenCalledWith({
+					id: 'listing-1',
+				});
+			});
+			And('it should return success status and the canceled listing', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('status');
+				expect(
+					(result as { status: { success: boolean } }).status.success,
+				).toBe(true);
+				expect(result).toHaveProperty('listing');
+			});
+		},
+	);
 
-	Scenario('Deleting an item listing successfully', ({ Given, When, Then, And }) => {
-		Given('a valid listing ID and authenticated user email', () => {
-			context = makeMockGraphContext({
-				applicationServices: {
-					...makeMockGraphContext().applicationServices,
-					Listing: {
-						ItemListing: {
-							...makeMockGraphContext().applicationServices.Listing.ItemListing,
-							deleteListings: vi.fn().mockResolvedValue(undefined),
+	Scenario(
+		'Deleting an item listing successfully',
+		({ Given, When, Then, And }) => {
+			Given('a valid listing ID and authenticated user email', () => {
+				context = makeMockGraphContext({
+					applicationServices: {
+						...makeMockGraphContext().applicationServices,
+						Listing: {
+							ItemListing: {
+								...makeMockGraphContext().applicationServices.Listing
+									.ItemListing,
+								deleteListings: vi.fn().mockResolvedValue(undefined),
+							},
 						},
 					},
+				});
+			});
+			When('the deleteItemListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.deleteItemListing as TestResolver<{
+					id: string;
+				}>;
+				result = await resolver({}, { id: 'listing-1' }, context, {} as never);
+			});
+			Then(
+				'it should call Listing.ItemListing.deleteListings with ID and email',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.deleteListings,
+					).toHaveBeenCalledWith({
+						id: 'listing-1',
+						userEmail: 'test@example.com',
+					});
 				},
+			);
+			And('it should return success status', () => {
+				expect(result).toBeDefined();
+				expect(result).toHaveProperty('status');
+				expect(
+					(result as { status: { success: boolean } }).status.success,
+				).toBe(true);
 			});
-		});
-		When('the deleteItemListing mutation is executed', async () => {
-			const resolver = itemListingResolvers.Mutation?.deleteItemListing as TestResolver<{
-				id: string;
-			}>;
-			result = await resolver({}, { id: 'listing-1' }, context, {} as never);
-		});
-		Then('it should call Listing.ItemListing.deleteListings with ID and email', () => {
-			expect(context.applicationServices.Listing.ItemListing.deleteListings).toHaveBeenCalledWith({
-				id: 'listing-1',
-				userEmail: 'test@example.com',
-			});
-		});
-		And('it should return success status', () => {
-			expect(result).toBeDefined();
-			expect(result).toHaveProperty('status');
-			expect((result as { status: { success: boolean } }).status.success).toBe(true);
-		});
-	});
+		},
+	);
 });

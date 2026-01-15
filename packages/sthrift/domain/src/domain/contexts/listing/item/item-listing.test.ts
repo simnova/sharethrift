@@ -20,6 +20,7 @@ function makePassport(
 	canPublishItemListing = true,
 	canUnpublishItemListing = true,
 	canDeleteItemListing = true,
+	canViewBlockedItemListing = true,
 ): Passport {
 	return vi.mocked({
 		listing: {
@@ -30,6 +31,7 @@ function makePassport(
 						canPublishItemListing: boolean;
 						canUnpublishItemListing: boolean;
 						canDeleteItemListing: boolean;
+						canViewBlockedItemListing: boolean;
 					}) => boolean,
 				) =>
 					fn({
@@ -37,6 +39,7 @@ function makePassport(
 						canPublishItemListing,
 						canUnpublishItemListing,
 						canDeleteItemListing,
+						canViewBlockedItemListing,
 					}),
 			})),
 		},
@@ -752,25 +755,6 @@ Scenario(
 	});
 
 	Scenario(
-		'Unblocking a listing with permission',
-		({ Given, When, Then }) => {
-			Given(
-				'an ItemListing aggregate with permission to publish item listing that is currently blocked',
-				() => {
-					passport = makePassport(true, true, true, true);
-					listing = new ItemListing(makeBaseProps({ state: 'Blocked' }), passport);
-				},
-			);
-			When('I call setBlocked(false)', () => {
-				listing.setBlocked(false);
-			});
-			Then('the listing\'s state should be "Active"', () => {
-				expect(listing.state).toBe('Active');
-			});
-		},
-	);
-
-	Scenario(
 		'Blocking already blocked listing',
 		({ Given, When, Then }) => {
 			Given(
@@ -884,6 +868,434 @@ Scenario(
 		},
 	);
 
+	Scenario(
+		'Loading sharer asynchronously',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			});
+			When('I call loadSharer()', async () => {
+				await listing.loadSharer();
+			});
+			Then('sharer should be loaded', async () => {
+				const sharer = await listing.loadSharer();
+				expect(sharer).toBeDefined();
+			});
+		},
+	);
+
+	Scenario(
+		'Getting entity reference',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			});
+			When('I call getEntityReference()', () => {
+				// Action in Then
+			});
+			Then('it should return ItemListingEntityReference', () => {
+				const { id } = listing.getEntityReference();
+				expect(id).toBeDefined();
+				expect(id).toBe('listing-1');
+			});
+		},
+	);
+
+	Scenario(
+		'Accessing displayLocation getter',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with location "San Francisco"', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ location: 'San Francisco' }),
+					passport,
+				);
+			});
+			When('I access displayLocation', () => {
+				// Access in Then
+			});
+			Then('it should return the same location value', () => {
+				expect(listing.displayLocation).toBe('San Francisco');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting blocked state using setter',
+		({ Given, When, Then }) => {
+			Given(
+				'an ItemListing aggregate with permission to publish item listing',
+				() => {
+					passport = makePassport(true, true, true, true);
+					listing = new ItemListing(makeBaseProps({ state: 'Published' }), passport);
+				},
+			);
+			When('I set blocked = true using the setter', () => {
+				listing.blocked = true;
+			});
+			Then('the listing\'s state should be "Blocked"', () => {
+				expect(listing.state).toBe('Blocked');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting blocked state to false using setter',
+		({ Given, When, Then }) => {
+			Given(
+				'an ItemListing aggregate with permission to publish item listing that is blocked',
+				() => {
+					passport = makePassport(true, true, true, true);
+					listing = new ItemListing(makeBaseProps({ state: 'Blocked' }), passport);
+				},
+			);
+			When('I set blocked = false using the setter', () => {
+				listing.blocked = false;
+			});
+			Then('the listing\'s state should be "Active"', () => {
+				expect(listing.state).toBe('Active');
+			});
+		},
+	);
+
+	Scenario(
+		'Creating new instance with images',
+		({ Given, When, Then }) => {
+			Given('a new ItemListing aggregate factory method with images', () => {
+				passport = makePassport(true, true, true, true);
+				const props = makeBaseProps();
+				listing = ItemListing.getNewInstance(
+					props,
+					passport,
+					props.sharer,
+					{
+						title: 'Item with Images',
+						description: 'Item with multiple images',
+						category: 'Electronics',
+						location: 'Delhi',
+						sharingPeriodStart: new Date('2025-10-06T00:00:00Z'),
+						sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
+						images: ['image1.jpg', 'image2.jpg', 'image3.jpg'],
+					},
+				);
+			});
+			When('I access the images', () => {
+				// Access in Then
+			});
+			Then('images array should contain all provided images', () => {
+				expect(listing.images).toEqual([
+					'image1.jpg',
+					'image2.jpg',
+					'image3.jpg',
+				]);
+			});
+		},
+	);
+
+	Scenario(
+		'Creating new instance without images',
+		({ Given, When, Then }) => {
+			Given('a new ItemListing aggregate factory method without images', () => {
+				passport = makePassport(true, true, true, true);
+				const props = makeBaseProps();
+				listing = ItemListing.getNewInstance(
+					props,
+					passport,
+					props.sharer,
+					{
+						title: 'Item without Images',
+						description: 'Item without images',
+						category: 'Books',
+						location: 'Mumbai',
+						sharingPeriodStart: new Date('2025-10-06T00:00:00Z'),
+						sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
+					},
+				);
+			});
+			When('I access the images', () => {
+				// Access in Then
+			});
+			Then('images array should be empty', () => {
+				expect(listing.images).toEqual([]);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting reports count when not set',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate without reports', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ reports: undefined }),
+					passport,
+				);
+			});
+			When('I access reports property', () => {
+				// Access in Then
+			});
+			Then('it should return 0', () => {
+				expect(listing.reports).toBe(0);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting reports count when set',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with 5 reports', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps({ reports: 5 }), passport);
+			});
+			When('I access reports property', () => {
+				// Access in Then
+			});
+			Then('it should return 5', () => {
+				expect(listing.reports).toBe(5);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting sharingHistory when empty',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate without sharing history', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ sharingHistory: undefined }),
+					passport,
+				);
+			});
+			When('I access sharingHistory property', () => {
+				// Access in Then
+			});
+			Then('it should return an empty array', () => {
+				expect(listing.sharingHistory).toEqual([]);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting sharingHistory when populated',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with sharing history', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({
+						sharingHistory: ['history-1', 'history-2', 'history-3'],
+					}),
+					passport,
+				);
+			});
+			When('I access sharingHistory property', () => {
+				// Access in Then
+			});
+			Then('it should return the sharing history array', () => {
+				expect(listing.sharingHistory).toEqual([
+					'history-1',
+					'history-2',
+					'history-3',
+				]);
+			});
+		},
+	);
+
+	Scenario(
+		'Accessing createdAt timestamp',
+		({ Given, When, Then }) => {
+			const createdDate = new Date('2024-01-01T10:00:00Z');
+			Given('an ItemListing aggregate with a specific createdAt timestamp', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ createdAt: createdDate }),
+					passport,
+				);
+			});
+			When('I access createdAt property', () => {
+				// Access in Then
+			});
+			Then('it should return the correct timestamp', () => {
+				expect(listing.createdAt).toEqual(createdDate);
+			});
+		},
+	);
+
+	Scenario(
+		'Accessing updatedAt timestamp',
+		({ Given, When, Then }) => {
+			const updatedDate = new Date('2024-12-01T15:30:00Z');
+			Given('an ItemListing aggregate with a specific updatedAt timestamp', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ updatedAt: updatedDate }),
+					passport,
+				);
+			});
+			When('I access updatedAt property', () => {
+				// Access in Then
+			});
+			Then('it should return the correct timestamp', () => {
+				expect(listing.updatedAt).toEqual(updatedDate);
+			});
+		},
+	);
+
+	Scenario(
+		'Accessing schemaVersion',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with schemaVersion "2.0.0"', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ schemaVersion: '2.0.0' }),
+					passport,
+				);
+			});
+			When('I access schemaVersion property', () => {
+				// Access in Then
+			});
+			Then('it should return "2.0.0"', () => {
+				expect(listing.schemaVersion).toBe('2.0.0');
+			});
+		},
+	);
+
+	Scenario(
+		'Checking isActive when state is Active',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate in Active state', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ state: 'Active' }),
+					passport,
+				);
+			});
+			When('I access isActive property', () => {
+				// Access in Then
+			});
+			Then('it should return true', () => {
+				expect(listing.isActive).toBe(true);
+			});
+		},
+	);
+
+	Scenario(
+		'Checking isActive when state is Paused',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate in Paused state', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps({ state: 'Paused' }), passport);
+			});
+			When('I access isActive property', () => {
+				// Access in Then
+			});
+			Then('it should return false', () => {
+				expect(listing.isActive).toBe(false);
+			});
+		},
+	);
+
+	Scenario(
+		'Checking isActive when state is Blocked',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate in Blocked state', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ state: 'Blocked' }),
+					passport,
+				);
+			});
+			When('I access isActive property', () => {
+				// Access in Then
+			});
+			Then('it should return false', () => {
+				expect(listing.isActive).toBe(false);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting polymorphic sharer as PersonalUser',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with PersonalUser sharer', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps(), passport);
+			});
+			When('I access the sharer property', () => {
+				// Access in Then
+			});
+			Then('it should instantiate as PersonalUser', () => {
+				const { sharer } = listing;
+				expect(sharer).toBeDefined();
+				expect(sharer).toBeInstanceOf(PersonalUser);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting title returns string',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with title "Test Item"', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(
+					makeBaseProps({ title: 'Test Item' }),
+					passport,
+				);
+			});
+			When('I access the title property', () => {
+				// Access in Then
+			});
+			Then('it should return "Test Item"', () => {
+				expect(listing.title).toBe('Test Item');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting title when isNew is true',
+		({ Given, When, Then }) => {
+			Given('a new ItemListing instance created via getNewInstance', () => {
+				passport = makePassport(true, true, true, true);
+				const props = makeBaseProps();
+				listing = ItemListing.getNewInstance(
+					props,
+					passport,
+					props.sharer,
+					{
+						title: 'Initial Title',
+						description: 'Initial Description',
+						category: 'Electronics',
+						location: 'Delhi',
+						sharingPeriodStart: new Date('2025-10-06T00:00:00Z'),
+						sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
+					},
+				);
+			});
+			When('I set the title to "New Title"', () => {
+				listing.title = 'New Title';
+			});
+			Then('the title should be updated without permission check', () => {
+				expect(listing.title).toBe('New Title');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state directly',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate', () => {
+				passport = makePassport(true, true, true, true);
+				listing = new ItemListing(makeBaseProps({ state: 'Published' }), passport);
+			});
+			When('I set state directly to "Drafted"', () => {
+				listing.state = 'Drafted';
+			});
+			Then('the state should be "Drafted"', () => {
+				expect(listing.state).toBe('Drafted');
+			});
+		},
+	);
 	Scenario('Getting expiresAt from item listing', ({ Given, When, Then }) => {
 		Given('an ItemListing aggregate with expiresAt set', () => {
 			const expirationDate = new Date('2025-12-31T23:59:59Z');

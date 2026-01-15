@@ -138,11 +138,6 @@ Feature: <AggregateRoot>ItemListing
     When I call setBlocked(true)
     Then the listing's state should be "Blocked"
 
-  Scenario: Unblocking a listing with permission
-    Given an ItemListing aggregate with permission to publish item listing that is currently blocked
-    When I call setBlocked(false)
-    Then the listing's state should be "Active"
-
   Scenario: Blocking already blocked listing
     Given an ItemListing aggregate with permission to publish item listing that is already blocked
     When I call setBlocked(true) again
@@ -173,6 +168,110 @@ Feature: <AggregateRoot>ItemListing
     When I set the listingType to "premium-listing"
     Then the listingType should be updated to "premium-listing"
 
+  Scenario: Loading sharer asynchronously
+    Given an ItemListing aggregate
+    When I call loadSharer()
+    Then sharer should be loaded
+
+  Scenario: Getting entity reference
+    Given an ItemListing aggregate
+    When I call getEntityReference()
+    Then it should return ItemListingEntityReference
+
+  Scenario: Accessing displayLocation getter
+    Given an ItemListing aggregate with location "San Francisco"
+    When I access displayLocation
+    Then it should return the same location value
+
+  Scenario: Setting blocked state using setter
+    Given an ItemListing aggregate with permission to publish item listing
+    When I set blocked = true using the setter
+    Then the listing's state should be "Blocked"
+
+  Scenario: Setting blocked state to false using setter
+    Given an ItemListing aggregate with permission to publish item listing that is blocked
+    When I set blocked = false using the setter
+    Then the listing's state should be "Active"
+
+  Scenario: Creating new instance with images
+    Given a new ItemListing aggregate factory method with images
+    When I access the images
+    Then images array should contain all provided images
+
+  Scenario: Creating new instance without images
+    Given a new ItemListing aggregate factory method without images
+    When I access the images
+    Then images array should be empty
+
+  Scenario: Getting reports count when not set
+    Given an ItemListing aggregate without reports
+    When I access reports property
+    Then it should return 0
+
+  Scenario: Getting reports count when set
+    Given an ItemListing aggregate with 5 reports
+    When I access reports property
+    Then it should return 5
+
+  Scenario: Getting sharingHistory when empty
+    Given an ItemListing aggregate without sharing history
+    When I access sharingHistory property
+    Then it should return an empty array
+
+  Scenario: Getting sharingHistory when populated
+    Given an ItemListing aggregate with sharing history
+    When I access sharingHistory property
+    Then it should return the sharing history array
+
+  Scenario: Accessing createdAt timestamp
+    Given an ItemListing aggregate with a specific createdAt timestamp
+    When I access createdAt property
+    Then it should return the correct timestamp
+
+  Scenario: Accessing updatedAt timestamp
+    Given an ItemListing aggregate with a specific updatedAt timestamp
+    When I access updatedAt property
+    Then it should return the correct timestamp
+
+  Scenario: Accessing schemaVersion
+    Given an ItemListing aggregate with schemaVersion "2.0.0"
+    When I access schemaVersion property
+    Then it should return "2.0.0"
+
+  Scenario: Checking isActive when state is Active
+    Given an ItemListing aggregate in Active state
+    When I access isActive property
+    Then it should return true
+
+  Scenario: Checking isActive when state is Paused
+    Given an ItemListing aggregate in Paused state
+    When I access isActive property
+    Then it should return false
+
+  Scenario: Checking isActive when state is Blocked
+    Given an ItemListing aggregate in Blocked state
+    When I access isActive property
+    Then it should return false
+
+  Scenario: Getting polymorphic sharer as PersonalUser
+    Given an ItemListing aggregate with PersonalUser sharer
+    When I access the sharer property
+    Then it should instantiate as PersonalUser
+
+  Scenario: Getting title returns string
+    Given an ItemListing aggregate with title "Test Item"
+    When I access the title property
+    Then it should return "Test Item"
+
+  Scenario: Setting title when isNew is true
+    Given a new ItemListing instance created via getNewInstance
+    When I set the title to "New Title"
+    Then the title should be updated without permission check
+
+  Scenario: Setting state directly
+    Given an ItemListing aggregate
+    When I set state directly to "Drafted"
+    Then the state should be "Drafted"
   Scenario: Getting expiresAt from item listing
     Given an ItemListing aggregate with expiresAt set
     When I access the expiresAt property

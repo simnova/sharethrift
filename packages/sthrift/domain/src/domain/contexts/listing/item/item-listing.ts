@@ -193,7 +193,17 @@ export class ItemListing<props extends ItemListingProps>
 	}
 
 	get state(): string {
-		return this.props.state;
+		// Field-level authorization: check if user has permission to view blocked listings
+		const currentState = this.props.state.valueOf();
+		const isBlocked = currentState === ValueObjects.ListingStateEnum.Blocked;
+		
+		if (isBlocked && !this.visa.determineIf((permissions) => permissions.canViewBlockedItemListing)) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to view this blocked listing',
+			);
+		}
+		
+		return currentState;
 	}
 
 	set state(value: string) {
@@ -334,6 +344,21 @@ export class ItemListing<props extends ItemListingProps>
 
 		if (current === ValueObjects.ListingStateEnum.Blocked) return; // already blocked
 		this.props.state = ValueObjects.ListingStateEnum.Blocked;
+	}
+
+	/**
+	 * Set whether this listing is blocked.
+	 * Convenience setter that delegates to setBlocked().
+	 */
+	set blocked(value: boolean) {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to change the blocked state of this listing',
+			);
+		}
+		this.setBlocked(value);
 	}
 
 /**

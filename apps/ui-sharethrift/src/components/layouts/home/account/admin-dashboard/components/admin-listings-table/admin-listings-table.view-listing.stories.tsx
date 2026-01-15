@@ -5,7 +5,8 @@ import { withMockApolloClient, withMockRouter } from '../../../../../../../test-
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
-	AdminListingsTableContainerUnblockListingDocument,
+	BlockListingContainerUnblockListingDocument,
+    AdminListingsTableContainerUnblockListingDocument
 } from '../../../../../../../generated.tsx';
 
 const meta = {
@@ -49,14 +50,15 @@ const meta = {
 				},
 				{
 					request: {
-						query: AdminListingsTableContainerUnblockListingDocument,
+						query: BlockListingContainerUnblockListingDocument,
 					},
 					result: {
 						data: {
-							unblockItemListing: {
-								__typename: 'MutationStatus',
+							unblockListing: {
+								__typename: 'BlockListingResult',
+								id: 'listing-123',
+								state: 'Published',
 								success: true,
-								errorMessage: null,
 							},
 						},
 					},

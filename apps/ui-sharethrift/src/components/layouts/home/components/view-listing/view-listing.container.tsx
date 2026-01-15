@@ -41,29 +41,29 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		fetchPolicy: 'cache-first',
 	});
 
-	const {
-		data: currentUserData,
-		loading: currentUserLoading,
-	} = useQuery(ViewListingCurrentUserDocument, {
-		skip: !props.isAuthenticated, // Skip if not authenticated
-	});
+	const { data: currentUserData, loading: currentUserLoading } = useQuery(
+		ViewListingCurrentUserDocument,
+		{
+			skip: !props.isAuthenticated, // Skip if not authenticated
+		},
+	);
 
 	const reserverId = currentUserData?.currentUser?.id ?? '';
 
 	const skip = !reserverId || !listingId;
-	const {
-		data: userReservationData,
-		loading: userReservationLoading,
-	} = useQuery(ViewListingActiveReservationRequestForListingDocument, {
-		variables: { listingId: listingId ?? '', reserverId },
-		skip,
-	});
+	const { data: userReservationData, loading: userReservationLoading } =
+		useQuery(ViewListingActiveReservationRequestForListingDocument, {
+			variables: { listingId: listingId ?? '', reserverId },
+			skip,
+		});
 
 	const sharedTimeAgo = listingData?.itemListing?.createdAt
 		? computeTimeAgo(listingData.itemListing.createdAt)
 		: undefined;
 
 	const userIsSharer = false;
+	const isAdmin = currentUserData?.currentUser?.__typename === 'AdminUser';
+
 	return (
 		<ComponentQueryLoader
 			loading={userReservationLoading || listingLoading || currentUserLoading}
@@ -80,6 +80,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 					userReservationRequest={
 						userReservationData?.myActiveReservationForListing
 					}
+					isAdmin={isAdmin}
 				/>
 			}
 		/>
