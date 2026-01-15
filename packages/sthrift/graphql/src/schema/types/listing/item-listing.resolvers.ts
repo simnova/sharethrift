@@ -2,45 +2,6 @@ import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.js';
 import { PopulateUserFromField, currentViewerIsAdmin } from '../../resolver-helper.ts';
 
-// Helper type for paged arguments
-export type PagedArgs = {
-	page: number;
-	pageSize: number;
-	searchText?: string;
-	statusFilters?: string[];
-	sorter?: { field: string; order: 'ascend' | 'descend' };
-	sharerId?: string;
-	isAdmin?: boolean;
-};
-
-// Helper function to construct pagedArgs
-function buildPagedArgs(
-	args: {
-		page: number;
-		pageSize: number;
-		searchText?: string | null;
-		statusFilters?: readonly string[] | null;
-		sorter?: { field: string; order: string } | null;
-	},
-	extra?: Partial<PagedArgs>,
-): PagedArgs {
-	return {
-		page: args.page,
-		pageSize: args.pageSize,
-		...(args.searchText != null ? { searchText: args.searchText } : {}),
-		...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
-		...(args.sorter
-			? {
-					sorter: {
-						field: args.sorter.field,
-						order: args.sorter.order as 'ascend' | 'descend',
-					},
-				}
-			: {}),
-		...extra,
-	};
-}
-
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
 		sharer: PopulateUserFromField('sharer'),
@@ -58,14 +19,25 @@ const itemListingResolvers: Resolvers = {
 					}).then((user) => (user ? user.id : undefined));
 			}
 
-			const pagedArgs = buildPagedArgs(args, { 
-				...(sharerId ? { sharerId } : {}),
-				isAdmin 
-			});
+			const command: Parameters<typeof context.applicationServices.Listing.ItemListing.queryPaged>[0] = {
+				page: args.page,
+				pageSize: args.pageSize,
+				...(args.searchText ? { searchText: args.searchText } : {}),
+				...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
+			};
 
-			return await context.applicationServices.Listing.ItemListing.queryPaged(
-				pagedArgs,
-			);
+			if (args.sorter) {
+				command.sorter = {
+					field: args.sorter.field,
+					order: args.sorter.order === 'ascend' || args.sorter.order === 'descend' ? args.sorter.order : "ascend",
+				};
+			}
+
+			if (sharerId) {
+				command.sharerId = sharerId;
+			}
+
+			return await context.applicationServices.Listing.ItemListing.queryPaged(command);
 		},
 		itemListings: async (_parent, _args, context) => {
 			return await context.applicationServices.Listing.ItemListing.queryAll({});
@@ -80,11 +52,21 @@ const itemListingResolvers: Resolvers = {
 		},
 		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			const pagedArgs = buildPagedArgs(args, { isAdmin: true });
+			const command: Parameters<typeof context.applicationServices.Listing.ItemListing.queryPaged>[0] = {
+				page: args.page,
+				pageSize: args.pageSize,
+				...(args.searchText ? { searchText: args.searchText } : {}),
+				...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
+			};
 
-			return await context.applicationServices.Listing.ItemListing.queryPaged(
-				pagedArgs,
-			);
+			if (args.sorter) {
+				command.sorter = {
+					field: args.sorter.field,
+					order: args.sorter.order === 'ascend' || args.sorter.order === 'descend' ? args.sorter.order : "ascend",
+				};
+			}
+
+			return await context.applicationServices.Listing.ItemListing.queryPaged(command);
 		},
 	},
 	Mutation: {
