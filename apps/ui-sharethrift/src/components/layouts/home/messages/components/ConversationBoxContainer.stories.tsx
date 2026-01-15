@@ -107,7 +107,7 @@ export const buildSendMessageMock = (
 	};
 
 	return { data: { sendMessage: baseResponse } };
-}
+};
 
 // #region Shared Mock Data
 const mockConversationDetail = buildConversationMock();
