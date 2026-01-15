@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, fn } from 'storybook/test';
 import { ListingInformation } from './listing-information.tsx';
-import { withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
+import { withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
 
 const mockListing = {
 	__typename: 'ItemListing' as const,
@@ -44,12 +44,22 @@ const meta: Meta<typeof ListingInformation> = {
 		userIsSharer: false,
 		isAuthenticated: true,
 		userReservationRequest: null,
-		onReserveClick: () => {},
-		onLoginClick: () => {},
-		onSignUpClick: () => {},
-		onCancelClick: () => {},
+		onReserveClick: () => {
+			// noop
+		},
+		onLoginClick: () => {
+            //` noop
+        },
+		onSignUpClick: () => {
+            // noop
+        },
+		onCancelClick: () => {
+            // noop
+        },
 		reservationDates: { startDate: null, endDate: null },
-		onReservationDatesChange: () => {},
+		onReservationDatesChange: () => {
+            // noop
+        },
 		reservationLoading: false,
 		otherReservationsLoading: false,
 		otherReservations: [],

@@ -1,14 +1,10 @@
 import { Row, Col, DatePicker, Button } from 'antd';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
-import type {
-	ViewListingQueryActiveByListingIdQuery,
-	ItemListing,
-	ViewListingActiveReservationRequestForListingQuery,
-} from '../../../../../../generated.tsx';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import type { ViewListingActiveReservationRequestForListingQuery, ItemListing, ViewListingQueryActiveByListingIdQuery } from '../../../../../../../generated';
 
 // Manual isBetween logic for Dayjs
 function isBetweenManual(

@@ -1,9 +1,8 @@
-import { Row, Col, Button, Form, Input, Select, DatePicker, Space } from 'antd';
-import type { ConfigType } from 'dayjs';
-import dayjs from 'dayjs';
+import { Form, Input, Select, DatePicker, Button } from 'antd';
+import type { RangePickerProps } from 'antd/es/date-picker';
+import TextArea from 'antd/es/input/TextArea';
 
-const { TextArea } = Input;
-const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 interface ListingFormProps {
 	categories: string[];
@@ -20,131 +19,93 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 	handleFormSubmit,
 	onCancel,
 }) => {
-	const disabledDate = (current: ConfigType) => {
-		try {
-			const maybeDay = current as dayjs.Dayjs;
-			if (!maybeDay || typeof maybeDay.isBefore !== 'function') {
-				return false;
-			}
-
-			return maybeDay.isBefore(dayjs(), 'day');
-		} catch {
-			return false;
-		}
+	const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+		// Can not select days before today
+		return current && current.isBefore(new Date().setHours(0, 0, 0, 0));
 	};
 
 	return (
-		<div className="create-listing-form-responsive">
-			<Space direction="vertical" size="large" style={{ width: '100%' }}>
-				<Form.Item
-					label="Title"
-					name="title"
-					rules={[
-						{ required: true, message: 'Title is required' },
-						{ max: 200, message: 'Title cannot exceed 200 characters' },
-					]}
-				>
-					<Input placeholder="Enter item title" />
-				</Form.Item>
+		<div style={{ paddingLeft: 32, paddingRight: 32 }}>
+			<Form.Item
+				label="Title"
+				name="title"
+				rules={[{ required: true, message: 'Please enter a title' }]}
+			>
+				<Input placeholder="Enter listing title" />
+			</Form.Item>
 
-				<Form.Item
-					label="Location"
-					name="location"
-					rules={[
-						{ required: true, message: 'Location is required' },
-						{ max: 255, message: 'Location cannot exceed 255 characters' },
-					]}
-				>
-					<Input placeholder="Enter location" />
-				</Form.Item>
+			<Form.Item
+				label="Description"
+				name="description"
+				rules={[{ required: true, message: 'Please enter a description' }]}
+			>
+				<TextArea
+					placeholder="Describe your item and sharing terms"
+					rows={6}
+					maxLength={maxCharacters}
+				/>
+			</Form.Item>
 
-				<Form.Item
-					label="Category"
-					name="category"
-					rules={[{ required: true, message: 'Category is required' }]}
-				>
-					<Select placeholder="Select a category">
-						{categories.map((category) => (
-							<Select.Option key={category} value={category}>
-								{category}
-							</Select.Option>
-						))}
-					</Select>
-				</Form.Item>
+			<Form.Item
+				label="Category"
+				name="category"
+				rules={[{ required: true, message: 'Please select a category' }]}
+			>
+				<Select placeholder="Select a category">
+					{categories.map((category) => (
+						<Option key={category} value={category}>
+							{category}
+						</Option>
+					))}
+				</Select>
+			</Form.Item>
 
-				<Form.Item
-					label="Reservation Period"
-					name="sharingPeriod"
-					rules={[
-						{ required: true, message: 'Reservation period is required' },
-					]}
-				>
-					<RangePicker
-						style={{ width: '100%' }}
-						placeholder={['Start date', 'End date']}
-						disabledDate={disabledDate}
-					/>
-				</Form.Item>
+			<Form.Item
+				label="Location"
+				name="location"
+				rules={[{ required: true, message: 'Please enter a location' }]}
+			>
+				<Input placeholder="Enter location" />
+			</Form.Item>
 
-				<Form.Item
-					label="Description"
-					name="description"
-					rules={[
-						{ required: true, message: 'Description is required' },
-						{
-							max: maxCharacters,
-							message: `Description cannot exceed ${maxCharacters} characters`,
-						},
-					]}
-				>
-					<TextArea
-						placeholder="Describe your item"
-						rows={6}
-						showCount={{
-							formatter: ({ count }: { count: number }) =>
-								`${count}/${maxCharacters}`,
-						}}
-					/>
-				</Form.Item>
+			<Form.Item
+				label="Sharing Period"
+				name="sharingPeriod"
+				rules={[{ required: true, message: 'Please select sharing dates' }]}
+			>
+				<DatePicker.RangePicker
+					disabledDate={disabledDate}
+					placeholder={['Start date', 'End date']}
+					style={{ width: '100%' }}
+				/>
+			</Form.Item>
 
-				{/* Action Buttons */}
-				<Row
-					gutter={16}
-					style={{ marginTop: '24px' }}
-					className="create-listing-buttons"
+			<div style={{ display: 'flex', gap: 16, marginTop: 32 }}>
+				<Button
+					type="default"
+					onClick={onCancel}
+					disabled={isLoading}
+					style={{ flex: 1 }}
 				>
-					<Col>
-						<Button
-							className="secondaryButton"
-							onClick={onCancel}
-							disabled={isLoading}
-						>
-							Cancel
-						</Button>
-					</Col>
-					<Col>
-						<Button
-							className="secondaryButton"
-							type="default"
-							onClick={() => handleFormSubmit(true)}
-							loading={isLoading}
-						>
-							Save as Draft
-						</Button>
-					</Col>
-					<Col>
-						<Button
-							className="primaryButton"
-							type="primary"
-							onClick={() => handleFormSubmit(false)}
-							loading={isLoading}
-						>
-							Publish
-						</Button>
-					</Col>
-				</Row>
-			</Space>
+					Cancel
+				</Button>
+				<Button
+					type="default"
+					onClick={() => handleFormSubmit(true)}
+					disabled={isLoading}
+					style={{ flex: 1 }}
+				>
+					Save as Draft
+				</Button>
+				<Button
+					type="primary"
+					onClick={() => handleFormSubmit(false)}
+					loading={isLoading}
+					style={{ flex: 1 }}
+				>
+					Publish Listing
+				</Button>
+			</div>
 		</div>
 	);
 };
-

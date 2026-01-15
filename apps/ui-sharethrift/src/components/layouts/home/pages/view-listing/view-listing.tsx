@@ -1,8 +1,8 @@
 import { Row, Col, Button } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
-import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
-import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
-import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
+import { ListingImageGalleryContainer } from './components/listing-image-gallery/listing-image-gallery.container.tsx';
+import { SharerInformationContainer } from './components/sharer-information/sharer-information.container.tsx';
+import { ListingInformationContainer } from './components/listing-information/listing-information.container.tsx';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,

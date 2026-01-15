@@ -3,11 +3,10 @@ import { useEffect, useState } from 'react';
 import { MessageOutlined } from '@ant-design/icons';
 import { useMutation } from '@apollo/client/react';
 import { useNavigate } from 'react-router-dom';
-import { CreateConversationDocument, HomeConversationListContainerConversationsByUserDocument } from '../../../../../../generated.tsx';
-import type {
-	CreateConversationMutation,
-	CreateConversationMutationVariables,
-} from '../../../../../../generated.tsx';
+import { CreateConversationDocument,
+HomeConversationListContainerConversationsByUserDocument,
+type CreateConversationMutation,type CreateConversationMutationVariables } from '../../../../../../../generated.tsx';
+
 
 type Sharer = {
 	id: string;

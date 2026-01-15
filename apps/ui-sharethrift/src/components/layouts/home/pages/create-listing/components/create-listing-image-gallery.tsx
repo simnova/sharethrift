@@ -2,8 +2,8 @@ import type { RefObject, FC } from 'react';
 import { useEffect } from 'react';
 import { PlusOutlined } from '@ant-design/icons';
 import { message } from 'antd';
-import { MainImage } from './components/main-image.tsx';
-import { Thumbnail } from './components/thumbnail.tsx';
+import { MainImage } from './main-image.tsx';
+import { Thumbnail } from './thumbnail.tsx';
 import styles from './image-gallery.module.css';
 
 function useFileLimit(

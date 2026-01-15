@@ -1,14 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent } from 'storybook/test';
 import { SharerInformation } from './sharer-information.tsx';
-import {
-	withMockApolloClient,
-	withMockRouter,
-} from '../../../../../../test-utils/storybook-decorators.tsx';
-import {
-	CreateConversationDocument,
-	HomeConversationListContainerConversationsByUserDocument,
-} from '../../../../../../generated.tsx';
+import { CreateConversationDocument,HomeConversationListContainerConversationsByUserDocument } from '../../../../../../../generated.tsx';
+import { withMockApolloClient, withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
+
 
 const mockSharer = {
 	id: 'user-1',

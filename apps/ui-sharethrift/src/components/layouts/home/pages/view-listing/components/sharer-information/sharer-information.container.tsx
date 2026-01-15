@@ -1,6 +1,6 @@
 import { useQuery } from '@apollo/client/react';
+import { SharerInformationContainerDocument } from '../../../../../../../generated.tsx';
 import { SharerInformation } from './sharer-information.tsx';
-import { SharerInformationContainerDocument } from '../../../../../../generated.tsx';
 
 interface SharerInformationContainerProps {
 	sharerId: string;

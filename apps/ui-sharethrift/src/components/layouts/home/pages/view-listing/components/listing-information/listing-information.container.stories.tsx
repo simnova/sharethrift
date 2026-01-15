@@ -1,15 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, waitFor, fn } from 'storybook/test';
 import { ListingInformationContainer } from './listing-information.container.tsx';
-import {
-	withMockApolloClient,
-	withMockRouter,
-} from '../../../../../../test-utils/storybook-decorators.tsx';
-import {
-	ViewListingCurrentUserDocument,
-	ViewListingQueryActiveByListingIdDocument,
-	HomeListingInformationCreateReservationRequestDocument,
-} from '../../../../../../generated.tsx';
+import { HomeListingInformationCreateReservationRequestDocument,ViewListingCurrentUserDocument,ViewListingQueryActiveByListingIdDocument } from '../../../../../../../generated.tsx';
+import { withMockApolloClient,
+withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
 
 const mockListing = {
 	__typename: 'ItemListing' as const,
@@ -235,7 +229,7 @@ export const QueryLoadingState: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
