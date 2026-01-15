@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client/react';
 import {
 	UseUserIsAdminDocument,
 	type UseUserIsAdminQuery,
-} from '../../../../../generated.tsx';
+} from '../../../generated.tsx';
 
 /*
  * Hook to check if current user is an admin to display UI components conditionally.

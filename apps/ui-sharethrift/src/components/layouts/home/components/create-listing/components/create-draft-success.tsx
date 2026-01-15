@@ -2,6 +2,7 @@ import { Modal, Button, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import styles from './modals.module.css';
 import '@sthrift/ui-components/src/styles/theme.css';
+import listImg from '@sthrift/ui-components/src/assets/item-images/list.png';
 
 interface SuccessDraftProps {
 	visible: boolean;
@@ -28,19 +29,21 @@ export const SuccessDraft: React.FC<SuccessDraftProps> = (props) => {
 							className="title36"
 							style={{ marginTop: 16, textAlign: 'center' }}
 						>
-							Saving your draft
+							Saving draft
 						</div>
 					</>
 				) : (
 					<>
+						<img src={listImg} alt="list" className={styles['image']} />
 						<div
 							className="title36"
 							style={{ marginTop: 16, textAlign: 'center' }}
 						>
-							Draft saved!
+							Draft saved
 						</div>
 						<p style={{ marginTop: 8, textAlign: 'center' }}>
-							Your listing draft has been saved. You can continue editing it later.
+							Your draft has been saved. You can publish it anytime from your
+							drafts.
 						</p>
 						<div className={styles['actions']}>
 							<Button
