@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { ApolloManualMergeCacheFix } from '../apollo-manual-merge-cache-fix.ts';
+import { ApolloManualMergeCacheFix } from './apollo-manual-merge-cache-fix.ts';
 
 // Simple component to display cache status
 const ApolloCacheTest = () => {

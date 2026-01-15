@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within } from 'storybook/test';
-import { StatusTag } from '../admin-listings-table.status-tag.tsx';
+import { StatusTag } from './admin-listings-table.status-tag.tsx';
 
 const meta: Meta<typeof StatusTag> = {
 	title: 'Admin/ListingsTable/StatusTag',

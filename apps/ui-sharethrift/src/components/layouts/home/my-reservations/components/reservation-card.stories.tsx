@@ -3,7 +3,7 @@ import { ReservationCard } from '../components/reservation-card.tsx';
 import {
 	storyReservationsActive,
 	storyReservationsPast,
-} from './reservation-story-mocks.ts';
+} from '../utils/reservation-story-mocks.ts';
 import {
 	defaultReservationActions,
 	withReservationMocks,

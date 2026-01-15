@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { formatDate } from '../admin-listings-table.utils.ts';
+import { formatDate } from './admin-listings-table.utils.ts';
 
 // Test component that displays format date results
 const FormatDateTest = (): React.JSX.Element => {

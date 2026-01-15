@@ -3,7 +3,7 @@ import { withMockApolloClient } from '../../../../../test-utils/storybook-decora
 import {
 	STORYBOOK_RESERVATION_USER_ID,
 	reservationStoryMocks,
-} from './reservation-story-mocks.ts';
+} from '../utils/reservation-story-mocks.ts';
 import { MyReservationsMain } from '../pages/my-reservations.tsx';
 import {
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,

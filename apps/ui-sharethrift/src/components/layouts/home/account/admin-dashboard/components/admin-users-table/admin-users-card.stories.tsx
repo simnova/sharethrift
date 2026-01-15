@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, fn, userEvent } from 'storybook/test';
-import { AdminUsersCard } from '../admin-users-card.tsx';
-import type { AdminUserData } from '../admin-users-table.types.ts';
+import { AdminUsersCard } from './admin-users-card.tsx';
+import type { AdminUserData } from './admin-users-table.types.ts';
 
 const mockActiveUser: AdminUserData = {
 	id: 'user-1',

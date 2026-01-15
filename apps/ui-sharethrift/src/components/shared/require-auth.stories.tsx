@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from 'react-oidc-context';
-import { RequireAuth } from '../require-auth.tsx';
-import { createMockAuth, createMockUser } from '../../../test/utils/mockAuth.ts';
+import { RequireAuth } from './require-auth.tsx';
+import { createMockAuth, createMockUser } from '../../test/utils/mockAuth.ts';
 
 const meta: Meta<typeof RequireAuth> = {
 	title: 'Shared/RequireAuth',

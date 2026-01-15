@@ -3,12 +3,12 @@ import { expect } from 'storybook/test';
 import {
 	withMockApolloClient,
 	MockAuthWrapper,
-} from '../../../test-utils/storybook-decorators.tsx';
+} from '../../test-utils/storybook-decorators.tsx';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from 'react-oidc-context';
-import { RequireAuthAdmin } from '../require-auth-admin.tsx';
-import { UseUserIsAdminDocument } from '../../../generated.tsx';
-import { createMockAuth } from '../../../test/utils/mockAuth.ts';
+import { RequireAuthAdmin } from './require-auth-admin.tsx';
+import { UseUserIsAdminDocument } from '../../generated.tsx';
+import { createMockAuth } from '../../test/utils/mockAuth.ts';
 import { vi } from 'vitest';
 
 const meta: Meta<typeof RequireAuthAdmin> = {

@@ -1,34 +1,40 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReservationsGrid } from '../components/reservations-grid.tsx';
+import { ReservationsTable } from '../components/reservations-table.tsx';
 import {
 	storyReservationsActive,
 	storyReservationsAll,
 	storyReservationsPast,
-} from './reservation-story-mocks.ts';
+} from '../utils/reservation-story-mocks.ts';
 import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
-const meta: Meta<typeof ReservationsGrid> = {
-	title: 'Organisms/ReservationsGrid',
-	component: ReservationsGrid,
+import { expect, within } from 'storybook/test';
+
+const meta: Meta<typeof ReservationsTable> = {
+	title: 'Organisms/ReservationsTable',
+	component: ReservationsTable,
 	parameters: { layout: 'padded' },
 	tags: ['autodocs'],
-	// Global decorator for MockedProvider
 	decorators: [withReservationMocks],
-	args: defaultReservationActions, // apply to all stories by default
+	args: defaultReservationActions,
 	argTypes: {
 		onCancel: { action: 'cancel clicked' },
 		onClose: { action: 'close clicked' },
 		onMessage: { action: 'message clicked' },
 	},
 };
-export default meta;
 
-type Story = StoryObj<typeof ReservationsGrid>;
+export default meta;
+type Story = StoryObj<typeof ReservationsTable>;
 
 export const AllReservations: Story = {
-	args: { reservations: storyReservationsAll }};
+	args: { reservations: storyReservationsAll },
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByRole('table')).toBeInTheDocument();
+	},
+};
 
 export const ActiveReservations: Story = {
 	args: {

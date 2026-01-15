@@ -1,20 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReservationsTable } from '../components/reservations-table.tsx';
+import { ReservationsView } from '../components/reservations-view.tsx';
 import {
 	storyReservationsActive,
 	storyReservationsAll,
 	storyReservationsPast,
-} from './reservation-story-mocks.ts';
+} from '../utils/reservation-story-mocks.ts';
 import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
-import { expect, within } from 'storybook/test';
-
-const meta: Meta<typeof ReservationsTable> = {
-	title: 'Organisms/ReservationsTable',
-	component: ReservationsTable,
-	parameters: { layout: 'padded' },
+const meta: Meta<typeof ReservationsView> = {
+	title: 'Organisms/ReservationsView',
+	component: ReservationsView,
+	parameters: {
+		layout: 'padded',
+		docs: {
+			description: {
+				component:
+					'Responsive reservations view that shows table on desktop and cards on mobile.',
+			},
+		},
+	},
 	tags: ['autodocs'],
 	decorators: [withReservationMocks],
 	args: defaultReservationActions,
@@ -26,15 +32,10 @@ const meta: Meta<typeof ReservationsTable> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof ReservationsTable>;
+type Story = StoryObj<typeof ReservationsView>;
 
 export const AllReservations: Story = {
-	args: { reservations: storyReservationsAll },
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvas.getByRole('table')).toBeInTheDocument();
-	},
-};
+	args: { reservations: storyReservationsAll }};
 
 export const ActiveReservations: Story = {
 	args: {
@@ -57,4 +58,18 @@ export const Empty: Story = {
 
 export const LoadingStates: Story = {
 	args: { reservations: storyReservationsActive, cancelLoading: true },
+};
+
+export const LoadingSpinner: Story = {
+	args: {
+		reservations: [],
+		loading: true,
+	},
+};
+
+export const ErrorState: Story = {
+	args: {
+		reservations: [],
+		error: new Error('Failed to load reservations'),
+	},
 };

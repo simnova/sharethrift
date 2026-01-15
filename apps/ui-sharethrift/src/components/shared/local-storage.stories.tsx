@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { clearStorage } from '../local-storage.ts';
+import { clearStorage } from './local-storage.ts';
 
 const LocalStorageTest: React.FC = () => {
 	return (

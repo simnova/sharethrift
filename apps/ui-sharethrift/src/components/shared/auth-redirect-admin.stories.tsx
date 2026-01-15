@@ -2,8 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from 'react-oidc-context';
-import { createMockAuth, createMockUser } from '../../../test/utils/mockAuth.ts';
-import { AuthRedirectAdmin } from '../auth-redirect-admin.tsx';
+import { createMockAuth, createMockUser } from '../../test/utils/mockAuth.ts';
+import { AuthRedirectAdmin } from './auth-redirect-admin.tsx';
 
 const meta: Meta<typeof AuthRedirectAdmin> = {
 	title: 'Shared/AuthRedirectAdmin',

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { useOnboardingRedirect } from '../use-has-completed-onboarding-check.ts';
+import { useOnboardingRedirect } from './use-has-completed-onboarding-check.ts';
 import { MemoryRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 

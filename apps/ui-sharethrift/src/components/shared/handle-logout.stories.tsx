@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { HandleLogout } from '../handle-logout.ts';
-import { clearStorage } from '../local-storage.ts';
+import { HandleLogout } from './handle-logout.ts';
+import { clearStorage } from './local-storage.ts';
 
 const HandleLogoutTest: React.FC = () => {
 	return (

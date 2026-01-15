@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { AuthLanding } from '../auth-landing.tsx';
+import { AuthLanding } from './auth-landing.tsx';
 
 const meta: Meta<typeof AuthLanding> = {
 	title: 'Shared/AuthLanding',

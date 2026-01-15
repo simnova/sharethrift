@@ -1,38 +1,31 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ReservationsView } from '../components/reservations-view.tsx';
+import { ReservationsGrid } from '../components/reservations-grid.tsx';
 import {
 	storyReservationsActive,
 	storyReservationsAll,
 	storyReservationsPast,
-} from './reservation-story-mocks.ts';
+} from '../utils/reservation-story-mocks.ts';
 import {
 	defaultReservationActions,
 	withReservationMocks,
 } from '../../../../../test/utils/storybook-providers.tsx';
-const meta: Meta<typeof ReservationsView> = {
-	title: 'Organisms/ReservationsView',
-	component: ReservationsView,
-	parameters: {
-		layout: 'padded',
-		docs: {
-			description: {
-				component:
-					'Responsive reservations view that shows table on desktop and cards on mobile.',
-			},
-		},
-	},
+const meta: Meta<typeof ReservationsGrid> = {
+	title: 'Organisms/ReservationsGrid',
+	component: ReservationsGrid,
+	parameters: { layout: 'padded' },
 	tags: ['autodocs'],
+	// Global decorator for MockedProvider
 	decorators: [withReservationMocks],
-	args: defaultReservationActions,
+	args: defaultReservationActions, // apply to all stories by default
 	argTypes: {
 		onCancel: { action: 'cancel clicked' },
 		onClose: { action: 'close clicked' },
 		onMessage: { action: 'message clicked' },
 	},
 };
-
 export default meta;
-type Story = StoryObj<typeof ReservationsView>;
+
+type Story = StoryObj<typeof ReservationsGrid>;
 
 export const AllReservations: Story = {
 	args: { reservations: storyReservationsAll }};
@@ -58,18 +51,4 @@ export const Empty: Story = {
 
 export const LoadingStates: Story = {
 	args: { reservations: storyReservationsActive, cancelLoading: true },
-};
-
-export const LoadingSpinner: Story = {
-	args: {
-		reservations: [],
-		loading: true,
-	},
-};
-
-export const ErrorState: Story = {
-	args: {
-		reservations: [],
-		error: new Error('Failed to load reservations'),
-	},
 };
