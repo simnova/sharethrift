@@ -160,6 +160,26 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
+		'Query getUserAppealRequest returns null for non-existent ID',
+		({ When, Then }) => {
+			When('getUserAppealRequest query is called with non-existent ID', async () => {
+				mockContext.applicationServices.AppealRequest.UserAppealRequest.getById =
+					vi.fn().mockResolvedValue(null);
+				result = await userAppealRequestResolvers.Query?.getUserAppealRequest?.(
+					{},
+					{ id: 'non-existent-id' },
+					mockContext,
+					{} as GraphQLResolveInfo,
+				);
+			});
+
+			Then('it should return null', () => {
+				expect(result).toBeNull();
+			});
+		},
+	);
+
+	Scenario(
 		'Query getAllUserAppealRequests returns paginated requests',
 		({ When, Then }) => {
 		When(

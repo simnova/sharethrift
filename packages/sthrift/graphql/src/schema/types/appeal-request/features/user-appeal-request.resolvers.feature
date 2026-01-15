@@ -20,6 +20,10 @@ Feature: User Appeal Request Resolvers
     When getUserAppealRequest query is called with valid ID
     Then it should return the user appeal request entity
 
+  Scenario: Query getUserAppealRequest returns null for non-existent ID
+    When getUserAppealRequest query is called with non-existent ID
+    Then it should return null
+
   # Query: getAllUserAppealRequests
   Scenario: Query getAllUserAppealRequests returns paginated requests
     When getAllUserAppealRequests query is called with pagination params
