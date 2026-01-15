@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { AdminUsers } from './admin-users.tsx';
-import { withMockApolloClient, withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
+import { withMockApolloClient, withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
 import {
 	AdminUsersTableContainerAllUsersDocument,
 	BlockUserDocument,
 	UnblockUserDocument,
-} from '../../../../../../../generated.tsx';
+} from '../../../../../../generated.tsx';
 
 const meta: Meta<typeof AdminUsers> = {
 	title: 'Components/AdminUsers',

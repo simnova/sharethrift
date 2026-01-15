@@ -7,7 +7,7 @@ import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
 	AdminListingsTableContainerUnblockListingDocument,
-} from '../../../../../../../generated.tsx';
+} from '../../../../../../generated.tsx';
 import { AdminListingsTable } from './admin-listings-table.tsx';
 
 export function AdminListings(): React.JSX.Element {

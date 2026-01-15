@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { AdminListingsTable } from './admin-listings-table';
-import type { MyListingData } from '../../../../my-listings/components/my-listings-dashboard.types';
+import type { MyListingData } from '../../../my-listings/components/my-listings-dashboard.types';
 
 const mockListings: MyListingData[] = [
 	{
@@ -68,7 +68,7 @@ export const WithListings: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -89,7 +89,7 @@ export const LoadingState: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -110,7 +110,7 @@ export const WithBlockedListings: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -131,7 +131,7 @@ export const EmptyState: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

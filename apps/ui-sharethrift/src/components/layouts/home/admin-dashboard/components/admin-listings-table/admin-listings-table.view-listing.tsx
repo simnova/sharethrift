@@ -17,7 +17,7 @@ import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
 	AdminListingsTableContainerUnblockListingDocument,
-} from '../../../../../../../generated.tsx';
+} from '../../../../../../generated.tsx';
 
 export function AdminViewListing(): ReactElement {
 	const { listingId } = useParams();

@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { AdminViewListing } from './admin-listings-table.view-listing.tsx';
-import { withMockApolloClient, withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
+import { withMockApolloClient, withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
 	AdminListingsTableContainerUnblockListingDocument,
-} from '../../../../../../../generated.tsx';
+} from '../../../../../../generated.tsx';
 
 const meta = {
 	title: 'Components/AdminViewListing',

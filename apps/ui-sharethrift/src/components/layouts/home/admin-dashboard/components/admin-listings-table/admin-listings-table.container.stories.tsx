@@ -4,12 +4,12 @@ import { AdminListings } from './admin-listings-table.container.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
-} from '../../../../../../../test-utils/storybook-decorators.tsx';
+} from '../../../../../../test-utils/storybook-decorators.tsx';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
 	AdminListingsTableContainerUnblockListingDocument,
-} from '../../../../../../../generated.tsx';
+} from '../../../../../../generated.tsx';
 
 const meta: Meta<typeof AdminListings> = {
 	title: 'Containers/AdminListingsTableContainer',

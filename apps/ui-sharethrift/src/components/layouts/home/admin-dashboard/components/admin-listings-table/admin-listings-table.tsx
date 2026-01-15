@@ -2,11 +2,11 @@ import { Button, Image, Popconfirm } from 'antd';
 import type { TableProps } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import { Dashboard } from '@sthrift/ui-components';
-import type { MyListingData } from '../../../../my-listings/components/my-listings-dashboard.types.ts';
 import { TitleFilter } from './admin-listings-table.title-filter';
 import { StatusFilter } from './admin-listings-table.status-filter';
 import { StatusTag } from './admin-listings-table.status-tag';
 import { formatDate } from './admin-listings-table.utils';
+import type { MyListingData } from '../../../my-listings/components/my-listings-dashboard.types';
 
 interface AdminListingsTableProps {
   readonly data: ReadonlyArray<MyListingData>;

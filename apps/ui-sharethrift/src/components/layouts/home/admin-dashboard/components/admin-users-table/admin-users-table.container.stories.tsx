@@ -4,12 +4,12 @@ import { AdminUsersTableContainer } from './admin-users-table.container.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
-} from '../../../../../../../test-utils/storybook-decorators.tsx';
+} from '../../../../../../test-utils/storybook-decorators.tsx';
 import {
 	AdminUsersTableContainerAllUsersDocument,
 	BlockUserDocument,
 	UnblockUserDocument,
-} from '../../../../../../../generated.tsx';
+} from '../../../../../../generated.tsx';
 
 const mockUsers = [
 	{
