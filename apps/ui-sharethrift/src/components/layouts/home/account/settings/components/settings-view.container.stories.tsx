@@ -145,7 +145,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingText = canvas.queryByText(/Loading/i);
 		expect(loadingText || canvasElement).toBeTruthy();
@@ -215,7 +215,7 @@ export const UserNotFound: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const notFoundText = canvas.queryByText(/User not found/i);
 		expect(notFoundText || canvasElement).toBeTruthy();

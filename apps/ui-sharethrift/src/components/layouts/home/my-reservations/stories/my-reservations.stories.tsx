@@ -1,15 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { withMockApolloClient } from '../../../../../test-utils/storybook-decorators.tsx';
+import { withMockApolloClient,withMockRouter } from '../../../../../test-utils/storybook-decorators.tsx';
 import {
 	STORYBOOK_RESERVATION_USER_ID,
 	reservationStoryMocks,
 } from './reservation-story-mocks.ts';
-import { MyReservationsMain } from '../pages/my-reservations.tsx';
 import {
 	HomeMyReservationsReservationsViewActiveContainerActiveReservationsDocument,
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 	ViewListingCurrentUserDocument,
 } from '../../../../../generated.tsx';
+import { App } from '../../../../../App.tsx';
+
+const meta: Meta<typeof App> = {
+	title: 'Pages/My Reservations',
+	component: App,
+  parameters:{
+    layout: 'fullscreen',
+  },
+	decorators: [withMockApolloClient, withMockRouter('/my-reservations')],
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
 // Default mocks that all stories get automatically
 const defaultMocks = [
 	// Always mock the current user
@@ -17,9 +30,10 @@ const defaultMocks = [
 		request: { query: ViewListingCurrentUserDocument },
 		result: {
 			data: {
-				currentPersonalUserAndCreateIfNotExists: {
+				currentUser: {
 					__typename: 'PersonalUser',
 					id: STORYBOOK_RESERVATION_USER_ID,
+          userType: 'personal-user',
 				},
 			},
 		},
@@ -28,23 +42,14 @@ const defaultMocks = [
 	...reservationStoryMocks,
 ];
 
-const meta: Meta<typeof MyReservationsMain> = {
-	title: 'Pages/MyReservations/Main',
-	component: MyReservationsMain,
-	parameters: {
-		layout: 'fullscreen',
-		apolloClient: {
-			mocks: defaultMocks,
-		},
-	},
-	decorators: [withMockApolloClient],
-};
-
-export default meta;
-type Story = StoryObj<typeof meta>;
-
 // Default needs no extra mocks
-export const Default: Story = {};
+export const Default: Story = {
+  parameters: {
+    apolloClient: {
+      mocks: defaultMocks,
+    },
+  },
+};
 
 // Loading only needs its delay-override
 export const Loading: Story = {

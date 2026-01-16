@@ -28,7 +28,7 @@ export const Default: Story = {
 		selectedCategory: '',
 		onCategoryChange: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

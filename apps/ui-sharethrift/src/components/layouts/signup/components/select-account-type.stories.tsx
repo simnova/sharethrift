@@ -61,7 +61,7 @@ const mockAccountPlans: AccountPlan[] = [
 ];
 
 const meta: Meta<typeof SelectAccountType> = {
-	title: 'Signup/SelectAccountType',
+	title: 'Components/Signup/SelectAccountType',
 	component: SelectAccountType,
 	parameters: {
 		layout: 'fullscreen',
@@ -78,7 +78,7 @@ export default meta;
 type Story = StoryObj<typeof SelectAccountType>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText('Account Type and Plan')).toBeTruthy();
 		expect(canvas.getByText('Non-Verified Personal')).toBeTruthy();
@@ -96,7 +96,7 @@ export const WithExistingAccountType: Story = {
 			},
 		} as Parameters<typeof SelectAccountType>[0]['currentUserData'],
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvas.getByText('Account Type and Plan')).toBeTruthy();
 	},
@@ -106,7 +106,7 @@ export const Loading: Story = {
 	args: {
 		loading: true,
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const saveButton = canvas.getByText('Save and Continue');
 		// Button should have loading state (ant-btn-loading class)

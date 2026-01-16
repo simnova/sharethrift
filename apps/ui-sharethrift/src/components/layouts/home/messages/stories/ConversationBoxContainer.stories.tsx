@@ -91,12 +91,13 @@ const cacheUpdateMocks = [
 // #endregion Shared Mock Data
 
 const meta: Meta<typeof ConversationBoxContainer> = {
-	title: 'Pages/Home/Messages/ConversationBoxContainer',
+	title: 'Components/Messages/ConversationBoxContainer',
 	component: ConversationBoxContainer,
 	decorators: [withMockApolloClient, withMockUserId('user-1')],
 	parameters: {
 		layout: 'fullscreen',
 	},
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 export default meta;
 type Story = StoryObj<typeof ConversationBoxContainer>;
@@ -110,7 +111,7 @@ export const Default: Story = {
 			mocks: defaultMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// ListingBanner shows "{firstName}'s Listing"
 		await expect(
@@ -128,7 +129,7 @@ export const SendMessageSuccess: Story = {
 			mocks: sendMessageSuccessMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'Test message');
@@ -146,7 +147,7 @@ export const SendMessageError: Story = {
 			mocks: sendMessageErrorMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'This will fail');
@@ -164,7 +165,7 @@ export const SendMessageNetworkError: Story = {
 			mocks: sendMessageNetworkErrorMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'Network will fail');
@@ -182,7 +183,7 @@ export const CacheUpdateOnSuccess: Story = {
 			mocks: cacheUpdateMocks,
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'First message');

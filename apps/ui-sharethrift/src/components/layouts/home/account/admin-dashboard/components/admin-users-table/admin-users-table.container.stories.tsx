@@ -122,7 +122,7 @@ export default meta;
 type Story = StoryObj<typeof AdminUsersTableContainer>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvasElement).toBeTruthy();
 		const johnDoe = canvas.queryByText(/John/i);
@@ -157,7 +157,7 @@ export const Empty: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -177,7 +177,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -234,7 +234,7 @@ export const WithBlockedUser: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvasElement).toBeTruthy();
 		const blockedText = canvas.queryByText(/Blocked/i);
@@ -277,7 +277,7 @@ export const BlockUserError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -323,7 +323,7 @@ export const ManyUsers: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -361,7 +361,7 @@ export const UnblockUserError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -381,7 +381,7 @@ export const WithError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

@@ -16,6 +16,7 @@ const meta: Meta<typeof AuthLanding> = {
 			</MemoryRouter>
 		),
 	],
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 
 export default meta;

@@ -57,7 +57,7 @@ export const Default: Story = {
 		onImageAdd: fn(),
 		onImageRemove: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const header = canvas.queryByText(/Create a Listing/i);
@@ -78,7 +78,7 @@ export const WithImages: Story = {
 		onCancel: fn(),
 		onImageRemove: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -88,7 +88,7 @@ export const FormInteraction: Story = {
 		onSubmit: fn(),
 		onCancel: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const titleInput = canvas.queryByLabelText(/Title/i);
@@ -102,7 +102,7 @@ export const ClickBackButton: Story = {
 	args: {
 		onCancel: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const backButton = canvas.queryByRole('button', { name: /Back/i });
@@ -118,7 +118,7 @@ export const ClickSaveAsDraft: Story = {
 		onSubmit: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const draftButton = canvas.queryByRole('button', { name: /Save as Draft/i });
@@ -134,7 +134,7 @@ export const ClickPublish: Story = {
 		onSubmit: fn(),
 		uploadedImages: ['/assets/item-images/bike.png'],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 		const publishButton = canvas.queryByRole('button', { name: /Publish/i });
@@ -150,7 +150,7 @@ export const Loading: Story = {
 		onSubmit: fn(),
 		onCancel: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -161,7 +161,7 @@ export const ShowPublishedSuccess: Story = {
 		onViewListing: fn(),
 		onModalClose: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -172,7 +172,7 @@ export const ShowDraftSuccess: Story = {
 		onViewDraft: fn(),
 		onModalClose: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -183,7 +183,7 @@ export const PublishWithValidForm: Story = {
 		onCancel: fn(),
 		uploadedImages: ['/assets/item-images/bike.png'],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		const titleInput = canvas.getByLabelText(/Title/i);
@@ -203,7 +203,7 @@ export const SaveDraftWithPartialData: Story = {
 		onCancel: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		const titleInput = canvas.getByLabelText(/Title/i);
@@ -221,7 +221,7 @@ export const RemoveImage: Story = {
 		onSubmit: fn(),
 		onCancel: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		
 		const removeButtons = canvas.queryAllByRole('button', { name: /remove/i });
@@ -242,7 +242,7 @@ export const LoadingToPublished: Story = {
 		onModalClose: fn(),
 		uploadedImages: ['/assets/item-images/bike.png'],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -256,7 +256,7 @@ export const LoadingToDraft: Story = {
 		onModalClose: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -267,7 +267,7 @@ export const MaxCharacterLimitDescription: Story = {
 		onCancel: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -278,7 +278,7 @@ export const CategorySelection: Story = {
 		onCancel: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const categorySelect = canvas.queryByRole('combobox', { name: /Category/i });
 		if (categorySelect) {
@@ -294,7 +294,7 @@ export const EmptyCategories: Story = {
 		onCancel: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -305,7 +305,7 @@ export const DateRangePicker: Story = {
 		onCancel: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const dateInputs = canvas.queryAllByRole('textbox');
 		await expect(dateInputs.length).toBeGreaterThan(0);
@@ -318,7 +318,7 @@ export const FormValidationError: Story = {
 		onCancel: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const publishButton = canvas.getByRole('button', { name: /Publish/i });
 		await userEvent.click(publishButton);
@@ -332,7 +332,7 @@ export const LocationInput: Story = {
 		onCancel: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const locationInput = canvas.getByLabelText(/Location/i);
 		await userEvent.type(locationInput, 'Toronto, ON');
@@ -346,7 +346,7 @@ export const ImageAdd: Story = {
 		onImageAdd: fn(),
 		uploadedImages: [],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -364,7 +364,7 @@ export const MultipleImages: Story = {
 		onCancel: fn(),
 		onImageRemove: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };

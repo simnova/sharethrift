@@ -17,6 +17,7 @@ const meta: Meta<typeof TermsContainer> = {
 		layout: 'fullscreen',
 	},
 	decorators: [withMockApolloClient, withMockRouter('/signup/terms')],
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 
 export default meta;

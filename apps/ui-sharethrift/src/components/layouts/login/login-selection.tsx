@@ -244,6 +244,7 @@ export const LoginSelection: React.FC = () => {
 							<Button
 								block
 								size="large"
+                data-testid="sign-up-button"
 								onClick={handleOnSignUp}
 								style={{
 									height: '48px',

@@ -88,7 +88,7 @@ const mocks = [
 ];
 
 const meta: Meta<typeof ViewListing> = {
-	title: 'Home/ViewListing',
+	title: 'Components/Home/ViewListing',
 	component: ViewListing,
 	parameters: {
 		layout: 'fullscreen',
