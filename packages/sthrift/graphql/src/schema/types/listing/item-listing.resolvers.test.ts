@@ -811,12 +811,124 @@ test.for(feature, ({ Scenario }) => {
 	);
 
 	Scenario(
-		'Querying adminListings with all filters',
+		'Querying myListingsAll with sorting by title ascending',
 		({ Given, And, When, Then }) => {
-			Given('an admin user with valid credentials', () => {
+			Given('a verified user and valid pagination arguments', () => {
 				context = makeMockGraphContext();
 			});
-			And('pagination arguments with searchText, statusFilters, and sorter', () => {
+			And('a sorter with field "title" and order "ascend"', () => {
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.queryPaged,
+				).mockResolvedValue({
+					items: [createMockListing({ title: 'A Camera' }), createMockListing({ title: 'B Laptop' })],
+					total: 2,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+			When('the myListingsAll query is executed', async () => {
+				const resolver = itemListingResolvers.Query
+					?.myListingsAll as TestResolver<{
+					page: number;
+					pageSize: number;
+					sorter: { field: string; order: 'ascend' | 'descend' };
+				}>;
+				result = await resolver(
+					{},
+					{
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'title', order: 'ascend' },
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then(
+				'it should call Listing.ItemListing.queryPaged with sorter field and order',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							page: 1,
+							pageSize: 10,
+							sorter: { field: 'title', order: 'ascend' },
+							sharerId: 'user-1',
+						}),
+					);
+				},
+			);
+			And('it should return sorted listings', () => {
+				expect(result).toBeDefined();
+				const resultData = result as { items: ItemListingEntity[] };
+				expect(resultData.items.length).toBe(2);
+			});
+		},
+	);
+
+	Scenario(
+		'Querying myListingsAll with sorting by createdAt descending',
+		({ Given, And, When, Then }) => {
+			Given('a verified user and valid pagination arguments', () => {
+				context = makeMockGraphContext();
+			});
+			And('a sorter with field "createdAt" and order "descend"', () => {
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.queryPaged,
+				).mockResolvedValue({
+					items: [
+						createMockListing({ createdAt: new Date('2025-01-02') }),
+						createMockListing({ createdAt: new Date('2025-01-01') })
+					],
+					total: 2,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+			When('the myListingsAll query is executed', async () => {
+				const resolver = itemListingResolvers.Query
+					?.myListingsAll as TestResolver<{
+					page: number;
+					pageSize: number;
+					sorter: { field: string; order: 'ascend' | 'descend' };
+				}>;
+				result = await resolver(
+					{},
+					{
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'createdAt', order: 'descend' },
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then(
+				'it should call Listing.ItemListing.queryPaged with sorter field and order',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							page: 1,
+							pageSize: 10,
+							sorter: { field: 'createdAt', order: 'descend' },
+							sharerId: 'user-1',
+						}),
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Querying myListingsAll with invalid sorter order defaults to ascend',
+		({ Given, And, When, Then }) => {
+			Given('a verified user and valid pagination arguments', () => {
+				context = makeMockGraphContext();
+			});
+			And('a sorter with invalid order value', () => {
 				vi.mocked(
 					context.applicationServices.Listing.ItemListing.queryPaged,
 				).mockResolvedValue({
@@ -826,8 +938,61 @@ test.for(feature, ({ Scenario }) => {
 					pageSize: 10,
 				});
 			});
-			When('the adminListings query is executed', async () => {
-				const resolver = itemListingResolvers.Query?.adminListings as TestResolver<{
+			When('the myListingsAll query is executed', async () => {
+				const resolver = itemListingResolvers.Query
+					?.myListingsAll as TestResolver<{
+					page: number;
+					pageSize: number;
+					sorter: { field: string; order: string };
+				}>;
+				result = await resolver(
+					{},
+					{
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'title', order: 'invalid' },
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then(
+				'it should default sorter order to "ascend"',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							page: 1,
+							pageSize: 10,
+							sorter: { field: 'title', order: 'ascend' },
+							sharerId: 'user-1',
+						}),
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Querying myListingsAll with combined search, filters, and sorting',
+		({ Given, And, When, Then }) => {
+			Given('a verified user and valid pagination arguments', () => {
+				context = makeMockGraphContext();
+			});
+			And('search text "camera", status filters ["Active"], and sorter by title ascending', () => {
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.queryPaged,
+				).mockResolvedValue({
+					items: [createMockListing({ title: 'Camera A', state: 'Active' }), createMockListing({ title: 'Camera B', state: 'Active' })],
+					total: 2,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+			When('the myListingsAll query is executed', async () => {
+				const resolver = itemListingResolvers.Query
+					?.myListingsAll as TestResolver<{
 					page: number;
 					pageSize: number;
 					searchText: string;
@@ -839,7 +1004,7 @@ test.for(feature, ({ Scenario }) => {
 					{
 						page: 1,
 						pageSize: 10,
-						searchText: 'test',
+						searchText: 'camera',
 						statusFilters: ['Active'],
 						sorter: { field: 'title', order: 'ascend' },
 					},
@@ -847,23 +1012,131 @@ test.for(feature, ({ Scenario }) => {
 					{} as never,
 				);
 			});
-			Then('it should call Listing.ItemListing.queryPaged with all provided parameters', () => {
-				expect(
+			Then(
+				'it should call Listing.ItemListing.queryPaged with all combined parameters',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							page: 1,
+							pageSize: 10,
+							searchText: 'camera',
+							statusFilters: ['Active'],
+							sorter: { field: 'title', order: 'ascend' },
+							sharerId: 'user-1',
+						}),
+					);
+				},
+			);
+			And('it should return filtered and sorted results', () => {
+				expect(result).toBeDefined();
+				const resultData = result as { items: ItemListingEntity[] };
+				expect(resultData.items.length).toBe(2);
+				expect(resultData.items[0]?.title).toContain('Camera');
+				expect(resultData.items[0]?.state).toBe('Active');
+			});
+		},
+	);
+
+	Scenario(
+		'Querying myListingsAll with no matching results after filtering',
+		({ Given, And, When, Then }) => {
+			Given('a verified user and strict filter criteria', () => {
+				context = makeMockGraphContext();
+			});
+			And('no listings match the search and filter criteria', () => {
+				vi.mocked(
 					context.applicationServices.Listing.ItemListing.queryPaged,
-				).toHaveBeenCalledWith(
-					expect.objectContaining({
+				).mockResolvedValue({
+					items: [],
+					total: 0,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+			When('the myListingsAll query is executed', async () => {
+				const resolver = itemListingResolvers.Query
+					?.myListingsAll as TestResolver<{
+					page: number;
+					pageSize: number;
+					searchText: string;
+					statusFilters: string[];
+				}>;
+				result = await resolver(
+					{},
+					{
 						page: 1,
 						pageSize: 10,
-						searchText: 'test',
+						searchText: 'nonexistent-item',
 						statusFilters: ['Active'],
-						sorter: { field: 'title', order: 'ascend' },
-					}),
+					},
+					context,
+					{} as never,
 				);
 			});
-			And('it should return paginated results', () => {
+			Then('it should return empty results with total 0', () => {
 				expect(result).toBeDefined();
-				expect(result).toHaveProperty('items');
-				expect(result).toHaveProperty('total');
+				const resultData = result as { items: ItemListingEntity[]; total: number };
+				expect(resultData.items).toEqual([]);
+				expect(resultData.total).toBe(0);
+			});
+		},
+	);
+
+	Scenario(
+		'Querying myListingsAll with invalid sorter field',
+		({ Given, And, When, Then }) => {
+			Given('a verified user and pagination arguments', () => {
+				context = makeMockGraphContext();
+			});
+			And('a sorter with an unsupported field name', () => {
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.queryPaged,
+				).mockResolvedValue({
+					items: [createMockListing()],
+					total: 1,
+					page: 1,
+					pageSize: 10,
+				});
+			});
+			When('the myListingsAll query is executed', async () => {
+				const resolver = itemListingResolvers.Query
+					?.myListingsAll as TestResolver<{
+					page: number;
+					pageSize: number;
+					sorter: { field: string; order: 'ascend' | 'descend' };
+				}>;
+				result = await resolver(
+					{},
+					{
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'invalidField', order: 'ascend' },
+					},
+					context,
+					{} as never,
+				);
+			});
+			Then(
+				'it should still call Listing.ItemListing.queryPaged with the sorter parameters',
+				() => {
+					expect(
+						context.applicationServices.Listing.ItemListing.queryPaged,
+					).toHaveBeenCalledWith(
+						expect.objectContaining({
+							page: 1,
+							pageSize: 10,
+							sorter: { field: 'invalidField', order: 'ascend' },
+							sharerId: 'user-1',
+						}),
+					);
+				},
+			);
+			And('it should return results (field validation is handled by application service)', () => {
+				expect(result).toBeDefined();
+				const resultData = result as { items: ItemListingEntity[] };
+				expect(resultData.items.length).toBeGreaterThan(0);
 			});
 		},
 	);

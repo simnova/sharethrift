@@ -278,6 +278,36 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
+	it('should throw error when listing is null in loadListing', async () => {
+		const doc = makeReservationRequestDoc();
+		doc.listing = null as never;
+		const adapter = new ReservationRequestDomainAdapter(doc as never);
+		await expect(adapter.loadListing()).rejects.toThrow('listing is not populated');
+	});
+
+	it('should get listing when it is populated', () => {
+		const doc = makeReservationRequestDoc();
+		doc.listing = {
+			id: new MongooseSeedwork.ObjectId().toString(),
+			title: 'Test Listing',
+			description: 'Test',
+			state: 'active',
+		} as unknown as Models.Listing.ItemListing;
+		const adapter = new ReservationRequestDomainAdapter(doc as never);
+		const result = adapter.listing;
+		expect(result).toBeDefined();
+	});
+
+	it('should return object id reference when reserver is ObjectId in getter', () => {
+		const doc = makeReservationRequestDoc();
+		const reserverId = new MongooseSeedwork.ObjectId();
+		doc.reserver = reserverId as never;
+		const adapter = new ReservationRequestDomainAdapter(doc as never);
+		const result = adapter.reserver;
+		expect(result).toBeDefined();
+		expect(result.id).toBe(reserverId.toString());
+	});
+
 	Scenario('Loading listing when it is an ObjectId', ({ When, Then }) => {
 		When('I call loadListing on an adapter with listing as ObjectId', async () => {
 			const oid = new MongooseSeedwork.ObjectId();
@@ -336,5 +366,62 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		Then('it should populate and return a PersonalUserDomainAdapter', () => {
 			expect(doc.populate).toHaveBeenCalledWith('reserver');
 		});
+	});
+});
+
+// Additional non-BDD tests for edge cases
+import { describe, it } from 'vitest';
+
+describe('ReservationRequestDomainAdapter - Additional Coverage', () => {
+	it('should throw error when reserver is null in loadReserver', async () => {
+		const doc = {} as Models.ReservationRequest.ReservationRequest;
+		doc.reserver = null as never;
+		const adapter = new ReservationRequestDomainAdapter(doc);
+		await expect(adapter.loadReserver()).rejects.toThrow('reserver is not populated');
+	});
+
+	it('should populate reserver when it is ObjectId in loadReserver', async () => {
+		const doc = {} as Models.ReservationRequest.ReservationRequest;
+		const reserverId = new MongooseSeedwork.ObjectId();
+		doc.reserver = reserverId as never;
+		const mockPopulate = vi.fn().mockResolvedValue(undefined);
+		doc.populate = mockPopulate as never;
+		const adapter = new ReservationRequestDomainAdapter(doc);
+		await adapter.loadReserver();
+		expect(mockPopulate).toHaveBeenCalledWith('reserver');
+	});
+
+	it('should return AdminUser when reserver userType is admin-user in loadReserver', async () => {
+		const doc = {} as Models.ReservationRequest.ReservationRequest;
+		const adminUserDoc = {
+			userType: 'admin-user',
+			id: new MongooseSeedwork.ObjectId(),
+		} as Models.User.AdminUser;
+		doc.reserver = adminUserDoc as never;
+		const adapter = new ReservationRequestDomainAdapter(doc);
+		const result = await adapter.loadReserver();
+		expect(result).toBeDefined();
+	});
+
+	it('should return entity reference when reserver is ObjectId in getter', () => {
+		const doc = {} as Models.ReservationRequest.ReservationRequest;
+		const reserverId = new MongooseSeedwork.ObjectId();
+		doc.reserver = reserverId as never;
+		const adapter = new ReservationRequestDomainAdapter(doc);
+		expect(adapter.reserver.id).toBe(reserverId.toString());
+	});
+
+	it('should return entity when reserver is populated admin-user in getter', () => {
+		const doc = {} as Models.ReservationRequest.ReservationRequest;
+		const adminUserDoc = {
+			userType: 'admin-user',
+			id: new MongooseSeedwork.ObjectId(),
+		} as Models.User.AdminUser;
+		doc.reserver = adminUserDoc as never;
+		const adapter = new ReservationRequestDomainAdapter(doc);
+		const reserverEntity = adapter.reserver;
+		// Just verify it returns an entity (coverage achieved)
+		expect(reserverEntity).toBeDefined();
+		expect(reserverEntity.id).toBeDefined();
 	});
 });

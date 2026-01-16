@@ -5,26 +5,40 @@ import type { FindOptions, FindOneOptions } from '../../mongo-data-source.ts';
 import { AccountPlanReadRepositoryImpl, getAccountPlanReadRepository } from './account-plan.read-repository.ts';
 
 // Mock the converter
-vi.mock('../../../domain/account-plan/account-plan/account-plan.domain-adapter.ts', () => ({
-	AccountPlanConverter: vi.fn().mockImplementation(() => ({
-		toDomain: vi.fn((doc) => ({ id: doc._id, name: doc.name })),
-	})),
-}));
+vi.mock('../../../domain/account-plan/account-plan/account-plan.domain-adapter.ts', () => {
+	// biome-ignore lint/complexity/useArrowFunction: constructor must use function syntax for 'new' compatibility
+	const AccountPlanConverter = vi.fn(function () {
+		return {
+			toDomain: vi.fn((doc) => ({ id: doc._id, name: doc.name })),
+		};
+	});
 
-vi.mock('../account-plan/account-plan.data.ts', () => ({
-	AccountPlanDataSourceImpl: vi.fn().mockImplementation(() => ({
-		find: vi.fn(),
-		findById: vi.fn(),
-		findOne: vi.fn(),
-	})),
-}));
+	return { AccountPlanConverter };
+});
+
+vi.mock('../account-plan/account-plan.data.ts', () => {
+	// biome-ignore lint/complexity/useArrowFunction: constructor must use function syntax for 'new' compatibility
+	const AccountPlanDataSourceImpl = vi.fn(function () {
+		return {
+			find: vi.fn(),
+			findById: vi.fn(),
+			findOne: vi.fn(),
+		};
+	});
+
+	return { AccountPlanDataSourceImpl };
+});
 
 function makeModelsContext(): ModelsContext {
-	return {
+	// Only AccountPlan.AccountPlanModel is used by AccountPlanReadRepositoryImpl
+	const partialContext = {
 		AccountPlan: {
 			AccountPlanModel: {},
 		},
-	} as ModelsContext;
+	};
+
+	// Other members are irrelevant for these tests and safely stubbed via cast
+	return partialContext as unknown as ModelsContext;
 }
 
 function makePassport(): Domain.Passport {
@@ -41,6 +55,22 @@ function makePassport(): Domain.Passport {
 			isSystemAccount: false,
 		}),
 	} as unknown as Domain.Passport;
+}
+
+/**
+ * Typed helper to access the private mongoDataSource property for testing.
+ * Avoids repeated inline casts throughout test assertions.
+ */
+function getMongoDataSource(repository: AccountPlanReadRepositoryImpl): {
+	find: ReturnType<typeof vi.fn>;
+	findById: ReturnType<typeof vi.fn>;
+	findOne: ReturnType<typeof vi.fn>;
+} {
+	return (repository as unknown as { mongoDataSource: { 
+		find: ReturnType<typeof vi.fn>;
+		findById: ReturnType<typeof vi.fn>;
+		findOne: ReturnType<typeof vi.fn>;
+	} }).mongoDataSource;
 }
 
 describe('AccountPlanReadRepositoryImpl', () => {
@@ -68,8 +98,7 @@ describe('AccountPlanReadRepositoryImpl', () => {
 				{ _id: '2', name: 'Plan 2' },
 			];
 
-			// Access the mongoDataSource via prototype or direct property
-			const mongoDataSource = (repository as unknown as { mongoDataSource: { find: ReturnType<typeof vi.fn> } }).mongoDataSource;
+			const mongoDataSource = getMongoDataSource(repository);
 			mongoDataSource.find = vi.fn().mockResolvedValue(mockData);
 
 			const result = await repository.getAll();
@@ -81,7 +110,7 @@ describe('AccountPlanReadRepositoryImpl', () => {
 			const options: FindOptions = { fields: ['name'] };
 			const mockData = [{ _id: '1', name: 'Plan 1' }];
 
-			const mongoDataSource = (repository as unknown as { mongoDataSource: { find: ReturnType<typeof vi.fn> } }).mongoDataSource;
+			const mongoDataSource = getMongoDataSource(repository);
 			mongoDataSource.find = vi.fn().mockResolvedValue(mockData);
 
 			await repository.getAll(options);
@@ -91,7 +120,7 @@ describe('AccountPlanReadRepositoryImpl', () => {
 		it('should return empty array when no plans exist', async () => {
 			const repository = new AccountPlanReadRepositoryImpl(models, passport);
 
-			const mongoDataSource = (repository as unknown as { mongoDataSource: { find: ReturnType<typeof vi.fn> } }).mongoDataSource;
+			const mongoDataSource = getMongoDataSource(repository);
 			mongoDataSource.find = vi.fn().mockResolvedValue([]);
 
 			const result = await repository.getAll();
@@ -104,7 +133,7 @@ describe('AccountPlanReadRepositoryImpl', () => {
 			const repository = new AccountPlanReadRepositoryImpl(models, passport);
 			const mockData = { _id: '123', name: 'Test Plan' };
 
-			const mongoDataSource = (repository as unknown as { mongoDataSource: { findById: ReturnType<typeof vi.fn> } }).mongoDataSource;
+			const mongoDataSource = getMongoDataSource(repository);
 			mongoDataSource.findById = vi.fn().mockResolvedValue(mockData);
 
 			const result = await repository.getById('123');
@@ -114,7 +143,7 @@ describe('AccountPlanReadRepositoryImpl', () => {
 		it('should return null when plan not found', async () => {
 			const repository = new AccountPlanReadRepositoryImpl(models, passport);
 
-			const mongoDataSource = (repository as unknown as { mongoDataSource: { findById: ReturnType<typeof vi.fn> } }).mongoDataSource;
+			const mongoDataSource = getMongoDataSource(repository);
 			mongoDataSource.findById = vi.fn().mockResolvedValue(null);
 
 			const result = await repository.getById('nonexistent');
@@ -125,7 +154,7 @@ describe('AccountPlanReadRepositoryImpl', () => {
 			const repository = new AccountPlanReadRepositoryImpl(models, passport);
 			const options: FindOneOptions = { fields: ['name'] };
 
-			const mongoDataSource = (repository as unknown as { mongoDataSource: { findById: ReturnType<typeof vi.fn> } }).mongoDataSource;
+			const mongoDataSource = getMongoDataSource(repository);
 			mongoDataSource.findById = vi.fn().mockResolvedValue(null);
 
 			await repository.getById('123', options);
@@ -138,7 +167,7 @@ describe('AccountPlanReadRepositoryImpl', () => {
 			const repository = new AccountPlanReadRepositoryImpl(models, passport);
 			const mockData = { _id: '123', name: 'Premium Plan' };
 
-			const mongoDataSource = (repository as unknown as { mongoDataSource: { findOne: ReturnType<typeof vi.fn> } }).mongoDataSource;
+			const mongoDataSource = getMongoDataSource(repository);
 			mongoDataSource.findOne = vi.fn().mockResolvedValue(mockData);
 
 			const result = await repository.getByName('Premium Plan');
@@ -148,7 +177,7 @@ describe('AccountPlanReadRepositoryImpl', () => {
 		it('should return null when plan not found by name', async () => {
 			const repository = new AccountPlanReadRepositoryImpl(models, passport);
 
-			const mongoDataSource = (repository as unknown as { mongoDataSource: { findOne: ReturnType<typeof vi.fn> } }).mongoDataSource;
+			const mongoDataSource = getMongoDataSource(repository);
 			mongoDataSource.findOne = vi.fn().mockResolvedValue(null);
 
 			const result = await repository.getByName('Nonexistent Plan');
@@ -158,7 +187,7 @@ describe('AccountPlanReadRepositoryImpl', () => {
 		it('should call findOne with name filter', async () => {
 			const repository = new AccountPlanReadRepositoryImpl(models, passport);
 
-			const mongoDataSource = (repository as unknown as { mongoDataSource: { findOne: ReturnType<typeof vi.fn> } }).mongoDataSource;
+			const mongoDataSource = getMongoDataSource(repository);
 			mongoDataSource.findOne = vi.fn().mockResolvedValue(null);
 
 			await repository.getByName('Test Plan');

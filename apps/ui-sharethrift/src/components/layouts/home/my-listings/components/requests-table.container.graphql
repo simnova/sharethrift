@@ -23,12 +23,26 @@ query HomeRequestsTableContainerMyListingsRequests(
   }
 }
 
-fragment HomeRequestsTableContainerRequestFields on ListingRequest {
+fragment HomeRequestsTableContainerRequestFields on ReservationRequest {
   id
-  title
-  image
-  requestedBy
-  requestedOn
-  reservationPeriod
-  status
+  listing {
+    title
+    images
+  }
+  reserver {
+    ... on PersonalUser {
+      account {
+        username
+      }
+    }
+    ... on AdminUser {
+      account {
+        username
+      }
+    }
+  }
+  createdAt
+  reservationPeriodStart
+  reservationPeriodEnd
+  state
 }

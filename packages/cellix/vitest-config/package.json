@@ -11,8 +11,9 @@
 		"build": "tsc --build"
 	},
 	"dependencies": {
-		"@storybook/addon-vitest": "^9.1.10",
-		"vitest": "^3.2.4"
+		"@storybook/addon-vitest": "^9.1.17",
+		"@vitest/browser-playwright": "catalog:",
+		"vitest": "catalog:"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

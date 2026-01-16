@@ -14,6 +14,23 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/admin-user.read-repository.feature'),
 );
 
+function createThenableQueryChain<T>(getValue: () => T) {
+	const chain: Record<string, unknown> = {};
+	chain.populate = vi.fn(() => chain);
+	chain.lean = vi.fn(() => chain);
+	chain.skip = vi.fn(() => chain);
+	chain.limit = vi.fn(() => chain);
+	chain.sort = vi.fn(() => chain);
+	chain.countDocuments = vi.fn(() => chain);
+	chain.exec = vi.fn(async () => getValue());
+	Object.defineProperty(chain, 'then', {
+		value: vi.fn((resolve: (v: T) => unknown) => Promise.resolve(getValue()).then(resolve)),
+		enumerable: false,
+		configurable: true,
+	});
+	return chain;
+}
+
 function makeRoleDoc(
 	overrides: Partial<Models.Role.AdminRole> = {},
 ): Models.Role.AdminRole {
@@ -97,26 +114,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		passport = makePassport();
 		mockUsers = [makeMockUser()];
 
-		const createQueryChain = (getValue: () => unknown) => {
-			const chain = {
-				populate: vi.fn(() => chain),
-				lean: vi.fn(() => chain),
-				skip: vi.fn(() => chain),
-				limit: vi.fn(() => chain),
-				sort: vi.fn(() => chain),
-				countDocuments: vi.fn(() => chain),
-				exec: vi.fn(async () => getValue()),
-				// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
-				then: vi.fn((resolve) => Promise.resolve(getValue()).then(resolve)),
-			};
-			return chain;
-		};
+		const createQueryChain = createThenableQueryChain(() => mockUsers);
 
 		mockModel = {
-			find: vi.fn(() => createQueryChain(() => mockUsers)),
-			findById: vi.fn(() => createQueryChain(() => mockUsers[0])),
-			findOne: vi.fn(() => createQueryChain(() => mockUsers[0])),
-			countDocuments: vi.fn(() => createQueryChain(() => mockUsers.length)),
+			find: vi.fn(() => createQueryChain),
+			findById: vi.fn(() => createThenableQueryChain(() => mockUsers[0])),
+			findOne: vi.fn(() => createThenableQueryChain(() => mockUsers[0])),
+			countDocuments: vi.fn(() => createThenableQueryChain(() => mockUsers.length)),
 		} as unknown as Models.User.AdminUserModelType;
 
 		const modelsContext = {
@@ -151,6 +155,23 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			expect((result as unknown[])[0]).toBeInstanceOf(
 				Domain.Contexts.User.AdminUser.AdminUser,
 			);
+		});
+	});
+
+	Scenario('Getting all admin users with no results', ({ Given, When, Then }) => {
+					Given('no AdminUser documents exist in the database', () => {
+						const mockDataSource = repository.mongoDataSource as unknown as {
+				find: ReturnType<typeof vi.fn>;
+			};
+			mockDataSource.find = vi.fn(() => Promise.resolve([]));
+		});
+
+		When('I call getAll', async () => {
+			result = await repository.getAll();
+		});
+
+		Then('I should receive an empty array', () => {
+			expect(result).toEqual([]);
 		});
 	});
 
@@ -278,13 +299,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		"Getting an admin user by ID that doesn't exist",
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
-				const nullQueryChain = {
-					populate: vi.fn(() => nullQueryChain),
-					lean: vi.fn(() => nullQueryChain),
-					exec: vi.fn(async () => null),
-					// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
-					then: vi.fn((resolve) => Promise.resolve(null).then(resolve)),
-				};
+				const nullQueryChain = createThenableQueryChain(() => null);
 
 				mockModel = {
 					...mockModel,
@@ -329,13 +344,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		"Getting an admin user by email that doesn't exist",
 		({ When, Then }) => {
 			When('I call getByEmail with "nonexistent@example.com"', async () => {
-				const nullQueryChain = {
-					populate: vi.fn(() => nullQueryChain),
-					lean: vi.fn(() => nullQueryChain),
-					exec: vi.fn(async () => null),
-					// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
-					then: vi.fn((resolve) => Promise.resolve(null).then(resolve)),
-				};
+				const nullQueryChain = createThenableQueryChain(() => null);
 
 				mockModel = {
 					...mockModel,
@@ -551,13 +560,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When(
 				'I call getByUsername with "nonexistent-username"',
 				async () => {
-					const nullQueryChain = {
-						populate: vi.fn(() => nullQueryChain),
-						lean: vi.fn(() => nullQueryChain),
-						exec: vi.fn(async () => null),
-						// biome-ignore lint/suspicious/noThenProperty: Mongoose queries are thenable
-						then: vi.fn((resolve) => Promise.resolve(null).then(resolve)),
-					};
+					const nullQueryChain = createThenableQueryChain(() => null);
 
 					mockModel = {
 						...mockModel,

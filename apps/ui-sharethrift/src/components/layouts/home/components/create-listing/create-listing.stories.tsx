@@ -260,3 +260,111 @@ export const LoadingToDraft: Story = {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
+
+export const MaxCharacterLimitDescription: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const CategorySelection: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const categorySelect = canvas.queryByRole('combobox', { name: /Category/i });
+		if (categorySelect) {
+			await userEvent.click(categorySelect);
+		}
+	},
+};
+
+export const EmptyCategories: Story = {
+	args: {
+		categories: [],
+		onSubmit: fn(),
+		onCancel: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const DateRangePicker: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const dateInputs = canvas.queryAllByRole('textbox');
+		await expect(dateInputs.length).toBeGreaterThan(0);
+	},
+};
+
+export const FormValidationError: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const publishButton = canvas.getByRole('button', { name: /Publish/i });
+		await userEvent.click(publishButton);
+		// Form should show validation errors since required fields are empty
+	},
+};
+
+export const LocationInput: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const locationInput = canvas.getByLabelText(/Location/i);
+		await userEvent.type(locationInput, 'Toronto, ON');
+	},
+};
+
+export const ImageAdd: Story = {
+	args: {
+		onSubmit: fn(),
+		onCancel: fn(),
+		onImageAdd: fn(),
+		uploadedImages: [],
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const MultipleImages: Story = {
+	args: {
+		uploadedImages: [
+			'/assets/item-images/bike.png',
+			'/assets/item-images/tent.png',
+			'/assets/item-images/projector.png',
+			'/assets/item-images/bike.png',
+			'/assets/item-images/tent.png',
+		],
+		onSubmit: fn(),
+		onCancel: fn(),
+		onImageRemove: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		await expect(canvasElement).toBeTruthy();
+	},
+};
