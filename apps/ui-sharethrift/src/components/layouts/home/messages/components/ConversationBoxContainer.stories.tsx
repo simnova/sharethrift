@@ -4,12 +4,12 @@ import {
 	ConversationBoxContainerConversationDocument,
 	ConversationBoxContainerSendMessageDocument,
 } from '../../../../../generated.tsx';
-import { withMockApolloClient, withMockUserId } from '../../../../../test-utils/storybook-decorators.tsx';
+import { withMockApolloClient, withMockRouter, withMockUserId } from '../../../../../test-utils/storybook-decorators.tsx';
 import { ConversationBoxContainer } from '../components/conversation-box.container.tsx';
 import type { Conversation } from '../../../../../generated.tsx';
 
 
-export const buildConversationMock = (
+const createConversationMock = (
 	overrides?: Partial<Conversation> & { messages?: Conversation['messages'] },
 ): Conversation => {
 	const defaultConversation: Conversation = {
@@ -76,7 +76,7 @@ export const buildConversationMock = (
 	};
 };
 
-export const buildSendMessageMock = (
+const createSendMessageMock = (
 	mode: 'success' | 'error' | 'networkError',
 	messageContent: string = 'Test message',
 ) => {
@@ -110,13 +110,13 @@ export const buildSendMessageMock = (
 };
 
 // #region Shared Mock Data
-const mockConversationDetail = buildConversationMock();
+const mockConversationDetail = createConversationMock();
 
 // Shared base conversation mock
 const conversationMock = {
 	request: {
 		query: ConversationBoxContainerConversationDocument,
-		variables: () => true,
+		variables: { conversationId: 'conv-1' },
 	},
 	maxUsageCount: Number.POSITIVE_INFINITY,
 	result: {
@@ -133,10 +133,10 @@ const sendMessageSuccessMocks = [
 	{
 		request: {
 			query: ConversationBoxContainerSendMessageDocument,
-			variables: () => true,
+			variables: { input: { conversationId: 'conv-1', content: 'Test message' } },
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
-		result: buildSendMessageMock('success'),
+		result: createSendMessageMock('success'),
 	},
 ];
 
@@ -146,10 +146,10 @@ const sendMessageErrorMocks = [
 	{
 		request: {
 			query: ConversationBoxContainerSendMessageDocument,
-			variables: () => true,
+			variables: { input: { conversationId: 'conv-1', content: 'This will fail' } },
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
-		result: buildSendMessageMock('error'),
+		result: createSendMessageMock('error'),
 	},
 ];
 
@@ -159,10 +159,10 @@ const sendMessageNetworkErrorMocks = [
 	{
 		request: {
 			query: ConversationBoxContainerSendMessageDocument,
-			variables: () => true,
+			variables: { input: { conversationId: 'conv-1', content: 'Network will fail' } },
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
-		...buildSendMessageMock('networkError'),
+		...createSendMessageMock('networkError'),
 	},
 ];
 
@@ -171,22 +171,22 @@ const cacheUpdateMocks = [
 	{
 		request: {
 			query: ConversationBoxContainerConversationDocument,
-			variables: () => true,
+			variables: { conversationId: 'conv-1' },
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
 		result: {
 			data: {
-				conversation: buildConversationMock({ messages: [] }),
+				conversation: createConversationMock({ messages: [] }),
 			},
 		},
 	},
 	{
 		request: {
 			query: ConversationBoxContainerSendMessageDocument,
-			variables: () => true,
+			variables: { input: { conversationId: 'conv-1', content: 'First message' } },
 		},
 		maxUsageCount: Number.POSITIVE_INFINITY,
-		result: buildSendMessageMock('success', 'First message'),
+		result: createSendMessageMock('success', 'First message'),
 	},
 ];
 // #endregion Shared Mock Data
@@ -194,7 +194,7 @@ const cacheUpdateMocks = [
 const meta: Meta<typeof ConversationBoxContainer> = {
 	title: 'Pages/Home/Messages/ConversationBoxContainer',
 	component: ConversationBoxContainer,
-	decorators: [withMockApolloClient, withMockUserId('user-1')],
+	decorators: [withMockApolloClient, withMockRouter(), withMockUserId('user-1')],
 	parameters: {
 		layout: 'fullscreen',
 	},
@@ -289,5 +289,23 @@ export const CacheUpdateOnSuccess: Story = {
 		await userEvent.type(textArea, 'First message');
 		const sendButton = canvas.getByRole('button', { name: /send/i });
 		await userEvent.click(sendButton);
+	},
+};
+
+export const CreateConversationMock: Story = {
+	args: {
+		selectedConversationId: 'conv-1',
+	},
+	parameters: {
+		apolloClient: {
+			mocks: defaultMocks,
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		// ListingBanner shows "{firstName}'s Listing"
+		await expect(
+			await canvas.findByText(/John's Listing/i),
+		).toBeInTheDocument();
 	},
 };
