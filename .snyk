@@ -33,3 +33,12 @@ ignore:
         reason: 'Transitive dependency in express, @docusaurus/core, @apollo/server, apollo-link-rest; not exploitable in current usage.'
         expires: '2026-01-19T00:00:00.000Z'
         created: '2026-01-05T09:39:00.000Z'
+  'SNYK-JS-UNDICI-14943963':
+    - '* > @azure/functions@4.8.0':
+        reason: 'Breaking changes in newer versions of @azure/functions; will upgrade when compatible'
+        expires: '2026-06-01T00:00:00.000Z'
+        created: '2026-01-16T00:00:00.000Z'
+    - '@sthrift/payment-service-cybersource@1.0.0 > cybersource-rest-client@0.0.73 > axios-cookiejar-support@4.0.7 > http-cookie-agent@5.0.4 > undici@5.29.0':
+        reason: 'Transitive dependency in cybersource-rest-client; no direct upgrade path available'
+        expires: '2026-06-01T00:00:00.000Z'
+        created: '2026-01-16T00:00:00.000Z'
