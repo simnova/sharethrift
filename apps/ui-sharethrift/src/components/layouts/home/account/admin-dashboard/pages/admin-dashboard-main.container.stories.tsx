@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
-import { AdminDashboardMain } from './admin-dashboard-main.tsx';
+import { expect, within } from 'storybook/test';
 import {
 	withMockApolloClient,
 	withMockRouter,
@@ -9,27 +8,40 @@ import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminUsersTableContainerAllUsersDocument,
 } from '../../../../../../generated.tsx';
+import { HomeRoutes } from '../../../index.tsx';
+import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers.ts';
 
-const meta: Meta<typeof AdminDashboardMain> = {
+const meta: Meta<typeof HomeRoutes> = {
 	title: 'Pages/AdminDashboardMain',
-	component: AdminDashboardMain,
+	component: HomeRoutes,
 	parameters: {
 		layout: 'fullscreen',
+	},
+	decorators: [withMockApolloClient, withMockRouter('/admin-dashboard')],
+};
+
+export default meta;
+type Story = StoryObj<typeof meta>;
+
+export const Default: Story = {
+	parameters: {
 		apolloClient: {
 			mocks: [
 				{
 					request: {
 						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: { page: 1, pageSize: 6, statusFilters: ['Blocked'] },
 					},
-					variableMatcher: () => true,
+
 					result: {
 						data: {
 							adminListings: {
 								items: [
 									{
 										id: 'listing-1',
+										__typename: 'ListingAll',
 										title: 'Test Listing',
-									images: ['https://example.com/image.jpg'],
+										images: ['https://example.com/image.jpg'],
 										createdAt: '2024-01-01T00:00:00Z',
 										sharingPeriodStart: '2024-01-15',
 										sharingPeriodEnd: '2024-02-15',
@@ -37,6 +49,8 @@ const meta: Meta<typeof AdminDashboardMain> = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -44,8 +58,8 @@ const meta: Meta<typeof AdminDashboardMain> = {
 				{
 					request: {
 						query: AdminUsersTableContainerAllUsersDocument,
+						variables: { page: 1, pageSize: 6 },
 					},
-					variableMatcher: () => true,
 					result: {
 						data: {
 							allUsers: {
@@ -64,19 +78,16 @@ const meta: Meta<typeof AdminDashboardMain> = {
 						},
 					},
 				},
+				userIsAdminMockRequest('admin-user', true),
 			],
 		},
 	},
-	decorators: [withMockApolloClient, withMockRouter('/account/admin-dashboard')],
-};
-
-export default meta;
-type Story = StoryObj<typeof AdminDashboardMain>;
-
-export const Default: Story = {
-	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		// make sure that everything rendered already and wait for async queries
 		expect(canvasElement).toBeTruthy();
-		const tabs = canvasElement.querySelectorAll('[role="tab"]');
-		expect(tabs.length).toBeGreaterThan(0);
+		const canvas = within(canvasElement);
+		// wait for the admin dashboard H1 heading to appear after Apollo mocks resolve
+		const adminDashboardText = await canvas.findByRole('heading', { name: /Admin Dashboard/i });
+		expect(adminDashboardText).toBeTruthy();
 	},
 };

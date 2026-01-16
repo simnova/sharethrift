@@ -4,6 +4,7 @@ export const userIsAdminMockRequest = (
 	userId: string,
 	isAdmin: boolean = false,
 ) => {
+	const typename = isAdmin ? 'AdminUser' : 'PersonalUser';
 	return {
 		request: {
 			query: UseUserIsAdminDocument,
@@ -12,7 +13,11 @@ export const userIsAdminMockRequest = (
 
 		result: {
 			data: {
-				currentUser: { id: userId, userIsAdmin: isAdmin },
+				currentUser: {
+					__typename: typename,
+					id: userId,
+					userIsAdmin: isAdmin,
+				},
 			},
 		},
 	};
