@@ -7,7 +7,7 @@ import { Listings } from './pages/all-listings-page.tsx';
 import { ViewListing } from './pages/view-listing-page.tsx';
 import { CreateListing } from './pages/create-listing-page.tsx';
 import { SectionLayout } from './section-layout.tsx';
-import { AdminDashboardMain } from './account/admin-dashboard/pages/admin-dashboard-main.tsx';
+import { AdminDashboardMain } from './admin-dashboard/pages/admin-dashboard-main.tsx';
 import { RequireAuth } from '../../shared/require-auth.tsx';
 import { RequireAuthAdmin } from '../../shared/require-auth-admin.tsx';
 

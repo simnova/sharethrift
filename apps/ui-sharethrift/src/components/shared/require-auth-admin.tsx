@@ -1,7 +1,7 @@
 import { useEffect, type JSX } from 'react';
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
-import { useUserIsAdmin } from '../layouts/home/account/hooks/useUserIsAdmin.ts';
+import { useUserIsAdmin } from './hooks/useUserIsAdmin.ts';
 
 const { VITE_B2C_REDIRECT_URI } = import.meta.env;
 
