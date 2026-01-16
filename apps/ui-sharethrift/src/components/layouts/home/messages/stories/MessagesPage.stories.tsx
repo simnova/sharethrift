@@ -34,8 +34,9 @@ export const Default: Story = {
 					result: {
 						data: {
 							currentUser: {
+                __typename: 'PersonalUser',
 								id: '507f1f77bcf86cd799439011',
-								useUserIsAdmin: false,
+								userIsAdmin: false,
 							},
 						},
 					},
