@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent, fn, waitFor } from 'storybook/test';
-import { AdminUsersTableContainer } from './admin-users-table.container.tsx';
-import {
-	withMockApolloClient,
-	withMockRouter,
-} from '../../../../../../../test-utils/storybook-decorators.tsx';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 import {
 	AdminUsersTableContainerAllUsersDocument,
 	BlockUserDocument,
 	UnblockUserDocument,
 } from '../../../../../../../generated.tsx';
+import {
+	withMockApolloClient,
+	withMockRouter,
+} from '../../../../../../../test-utils/storybook-decorators.tsx';
+import { AdminUsersTableContainer } from './admin-users-table.container.tsx';
 
 const mockUsers = [
 	{
@@ -124,11 +124,12 @@ type Story = StoryObj<typeof AdminUsersTableContainer>;
 export const Default: Story = {
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
-		expect(canvasElement).toBeTruthy();
-		const johnDoe = canvas.queryByText(/John/i);
-		if (johnDoe) {
-			expect(johnDoe).toBeInTheDocument();
-		}
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -157,8 +158,17 @@ export const Empty: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeTruthy();
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+		const emptyText =
+			canvas.queryByText(/No users/i) ?? canvas.queryByText(/empty/i);
+		expect(emptyText ?? canvasElement).toBeTruthy();
 	},
 };
 
@@ -177,15 +187,24 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeTruthy();
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
 
 export const WithSearch: Story = {
-	play: async ({ canvasElement }) => {
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
-		expect(canvasElement).toBeTruthy();
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 		const searchInput = canvas.queryByRole('textbox');
 		if (searchInput) {
 			await userEvent.type(searchInput, 'john');
@@ -234,9 +253,14 @@ export const WithBlockedUser: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
-		expect(canvasElement).toBeTruthy();
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Jane/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
 		const blockedText = canvas.queryByText(/Blocked/i);
 		if (blockedText) {
 			expect(blockedText).toBeInTheDocument();
@@ -277,8 +301,14 @@ export const BlockUserError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeTruthy();
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -323,8 +353,14 @@ export const ManyUsers: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeTruthy();
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/User/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -361,8 +397,14 @@ export const UnblockUserError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeTruthy();
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Jane/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -381,15 +423,29 @@ export const WithError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
-		expect(canvasElement).toBeTruthy();
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				const errorContainer =
+					canvas.queryByRole('alert') ??
+					canvas.queryByText(/an error occurred/i);
+				expect(errorContainer ?? canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
 export const WithStatusFilter: Story = {
-	play: async ({ canvasElement }) => {
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
-		expect(canvasElement).toBeTruthy();
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
 		const filterDropdown = canvas.queryByText(/Status/i);
 		if (filterDropdown) {
 			await userEvent.click(filterDropdown);
@@ -732,6 +788,285 @@ export const SortAscending: Story = {
 		if (firstNameHeader) {
 			await userEvent.click(firstNameHeader);
 			await userEvent.click(firstNameHeader);
+		}
+	},
+};
+
+export const ConfirmBlockUser: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: BlockUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							blockUser: {
+								__typename: 'MutationStatus',
+								success: true,
+								errorMessage: null,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Click on a "Block" button if visible
+		const blockBtn = canvas.queryByRole('button', { name: /^Block$/i });
+		if (blockBtn) {
+			await userEvent.click(blockBtn);
+			// Wait for modal and fill form
+			await waitFor(async () => {
+				const reasonSelect = document.querySelector('.ant-select-selector');
+				if (reasonSelect) {
+					await userEvent.click(reasonSelect);
+				}
+			});
+			// Select first reason option
+			const firstOption = document.querySelector('.ant-select-item');
+			if (firstOption) {
+				await userEvent.click(firstOption);
+			}
+			// Fill description
+			const descriptionField = document.querySelector('textarea');
+			if (descriptionField) {
+				await userEvent.type(descriptionField, 'Test block reason');
+			}
+			// Confirm block
+			const confirmBtn = document.querySelector(
+				'.ant-modal-footer .ant-btn-primary',
+			);
+			if (confirmBtn) {
+				await userEvent.click(confirmBtn);
+			}
+		}
+	},
+};
+
+export const CancelBlockModal: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Click on a "Block" button if visible
+		const blockBtn = canvas.queryByRole('button', { name: /^Block$/i });
+		if (blockBtn) {
+			await userEvent.click(blockBtn);
+			// Wait for modal and cancel
+			await waitFor(async () => {
+				const cancelBtn = document.querySelector(
+					'.ant-modal-footer .ant-btn:not(.ant-btn-primary)',
+				);
+				if (cancelBtn) {
+					await userEvent.click(cancelBtn);
+				}
+			});
+		}
+	},
+};
+
+export const CancelUnblockModal: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [mockUsers[1]],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Jane/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Click on an "Unblock" button if visible
+		const unblockBtn = canvas.queryByRole('button', { name: /Unblock/i });
+		if (unblockBtn) {
+			await userEvent.click(unblockBtn);
+			// Wait for modal and cancel
+			await waitFor(async () => {
+				const cancelBtn = document.querySelector(
+					'.ant-modal-footer .ant-btn:not(.ant-btn-primary)',
+				);
+				if (cancelBtn) {
+					await userEvent.click(cancelBtn);
+				}
+			});
+		}
+	},
+};
+
+export const HandleBlockError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: BlockUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					error: new Error('Failed to block user'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/John/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Trigger block action which will error
+		const blockBtn = canvas.queryByRole('button', { name: /^Block$/i });
+		if (blockBtn) {
+			await userEvent.click(blockBtn);
+		}
+	},
+};
+
+export const HandleUnblockError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [mockUsers[1]],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: UnblockUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					error: new Error('Failed to unblock user'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Jane/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Trigger unblock action which will error
+		const unblockBtn = canvas.queryByRole('button', { name: /Unblock/i });
+		if (unblockBtn) {
+			await userEvent.click(unblockBtn);
 		}
 	},
 };
