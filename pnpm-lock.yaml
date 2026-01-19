@@ -297,7 +297,7 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0(oidc-client-ts@3.3.0)(react@19.2.0)
       react-router-dom:
-        specifier: ^7.12.0
+        specifier: 'catalog:'
         version: 7.12.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rxjs:
         specifier: ^7.8.2
@@ -652,7 +652,7 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0(oidc-client-ts@3.3.0)(react@19.2.0)
       react-router-dom:
-        specifier: ^7.12.0
+        specifier: 'catalog:'
         version: 7.12.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rimraf:
         specifier: ^6.0.1
@@ -1311,7 +1311,7 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0(oidc-client-ts@3.3.0)(react@19.2.0)
       react-router-dom:
-        specifier: ^7.12.0
+        specifier: 'catalog:'
         version: 7.12.0(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
       rxjs:
         specifier: ^7.8.2
