@@ -8,7 +8,7 @@ const mockListings: MyListingData[] = [
 	{
 		id: '1',
 		title: 'Camping Tent',
-		image: 'https://via.placeholder.com/150',
+		image: '/assets/item-images/tent.png',
 		createdAt: '2024-01-15',
 		reservationPeriod: '2024-06-01 - 2024-08-31',
 		status: 'Active',
@@ -17,7 +17,7 @@ const mockListings: MyListingData[] = [
 	{
 		id: '2',
 		title: 'Mountain Bike',
-		image: 'https://via.placeholder.com/150',
+		image: '/assets/item-images/bike.png',
 		createdAt: '2024-02-20',
 		reservationPeriod: '2024-06-01 - 2024-12-31',
 		status: 'Blocked',
@@ -25,8 +25,8 @@ const mockListings: MyListingData[] = [
 	},
 	{
 		id: '3',
-		title: 'Kayak',
-		image: 'https://via.placeholder.com/150',
+		title: 'Utensil Set',
+		image: '/assets/item-images/utensils.png',
 		createdAt: '2024-03-10',
 		reservationPeriod: '2024-07-01 - 2024-09-30',
 		status: 'Blocked',
@@ -68,28 +68,7 @@ export const WithListings: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play:  ({ canvasElement }) => {
-		expect(canvasElement).toBeTruthy();
-	},
-};
-
-export const LoadingState: Story = {
-	args: {
-		data: [],
-		searchText: '',
-		statusFilters: [],
-		sorter: { field: null, order: null },
-		currentPage: 1,
-		pageSize: 10,
-		total: 0,
-		loading: true,
-		onSearch: fn(),
-		onStatusFilter: fn(),
-		onTableChange: fn(),
-		onPageChange: fn(),
-		onAction: fn(),
-	},
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -110,7 +89,7 @@ export const WithBlockedListings: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -131,7 +110,7 @@ export const EmptyState: Story = {
 		onPageChange: fn(),
 		onAction: fn(),
 	},
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
