@@ -118,8 +118,8 @@ importers:
   apps/api:
     dependencies:
       '@azure/functions':
-        specifier: ^4.0.0
-        version: 4.8.0
+        specifier: ^4.11.0
+        version: 4.11.0
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../packages/cellix/api-services-spec
@@ -835,8 +835,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.2(@apollo/server@5.2.0(graphql@16.11.0))
       '@azure/functions':
-        specifier: ^4.0.0
-        version: 4.8.0
+        specifier: ^4.11.0
+        version: 4.11.0
       '@graphql-tools/json-file-loader':
         specifier: ^8.0.20
         version: 8.0.20(graphql@16.11.0)
@@ -1122,8 +1122,8 @@ importers:
   packages/sthrift/rest:
     dependencies:
       '@azure/functions':
-        specifier: ^4.6.0
-        version: 4.8.0
+        specifier: ^4.11.0
+        version: 4.11.0
       '@sthrift/application-services':
         specifier: workspace:*
         version: link:../application-services
@@ -1694,6 +1694,10 @@ packages:
     resolution: {integrity: sha512-XPArKLzsvl0Hf0CaGyKHUyVgF7oDnhKoP85Xv6M4StF/1AhfORhZudHtOyf2s+FcbuQ9dPRAjB8J2KvRRMUK2A==}
     engines: {node: '>=20.0.0'}
 
+  '@azure/functions-extensions-base@0.2.0':
+    resolution: {integrity: sha512-ncCkHBNQYJa93dBIh+toH0v1iSgCzSo9tr94s6SMBe7DPWREkaWh8cq33A5P4rPSFX1g5W+3SPvIzDr/6/VOWQ==}
+    engines: {node: '>=18.0'}
+
   '@azure/functions-opentelemetry-instrumentation@0.1.0':
     resolution: {integrity: sha512-eRitTbOUDhlzc4o2Q9rjbXiMYa/ep06m2jIkN7HOuLP0aHnjPh3zHXtqji/NyeqT/GfHjCgJr+r8+49s7KER7w==}
     engines: {node: '>=18.0'}
@@ -1703,9 +1707,9 @@ packages:
   '@azure/functions@3.5.1':
     resolution: {integrity: sha512-6UltvJiuVpvHSwLcK/Zc6NfUwlkDLOFFx97BHCJzlWNsfiWwzwmTsxJXg4kE/LemKTHxPpfoPE+kOJ8hAdiKFQ==}
 
-  '@azure/functions@4.8.0':
-    resolution: {integrity: sha512-LNtl3xZNE40vE7+SIST+GYQX5cnnI1M65fXPi26l9XCdPakuQrz54lHv+qQQt1GG5JbqLfQk75iM7A6Y9O+2dQ==}
-    engines: {node: '>=18.0'}
+  '@azure/functions@4.11.0':
+    resolution: {integrity: sha512-J0We2gav3YZFLO9pJlXDKUSOT0r/DzkUaJTaruhm8pwoSMbi4zjsS5N6fARrTel+IBCm77hlD0IgZSKSWvVpUw==}
+    engines: {node: '>=20.0'}
 
   '@azure/identity@3.4.2':
     resolution: {integrity: sha512-0q5DL4uyR0EZ4RXQKD8MadGH6zTIcloUoS/RVbCpNpej4pwte0xpqYxk8K97Py2RiuUvI7F4GXpoT4046VfufA==}
@@ -12881,7 +12885,7 @@ snapshots:
     dependencies:
       '@apollo/server': 5.2.0(graphql@16.11.0)
       '@azure/functions': 3.5.1
-      '@azure/functions-v4': '@azure/functions@4.8.0'
+      '@azure/functions-v4': '@azure/functions@4.11.0'
 
   '@asamuzakjp/css-color@3.2.0':
     dependencies:
@@ -12996,6 +13000,8 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@azure/functions-extensions-base@0.2.0': {}
+
   '@azure/functions-opentelemetry-instrumentation@0.1.0(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
@@ -13009,11 +13015,11 @@ snapshots:
       long: 4.0.0
       uuid: 8.3.2
 
-  '@azure/functions@4.8.0':
+  '@azure/functions@4.11.0':
     dependencies:
+      '@azure/functions-extensions-base': 0.2.0
       cookie: 0.7.2
       long: 4.0.0
-      undici: 5.29.0
 
   '@azure/identity@3.4.2':
     dependencies:
@@ -15514,7 +15520,8 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@fastify/busboy@2.1.1': {}
+  '@fastify/busboy@2.1.1':
+    optional: true
 
   '@fastify/busboy@3.2.0': {}
 
@@ -25718,6 +25725,7 @@ snapshots:
   undici@5.29.0:
     dependencies:
       '@fastify/busboy': 2.1.1
+    optional: true
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
