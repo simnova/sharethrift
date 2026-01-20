@@ -62,10 +62,12 @@
         },
         "overrides": {
             "@pnpm/npm-conf": ">=3.0.2",
-            "@types/node": "^24.10.7"
+            "@types/node": "^24.10.7",
+            "@azure/functions": "4.8.0"
         }
     },
     "devDependencies": {
+        "@azure/functions": "4.8.0",
         "@amiceli/vitest-cucumber": "^6.1.0",
         "@biomejs/biome": "2.0.0",
         "@graphql-codegen/cli": "^5.0.7",
