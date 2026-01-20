@@ -20,9 +20,10 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@azure/functions": "catalog:",
+    
 		"typescript": "^5.8.3",
-		"@sthrift/application-services": "workspace:*"
+		"@sthrift/application-services": "workspace:*",
+		"@azure/functions": "4.8.0"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
