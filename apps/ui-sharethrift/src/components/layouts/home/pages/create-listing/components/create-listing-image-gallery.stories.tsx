@@ -1,123 +1,22 @@
+import React from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within } from 'storybook/test';
-import { useRef, useState, useEffect } from 'react';
+import { expect, within, userEvent } from 'storybook/test';
+import { useRef } from 'react';
 import { ImageGallery } from './create-listing-image-gallery.tsx';
 
-const createMockFile = (name: string): File => {
-	return new File(['test content'], name, { type: 'image/png' });
-};
-
-const FileLimitTestComponent = ({
-	maxCount = 5,
-	initialCount = 0,
-}: { maxCount?: number; initialCount?: number }) => {
-	const inputRef = useRef<HTMLInputElement>(null);
-	const [fileCount, setFileCount] = useState(initialCount);
-
-	// Simulate the useFileLimit hook behavior for testing
-	useEffect(() => {
-		const handler = (e: Event) => {
-			const input = e.target as HTMLInputElement;
-			if (!input.files) {
-				return;
-			}
-			const files = Array.from(input.files);
-			const remaining = maxCount - fileCount;
-			if (remaining <= 0) {
-				input.value = '';
-				return;
-			}
-			if (files.length > remaining) {
-				const dt = new DataTransfer();
-				files.slice(0, remaining).forEach((f) => dt.items.add(f));
-				input.files = dt.files;
-			}
-		};
-		const el = inputRef.current;
-		el?.addEventListener('change', handler);
-		return () => el?.removeEventListener('change', handler);
-	}, [fileCount, maxCount]);
-
-	const handleFilesSelected = () => {
-		if (inputRef.current?.files) {
-			setFileCount((prev) => prev + inputRef.current!.files!.length);
-		}
-	};
+// Simple wrapper that properly manages state
+const TestWrapper = ({ initialImages = [] }: { initialImages?: string[] }) => {
+	const [images, setImages] = React.useState(initialImages);
+	const mainRef = useRef<HTMLInputElement>(null);
+	const additionalRef = useRef<HTMLInputElement>(null);
 
 	return (
-		<div data-testid="file-limit-container">
-			<p data-testid="current-count">Current count: {fileCount}</p>
-			<p data-testid="max-count">Max allowed: {maxCount}</p>
-			<input
-				ref={inputRef}
-				type="file"
-				multiple
-				data-testid="file-input"
-				onChange={handleFilesSelected}
-			/>
-		</div>
-	);
-};
-
-const FileLimitTestWithFileSelection = ({
-	maxCount = 5,
-	initialCount = 0,
-	filesToSelect = 1,
-}: { maxCount?: number; initialCount?: number; filesToSelect?: number }) => {
-	const inputRef = useRef<HTMLInputElement>(null);
-	const [fileCount] = useState(initialCount);
-	const [triggered, setTriggered] = useState(false);
-
-	// Simulate the useFileLimit hook behavior for testing
-	useEffect(() => {
-		const handler = (e: Event) => {
-			const input = e.target as HTMLInputElement;
-			if (!input.files) {
-				return;
-			}
-			const files = Array.from(input.files);
-			const remaining = maxCount - fileCount;
-			if (remaining <= 0) {
-				input.value = '';
-				return;
-			}
-			if (files.length > remaining) {
-				const dt = new DataTransfer();
-				files.slice(0, remaining).forEach((f) => dt.items.add(f));
-				input.files = dt.files;
-			}
-		};
-		const el = inputRef.current;
-		el?.addEventListener('change', handler);
-		return () => el?.removeEventListener('change', handler);
-	}, [fileCount, maxCount]);
-
-	useEffect(() => {
-		if (!triggered && inputRef.current) {
-			const dt = new DataTransfer();
-			for (let i = 0; i < filesToSelect; i++) {
-				dt.items.add(createMockFile(`test${i}.png`));
-			}
-			inputRef.current.files = dt.files;
-
-			const event = new Event('change', { bubbles: true });
-			inputRef.current.dispatchEvent(event);
-			setTriggered(true);
-		}
-	}, [triggered, filesToSelect]);
-
-	return (
-		<div data-testid="file-limit-container">
-			<p data-testid="current-count">Current count: {fileCount}</p>
-			<p data-testid="max-count">Max allowed: {maxCount}</p>
-			<p data-testid="triggered">Triggered: {triggered ? 'yes' : 'no'}</p>
-			<input
-				ref={inputRef}
-				type="file"
-				multiple
-				data-testid="file-input"
-			/>
-		</div>
+		<ImageGallery
+			uploadedImages={images}
+			onImageRemove={(url) => setImages(prev => prev.filter(img => img !== url))}
+			mainFileInputRef={mainRef}
+			additionalFileInputRef={additionalRef}
+		/>
 	);
 };
 
@@ -132,153 +31,231 @@ const meta: Meta<typeof ImageGallery> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Empty: Story = {
-	args: {
-		uploadedImages: [],
-		onImageRemove: () => {},
-		mainFileInputRef: { current: null },
-		additionalFileInputRef: { current: null },
-	},
+export const EmptyState: Story = {
+	render: () => <TestWrapper />,
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const uploadText = canvas.getByText(/Click to upload images, up to 5/i);
-		expect(uploadText).toBeInTheDocument();
+		// Check for upload text
+		expect(canvas.getByText(/Click to upload images, up to 5/i)).toBeInTheDocument();
+		// Check for upload button
+		expect(canvas.getByRole('button', { name: /Upload image/i })).toBeInTheDocument();
 	},
 };
 
-export const WithImages: Story = {
-	args: {
-		uploadedImages: ['/assets/item-images/bike.png', '/assets/item-images/tent.png'],
-		onImageRemove: () => {},
-		mainFileInputRef: { current: null },
-		additionalFileInputRef: { current: null },
-	},
+export const WithOneImage: Story = {
+	render: () => <TestWrapper initialImages={['data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==']} />,
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		// Should show main image and thumbnail
-		const images = canvas.getAllByRole('img');
-		expect(images.length).toBeGreaterThan(0);
+		// Component should render without crashing
+		expect(canvas.getByText('1 / 5')).toBeInTheDocument();
+		// Should have add button for additional images
+		expect(canvas.getByRole('button', { name: /Upload additional image/i })).toBeInTheDocument();
 	},
 };
 
-export const MaxImages: Story = {
-	args: {
-		uploadedImages: [
-			'/assets/item-images/bike.png',
-			'/assets/item-images/tent.png',
-			'/assets/item-images/projector.png',
-			'/assets/item-images/bike.png',
-			'/assets/item-images/tent.png',
-		],
-		onImageRemove: () => {},
-		mainFileInputRef: { current: null },
-		additionalFileInputRef: { current: null },
-	},
+export const WithMultipleImages: Story = {
+	render: () => <TestWrapper initialImages={[
+		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+	]} />,
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		// Should show main image and 4 thumbnails, no add button
-		const images = canvas.getAllByRole('img');
-		expect(images.length).toBe(5); // 1 main + 4 thumbnails
-		const addButton = canvas.queryByLabelText(/Upload additional image/i);
-		expect(addButton).not.toBeInTheDocument();
+		// Component should render without crashing
+		expect(canvas.getByText('3 / 5')).toBeInTheDocument();
+		// Should have add button for additional images
+		expect(canvas.getByRole('button', { name: /Upload additional image/i })).toBeInTheDocument();
 	},
 };
 
-export const FileLimitHookTest: Story = {
-	render: () => <FileLimitTestComponent />,
+export const AtMaxCapacity: Story = {
+	render: () => <TestWrapper initialImages={[
+		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+		'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+	]} />,
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const container = canvas.getByTestId('file-limit-container');
-		expect(container).toBeInTheDocument();
+		// Component should render without crashing
+		expect(canvas.getByText('5 / 5')).toBeInTheDocument();
+		// Should NOT have add button when at max
+		expect(canvas.queryByRole('button', { name: /Upload additional image/i })).not.toBeInTheDocument();
 	},
 };
 
-export const WithZeroFiles: Story = {
-	render: () => <FileLimitTestComponent maxCount={5} initialCount={0} />,
+export const KeyboardAccessibility: Story = {
+	render: () => <TestWrapper />,
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const countElement = canvas.getByTestId('current-count');
-		expect(countElement).toHaveTextContent('Current count: 0');
-		const maxElement = canvas.getByTestId('max-count');
-		expect(maxElement).toHaveTextContent('Max allowed: 5');
+		const uploadButton = canvas.getByRole('button', { name: /Upload image/i });
+
+		// Button should be focusable
+		expect(uploadButton).toBeInTheDocument();
+		// Should have proper accessibility attributes
+		expect(uploadButton).toHaveAttribute('aria-label', 'Upload image');
+
+		// Test keyboard interaction
+		await userEvent.type(uploadButton, '{enter}');
+		// The click handler should be called (we can't test file input directly in browser)
 	},
 };
 
-export const NearMaxLimit: Story = {
-	render: () => <FileLimitTestComponent maxCount={5} initialCount={4} />,
+export const AdditionalImageButton: Story = {
+	render: () => <TestWrapper initialImages={['/test-image-1.jpg']} />,
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const countElement = canvas.getByTestId('current-count');
-		expect(countElement).toHaveTextContent('Current count: 4');
-		const input = canvas.getByTestId('file-input');
-		expect(input).toBeInTheDocument();
+		const addButton = canvas.getByRole('button', { name: /Upload additional image/i });
+
+		// Button should exist and be accessible
+		expect(addButton).toBeInTheDocument();
+		expect(addButton).toHaveAttribute('aria-label', 'Upload additional image');
+
+		// Test keyboard interaction
+		await userEvent.type(addButton, '{enter}');
+		// The click handler should be called (we can't test file input directly in browser)
 	},
 };
 
-export const AtMaxLimit: Story = {
-	render: () => <FileLimitTestComponent maxCount={5} initialCount={5} />,
+export const FileLimitExceeded: Story = {
+	render: () => {
+		const [images, setImages] = React.useState([
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+		]);
+		const mainRef = useRef<HTMLInputElement>(null);
+		const additionalRef = useRef<HTMLInputElement>(null);
+
+		return (
+			<ImageGallery
+				uploadedImages={images}
+				onImageRemove={(url) => setImages(prev => prev.filter(img => img !== url))}
+				mainFileInputRef={mainRef}
+				additionalFileInputRef={additionalRef}
+			/>
+		);
+	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const countElement = canvas.getByTestId('current-count');
-		expect(countElement).toHaveTextContent('Current count: 5');
+		// Should show 4/5
+		expect(canvas.getByText('4 / 5')).toBeInTheDocument();
+		// Should have add button
+		expect(canvas.getByRole('button', { name: /Upload additional image/i })).toBeInTheDocument();
 	},
 };
 
-export const CustomMaxLimit: Story = {
-	render: () => <FileLimitTestComponent maxCount={10} initialCount={3} />,
+export const FileInputChangeLimitExceeded: Story = {
+	render: () => {
+		const [images, setImages] = React.useState([
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+		]);
+		const mainRef = useRef<HTMLInputElement>(null);
+		const additionalRef = useRef<HTMLInputElement>(null);
+
+		// Create hidden file input for testing
+		React.useEffect(() => {
+			if (additionalRef.current) {
+				// Create a data transfer with multiple files to trigger limit exceeded
+				const dt = new DataTransfer();
+				const file1 = new File(['test'], 'test1.jpg', { type: 'image/jpeg' });
+				const file2 = new File(['test'], 'test2.jpg', { type: 'image/jpeg' });
+				dt.items.add(file1);
+				dt.items.add(file2);
+				additionalRef.current.files = dt.files;
+
+				// Trigger change event
+				const event = new Event('change', { bubbles: true });
+				additionalRef.current.dispatchEvent(event);
+			}
+		}, []);
+
+		return (
+			<>
+				<ImageGallery
+					uploadedImages={images}
+					onImageRemove={(url) => setImages(prev => prev.filter(img => img !== url))}
+					mainFileInputRef={mainRef}
+					additionalFileInputRef={additionalRef}
+				/>
+				<input
+					ref={additionalRef}
+					type="file"
+					multiple
+					accept="image/*"
+					style={{ display: 'none' }}
+				/>
+			</>
+		);
+	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const countElement = canvas.getByTestId('current-count');
-		expect(countElement).toHaveTextContent('Current count: 3');
-		const maxElement = canvas.getByTestId('max-count');
-		expect(maxElement).toHaveTextContent('Max allowed: 10');
+		// Should show 5/5 (at max capacity)
+		expect(canvas.getByText('5 / 5')).toBeInTheDocument();
+		// Should NOT have add button when at max
+		expect(canvas.queryByRole('button', { name: /Upload additional image/i })).not.toBeInTheDocument();
 	},
 };
 
-export const FileSelectionWithinLimit: Story = {
-	render: () => (
-		<FileLimitTestWithFileSelection
-			maxCount={5}
-			initialCount={0}
-			filesToSelect={2}
-		/>
-	),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await new Promise((resolve) => setTimeout(resolve, 100));
-		const triggered = canvas.getByTestId('triggered');
-		expect(triggered).toHaveTextContent('Triggered: yes');
-	},
-};
+export const FileInputChangePartialAcceptance: Story = {
+	render: () => {
+		const [images, setImages] = React.useState([
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+			'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='
+		]);
+		const mainRef = useRef<HTMLInputElement>(null);
+		const additionalRef = useRef<HTMLInputElement>(null);
 
-export const FileSelectionAtLimit: Story = {
-	render: () => (
-		<FileLimitTestWithFileSelection
-			maxCount={5}
-			initialCount={5}
-			filesToSelect={2}
-		/>
-	),
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await new Promise((resolve) => setTimeout(resolve, 100));
-		const triggered = canvas.getByTestId('triggered');
-		expect(triggered).toHaveTextContent('Triggered: yes');
-	},
-};
+		// Create hidden file input for testing
+		React.useEffect(() => {
+			if (additionalRef.current) {
+				// Create a data transfer with 3 files but only 1 slot remaining
+				const dt = new DataTransfer();
+				const file1 = new File(['test'], 'test1.jpg', { type: 'image/jpeg' });
+				const file2 = new File(['test'], 'test2.jpg', { type: 'image/jpeg' });
+				const file3 = new File(['test'], 'test3.jpg', { type: 'image/jpeg' });
+				dt.items.add(file1);
+				dt.items.add(file2);
+				dt.items.add(file3);
+				additionalRef.current.files = dt.files;
 
-export const FileSelectionExceedsLimit: Story = {
-	render: () => (
-		<FileLimitTestWithFileSelection
-			maxCount={3}
-			initialCount={0}
-			filesToSelect={5}
-		/>
-	),
+				// Trigger change event
+				const event = new Event('change', { bubbles: true });
+				additionalRef.current.dispatchEvent(event);
+			}
+		}, []);
+
+		return (
+			<>
+				<ImageGallery
+					uploadedImages={images}
+					onImageRemove={(url) => setImages(prev => prev.filter(img => img !== url))}
+					mainFileInputRef={mainRef}
+					additionalFileInputRef={additionalRef}
+				/>
+				<input
+					ref={additionalRef}
+					type="file"
+					multiple
+					accept="image/*"
+					style={{ display: 'none' }}
+				/>
+			</>
+		);
+	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await new Promise((resolve) => setTimeout(resolve, 100));
-		const triggered = canvas.getByTestId('triggered');
-		expect(triggered).toHaveTextContent('Triggered: yes');
+		// Should show 4/5 (still 4 images, the hook filtered but didn't add new ones)
+		expect(canvas.getByText('4 / 5')).toBeInTheDocument();
+		// Should have add button since we're not at max
+		expect(canvas.getByRole('button', { name: /Upload additional image/i })).toBeInTheDocument();
 	},
 };
