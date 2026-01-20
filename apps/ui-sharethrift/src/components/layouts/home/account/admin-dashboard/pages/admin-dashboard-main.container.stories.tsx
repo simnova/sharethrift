@@ -12,7 +12,7 @@ import { HomeRoutes } from '../../../index.tsx';
 import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers.ts';
 
 const meta: Meta<typeof HomeRoutes> = {
-	title: 'Pages/AdminDashboardMain',
+	title: 'Pages/Admin Dashboard',
 	component: HomeRoutes,
 	parameters: {
 		layout: 'fullscreen',

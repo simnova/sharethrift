@@ -9,7 +9,7 @@ import { HomeRoutes } from '../index.tsx';
 import { userIsAdminMockRequest } from '../../../../test-utils/storybook-helpers.ts';
 
 const meta: Meta<typeof HomeRoutes> = {
-	title: 'Pages/Create Listing Page',
+	title: 'Pages/Create Listing',
 	component: HomeRoutes,
 	parameters: {
 		layout: 'fullscreen',
