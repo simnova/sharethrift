@@ -20,7 +20,7 @@
 		"azurite": "azurite-blob --silent --location ../../__blobstorage__ & azurite-queue --silent --location ../../__queuestorage__ & azurite-table --silent --location ../../__tablestorage__"
 	},
 	"dependencies": {
-		"@azure/functions": "catalog:",
+		"@azure/functions": "4.8.0",
 		"@cellix/api-services-spec": "workspace:*",
 		"@cellix/messaging-service": "workspace:*",
 		"@cellix/mongoose-seedwork": "workspace:*",
