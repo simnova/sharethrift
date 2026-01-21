@@ -38,8 +38,10 @@ const config: Config = {
 		locales: ['en'],
 	},
 
-	// Removed swc-loader webpack config (swc-loader not installed)
-	// Docusaurus uses its own default loader (esbuild or babel)
+	markdown: {
+		mermaid: true,
+	},
+	themes: ['@docusaurus/theme-mermaid'],
 
 	presets: [
 		[
