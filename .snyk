@@ -38,4 +38,9 @@ ignore:
         reason: 'Transitive dependency in Azure Functions and payment services; upgrade blocked by upstream compatibility'
         expires: '2026-06-01T00:00:00.000Z'
         created: '2026-01-20T00:00:00.000Z'
+  'SNYK-JS-QS-14724253':
+    - '* > qs@6.13.0':
+        reason: 'Transitive dependency in various packages (azurite, express); not exploitable in current usage context'
+        expires: '2026-06-01T00:00:00.000Z'
+        created: '2026-01-21T00:00:00.000Z'
 

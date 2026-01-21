@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect } from 'storybook/test';
-import { AdminViewListing } from './admin-listings-table.view-listing.tsx';
-import { withMockApolloClient, withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
+import { expect, within, userEvent, waitFor } from 'storybook/test';
+import AdminViewListing from './admin-listings-table.view-listing';
+import { withMockRouter, withMockApolloClient } from '../../../../../../test-utils/storybook-decorators.tsx';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
@@ -11,8 +11,17 @@ import {
 const meta = {
 	title: 'Components/AdminViewListing',
 	component: AdminViewListing,
+	decorators: [withMockApolloClient, withMockRouter('/listing-123')],
 	parameters: {
 		layout: 'fullscreen',
+	},
+} satisfies Meta<typeof AdminViewListing>;
+
+export default meta;
+type Story = StoryObj<typeof AdminViewListing>;
+
+export const Default: Story = {
+	parameters: {
 		apolloClient: {
 			mocks: [
 				{
@@ -33,47 +42,16 @@ const meta = {
 										__typename: 'ListingAll',
 										id: 'listing-123',
 										title: 'Mountain Bike for Weekend',
-										images: [
-											'https://via.placeholder.com/300',
-										],
-										state: 'Blocked',
+										images: ['https://via.placeholder.com/300'],
+										state: 'Active',
 										createdAt: '2024-11-01T10:00:00Z',
 										sharingPeriodStart: '2024-12-01',
 										sharingPeriodEnd: '2024-12-15',
 									},
 								],
 								total: 1,
-							},
-						},
-					},
-				},
-				{
-					request: {
-						query: AdminListingsTableContainerUnblockListingDocument,
-					},
-					result: {
-						data: {
-							unblockItemListing: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
-							},
-						},
-					},
-				},
-				{
-					request: {
-						query: AdminListingsTableContainerDeleteListingDocument,
-					},
-					result: {
-						data: {
-							deleteItemListing: {
-								__typename: 'ItemListingMutationResult',
-								status: {
-									__typename: 'MutationStatus',
-									success: true,
-									errorMessage: null,
-								},
+								page: 1,
+								pageSize: 100,
 							},
 						},
 					},
@@ -81,15 +59,10 @@ const meta = {
 			],
 		},
 	},
-	decorators: [withMockApolloClient, withMockRouter('/account/admin-dashboard/listings/listing-123')],
-} satisfies Meta<typeof AdminViewListing>;
-
-export default meta;
-type Story = StoryObj<typeof AdminViewListing>;
-
-export const Default: Story = {
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
+		await new Promise(resolve => setTimeout(resolve, 1000));
+		expect(canvasElement.textContent).toContain('Mountain Bike for Weekend');
 	},
 };
 
@@ -103,7 +76,7 @@ export const ListingNotFound: Story = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Active'],
 						},
 					},
 					result: {
@@ -112,6 +85,8 @@ export const ListingNotFound: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [],
 								total: 0,
+								page: 1,
+								pageSize: 100,
 							},
 						},
 					},
@@ -134,7 +109,7 @@ export const LoadingState: Story = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Active'],
 						},
 					},
 					delay: Infinity,
@@ -157,7 +132,7 @@ export const UnblockSuccess: Story = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Active'],
 						},
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
@@ -178,6 +153,8 @@ export const UnblockSuccess: Story = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 100,
 							},
 						},
 					},
@@ -201,7 +178,12 @@ export const UnblockSuccess: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvas.queryByText('Unblock Listing')).toBeInTheDocument();
+		});
+		const unblockBtn = canvas.getByText('Unblock Listing');
+		await userEvent.click(unblockBtn);
 	},
 };
 
@@ -215,7 +197,7 @@ export const UnblockError: Story = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Active'],
 						},
 					},
 					result: {
@@ -235,6 +217,8 @@ export const UnblockError: Story = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 100,
 							},
 						},
 					},
@@ -250,7 +234,12 @@ export const UnblockError: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvas.queryByText('Unblock Listing')).toBeInTheDocument();
+		});
+		const unblockBtn = canvas.getByText('Unblock Listing');
+		await userEvent.click(unblockBtn);
 	},
 };
 
@@ -264,9 +253,10 @@ export const DeleteSuccess: Story = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Active'],
 						},
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							adminListings: {
@@ -284,6 +274,8 @@ export const DeleteSuccess: Story = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 100,
 							},
 						},
 					},
@@ -324,7 +316,7 @@ export const DeleteFailure: Story = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Active'],
 						},
 					},
 					result: {
@@ -344,6 +336,8 @@ export const DeleteFailure: Story = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 100,
 							},
 						},
 					},
@@ -384,9 +378,10 @@ export const DeleteError: Story = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Active'],
 						},
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							adminListings: {
@@ -404,6 +399,8 @@ export const DeleteError: Story = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 100,
 							},
 						},
 					},
@@ -433,7 +430,7 @@ export const PublishedListing: Story = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Active'],
 						},
 					},
 					result: {
@@ -446,13 +443,15 @@ export const PublishedListing: Story = {
 										id: 'listing-123',
 										title: 'Camping Gear Set',
 										images: ['https://via.placeholder.com/300'],
-										state: 'Published',
+										state: 'Active',
 										createdAt: '2024-11-01T10:00:00Z',
 										sharingPeriodStart: '2024-12-01',
 										sharingPeriodEnd: '2024-12-15',
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 100,
 							},
 						},
 					},
@@ -475,7 +474,7 @@ export const AppealRequestedListing: Story = {
 						variables: {
 							page: 1,
 							pageSize: 100,
-							statusFilters: ['Appeal Requested', 'Blocked', 'Published'],
+							statusFilters: ['Blocked', 'Active'],
 						},
 					},
 					result: {
@@ -488,13 +487,191 @@ export const AppealRequestedListing: Story = {
 										id: 'listing-123',
 										title: 'Electronics Bundle',
 										images: ['https://via.placeholder.com/300'],
-										state: 'Appeal Requested',
+										state: 'Active',
 										createdAt: '2024-11-01T10:00:00Z',
 										sharingPeriodStart: '2024-12-01',
 										sharingPeriodEnd: '2024-12-15',
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 100,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ActiveListing: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 100,
+							statusFilters: ['Blocked', 'Active'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-123',
+										title: 'Active Listing Item',
+										images: ['https://via.placeholder.com/300'],
+										state: 'Active',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 100,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ListingWithNullDates: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 100,
+							statusFilters: ['Blocked', 'Active'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-123',
+										title: 'Listing with Missing Dates',
+										images: ['https://via.placeholder.com/300'],
+										state: 'Blocked',
+										createdAt: null,
+										sharingPeriodStart: null,
+										sharingPeriodEnd: null,
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 100,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const ListingWithoutImages: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 100,
+							statusFilters: ['Blocked', 'Active'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-123',
+										title: 'Listing Without Images',
+										images: [],
+										state: 'Active',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 100,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const UnknownStateListing: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 100,
+							statusFilters: ['Blocked', 'Active'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-123',
+										title: 'Unknown State Listing',
+										images: ['https://via.placeholder.com/300'],
+										state: null,
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 100,
 							},
 						},
 					},

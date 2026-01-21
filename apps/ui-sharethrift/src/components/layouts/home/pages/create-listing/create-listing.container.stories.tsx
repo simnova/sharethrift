@@ -56,7 +56,12 @@ export const Authenticated: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(canvasElement).toBeTruthy();
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
 		const titleInput = canvas.queryByLabelText(/Title/i);
 		if (titleInput) {
 			expect(titleInput).toBeInTheDocument();
@@ -101,7 +106,26 @@ export const WithDraftSuccess: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+
+		// Fill out the form to trigger handleSubmit
+		const titleInput = canvas.getByLabelText(/Title/i);
+		const descriptionInput = canvas.getByLabelText(/Description/i);
+		const locationInput = canvas.getByLabelText(/Location/i);
+
+		await userEvent.type(titleInput, 'Test Draft Listing');
+		await userEvent.type(descriptionInput, 'Test description for draft');
+		await userEvent.type(locationInput, 'Toronto');
+
+		// Click Save as Draft button
+		const draftBtn = canvas.getByRole('button', { name: /Save as Draft/i });
+		await userEvent.click(draftBtn);
 	},
 };
 
@@ -133,7 +157,26 @@ export const WithPublishSuccess: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+
+		// Fill out the form to trigger handleSubmit
+		const titleInput = canvas.getByLabelText(/Title/i);
+		const descriptionInput = canvas.getByLabelText(/Description/i);
+		const locationInput = canvas.getByLabelText(/Location/i);
+
+		await userEvent.type(titleInput, 'Test Published Listing');
+		await userEvent.type(descriptionInput, 'Test description for published listing');
+		await userEvent.type(locationInput, 'Vancouver');
+
+		// Click Publish button
+		const publishBtn = canvas.getByRole('button', { name: /Publish/i });
+		await userEvent.click(publishBtn);
 	},
 };
 
@@ -156,7 +199,25 @@ export const WithError: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+
+		// Fill out the form and submit to trigger error handling
+		const titleInput = canvas.getByLabelText(/Title/i);
+		const descriptionInput = canvas.getByLabelText(/Description/i);
+		const locationInput = canvas.getByLabelText(/Location/i);
+
+		await userEvent.type(titleInput, 'Test Error Listing');
+		await userEvent.type(descriptionInput, 'Test description for error case');
+		await userEvent.type(locationInput, 'Montreal');
+
+		const publishBtn = canvas.getByRole('button', { name: /Publish/i });
+		await userEvent.click(publishBtn);
 	},
 };
 
@@ -179,7 +240,25 @@ export const Loading: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+
+		// Fill out form and submit to trigger loading state
+		const titleInput = canvas.getByLabelText(/Title/i);
+		const descriptionInput = canvas.getByLabelText(/Description/i);
+		const locationInput = canvas.getByLabelText(/Location/i);
+
+		await userEvent.type(titleInput, 'Test Loading Listing');
+		await userEvent.type(descriptionInput, 'Test description for loading state');
+		await userEvent.type(locationInput, 'Calgary');
+
+		const publishBtn = canvas.getByRole('button', { name: /Publish/i });
+		await userEvent.click(publishBtn);
 	},
 };
 
@@ -211,7 +290,18 @@ export const ImageHandling: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryByLabelText(/Title/i)).toBeInTheDocument();
+			},
+			{ timeout: 3000 },
+		);
+
+		// Test image handling by adding and removing images
+		// Note: This assumes the CreateListing component has image upload functionality
+		// The container's handleImageAdd and handleImageRemove functions should be called
+		expect(canvasElement).toBeTruthy();
 	},
 };
 
@@ -277,7 +367,7 @@ export const ViewListingAction: Story = {
 								__typename: 'ItemListing',
 								id: '1',
 								title: 'Test Listing',
-								state: 'Published',
+								state: 'Active',
 							},
 						},
 					},
@@ -293,8 +383,29 @@ export const ViewListingAction: Story = {
 			},
 			{ timeout: 3000 },
 		);
-		// Verify the form is rendered
-		expect(canvas.queryByLabelText(/Description/i)).toBeInTheDocument();
+
+		// Fill out form and submit to trigger success modal
+		const titleInput = canvas.getByLabelText(/Title/i);
+		const descriptionInput = canvas.getByLabelText(/Description/i);
+		const locationInput = canvas.getByLabelText(/Location/i);
+
+		await userEvent.type(titleInput, 'Test View Listing');
+		await userEvent.type(descriptionInput, 'Test description');
+		await userEvent.type(locationInput, 'Ottawa');
+
+		const publishBtn = canvas.getByRole('button', { name: /Publish/i });
+		await userEvent.click(publishBtn);
+
+		// Wait for success modal and click "View Listing" button to trigger handleViewListing
+		await waitFor(
+			() => {
+				const viewBtn = canvas.queryByRole('button', { name: /View Listing/i });
+				if (viewBtn) {
+					userEvent.click(viewBtn);
+				}
+			},
+			{ timeout: 5000 },
+		);
 	},
 };
 
@@ -317,7 +428,7 @@ export const ViewDraftAction: Story = {
 								__typename: 'ItemListing',
 								id: '1',
 								title: 'Test Draft',
-								state: 'Drafted',
+								state: 'Draft',
 							},
 						},
 					},
@@ -333,8 +444,29 @@ export const ViewDraftAction: Story = {
 			},
 			{ timeout: 3000 },
 		);
-		// Verify the form is rendered
-		expect(canvas.queryByLabelText(/Description/i)).toBeInTheDocument();
+
+		// Fill out form and save as draft to trigger success modal
+		const titleInput = canvas.getByLabelText(/Title/i);
+		const descriptionInput = canvas.getByLabelText(/Description/i);
+		const locationInput = canvas.getByLabelText(/Location/i);
+
+		await userEvent.type(titleInput, 'Test View Draft');
+		await userEvent.type(descriptionInput, 'Test draft description');
+		await userEvent.type(locationInput, 'Edmonton');
+
+		const draftBtn = canvas.getByRole('button', { name: /Save as Draft/i });
+		await userEvent.click(draftBtn);
+
+		// Wait for success modal and click "View Draft" button to trigger handleViewDraft
+		await waitFor(
+			() => {
+				const viewBtn = canvas.queryByRole('button', { name: /View Draft/i });
+				if (viewBtn) {
+					userEvent.click(viewBtn);
+				}
+			},
+			{ timeout: 5000 },
+		);
 	},
 };
 
@@ -373,8 +505,29 @@ export const ModalCloseAction: Story = {
 			},
 			{ timeout: 3000 },
 		);
-		// Verify the form is rendered
-		expect(canvas.queryByLabelText(/Description/i)).toBeInTheDocument();
+
+		// Fill out form and submit to trigger success modal
+		const titleInput = canvas.getByLabelText(/Title/i);
+		const descriptionInput = canvas.getByLabelText(/Description/i);
+		const locationInput = canvas.getByLabelText(/Location/i);
+
+		await userEvent.type(titleInput, 'Test Modal Close');
+		await userEvent.type(descriptionInput, 'Test description');
+		await userEvent.type(locationInput, 'Winnipeg');
+
+		const publishBtn = canvas.getByRole('button', { name: /Publish/i });
+		await userEvent.click(publishBtn);
+
+		// Wait for success modal and click close button to trigger handleModalClose
+		await waitFor(
+			() => {
+				const closeBtn = canvas.queryByRole('button', { name: /×/i }) || canvas.queryByRole('button', { name: /Close/i });
+				if (closeBtn) {
+					userEvent.click(closeBtn);
+				}
+			},
+			{ timeout: 5000 },
+		);
 	},
 };
 
@@ -456,7 +609,16 @@ export const UnauthenticatedSubmit: Story = {
 			},
 			{ timeout: 3000 },
 		);
-		// Try to submit as unauthenticated user
+
+		// Fill out form and try to submit as unauthenticated user
+		const titleInput = canvas.getByLabelText(/Title/i);
+		const descriptionInput = canvas.getByLabelText(/Description/i);
+		const locationInput = canvas.getByLabelText(/Location/i);
+
+		await userEvent.type(titleInput, 'Test Unauth Listing');
+		await userEvent.type(descriptionInput, 'Test description for unauthenticated submit');
+		await userEvent.type(locationInput, 'Halifax');
+
 		const submitBtn =
 			canvas.queryByRole('button', { name: /Publish/i }) ||
 			canvas.queryByRole('button', { name: /Submit/i });

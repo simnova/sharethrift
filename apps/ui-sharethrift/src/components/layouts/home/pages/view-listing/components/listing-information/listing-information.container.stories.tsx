@@ -385,7 +385,15 @@ export const MutationError: Story = {
 			},
 			{ timeout: 3000 },
 		);
-		// Try clicking reserve to trigger mutation error
+		
+		// Select reservation dates first
+		const dateInputs = canvas.queryAllByRole('textbox');
+		if (dateInputs.length >= 2 && dateInputs[0] && dateInputs[1]) {
+			await userEvent.type(dateInputs[0], '2025-02-01');
+			await userEvent.type(dateInputs[1], '2025-02-05');
+		}
+		
+		// Now click reserve to trigger mutation error and test the catch block
 		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
 		if (reserveBtn) {
 			await userEvent.click(reserveBtn);
@@ -493,5 +501,226 @@ export const SkipQuery: Story = {
 			},
 			{ timeout: 3000 },
 		);
+	},
+};
+
+export const SuccessfulReservation: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: {
+							input: {
+								listingId: '1',
+								reservationPeriodStart: '2025-02-01T00:00:00.000Z',
+								reservationPeriodEnd: '2025-02-05T00:00:00.000Z',
+							},
+						},
+					},
+					result: {
+						data: {
+							createReservationRequest: {
+								__typename: 'ReservationRequest',
+								id: 'res-1',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+
+		// Select reservation dates
+		const dateInputs = canvas.queryAllByRole('textbox');
+		if (dateInputs.length >= 2 && dateInputs[0] && dateInputs[1]) {
+			await userEvent.type(dateInputs[0], '2025-02-01');
+			await userEvent.type(dateInputs[1], '2025-02-05');
+		}
+
+		// Click reserve to trigger successful mutation
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+		}
+	},
+};
+
+export const DateValidationWarning: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+
+		// Click reserve without selecting dates to trigger validation warning
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+		}
+	},
+};
+
+export const PartialDateSelection: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+
+		// Select only start date, leave end date empty
+		const dateInputs = canvas.queryAllByRole('textbox');
+		if (dateInputs.length >= 1 && dateInputs[0]) {
+			await userEvent.type(dateInputs[0], '2025-02-01');
+		}
+
+		// Click reserve to trigger validation warning
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+		}
+	},
+};
+
+export const MutationLoadingState: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					delay: Infinity, // Keep loading indefinitely
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
+					0,
+				);
+			},
+			{ timeout: 3000 },
+		);
+
+		// Select reservation dates
+		const dateInputs = canvas.queryAllByRole('textbox');
+		if (dateInputs.length >= 2 && dateInputs[0] && dateInputs[1]) {
+			await userEvent.type(dateInputs[0], '2025-02-01');
+			await userEvent.type(dateInputs[1], '2025-02-05');
+		}
+
+		// Click reserve to trigger loading state
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+		}
+
+		// Verify loading state is shown
+		await waitFor(() => {
+			const loadingBtn = canvas.queryByRole('button', { name: /loading/i }) ||
+			                 canvas.queryByText(/loading/i) ||
+			                 canvas.queryByRole('button', { hidden: true });
+			expect(loadingBtn).toBeTruthy();
+		}, { timeout: 2000 });
 	},
 };

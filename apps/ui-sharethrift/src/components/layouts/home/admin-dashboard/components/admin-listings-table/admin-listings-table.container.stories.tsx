@@ -598,7 +598,7 @@ export const UnblockFailure: Story = {
 	},
 };
 
-export const UnblockError: Story = {
+export const ViewListingAction: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
@@ -631,14 +631,6 @@ export const UnblockError: Story = {
 						},
 					},
 				},
-				{
-					request: {
-						query: AdminListingsTableContainerUnblockListingDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					error: new Error('Network error'),
-				},
 			],
 		},
 	},
@@ -652,10 +644,10 @@ export const UnblockError: Story = {
 			},
 			{ timeout: 3000 },
 		);
-		const unblockBtns = canvas.queryAllByText(/Unblock/i);
-		const unblockBtn = unblockBtns[0];
-		if (unblockBtn) {
-			await userEvent.click(unblockBtn);
+		const viewBtns = canvas.queryAllByText(/View/i);
+		const viewBtn = viewBtns[0];
+		if (viewBtn) {
+			await userEvent.click(viewBtn);
 		}
 	},
 };

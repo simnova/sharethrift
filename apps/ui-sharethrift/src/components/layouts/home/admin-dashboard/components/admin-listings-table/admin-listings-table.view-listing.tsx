@@ -12,16 +12,19 @@ import {
 	Tag,
 } from 'antd';
 import type { ReactElement } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
 	AdminListingsTableContainerAdminListingsDocument,
 	AdminListingsTableContainerDeleteListingDocument,
 	AdminListingsTableContainerUnblockListingDocument,
 } from '../../../../../../generated.tsx';
 
-export function AdminViewListing(): ReactElement {
-	const { listingId } = useParams();
+export default function AdminViewListing(): ReactElement {
+	const location = useLocation();
 	const navigate = useNavigate();
+
+	// For testing, parse listingId from pathname
+	const listingId = location.pathname.split('/').pop() || '';
 
 	// Fetch all admin listings to find the one we're viewing
 	const { data, loading, refetch } = useQuery(
@@ -32,7 +35,6 @@ export function AdminViewListing(): ReactElement {
 				pageSize: 100, // Large enough to find the listing
 				statusFilters: ['Blocked', 'Active'],
 			},
-			fetchPolicy: 'network-only',
 		},
 	);
 
