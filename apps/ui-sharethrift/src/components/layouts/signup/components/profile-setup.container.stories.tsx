@@ -32,6 +32,8 @@ const mockPersonalUser = {
 
 const meta: Meta<typeof ProfileSetupContainer> = {
 	title: 'Containers/ProfileSetupContainer',
+	tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	component: ProfileSetupContainer,
 	parameters: {
 		layout: 'padded',
@@ -77,7 +79,7 @@ export default meta;
 type Story = StoryObj<typeof ProfileSetupContainer>;
 
 export const Default: Story = {
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -127,7 +129,7 @@ export const QueryError: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -203,7 +205,7 @@ export const UpdateSuccess: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -257,7 +259,7 @@ export const UpdateFailure: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -299,7 +301,7 @@ export const UpdateError: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -344,7 +346,7 @@ export const EmptyProfile: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -383,7 +385,7 @@ export const UpdateLoading: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {

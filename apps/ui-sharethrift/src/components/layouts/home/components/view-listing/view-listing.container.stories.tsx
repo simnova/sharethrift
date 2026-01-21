@@ -41,6 +41,8 @@ const mockCurrentUser = {
 
 const meta: Meta<typeof ViewListingContainer> = {
 	title: 'Containers/ViewListingContainer',
+	tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	component: ViewListingContainer,
 	parameters: {
 		layout: 'fullscreen',
@@ -91,7 +93,7 @@ export const Authenticated: Story = {
 	args: {
 		isAuthenticated: true,
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		await waitFor(
 			() => {
 				// Component rendered
@@ -123,7 +125,7 @@ export const Unauthenticated: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		await waitFor(
 			() => {
 				// Component rendered

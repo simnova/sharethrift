@@ -36,6 +36,8 @@ const mockListings = [
 
 const meta: Meta<typeof AllListingsTableContainer> = {
 	title: 'Containers/AllListingsTableContainer',
+	tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	component: AllListingsTableContainer,
 	args: {
 		currentPage: 1,

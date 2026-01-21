@@ -38,14 +38,14 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 
 	const requests = (data?.myListingsRequests?.items ?? []).map((request) => ({
 		id: request.id,
-		title: request.listing?.title || 'Unknown',
+		title: request.listing?.title || 'Unknown Title',
 		image: request.listing?.images?.[0] || null,
-		requestedBy: `@${request.reserver?.account?.username || 'unknown'}`,
+		requestedBy: `@${request.reserver?.account?.username || 'unknown user'}`,
 		requestedOn: request.createdAt?.toISOString(),
 		reservationPeriod: request.reservationPeriodStart && request.reservationPeriodEnd
 			? `${request.reservationPeriodStart.toISOString().split('T')[0]} to ${request.reservationPeriodEnd.toISOString().split('T')[0]}`
-			: 'Unknown',
-		status: request.state || 'Unknown',
+			: 'Unknown Period',
+		status: request.state || 'Unknown Status',
 	}));
 	const total = data?.myListingsRequests?.total ?? 0;
 

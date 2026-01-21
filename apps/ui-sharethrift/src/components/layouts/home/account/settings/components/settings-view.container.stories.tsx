@@ -79,6 +79,7 @@ const mockAdminUser = {
 const meta: Meta<typeof SettingsViewContainer> = {
 	title: 'Containers/SettingsViewContainer',
 	component: SettingsViewContainer,
+	tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {
@@ -145,7 +146,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingText = canvas.queryByText(/Loading/i);
 		expect(loadingText || canvasElement).toBeTruthy();
@@ -215,7 +216,7 @@ export const UserNotFound: Story = {
 			],
 		},
 	},
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const notFoundText = canvas.queryByText(/User not found/i);
 		expect(notFoundText || canvasElement).toBeTruthy();

@@ -100,6 +100,8 @@ const mockAccountPlans = [
 const meta: Meta<typeof SelectAccountTypeContainer> = {
 	title: 'Containers/SelectAccountTypeContainer',
 	component: SelectAccountTypeContainer,
+	tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {
@@ -691,7 +693,7 @@ export const MissingUserId: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		// Component should handle null user gracefully
 		expect(canvasElement).toBeTruthy();
 	},

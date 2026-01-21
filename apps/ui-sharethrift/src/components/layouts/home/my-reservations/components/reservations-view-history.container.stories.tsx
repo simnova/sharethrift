@@ -64,6 +64,8 @@ const mockPastReservations = [
 
 const meta: Meta = {
 	title: 'Containers/ReservationsViewHistoryContainer',
+	tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	component: ReservationsViewHistoryContainer,
 	parameters: {
 		layout: 'fullscreen',
@@ -81,7 +83,8 @@ const meta: Meta = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
 					result: {
@@ -93,14 +96,17 @@ const meta: Meta = {
 			],
 		},
 	},
-	decorators: [withMockApolloClient, withMockRouter('/my-reservations/history')],
+	decorators: [
+		withMockApolloClient,
+		withMockRouter('/my-reservations/history'),
+	],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -121,7 +127,8 @@ export const Empty: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
 					result: {
@@ -133,7 +140,7 @@ export const Empty: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -151,7 +158,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };

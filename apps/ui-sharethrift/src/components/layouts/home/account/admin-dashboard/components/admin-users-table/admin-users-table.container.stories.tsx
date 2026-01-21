@@ -55,7 +55,7 @@ const meta: Meta<typeof AdminUsersTableContainer> = {
 		currentPage: 1,
 		onPageChange: fn(),
 	},
-  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. This is all about functional testing.
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {

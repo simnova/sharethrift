@@ -44,7 +44,7 @@ export default meta;
 type Story = StoryObj<typeof ReservationStateUtilsTest>;
 
 export const Constants: Story = {
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(ACTIVE_RESERVATION_STATES).toContain('Accepted');
 		expect(ACTIVE_RESERVATION_STATES).toContain('Requested');
 		expect(ACTIVE_RESERVATION_STATES.length).toBe(2);
@@ -62,7 +62,7 @@ export const Constants: Story = {
 };
 
 export const ActiveStateChecker: Story = {
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(isActiveReservationState('Accepted')).toBe(true);
 		expect(isActiveReservationState('Requested')).toBe(true);
 
@@ -77,7 +77,7 @@ export const ActiveStateChecker: Story = {
 };
 
 export const InactiveStateChecker: Story = {
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(isInactiveReservationState('Cancelled')).toBe(true);
 		expect(isInactiveReservationState('Closed')).toBe(true);
 		expect(isInactiveReservationState('Rejected')).toBe(true);

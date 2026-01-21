@@ -14,6 +14,7 @@ import { AdminListings } from './admin-listings-table.container.tsx';
 const meta: Meta<typeof AdminListings> = {
 	title: 'Containers/AdminListingsTableContainer',
 	component: AdminListings,
+  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {

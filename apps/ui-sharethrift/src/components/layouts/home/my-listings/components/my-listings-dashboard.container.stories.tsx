@@ -39,6 +39,8 @@ const mockRequests = {
 
 const meta: Meta<typeof MyListingsDashboardContainer> = {
 	title: 'Containers/MyListingsDashboardContainer',
+	tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	component: MyListingsDashboardContainer,
 	parameters: {
 		layout: 'fullscreen',
@@ -95,7 +97,13 @@ export const Empty: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							myListingsAll: { __typename: 'MyListingsAllResult', items: [], total: 0, page: 1, pageSize: 6 },
+							myListingsAll: {
+								__typename: 'MyListingsAllResult',
+								items: [],
+								total: 0,
+								page: 1,
+								pageSize: 6,
+							},
 						},
 					},
 				},
@@ -107,7 +115,13 @@ export const Empty: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							myListingsRequests: { __typename: 'MyListingsRequestsResult', items: [], total: 0, page: 1, pageSize: 6 },
+							myListingsRequests: {
+								__typename: 'MyListingsRequestsResult',
+								items: [],
+								total: 0,
+								page: 1,
+								pageSize: 6,
+							},
 						},
 					},
 				},

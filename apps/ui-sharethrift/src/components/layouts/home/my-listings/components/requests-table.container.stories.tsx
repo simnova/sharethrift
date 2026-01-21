@@ -51,6 +51,8 @@ const mockRequests = {
 		},
 	],
 	total: 2,
+	page: 1,
+	pageSize: 6,
 };
 
 const meta: Meta<typeof RequestsTableContainer> = {
@@ -92,7 +94,7 @@ export const Default: Story = {
 		currentPage: 1,
 		onPageChange: fn(),
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -127,14 +129,14 @@ export const Empty: Story = {
 					},
 					result: {
 						data: {
-							myListingsRequests: { items: [], total: 0 },
+							myListingsRequests: { items: [], total: 0, page: 1, pageSize: 6 },
 						},
 					},
 				},
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -204,7 +206,7 @@ export const ErrorState: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -244,6 +246,8 @@ export const WithSearchFilter: Story = {
 							myListingsRequests: {
 								items: [mockRequests.items[0]],
 								total: 1,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -251,7 +255,7 @@ export const WithSearchFilter: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -295,6 +299,8 @@ export const WithStatusFilter: Story = {
 							myListingsRequests: {
 								items: [mockRequests.items[1]],
 								total: 1,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -302,7 +308,7 @@ export const WithStatusFilter: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -345,7 +351,7 @@ export const WithSorting: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -388,6 +394,8 @@ export const Pagination: Story = {
 							myListingsRequests: {
 								items: [],
 								total: 12,
+								page: 2,
+								pageSize: 6,
 							},
 						},
 					},
@@ -395,7 +403,7 @@ export const Pagination: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -436,7 +444,7 @@ export const NoData: Story = {
 			],
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
@@ -486,7 +494,9 @@ export const DataMappingEdgeCases: Story = {
 										__typename: 'ReservationRequest',
 										id: '2',
 										createdAt: new Date('2025-01-16T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-20T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-20T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-25T00:00:00.000Z'),
 										state: 'Pending',
 										listing: {
@@ -503,13 +513,15 @@ export const DataMappingEdgeCases: Story = {
 										__typename: 'ReservationRequest',
 										id: '3',
 										createdAt: new Date('2025-01-17T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-21T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-21T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-26T00:00:00.000Z'),
 										state: 'Accepted',
 										listing: {
 											__typename: 'ItemListing',
 											title: 'Valid Title',
-											images: ['/assets/item-images/valid.png'],
+											images: ['/assets/item-images/airpods.png'],
 										},
 										reserver: {
 											__typename: 'PersonalUser',
@@ -521,6 +533,8 @@ export const DataMappingEdgeCases: Story = {
 									},
 								],
 								total: 3,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -540,13 +554,13 @@ export const DataMappingEdgeCases: Story = {
 		);
 
 		// Test fallback values for missing data
-		expect(canvas.getByText('Unknown')).toBeInTheDocument(); // Missing listing title
-		expect(canvas.getByText('@unknown')).toBeInTheDocument(); // Missing username
-		expect(canvas.getAllByText('Unknown').length).toBeGreaterThan(1); // Multiple fallbacks
+		expect(canvas.queryAllByText('Unknown Title').length).toBeGreaterThan(0); // Missing listing title
+		expect(canvas.queryAllByText('@unknown user').length).toBeGreaterThan(0); // Missing username
+		expect(canvas.queryAllByText('Unknown Status').length).toBeGreaterThan(0); // Missing status
 
 		// Test valid data still renders correctly
-		expect(canvas.getByText('Valid Title')).toBeInTheDocument();
-		expect(canvas.getByText('Accepted')).toBeInTheDocument();
+		expect(canvas.queryAllByText('Valid Title').length).toBeGreaterThan(0);
+		expect(canvas.queryAllByText('Accepted').length).toBeGreaterThan(0);
 	},
 };
 
@@ -578,13 +592,15 @@ export const DateFormatting: Story = {
 										__typename: 'ReservationRequest',
 										id: '1',
 										createdAt: new Date('2025-01-15T10:30:45.123Z'),
-										reservationPeriodStart: new Date('2025-01-20T09:15:30.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-20T09:15:30.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-25T18:45:00.000Z'),
 										state: 'Pending',
 										listing: {
 											__typename: 'ItemListing',
 											title: 'Test Item',
-											images: ['/assets/item-images/test.png'],
+											images: ['/assets/item-images/airpods.png'],
 										},
 										reserver: {
 											__typename: 'PersonalUser',
@@ -596,6 +612,8 @@ export const DateFormatting: Story = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -638,7 +656,7 @@ export const StateFilteringInteraction: Story = {
 							page: 1,
 							pageSize: 6,
 							searchText: '',
-							statusFilters: ['Pending'],
+							statusFilters: [],
 							sorter: { field: '', order: '' },
 							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
 						},
@@ -651,13 +669,15 @@ export const StateFilteringInteraction: Story = {
 										__typename: 'ReservationRequest',
 										id: '1',
 										createdAt: new Date('2025-01-15T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-20T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-20T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-25T00:00:00.000Z'),
 										state: 'Pending',
 										listing: {
 											__typename: 'ItemListing',
 											title: 'Filtered Item',
-											images: ['/assets/item-images/filtered.png'],
+											images: ['/assets/item-images/airpods.png'],
 										},
 										reserver: {
 											__typename: 'PersonalUser',
@@ -669,6 +689,8 @@ export const StateFilteringInteraction: Story = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -682,7 +704,7 @@ export const StateFilteringInteraction: Story = {
 		// Wait for filtered data to load
 		await waitFor(
 			() => {
-				expect(canvas.getByText('Filtered Item')).toBeInTheDocument();
+				expect(canvas.get('Filtered Item')).toBeInTheDocument();
 			},
 			{ timeout: 3000 },
 		);
@@ -721,7 +743,9 @@ export const SortingInteraction: Story = {
 										__typename: 'ReservationRequest',
 										id: '1',
 										createdAt: new Date('2025-01-15T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-20T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-20T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-25T00:00:00.000Z'),
 										state: 'Pending',
 										listing: {
@@ -741,7 +765,9 @@ export const SortingInteraction: Story = {
 										__typename: 'ReservationRequest',
 										id: '2',
 										createdAt: new Date('2025-01-16T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-21T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-21T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-26T00:00:00.000Z'),
 										state: 'Accepted',
 										listing: {

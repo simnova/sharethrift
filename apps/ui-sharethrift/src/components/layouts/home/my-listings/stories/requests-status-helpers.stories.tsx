@@ -45,7 +45,7 @@ export default meta;
 type Story = StoryObj<typeof RequestsHelpersTest>;
 
 export const StatusTagClasses: Story = {
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(getStatusTagClass('Accepted')).toBe('requestAcceptedTag');
 		expect(getStatusTagClass('Rejected')).toBe('requestRejectedTag');
 		expect(getStatusTagClass('Closed')).toBe('expiredTag');
@@ -133,7 +133,7 @@ const ActionButtonsTest = () => {
 
 export const ActionButtons: Story = {
 	render: () => <ActionButtonsTest />,
-	play:  ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const pendingSection = canvasElement.querySelector('[data-testid="pending-buttons"]');
 		expect(pendingSection?.textContent).toContain('Accept');
 		expect(pendingSection?.textContent).toContain('Reject');
