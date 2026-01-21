@@ -83,8 +83,12 @@ export default function AdminViewListing(): ReactElement {
 
 	const handleDelete = async () => {
 		if (!listing) return;
-		// onCompleted and onError handlers will show messages and navigate
-		await deleteListingMutation({ variables: { id: listing.id } });
+		try {
+			// onCompleted and onError handlers will show messages and navigate
+			await deleteListingMutation({ variables: { id: listing.id } });
+		} catch (e: unknown) {
+			// Error is handled by onError, but catch to prevent unhandled rejection
+		}
 	};
 	if (loading) {
 		return (

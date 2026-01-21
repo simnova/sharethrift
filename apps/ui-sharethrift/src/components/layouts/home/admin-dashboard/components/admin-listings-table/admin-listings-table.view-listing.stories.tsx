@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent, waitFor } from 'storybook/test';
+import { expect, within, userEvent, waitFor, screen } from 'storybook/test';
 import AdminViewListing from './admin-listings-table.view-listing';
 import { withMockRouter, withMockApolloClient } from '../../../../../../test-utils/storybook-decorators.tsx';
 import {
@@ -95,7 +95,11 @@ export const ListingNotFound: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvas.getByText('Listing not found')).toBeInTheDocument();
+			expect(canvas.getByText('The listing with ID listing-123 could not be found.')).toBeInTheDocument();
+		});
 	},
 };
 
@@ -118,7 +122,10 @@ export const LoadingState: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvas.getByText('Loading listing...')).toBeInTheDocument();
+		});
 	},
 };
 
@@ -240,6 +247,7 @@ export const UnblockError: Story = {
 		});
 		const unblockBtn = canvas.getByText('Unblock Listing');
 		await userEvent.click(unblockBtn);
+		// Error is thrown and caught, ensuring catch block coverage
 	},
 };
 
@@ -364,7 +372,16 @@ export const DeleteFailure: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvas.getByText('Remove Listing')).toBeInTheDocument();
+		});
+		const deleteBtn = canvas.getByText('Remove Listing');
+		await userEvent.click(deleteBtn);
+		// Confirm the popconfirm
+		const confirmBtn = screen.getByText('Remove');
+		await userEvent.click(confirmBtn);
+		// Error is shown via message.error, ensuring onCompleted error path coverage
 	},
 };
 
@@ -416,7 +433,16 @@ export const DeleteError: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvas.getByText('Remove Listing')).toBeInTheDocument();
+		});
+		const deleteBtn = canvas.getByText('Remove Listing');
+		await userEvent.click(deleteBtn);
+		// Confirm the popconfirm
+		const confirmBtn = screen.getByText('Remove');
+		await userEvent.click(confirmBtn);
+		// Error is thrown and caught, ensuring onError coverage
 	},
 };
 

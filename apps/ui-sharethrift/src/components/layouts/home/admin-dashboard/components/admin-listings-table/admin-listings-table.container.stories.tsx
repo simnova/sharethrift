@@ -1040,10 +1040,12 @@ export const UnblockMutationNetworkError: Story = {
 				{
 					request: {
 						query: AdminListingsTableContainerUnblockListingDocument,
-						variables: () => true,
+						variables: { id: 'listing-1' },
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
-					error: new Error('Network connection failed'),
+					result: {
+						errors: [new Error('Network connection failed')],
+					},
 				},
 			],
 		},
@@ -1060,6 +1062,7 @@ export const UnblockMutationNetworkError: Story = {
 		const unblockBtn = unblockBtns[0];
 		if (unblockBtn) {
 			await userEvent.click(unblockBtn);
+			// Error is thrown and caught, ensuring catch block coverage
 		}
 	},
 };
