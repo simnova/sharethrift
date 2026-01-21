@@ -1,5 +1,10 @@
 version: v1.5.0
 ignore:
+  'SNYK-JS-UNDICI-14943963':
+    - '* > undici':
+        reason: 'Transitive dependency in @azure/functions; upgrade path has type errors'
+        expires: '2026-01-29T00:00:00.000Z'
+        created: '2026-01-15T11:04:00.000Z'
   'SNYK-JS-SIRV-12558119':
     - '* > sirv@2.0.4':
         reason: 'Transitive dependency in Docusaurus; not exploitable in static site serving context (dev-only asset handler)'
@@ -33,3 +38,11 @@ ignore:
         reason: 'Transitive dependency in express, @docusaurus/core, @apollo/server, apollo-link-rest; not exploitable in current usage.'
         expires: '2026-01-19T00:00:00.000Z'
         created: '2026-01-05T09:39:00.000Z'
+
+# Snyk Code exclusions for local development tooling
+exclude:
+  code:
+    - local-https-proxy.js  # HTTPS->HTTP proxy for local Azure Functions (intentional HTTP usage)
+    - packages/sthrift/mock-messaging-server/src/index.ts  # HTTP fallback for CI/CD (no certs in pipeline)
+    - packages/cellix/mock-oauth2-server/src/index.ts  # HTTP fallback for CI/CD
+    - packages/cellix/mock-payment-server/src/index.ts  # HTTP fallback for CI/CD

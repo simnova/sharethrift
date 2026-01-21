@@ -1,4 +1,8 @@
+import { fileURLToPath } from 'node:url';
 import express from 'express';
+import https from 'node:https';
+import fs from 'node:fs';
+import path from 'node:path';
 import crypto from 'node:crypto';
 import { generateKeyPair } from 'jose';
 import { exportPKCS8 } from 'jose';
@@ -23,17 +27,29 @@ import type {
 	SubscriptionsListResponse,
 	PaymentInstrumentInfo,
 } from '@cellix/payment-service';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.disable('x-powered-by');
-const port = 3001;
+const DEFAULT_PORT = Number(process.env['PORT'] ?? 3001);
+const HOST = 'mock-payment.sharethrift.localhost';
 
-// Enable CORS for all origins (or restrict to 'http://localhost:3000' if needed)
+// Detect certificate availability to determine protocol (HTTPS vs HTTP)
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
+const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
+const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
+const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
+
+// Derive protocol and base URLs based on cert availability
+const PROTOCOL = hasCerts ? 'https' : 'http';
+const FRONTEND_HOST = hasCerts ? 'sharethrift.localhost:3000' : 'localhost:3000';
+const PAYMENT_HOST = hasCerts ? `${HOST}:${DEFAULT_PORT}` : `localhost:${DEFAULT_PORT}`;
+
+const FRONTEND_BASE_URL = `${PROTOCOL}://${FRONTEND_HOST}`;
+const PAYMENT_BASE_URL = `${PROTOCOL}://${PAYMENT_HOST}`;
+
+// Enable CORS for all origins (or restrict to 'https://sharethrift.localhost:3000' if needed)
 app.use((req, res, next) => {
-	res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+	res.header('Access-Control-Allow-Origin', FRONTEND_BASE_URL);
 	res.header(
 		'Access-Control-Allow-Methods',
 		'GET,POST,PUT,PATCH,DELETE,OPTIONS',
@@ -50,7 +66,9 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use('/microform/bundle/:version', express.static(__dirname)); // Serve static files for iframe.min.js
+// Use fileURLToPath(import.meta.url) to get current file path in ES modules
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+app.use('/microform/bundle/:version', express.static(currentDir)); // Serve static files for iframe.min.js
 // Cybersource mock config
 const CYBERSOURCE_MERCHANT_ID = 'simnova_sharethrift';
 
@@ -72,7 +90,7 @@ app.get('/pts/v2/public-key', async (_req, res) => {
 		flx: {
 			path: '/flex/v2/tokens',
 			data: 'qTdsCnVFJpOHwltOD91CxRAAEOl5LzG2IXlGH/ZaA3jh+jbKzwCJxbb/0u6Gh9OlBXXtEfeCFoU5Y5emKN3d6eeq3WUfvXqswVm0Q9l6A1sMRk+xMCVFuUWN3SyFiyvDSNWF+jUsYfISkq2+dH+ttnH/hO/zn/FMNQQ64DRrCC+jR7sPOKITWwWAnpC84InJS4Nk',
-			origin: 'http://localhost:3001',
+			origin: process.env['PAYMENT_MOCK_ORIGIN'] ?? PAYMENT_BASE_URL,
 			jwk: mockJwk,
 		},
 		ctx: [
@@ -81,8 +99,8 @@ app.get('/pts/v2/public-key', async (_req, res) => {
 				data: {
 					clientLibrary:
 						'https://testflex.cybersource.com/microform/bundle/v2/flex-microform.min.js',
-					targetOrigins: ['http://localhost:3000'],
-					mfOrigin: 'http://localhost:3001',
+					targetOrigins: [FRONTEND_BASE_URL],
+					mfOrigin: PAYMENT_BASE_URL,
 				},
 			},
 		],
@@ -1336,6 +1354,56 @@ app.post(
 	},
 );
 
-app.listen(port, () => {
-	console.log(`Payment Mock Server listening on port ${port}`);
-});
+const startServer = (portToTry: number, attempt = 0): void => {
+	if (hasCerts) {
+		const httpsOptions = {
+			key: fs.readFileSync(certKeyPath),
+			cert: fs.readFileSync(certPath),
+		};
+		
+		const server = https.createServer(httpsOptions, app).listen(portToTry, HOST, () => {
+			console.log(` Mock Payment Server listening on https://${HOST}:${portToTry}`);
+			console.log(`   CORS origin: ${FRONTEND_BASE_URL}`);
+			console.log(`   Microform origin: ${PAYMENT_BASE_URL}`);
+		});
+
+		server.on('error', (error: NodeJS.ErrnoException) => {
+			if (error.code === 'EADDRINUSE' && attempt < 5) {
+				const nextPort = portToTry + 1;
+				console.warn(
+					`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
+				);
+				server.close(() => {
+					startServer(nextPort, attempt + 1);
+				});
+				return;
+			}
+
+			console.error('Failed to start mock-payment-server', error);
+		});
+	} else {
+		// Fallback to HTTP when certs don't exist (CI/CD)
+		const server = app.listen(portToTry, () => {
+			console.log(` Mock Payment Server listening on http://localhost:${portToTry} (no certs found)`);
+			console.log(`   CORS origin: ${FRONTEND_BASE_URL}`);
+			console.log(`   Microform origin: ${PAYMENT_BASE_URL}`);
+		});
+
+		server.on('error', (error: NodeJS.ErrnoException) => {
+			if (error.code === 'EADDRINUSE' && attempt < 5) {
+				const nextPort = portToTry + 1;
+				console.warn(
+					`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
+				);
+				server.close(() => {
+					startServer(nextPort, attempt + 1);
+				});
+				return;
+			}
+
+			console.error('Failed to start mock-payment-server', error);
+		});
+	}
+};
+
+startServer(DEFAULT_PORT);
