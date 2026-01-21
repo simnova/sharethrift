@@ -28,59 +28,16 @@ import type {
 } from '@cellix/payment-service';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.disable('x-powered-by');
 const DEFAULT_PORT = Number(process.env['PORT'] ?? 3001);
 const HOST = 'mock-payment.sharethrift.localhost';
 
 // Detect certificate availability to determine protocol (HTTPS vs HTTP)
-const resolveWorkspaceRootForCerts = (): string => {
-	// Prefer an explicit workspace root if provided
-	const envRoot = process.env['WORKSPACE_ROOT'];
-	if (envRoot && path.isAbsolute(envRoot)) {
-		return envRoot;
-	}
-
-	// Walk up from this file's directory looking for either:
-	// - a ".certs" directory, or
-	// - a "package.json" file with "workspaces" field (monorepo root marker)
-	let currentDir = __dirname;
-	for (let i = 0; i < 10; i += 1) {
-		const certsDir = path.join(currentDir, '.certs');
-		const packageJsonPath = path.join(currentDir, 'package.json');
-
-		// Check for .certs directory
-		if (fs.existsSync(certsDir)) {
-			return currentDir;
-		}
-
-		// Check for workspace root package.json
-		if (fs.existsSync(packageJsonPath)) {
-			try {
-				const packageJson = JSON.parse(
-					fs.readFileSync(packageJsonPath, 'utf-8'),
-				);
-				if (packageJson.workspaces || packageJson.name === 'sharethrift') {
-					return currentDir;
-				}
-			} catch {
-				// Ignore JSON parse errors, continue searching
-			}
-		}
-
-		const parentDir = path.dirname(currentDir);
-		if (parentDir === currentDir) {
-			break;
-		}
-		currentDir = parentDir;
-	}
-
-	// Fallback: use this file's directory if no better root is found
-	return __dirname;
-};
-
-const workspaceRoot = resolveWorkspaceRootForCerts();
+const workspaceRoot = path.resolve(
+	path.dirname(fileURLToPath(import.meta.url)),
+	'../../../../..'
+);
 const certKeyPath = path.join(
 	workspaceRoot,
 	'.certs/sharethrift.localhost-key.pem',

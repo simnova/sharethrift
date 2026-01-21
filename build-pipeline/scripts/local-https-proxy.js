@@ -6,12 +6,9 @@ import { fileURLToPath } from 'node:url';
 import net from 'node:net';
 import { spawn } from 'node:child_process';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const PROXY_PORT = 7072;
 const TARGET_PORT = 7071; // Azure Functions default port
-const IS_DAEMON_MODE = process.env.DAEMON_MODE === 'true';
 
 const certPath = path.join(__dirname, '.certs', 'sharethrift.localhost.pem');
 const keyPath = path.join(__dirname, '.certs', 'sharethrift.localhost-key.pem');
@@ -55,18 +52,6 @@ if (portInUse) {
 	process.exit(0);
 }
 
-// If not in daemon mode, spawn self as daemon and exit
-if (!IS_DAEMON_MODE) {
-	console.log('Starting HTTPS proxy in background...');
-	const child = spawn(process.execPath, [__filename], {
-		detached: true,
-		stdio: 'ignore',
-		env: { ...process.env, DAEMON_MODE: 'true' },
-	});
-	child.unref();
-	console.log(`✓ HTTPS proxy started on https://data-access.sharethrift.localhost:${PROXY_PORT}`);
-	process.exit(0);
-}
 
 const server = https.createServer({
 	cert: fs.readFileSync(certPath),

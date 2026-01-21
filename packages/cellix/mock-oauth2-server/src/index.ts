@@ -10,8 +10,6 @@ import { exportPKCS8 } from 'jose';
 
 setupEnvironment();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const app = express();
 app.disable('x-powered-by');
@@ -136,55 +134,13 @@ async function buildTokenResponse(
 	};
 }
 
-const resolveWorkspaceRootForCerts = (): string => {
-	// Prefer an explicit workspace root if provided
-	const envRoot = process.env['WORKSPACE_ROOT'];
-	if (envRoot && path.isAbsolute(envRoot)) {
-		return envRoot;
-	}
-
-	// Walk up from this file's directory looking for either:
-	// - a ".certs" directory, or
-	// - a "package.json" file with "workspaces" field (monorepo root marker)
-	let currentDir = __dirname;
-	for (let i = 0; i < 10; i += 1) {
-		const certsDir = path.join(currentDir, '.certs');
-		const packageJsonPath = path.join(currentDir, 'package.json');
-
-		// Check for .certs directory
-		if (fs.existsSync(certsDir)) {
-			return currentDir;
-		}
-
-		// Check for workspace root package.json
-		if (fs.existsSync(packageJsonPath)) {
-			try {
-				const packageJson = JSON.parse(
-					fs.readFileSync(packageJsonPath, 'utf-8'),
-				);
-				if (packageJson.workspaces || packageJson.name === 'sharethrift') {
-					return currentDir;
-				}
-			} catch {
-				// Ignore JSON parse errors, continue searching
-			}
-		}
-
-		const parentDir = path.dirname(currentDir);
-		if (parentDir === currentDir) {
-			break;
-		}
-		currentDir = parentDir;
-	}
-
-	// Fallback: use this file's directory if no better root is found
-	return __dirname;
-};
-
 // Main async startup
 async function main() {
 	// Check for certificates early to determine BASE_URL
-	const workspaceRoot = resolveWorkspaceRootForCerts();
+	const workspaceRoot = path.resolve(
+		path.dirname(fileURLToPath(import.meta.url)),
+		'../../../../..'
+	);
 	const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
 	const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
 	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
