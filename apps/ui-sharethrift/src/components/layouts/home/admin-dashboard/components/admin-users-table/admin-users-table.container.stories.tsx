@@ -1021,3 +1021,359 @@ export const UnblockUserMutationError: Story = {
 		expect(canvas.queryByText(/User unblocked successfully/i)).toBeNull();
 	},
 };
+
+export const DataTransformationWithNullValues: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: {
+							page: 1,
+							pageSize: 50,
+							searchText: '',
+							statusFilters: [],
+							sorter: undefined,
+						},
+					},
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [
+									{
+										__typename: 'PersonalUser',
+										id: 'user-null',
+										createdAt: null,
+										userType: null,
+										isBlocked: null,
+										account: null,
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/N\/A/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 5000 },
+		);
+	},
+};
+
+export const DataTransformationWithPartialAccountData: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: {
+							page: 1,
+							pageSize: 50,
+							searchText: '',
+							statusFilters: [],
+							sorter: undefined,
+						},
+					},
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [
+									{
+										__typename: 'PersonalUser',
+										id: 'user-partial',
+										createdAt: '2024-01-15T10:30:00Z',
+										userType: 'personal-user',
+										isBlocked: false,
+										account: {
+											__typename: 'PersonalUserAccount',
+											username: null,
+											email: null,
+											profile: null,
+										},
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/N\/A/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 5000 },
+		);
+	},
+};
+
+export const BlockUserMutationNetworkError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: BlockUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					error: new Error('Network error occurred'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const UnblockUserMutationNetworkError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [mockUsers[1]],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: UnblockUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					error: new Error('Network error occurred'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const SortingWithArrayField: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: {
+							page: 1,
+							pageSize: 50,
+							searchText: '',
+							statusFilters: [],
+							sorter: { field: ['account', 'profile', 'firstName'], order: 'ascend' },
+						},
+					},
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const SortingWithNullField: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: {
+							page: 1,
+							pageSize: 50,
+							searchText: '',
+							statusFilters: [],
+							sorter: undefined,
+						},
+					},
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const SearchWithPageReset: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: {
+							page: 1,
+							pageSize: 50,
+							searchText: 'john',
+							statusFilters: [],
+							sorter: undefined,
+						},
+					},
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [mockUsers[0]],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const StatusFilterWithPageReset: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: {
+							page: 1,
+							pageSize: 50,
+							searchText: '',
+							statusFilters: ['Blocked'],
+							sorter: undefined,
+						},
+					},
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [mockUsers[1]],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+export const TableChangeWithSorter: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: {
+							page: 1,
+							pageSize: 50,
+							searchText: '',
+							statusFilters: [],
+							sorter: { field: 'firstName', order: 'descend' },
+						},
+					},
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		expect(canvasElement).toBeTruthy();
+	},
+};

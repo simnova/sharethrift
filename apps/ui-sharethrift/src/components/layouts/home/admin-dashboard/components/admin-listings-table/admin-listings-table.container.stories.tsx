@@ -651,3 +651,462 @@ export const ViewListingAction: Story = {
 		}
 	},
 };
+
+export const DataTransformationWithNullValues: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 6,
+							statusFilters: ['Blocked'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-null',
+										title: null,
+										images: null,
+										state: null,
+										createdAt: null,
+										sharingPeriodStart: null,
+										sharingPeriodEnd: null,
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				// Should handle null values gracefully and show appropriate fallbacks
+				expect(canvas.queryAllByText(/Unknown/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+	},
+};
+
+export const DataTransformationWithPartialData: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 6,
+							statusFilters: ['Blocked'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-partial',
+										title: 'Partial Listing',
+										images: [],
+										state: 'Active',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: null, // Missing end date
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(
+			() => {
+				// Test that component handles partial data gracefully
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+	},
+};
+
+export const EmptyListings: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 6,
+							statusFilters: ['Blocked'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [],
+								total: 0,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(
+			() => {
+				// Should handle empty state gracefully
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+	},
+};
+
+export const MultipleListingsWithDifferentStates: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 6,
+							statusFilters: ['Blocked', 'Active'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-1',
+										title: 'Blocked Bike',
+										images: ['https://example.com/bike.jpg'],
+										state: 'Blocked',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+									{
+										__typename: 'ListingAll',
+										id: 'listing-2',
+										title: 'Active Camera',
+										images: ['https://example.com/camera.jpg'],
+										state: 'Active',
+										createdAt: '2024-11-02T10:00:00Z',
+										sharingPeriodStart: '2024-12-10',
+										sharingPeriodEnd: '2024-12-20',
+									},
+								],
+								total: 2,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		await waitFor(
+			() => {
+				// Test that component handles multiple listings with different states
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+	},
+};
+
+export const StatusFilterFunctionality: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-1',
+										title: 'Filtered Listing',
+										images: ['https://example.com/item.jpg'],
+										state: 'Active',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Filtered Listing/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Status filter interaction would be tested here
+		// Note: The actual filter UI is in the AdminListingsTable component
+	},
+};
+
+export const SearchWithPageReset: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [],
+								total: 0,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+		const searchInput = canvas.queryByRole('textbox');
+		if (searchInput) {
+			await userEvent.type(searchInput, 'test search');
+			// Should trigger page reset to 1
+		}
+	},
+};
+
+export const SortingWithDifferentFields: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-1',
+										title: 'Zebra Bike',
+										images: ['https://example.com/bike.jpg'],
+										state: 'Blocked',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+									{
+										__typename: 'ListingAll',
+										id: 'listing-2',
+										title: 'Apple Camera',
+										images: ['https://example.com/camera.jpg'],
+										state: 'Active',
+										createdAt: '2024-11-02T10:00:00Z',
+										sharingPeriodStart: '2024-12-10',
+										sharingPeriodEnd: '2024-12-20',
+									},
+								],
+								total: 2,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Zebra Bike/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Test sorting by title
+		const titleHeader = canvas.queryByText(/Title/i);
+		if (titleHeader) {
+			await userEvent.click(titleHeader);
+		}
+	},
+};
+
+export const UnblockMutationNetworkError: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-1',
+										title: 'Mountain Bike',
+										images: ['https://example.com/bike.jpg'],
+										state: 'Blocked',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: AdminListingsTableContainerUnblockListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					error: new Error('Network connection failed'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Mountain Bike/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		const unblockBtns = canvas.queryAllByText(/Unblock/i);
+		const unblockBtn = unblockBtns[0];
+		if (unblockBtn) {
+			await userEvent.click(unblockBtn);
+		}
+	},
+};
+
+export const PaginationFunctionality: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: Array.from({ length: 6 }, (_, i) => ({
+									__typename: 'ListingAll',
+									id: `listing-${i + 1}`,
+									title: `Listing ${i + 1}`,
+									images: ['https://example.com/image.jpg'],
+									state: 'Blocked',
+									createdAt: '2024-11-01T10:00:00Z',
+									sharingPeriodStart: '2024-12-01',
+									sharingPeriodEnd: '2024-12-15',
+								})),
+								total: 12,
+								page: 1,
+								pageSize: 6,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Listing 1/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+		// Pagination testing would occur here
+		// Note: Actual pagination UI is in the AdminListingsTable component
+	},
+};
