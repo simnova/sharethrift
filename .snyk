@@ -1,5 +1,10 @@
 version: v1.5.0
 ignore:
+  'SNYK-JS-UNDICI-14943963':
+    - '* > undici':
+        reason: 'Transitive dependency in @azure/functions; upgrade path has type errors'
+        expires: '2026-01-29T00:00:00.000Z'
+        created: '2026-01-15T11:04:00.000Z'
   'SNYK-JS-SIRV-12558119':
     - '* > sirv@2.0.4':
         reason: 'Transitive dependency in Docusaurus; not exploitable in static site serving context (dev-only asset handler)'
