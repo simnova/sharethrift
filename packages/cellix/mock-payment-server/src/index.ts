@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import express from 'express';
 import https from 'node:https';
 import fs from 'node:fs';
@@ -26,7 +27,6 @@ import type {
 	SubscriptionsListResponse,
 	PaymentInstrumentInfo,
 } from '@cellix/payment-service';
-import { fileURLToPath } from 'node:url';
 
 const app = express();
 app.disable('x-powered-by');
@@ -34,18 +34,9 @@ const DEFAULT_PORT = Number(process.env['PORT'] ?? 3001);
 const HOST = 'mock-payment.sharethrift.localhost';
 
 // Detect certificate availability to determine protocol (HTTPS vs HTTP)
-const workspaceRoot = path.resolve(
-	path.dirname(fileURLToPath(import.meta.url)),
-	'../../../../..'
-);
-const certKeyPath = path.join(
-	workspaceRoot,
-	'.certs/sharethrift.localhost-key.pem',
-);
-const certPath = path.join(
-	workspaceRoot,
-	'.certs/sharethrift.localhost.pem',
-);
+const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
+const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
+const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
 const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
 
 // Derive protocol and base URLs based on cert availability
@@ -75,7 +66,9 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use('/microform/bundle/:version', express.static(__dirname)); // Serve static files for iframe.min.js
+// Use fileURLToPath(import.meta.url) to get current file path in ES modules
+const currentDir = path.dirname(fileURLToPath(import.meta.url));
+app.use('/microform/bundle/:version', express.static(currentDir)); // Serve static files for iframe.min.js
 // Cybersource mock config
 const CYBERSOURCE_MERCHANT_ID = 'simnova_sharethrift';
 

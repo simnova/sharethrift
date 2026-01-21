@@ -1,10 +1,9 @@
+import { fileURLToPath } from 'node:url';
 import express from 'express';
 import https from 'node:https';
 import http from 'node:http';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
 import type { Request, Response, Application } from 'express';
 import type { Server } from 'node:http';
 import { config } from 'dotenv';
@@ -79,13 +78,11 @@ export function createApp(): Application {
 export function startServer(port = 10000, seedData = false): Promise<Server> {
 	return new Promise((resolve) => {
 		const app = createApp();
-		const workspaceRoot = path.resolve(
-			path.dirname(fileURLToPath(import.meta.url)),
-			'../../../../..'
-		);
-		const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
-		const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
-		const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
+			// Always resolve .certs from monorepo root (works regardless of script location or cwd)
+			const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
+			const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
+			const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
+			const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
 		if (hasCerts) {
 			const httpsOptions = {
 				key: fs.readFileSync(certKeyPath),

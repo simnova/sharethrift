@@ -1,10 +1,10 @@
+import { fileURLToPath } from 'node:url';
 import { setupEnvironment } from './setup-environment.js';
 import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
 import express from 'express';
 import https from 'node:https';
 import fs from 'node:fs';
-import path, { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 import { exportJWK, generateKeyPair, SignJWT, type JWK } from 'jose';
 import { exportPKCS8 } from 'jose';
 
@@ -136,13 +136,10 @@ async function buildTokenResponse(
 
 // Main async startup
 async function main() {
-	// Check for certificates early to determine BASE_URL
-	const workspaceRoot = path.resolve(
-		path.dirname(fileURLToPath(import.meta.url)),
-		'../../../../..'
-	);
-	const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
-	const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
+	// Always resolve .certs from monorepo root (works regardless of script location or cwd)
+	const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
+	const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
+	const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
 	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
 
 	// Set BASE_URL based on whether we have certificates

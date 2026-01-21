@@ -4,14 +4,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import net from 'node:net';
-import { spawn } from 'node:child_process';
 
 
 const PROXY_PORT = 7072;
 const TARGET_PORT = 7071; // Azure Functions default port
 
-const certPath = path.join(__dirname, '.certs', 'sharethrift.localhost.pem');
-const keyPath = path.join(__dirname, '.certs', 'sharethrift.localhost-key.pem');
+const projectRoot = path.resolve(process.cwd());
+const certPath = path.join(projectRoot, '.certs', 'sharethrift.localhost.pem');
+const keyPath = path.join(projectRoot, '.certs', 'sharethrift.localhost-key.pem');
 
 // Validate certificate files exist
 if (!fs.existsSync(certPath)) {
@@ -45,86 +45,87 @@ function checkPortInUse(port) {
 	});
 }
 
-const portInUse = await checkPortInUse(PROXY_PORT);
 
-if (portInUse) {
-	console.log(`✓ HTTPS proxy already running on port ${PROXY_PORT}`);
-	process.exit(0);
-}
-
-
-const server = https.createServer({
-	cert: fs.readFileSync(certPath),
-	key: fs.readFileSync(keyPath),
-}, (req, res) => {
-	// Validate hostname
-	const host = req.headers.host?.split(':')[0];
-	if (host !== 'data-access.sharethrift.localhost') {
-		res.writeHead(404);
-		res.end('Not Found');
-		return;
+(async () => {
+	const portInUse = await checkPortInUse(PROXY_PORT);
+	if (portInUse) {
+		console.log(`✓ HTTPS proxy already running on port ${PROXY_PORT}`);
+		process.exit(0);
 	}
 
-	// Forward with X-Forwarded headers for protocol-aware handling
-	const options = {
-		hostname: 'localhost',
-		port: TARGET_PORT,
-		path: req.url,
-		method: req.method,
-		headers: {
-			...req.headers,
-			'X-Forwarded-Proto': 'https',
-			'X-Forwarded-Host': req.headers.host || 'data-access.sharethrift.localhost:7072',
-			'X-Forwarded-For': req.socket.remoteAddress || '127.0.0.1',
-		},
-	};
+	const server = https.createServer({
+		cert: fs.readFileSync(certPath),
+		key: fs.readFileSync(keyPath),
+	}, (req, res) => {
+		// Validate hostname
+		const host = req.headers.host?.split(':')[0];
+		if (host !== 'data-access.sharethrift.localhost') {
+			res.writeHead(404);
+			res.end('Not Found');
+			return;
+		}
 
-	const proxy = http.request(options, (proxyRes) => {
-		res.writeHead(proxyRes.statusCode, proxyRes.headers);
-		proxyRes.pipe(res, { end: true });
+		// Forward with X-Forwarded headers for protocol-aware handling
+		const options = {
+			hostname: 'localhost',
+			port: TARGET_PORT,
+			path: req.url,
+			method: req.method,
+			headers: {
+				...req.headers,
+				'X-Forwarded-Proto': 'https',
+				'X-Forwarded-Host': req.headers.host || 'data-access.sharethrift.localhost:7072',
+				'X-Forwarded-For': req.socket.remoteAddress || '127.0.0.1',
+			},
+		};
+
+		const proxy = http.request(options, (proxyRes) => {
+			res.writeHead(proxyRes.statusCode, proxyRes.headers);
+			proxyRes.pipe(res, { end: true });
+		});
+
+		req.pipe(proxy, { end: true });
+
+		proxy.on('error', (err) => {
+			console.error('Proxy error:', err);
+			res.writeHead(502);
+			res.end('Bad Gateway');
+		});
 	});
 
-	req.pipe(proxy, { end: true });
-
-	proxy.on('error', (err) => {
-		console.error('Proxy error:', err);
-		res.writeHead(502);
-		res.end('Bad Gateway');
+	// Handle server startup errors
+	server.on('error', (err) => {
+		if (err.code === 'EADDRINUSE') {
+			console.error(`Error: Port ${PROXY_PORT} is already in use`);
+			console.error('Another instance may be running. Stop it or use a different port.');
+		} else if (err.code === 'EACCES') {
+			console.error(`Error: Permission denied to bind to port ${PROXY_PORT}`);
+			console.error('Try using a port > 1024 or run with elevated privileges.');
+		} else {
+			console.error('Server error:', err);
+		}
+		process.exit(1);
 	});
-});
 
-// Handle server startup errors
-server.on('error', (err) => {
-	if (err.code === 'EADDRINUSE') {
-		console.error(`Error: Port ${PROXY_PORT} is already in use`);
-		console.error('Another instance may be running. Stop it or use a different port.');
-	} else if (err.code === 'EACCES') {
-		console.error(`Error: Permission denied to bind to port ${PROXY_PORT}`);
-		console.error('Try using a port > 1024 or run with elevated privileges.');
-	} else {
-		console.error('Server error:', err);
-	}
-	process.exit(1);
-});
-
-// Handle graceful shutdown
-process.on('SIGINT', () => {
-	console.log('\nShutting down HTTPS proxy...');
-	server.close(() => {
-		console.log('HTTPS proxy stopped');
-		process.exit(0);
+	// Handle graceful shutdown
+	process.on('SIGINT', () => {
+		console.log('\nShutting down HTTPS proxy...');
+		server.close(() => {
+			console.log('HTTPS proxy stopped');
+			process.exit(0);
+		});
 	});
-});
 
-process.on('SIGTERM', () => {
-	console.log('\nShutting down HTTPS proxy...');
-	server.close(() => {
-		console.log('HTTPS proxy stopped');
-		process.exit(0);
+	process.on('SIGTERM', () => {
+		console.log('\nShutting down HTTPS proxy...');
+		server.close(() => {
+			console.log('HTTPS proxy stopped');
+			process.exit(0);
+		});
 	});
-});
 
-server.listen(PROXY_PORT, () => {
-	console.log(`HTTPS proxy daemon listening on https://data-access.sharethrift.localhost:${PROXY_PORT}`);
-	console.log(`Proxying to http://localhost:${TARGET_PORT}`);
-});
+	server.listen(PROXY_PORT, () => {
+		console.log(`HTTPS proxy daemon listening on https://data-access.sharethrift.localhost:${PROXY_PORT}`);
+		console.log(`Proxying to http://localhost:${TARGET_PORT}`);
+	});
+})();
