@@ -24,6 +24,7 @@ const mockListing = {
 const mockCurrentUser = {
 	__typename: 'PersonalUser',
 	id: 'user-2',
+	userType: 'personal',
 };
 
 const meta: Meta<typeof ListingInformationContainer> = {

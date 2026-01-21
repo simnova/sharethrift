@@ -3,14 +3,35 @@ import { expect, within, userEvent } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { MockAuthWrapper } from '../../test-utils/storybook-decorators.tsx';
 import { LoginSelection } from './login-selection.tsx';
+import { withMockApolloClient } from '../../test-utils/storybook-decorators.tsx';
+import { UseUserIsAdminDocument } from '../../generated.tsx';
 
 const meta: Meta<typeof LoginSelection> = {
 	title: 'Shared/LoginSelection',
 	component: LoginSelection,
 	parameters: {
 		layout: 'fullscreen',
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: UseUserIsAdminDocument,
+					},
+					result: {
+						data: {
+							currentUser: {
+								__typename: 'PersonalUser',
+								id: 'user-1',
+								userIsAdmin: false,
+							},
+						},
+					},
+				},
+			],
+		},
 	},
 	decorators: [
+		withMockApolloClient,
 		(Story) => (
 			<MockAuthWrapper>
 				<MemoryRouter>
