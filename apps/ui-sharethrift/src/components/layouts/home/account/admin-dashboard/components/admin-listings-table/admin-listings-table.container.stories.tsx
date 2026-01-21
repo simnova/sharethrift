@@ -85,7 +85,6 @@ const meta: Meta<typeof AdminListings> = {
 			],
 		},
 	},
-  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	decorators: [
 		withMockApolloClient,
 		withMockRouter('/account/admin-dashboard/listings'),
