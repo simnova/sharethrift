@@ -13,7 +13,7 @@
         "test": "turbo run test",
         "lint": "turbo run lint",
         "setup:certs": "node scripts/setup-local-certs.js",
-        "proxy:start": "node local-https-proxy.js",
+        "proxy:start": "node build-pipeline/scripts/local-https-proxy.js",
         "predev": "pnpm run setup:certs && pnpm run proxy:start",
         "dev": "pnpm run build && turbo run azurite gen:watch start --parallel",
         "start": "turbo run build && concurrently pnpm:start:* --kill-others-on-fail --workspace=@sthrift/api",
