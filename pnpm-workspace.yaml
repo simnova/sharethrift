@@ -1,12 +1,15 @@
 packages:
   - "apps/*"
+  - "packages/arch-unit-tests"
   - "packages/cellix/*"
   - "packages/sthrift/*"
+
 
 catalog:
   mongoose: 8.17.0
   mongodb: 6.18.0
   # Vitest 4.x and related testing dependencies
+  typescript: 5.9.3
   vitest: ^4.0.15
   '@vitest/coverage-v8': ^4.0.15
   '@vitest/browser-playwright': ^4.0.15
