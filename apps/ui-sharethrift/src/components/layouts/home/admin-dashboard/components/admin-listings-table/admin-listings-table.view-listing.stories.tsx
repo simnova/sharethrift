@@ -1090,8 +1090,13 @@ export const DateFormattingReservationPeriod: Story = {
 			{ timeout: 3000 },
 		);
 		// Should format reservation period with start and end dates (11/30 due to UTC timezone conversion)
-		const periodElement = canvas.getByText(/11\/30\/2024.*12\/14\/2024/i);
-		expect(periodElement).toBeTruthy();
+		await waitFor(
+			() => {
+				const periodElement = canvas.getByText(/11\/30\/2024.*12\/14\/2024/i);
+				expect(periodElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
