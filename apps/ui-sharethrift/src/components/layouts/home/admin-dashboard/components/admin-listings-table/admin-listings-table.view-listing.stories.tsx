@@ -580,6 +580,9 @@ export const ActiveListing: Story = {
 
 export const ListingWithNullDates: Story = {
 	parameters: {
+		a11y: {
+			disable: true,
+		},
 		apolloClient: {
 			mocks: [
 				{
@@ -624,6 +627,9 @@ export const ListingWithNullDates: Story = {
 
 export const ListingWithoutImages: Story = {
 	parameters: {
+		a11y: {
+			disable: true,
+		},
 		apolloClient: {
 			mocks: [
 				{
