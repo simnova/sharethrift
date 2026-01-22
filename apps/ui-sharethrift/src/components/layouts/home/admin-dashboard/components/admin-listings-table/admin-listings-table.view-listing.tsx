@@ -86,7 +86,7 @@ export default function AdminViewListing(): ReactElement {
 		try {
 			// onCompleted and onError handlers will show messages and navigate
 			await deleteListingMutation({ variables: { id: listing.id } });
-		} catch (e: unknown) {
+		} catch (_e: unknown) {
 			// Error is handled by onError, but catch to prevent unhandled rejection
 		}
 	};
