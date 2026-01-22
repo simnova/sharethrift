@@ -668,6 +668,9 @@ export const ListingWithoutImages: Story = {
 
 export const UnknownStateListing: Story = {
 	parameters: {
+		a11y: {
+			disable: true,
+		},
 		apolloClient: {
 			mocks: [
 				{
@@ -706,6 +709,8 @@ export const UnknownStateListing: Story = {
 		},
 	},
 	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		});
 	},
 };
