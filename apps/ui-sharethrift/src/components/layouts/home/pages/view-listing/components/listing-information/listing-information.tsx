@@ -86,12 +86,6 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 	const areDatesSelected =
 		reservationDates?.startDate && reservationDates?.endDate;
 
-	console.log('is authenticated', isAuthenticated);
-	console.log(
-		'user reservation request',
-		userReservationRequest?.reservationPeriodEnd,
-	);
-
 	const handleDateRangeChange = (
 		dates: [Dayjs | null, Dayjs | null] | null,
 	): void => {
@@ -149,7 +143,6 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 			startDate: start.toDate(),
 			endDate: end.toDate(),
 		});
-		console.log('Selected dates:', dates);
 	};
 
 	const reservationRequestStatus = userReservationRequest?.state ?? null;

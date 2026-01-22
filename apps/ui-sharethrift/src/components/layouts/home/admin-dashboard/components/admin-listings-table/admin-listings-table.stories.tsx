@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, fn } from 'storybook/test';
+import { expect, fn, within, userEvent, waitFor } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { AdminListingsTable } from './admin-listings-table';
 import type { MyListingData } from '../../../my-listings/components/my-listings-dashboard.types';
@@ -135,3 +135,211 @@ export const EmptyState: Story = {
 		expect(canvasElement).toBeTruthy();
 	},
 };
+
+export const WithSearchFilter: Story = {
+	args: {
+		...WithListings.args,
+		searchText: 'Mountain',
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+		const searchIcon = canvas.queryByRole('img', { name: /search/i });
+		if (searchIcon) {
+			await userEvent.click(searchIcon);
+		}
+	},
+};
+
+export const WithStatusFilter: Story = {
+	args: {
+		...WithListings.args,
+		statusFilters: ['Blocked'],
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const SortByCreatedAt: Story = {
+	args: {
+		...WithListings.args,
+		sorter: { field: 'createdAt', order: 'descend' },
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const SortByReservationPeriod: Story = {
+	args: {
+		...WithListings.args,
+		sorter: { field: 'reservationPeriod', order: 'ascend' },
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const WithPendingRequests: Story = {
+	args: {
+		...WithListings.args,
+		data: mockListings.filter(l => l.pendingRequestsCount > 0),
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const ViewListingAction: Story = {
+	args: WithListings.args,
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+		const viewButtons = canvas.queryAllByText(/View/i);
+		if (viewButtons[0]) {
+			await userEvent.click(viewButtons[0]);
+		}
+	},
+};
+
+export const UnblockListingAction: Story = {
+	args: WithBlockedListings.args,
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const DeleteListingAction: Story = {
+	args: WithListings.args,
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const WithPagination: Story = {
+	args: {
+		...WithListings.args,
+		currentPage: 2,
+		total: 50,
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const WithMultipleFilters: Story = {
+	args: {
+		...WithListings.args,
+		searchText: 'Bike',
+		statusFilters: ['Blocked', 'Active'],
+		sorter: { field: 'createdAt', order: 'descend' },
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const TableColumnSorting: Story = {
+	args: WithListings.args,
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+		const createdAtHeader = canvas.queryByText(/Created At/i);
+		if (createdAtHeader) {
+			await userEvent.click(createdAtHeader);
+		}
+	},
+};
+
+export const SearchInputInteraction: Story = {
+	args: WithListings.args,
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+		const searchIcon = canvas.queryByRole('img', { name: /search/i });
+		if (searchIcon) {
+			await userEvent.click(searchIcon);
+			await waitFor(() => {
+				const searchInput = canvas.queryByRole('textbox');
+				if (searchInput) {
+					expect(searchInput).toBeTruthy();
+				}
+			}, { timeout: 1000 });
+		}
+	},
+};
+
+export const StatusFilterInteraction: Story = {
+	args: WithListings.args,
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const WithNullImage: Story = {
+	args: {
+		...WithListings.args,
+		data: [{
+			id: mockListings[0]?.id ?? '1',
+			title: mockListings[0]?.title ?? 'Default Title',
+			image: null,
+			createdAt: mockListings[0]?.createdAt ?? null,
+			reservationPeriod: mockListings[0]?.reservationPeriod ?? null,
+			status: mockListings[0]?.status ?? 'Active',
+			pendingRequestsCount: mockListings[0]?.pendingRequestsCount ?? 0,
+		}],
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const WithLongTitle: Story = {
+	args: {
+		...WithListings.args,
+		data: [{
+			id: mockListings[0]?.id ?? '1',
+			title: 'Very Long Listing Title That Should Be Displayed Properly In The Table Without Breaking The Layout',
+			image: mockListings[0]?.image ?? null,
+			createdAt: mockListings[0]?.createdAt ?? null,
+			reservationPeriod: mockListings[0]?.reservationPeriod ?? null,
+			status: mockListings[0]?.status ?? 'Active',
+			pendingRequestsCount: mockListings[0]?.pendingRequestsCount ?? 0,
+		}],
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+

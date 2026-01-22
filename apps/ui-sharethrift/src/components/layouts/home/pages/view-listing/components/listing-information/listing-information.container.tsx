@@ -3,12 +3,10 @@ import { useState } from 'react';
 import { message } from 'antd';
 import { HomeListingInformationCreateReservationRequestDocument,
 ViewListingActiveReservationRequestForListingDocument,
-ViewListingCurrentUserDocument,
 ViewListingQueryActiveByListingIdDocument,
 type CreateReservationRequestInput,
 type ItemListing,
 type ViewListingActiveReservationRequestForListingQuery, 
-type ViewListingCurrentUserQuery, 
 type ViewListingQueryActiveByListingIdQuery,
 type ViewListingQueryActiveByListingIdQueryVariables} from '../../../../../../../generated';
 import { ListingInformation } from './listing-information.tsx';
@@ -58,17 +56,6 @@ export const ListingInformationContainer: React.FC<
 		fetchPolicy: 'cache-first',
 	});
 
-	if (otherReservationsData) {
-		console.log('Other reservations data:', otherReservationsData);
-	}
-
-	const { data: currentUserData } = useQuery<ViewListingCurrentUserQuery>(
-		ViewListingCurrentUserDocument,
-	);
-	if (!currentUserData?.currentUser) {
-		console.log('Current user not found');
-	}
-
 	const client = useApolloClient();
 
 	const [createReservationRequestMutation, { loading: mutationLoading }] =
@@ -79,8 +66,8 @@ export const ListingInformationContainer: React.FC<
 				});
 				setReservationDates({ startDate: null, endDate: null });
 			},
-			onError: (error) => {
-				console.log(error.message || 'Failed to create reservation request');
+			onError: () => {
+				// Error handled by Apollo Client
 			},
 		});
 
