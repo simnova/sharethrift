@@ -34,9 +34,11 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 
 		newInstance.props.user = { id: userId } as PersonalUserEntityReference;
 		newInstance.props.listing = { id: listingId } as ItemListingEntityReference;
-		newInstance.reason = reason;
+		// Set reason directly on props to avoid permission check during initialization
+		// Permission checks require full user entity which isn't populated yet
+		newInstance.props.reason = new ValueObjects.Reason(reason).valueOf();
 		newInstance.props.state = ValueObjects.AppealRequestState.REQUESTED;
-		newInstance.props.type = ValueObjects.AppealRequestType.LISTING;
+		// Note: 'type' is set automatically by Mongoose discriminator pattern, not manually set
 		newInstance.props.blocker = { id: blockerId } as PersonalUserEntityReference;
 
 		return newInstance;

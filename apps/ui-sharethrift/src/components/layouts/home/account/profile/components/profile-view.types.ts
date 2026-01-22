@@ -10,4 +10,5 @@ export interface ProfileUser {
 		state: string;
 	};
 	createdAt: string;
+	isBlocked?: boolean;
 }

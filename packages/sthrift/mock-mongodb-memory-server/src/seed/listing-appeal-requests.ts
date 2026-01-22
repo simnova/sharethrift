@@ -32,7 +32,7 @@ export const listingAppealRequests = [
 	},
 	{
 		_id: '907f1f77bcf86cd799439053',
-		type: 'listing',
+		type: 'user-appeal-request',
 		user: new ObjectId('507f1f77bcf86cd799439014'),
 		listing: new ObjectId('707f1f77bcf86cd799439033'),
 		reason:

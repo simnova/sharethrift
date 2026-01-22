@@ -1,0 +1,38 @@
+query AdminAppealsTableContainerGetAllUserAppealRequests(
+	$input: GetAllUserAppealRequestsInput!
+) {
+	getAllUserAppealRequests(input: $input) {
+		items {
+			id
+			reason
+			state
+			type
+			createdAt
+			updatedAt
+			user {
+				id
+				account {
+					username
+					email
+					profile {
+						firstName
+						lastName
+					}
+				}
+			}
+		}
+		total
+		page
+		pageSize
+	}
+}
+
+mutation AdminAppealsTableContainerUpdateUserAppealRequestState(
+	$input: UpdateUserAppealRequestStateInput!
+) {
+	updateUserAppealRequestState(input: $input) {
+		id
+		state
+		updatedAt
+	}
+}

@@ -1,0 +1,21 @@
+mutation HomeAccountProfileUserAppealContainerCreateUserAppealRequest($input: CreateUserAppealRequestInput!) {
+	createUserAppealRequest(input: $input) {
+		id
+		reason
+		state
+		type
+		createdAt
+		updatedAt
+	}
+}
+
+query HomeAccountProfileUserAppealContainerGetUserAppealRequests($input: ObjectID!) {
+	getUserAppealRequest(id: $input) {
+		id
+		reason
+		state
+		type
+		createdAt
+		updatedAt
+	}
+}
