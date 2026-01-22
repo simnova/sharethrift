@@ -52,7 +52,9 @@
         "snyk:code": "snyk code test --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --severity-threshold=medium",
         "snyk:code:report": "snyk code test --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --project-name=sharethrift-code --report",
         "snyk:iac": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift",
-        "snyk:iac:report": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --target-name=sharethrift-iac --report"
+        "snyk:iac:report": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --target-name=sharethrift-iac --report",
+        "edgescan:agent": "docker run --tty --rm edgescan/cicd-integration:latest --api-token $ES_API_TOKEN --asset-id $ES_ASSET_ID --start-scan --max-risk-threshold 3 --wait --color",
+        "edgescan:dev": "container run --tty --rm --platform linux/amd64 edgescan/cicd-integration:latest --api-token $ES_API_TOKEN --asset-id $ES_ASSET_ID --start-scan --max-risk-threshold 3 --wait --color"
     },
     "pnpm": {
         "auditConfig": {
