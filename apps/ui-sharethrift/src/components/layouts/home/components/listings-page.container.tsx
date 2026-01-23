@@ -9,7 +9,7 @@ import {
 	ListingsPageContainerGetListingsDocument,
 	type ItemListing,
 } from '../../../../generated.tsx';
-import { useCreateListingNavigation } from './create-listing/hooks/use-create-listing-navigation.ts';
+import { useCreateListingNavigation } from '../../../shared/hooks/use-create-listing-navigation.ts';
 import { ListingsPage } from './listings-page.tsx';
 
 interface ListingsPageContainerProps {

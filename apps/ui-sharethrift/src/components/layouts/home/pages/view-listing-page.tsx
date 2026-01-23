@@ -1,4 +1,4 @@
-import { ViewListingContainer } from "../components/view-listing/view-listing.container.tsx";
+import { ViewListingContainer } from "./view-listing/view-listing.container.tsx";
 import { useAuth } from "react-oidc-context";
 
 export const ViewListing: React.FC = () => {
