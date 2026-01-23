@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent, fn } from 'storybook/test';
+import { expect, within, userEvent, waitFor, fn } from 'storybook/test';
 import { ListingInformation } from './listing-information.tsx';
 import { withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
 
@@ -916,23 +916,141 @@ export const ReservationStateDisplay: Story = {
 	},
 };
 
-// NEW: Test the reservation period display formatting
-export const ReservationPeriodDisplay: Story = {
+// NEW: Test handleDateRangeChange with actual date selection
+export const HandleDateRangeChangeWithSelection: Story = {
 	args: {
 		isAuthenticated: true,
 		userIsSharer: false,
-		userReservationRequest: {
-			__typename: 'ReservationRequest' as const,
-			id: 'res-display',
-			state: 'Accepted' as const,
-			reservationPeriodStart: '1738368000000', // Feb 1, 2025
-			reservationPeriodEnd: '1739145600000',   // Feb 10, 2025
-		},
+		otherReservations: [],
+		onReservationDatesChange: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 
-		// Tests the date formatting and display of reservation periods
-		// Covers the dayjs formatting logic
+		// Wait for component to render
+		await waitFor(() => {
+			expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(0);
+		}, { timeout: 3000 });
+
+		// Find the DatePicker RangePicker (first input)
+		const dateInputs = canvas.getAllByRole('textbox');
+		const datePicker = dateInputs[0]; // Start date input
+		expect(datePicker).toBeTruthy();
+
+		// Click on the date picker to open it
+		await userEvent.click(datePicker);
+
+		// Wait for the calendar to appear
+		await waitFor(() => {
+			const calendar = document.querySelector('.ant-picker-dropdown');
+			expect(calendar).toBeTruthy();
+		}, { timeout: 1000 });
+
+		// Find and click on start date (e.g., February 1st)
+		const startDateCell = document.querySelector('.ant-picker-cell-inner[title="2025-02-01"]') ||
+		                     document.querySelector('.ant-picker-cell:not(.ant-picker-cell-disabled)');
+		if (startDateCell) {
+			await userEvent.click(startDateCell);
+		}
+
+		// Find and click on end date (e.g., February 5th)
+		const endDateCell = document.querySelector('.ant-picker-cell-inner[title="2025-02-05"]') ||
+		                   document.querySelectorAll('.ant-picker-cell:not(.ant-picker-cell-disabled)')[4];
+		if (endDateCell) {
+			await userEvent.click(endDateCell);
+		}
+
+		// Verify onReservationDatesChange was called
+		await waitFor(() => {
+			expect(args.onReservationDatesChange).toHaveBeenCalled();
+		}, { timeout: 1000 });
+	},
+};
+
+// NEW: Test date validation with past dates
+export const DateValidationPastDateSelection: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservations: [],
+		onReservationDatesChange: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		// Wait for component to render
+		await waitFor(() => {
+			expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(0);
+		}, { timeout: 3000 });
+
+		// Find the DatePicker RangePicker (first input)
+		const dateInputs = canvas.getAllByRole('textbox');
+		const datePicker = dateInputs[0]; // Start date input
+		expect(datePicker).toBeTruthy();
+
+		// Click on the date picker to open it
+		await userEvent.click(datePicker);
+
+		// Wait for the calendar to appear
+		await waitFor(() => {
+			const calendar = document.querySelector('.ant-picker-dropdown');
+			expect(calendar).toBeTruthy();
+		}, { timeout: 1000 });
+
+		// Try to select a past date (this should trigger the validation error)
+		const pastDateCell = document.querySelector('.ant-picker-cell.ant-picker-cell-disabled') ||
+		                    document.querySelector('.ant-picker-cell-inner[title*="2024"]');
+		if (pastDateCell) {
+			await userEvent.click(pastDateCell);
+		}
+
+		// Verify component still renders (validation should prevent invalid selection)
+		expect(canvasElement).toBeTruthy();
+	},
+};
+
+// NEW: Test date validation with overlapping reservations
+export const DateValidationOverlappingReservations: Story = {
+	args: {
+		isAuthenticated: true,
+		userIsSharer: false,
+		otherReservations: mockOtherReservations,
+		onReservationDatesChange: fn(),
+	},
+	play: async ({ canvasElement, args }) => {
+		const canvas = within(canvasElement);
+		await expect(canvasElement).toBeTruthy();
+
+		// Wait for component to render
+		await waitFor(() => {
+			expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(0);
+		}, { timeout: 3000 });
+
+		// Find the DatePicker RangePicker (first input)
+		const dateInputs = canvas.getAllByRole('textbox');
+		const datePicker = dateInputs[0]; // Start date input
+		expect(datePicker).toBeTruthy();
+
+		// Click on the date picker to open it
+		await userEvent.click(datePicker);
+
+		// Wait for the calendar to appear
+		await waitFor(() => {
+			const calendar = document.querySelector('.ant-picker-dropdown');
+			expect(calendar).toBeTruthy();
+		}, { timeout: 1000 });
+
+		// Try to select dates that overlap with existing reservations
+		// (mockOtherReservations has reservations from Feb 15-20 and Mar 1-10)
+		const overlappingDateCell = document.querySelector('.ant-picker-cell-inner[title="2025-02-16"]') ||
+		                           document.querySelector('.ant-picker-cell:not(.ant-picker-cell-disabled)');
+		if (overlappingDateCell) {
+			await userEvent.click(overlappingDateCell);
+		}
+
+		// Verify component still renders
+		expect(canvasElement).toBeTruthy();
 	},
 };

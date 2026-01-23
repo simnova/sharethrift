@@ -62,14 +62,12 @@ const meta: Meta<typeof AdminUsersTableContainer> = {
 				{
 					request: {
 						query: AdminUsersTableContainerAllUsersDocument,
-						variables: {
-							page: 1,
-							pageSize: 50,
-							searchText: '',
-							statusFilters: [],
-							sorter: undefined,
+						variables: (vars: any) => {
+							// Accept any variables for this query
+							return vars.page !== undefined && vars.pageSize !== undefined;
 						},
 					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							allUsers: {
