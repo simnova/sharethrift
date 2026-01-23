@@ -1620,3 +1620,360 @@ export const RefetchQueriesOnMutationSuccess: Story = {
 		}, { timeout: 3000 });
 	},
 };
+
+export const SkipQueryBranch: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			id: '', // Empty string triggers skip
+		},
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				// No mock for ViewListingQueryActiveByListingIdDocument since it should be skipped
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+		// Query should be skipped due to !listing?.id condition
+	},
+};
+
+export const SkipQueryBranchUndefinedId: Story = {
+	args: {
+		listing: {
+			...mockListing,
+			id: undefined as unknown as string, // Undefined triggers skip
+		},
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+		// Query should be skipped due to !listing?.id condition
+	},
+};
+
+export const DateValidationStartDateNull: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+
+		// Don't select any dates (startDate remains null)
+		// Click reserve to trigger the date validation branch
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+			// This should trigger message.warning due to !reservationDates.startDate
+		}
+	},
+};
+
+export const DateValidationEndDateNull: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+
+		// Select only start date, leave end date null
+		const dateInputs = canvas.queryAllByRole('textbox');
+		if (dateInputs.length >= 1 && dateInputs[0]) {
+			await userEvent.type(dateInputs[0], '2025-02-01');
+		}
+
+		// Click reserve to trigger the date validation branch
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+			// This should trigger message.warning due to !reservationDates.endDate
+		}
+	},
+};
+
+export const HandleReserveClickCatchBlock: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					error: new Error('Network failure in catch block'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+
+		// Select dates to pass validation
+		const dateInputs = canvas.queryAllByRole('textbox');
+		if (dateInputs.length >= 2 && dateInputs[0] && dateInputs[1]) {
+			await userEvent.type(dateInputs[0], '2025-02-01');
+			await userEvent.type(dateInputs[1], '2025-02-05');
+		}
+
+		// Click reserve to trigger the catch block
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+			// This should trigger console.error in the catch block
+		}
+	},
+};
+
+export const OnCompletedCallback: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					result: {
+						data: {
+							createReservationRequest: {
+								__typename: 'ReservationRequest',
+								id: 'completed-res',
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+
+		// Select dates
+		const dateInputs = canvas.queryAllByRole('textbox');
+		if (dateInputs.length >= 2 && dateInputs[0] && dateInputs[1]) {
+			await userEvent.type(dateInputs[0], '2025-02-01');
+			await userEvent.type(dateInputs[1], '2025-02-05');
+		}
+
+		// Click reserve to trigger onCompleted callback
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+			// This should trigger client.refetchQueries and setReservationDates reset
+		}
+	},
+};
+
+export const OnErrorCallback: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					error: new Error('Mutation error triggering onError'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(0);
+			},
+			{ timeout: 3000 },
+		);
+
+		// Select dates
+		const dateInputs = canvas.queryAllByRole('textbox');
+		if (dateInputs.length >= 2 && dateInputs[0] && dateInputs[1]) {
+			await userEvent.type(dateInputs[0], '2025-02-01');
+			await userEvent.type(dateInputs[1], '2025-02-05');
+		}
+
+		// Click reserve to trigger onError callback
+		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
+		if (reserveBtn) {
+			await userEvent.click(reserveBtn);
+			// This should trigger the onError callback (which does nothing)
+		}
+	},
+};

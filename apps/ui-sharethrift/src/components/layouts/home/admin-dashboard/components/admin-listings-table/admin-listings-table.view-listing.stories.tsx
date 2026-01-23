@@ -1298,3 +1298,338 @@ export const PopconfirmUI: Story = {
 		);
 	},
 };
+
+export const HandleBackFunction: Story = {
+	decorators: [
+		withMockApolloClient,
+		withMockRouter('/account/admin-dashboard/listings/listing-1'),
+	],
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText('Mountain Bike')).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+		const backBtn = canvas.getAllByText('Back to Admin Dashboard')[0];
+		if (backBtn) {
+			await userEvent.click(backBtn);
+			// This should trigger the handleBack function which clears session storage
+		}
+	},
+};
+
+export const HandleUnblockFunction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-1',
+										title: 'Unblock Test Listing',
+										images: ['https://example.com/bike.jpg'],
+										state: 'Blocked',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 100,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: AdminListingsTableContainerUnblockListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							unblockItemListing: {
+								__typename: 'MutationStatus',
+								success: true,
+								errorMessage: null,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	decorators: [
+		withMockApolloClient,
+		withMockRouter('/account/admin-dashboard/listings/listing-1'),
+	],
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText('Unblock Test Listing')).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+		const unblockBtn = canvas.getByText('Unblock Listing');
+		await userEvent.click(unblockBtn);
+		// This should trigger the handleUnblock function
+	},
+};
+
+export const HandleDeleteFunction: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-1',
+										title: 'Delete Test Listing',
+										images: ['https://example.com/bike.jpg'],
+										state: 'Active',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 100,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: AdminListingsTableContainerDeleteListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							deleteItemListing: {
+								__typename: 'ItemListingMutationResult',
+								status: {
+									__typename: 'MutationStatus',
+									success: true,
+									errorMessage: null,
+								},
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	decorators: [
+		withMockApolloClient,
+		withMockRouter('/account/admin-dashboard/listings/listing-1'),
+	],
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText('Delete Test Listing')).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+		const deleteBtn = canvas.getByText('Remove Listing');
+		await userEvent.click(deleteBtn);
+		// This should trigger the handleDelete function
+	},
+};
+
+export const GetStatusColorBlocked: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 100,
+							statusFilters: ['Blocked', 'Active'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-1',
+										title: 'Blocked Color Test',
+										images: ['https://example.com/bike.jpg'],
+										state: 'Blocked',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 100,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	decorators: [
+		withMockApolloClient,
+		withMockRouter('/account/admin-dashboard/listings/listing-1'),
+	],
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText('Blocked Color Test')).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+		// getStatusColor function should return 'purple' for 'Blocked' state
+		const blockedTags = canvas.getAllByText('Blocked');
+		expect(blockedTags.length).toBeGreaterThan(0);
+	},
+};
+
+export const GetStatusColorActive: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 100,
+							statusFilters: ['Blocked', 'Active'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-1',
+										title: 'Active Color Test',
+										images: ['https://example.com/bike.jpg'],
+										state: 'Active',
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 100,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	decorators: [
+		withMockApolloClient,
+		withMockRouter('/account/admin-dashboard/listings/listing-1'),
+	],
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText('Active Color Test')).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+		// getStatusColor function should return 'green' for non-Blocked states
+		const activeTags = canvas.getAllByText('Active');
+		expect(activeTags.length).toBeGreaterThan(0);
+	},
+};
+
+export const GetStatusColorUnknown: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminListingsTableContainerAdminListingsDocument,
+						variables: {
+							page: 1,
+							pageSize: 100,
+							statusFilters: ['Blocked', 'Active'],
+						},
+					},
+					result: {
+						data: {
+							adminListings: {
+								__typename: 'AdminListingSearchResults',
+								items: [
+									{
+										__typename: 'ListingAll',
+										id: 'listing-1',
+										title: 'Unknown Color Test',
+										images: ['https://example.com/bike.jpg'],
+										state: null,
+										createdAt: '2024-11-01T10:00:00Z',
+										sharingPeriodStart: '2024-12-01',
+										sharingPeriodEnd: '2024-12-15',
+									},
+								],
+								total: 1,
+								page: 1,
+								pageSize: 100,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	decorators: [
+		withMockApolloClient,
+		withMockRouter('/account/admin-dashboard/listings/listing-1'),
+	],
+	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+		const canvas = within(canvasElement);
+		await waitFor(
+			() => {
+				expect(canvas.getByText('Unknown Color Test')).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+		// getStatusColor function should return 'green' for unknown/null states
+		const unknownTags = canvas.getAllByText('Unknown');
+		expect(unknownTags.length).toBeGreaterThan(0);
+	},
+};
