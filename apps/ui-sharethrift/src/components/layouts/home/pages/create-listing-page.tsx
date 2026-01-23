@@ -1,4 +1,4 @@
-import { CreateListingContainer } from '../components/create-listing/create-listing.container.tsx';
+import { CreateListingContainer } from './create-listing/create-listing.container.tsx';
 import { useAuth } from 'react-oidc-context';
 
 interface CreateListingProps {

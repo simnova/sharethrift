@@ -64,7 +64,8 @@
         },
         "overrides": {
             "@pnpm/npm-conf": ">=3.0.2",
-            "@types/node": "^24.10.7"
+            "@types/node": "^24.10.7",
+            "lodash": "^4.17.23"
         }
     },
     "catalog": {
