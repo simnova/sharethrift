@@ -939,7 +939,7 @@ export const HandleDateRangeChangeWithSelection: Story = {
 		expect(datePicker).toBeTruthy();
 
 		// Click on the date picker to open it
-		await userEvent.click(datePicker);
+		if (datePicker) await userEvent.click(datePicker);
 
 		// Wait for the calendar to appear
 		await waitFor(() => {
@@ -976,7 +976,7 @@ export const DateValidationPastDateSelection: Story = {
 		otherReservations: [],
 		onReservationDatesChange: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 
@@ -991,7 +991,7 @@ export const DateValidationPastDateSelection: Story = {
 		expect(datePicker).toBeTruthy();
 
 		// Click on the date picker to open it
-		await userEvent.click(datePicker);
+		if (datePicker) await userEvent.click(datePicker);
 
 		// Wait for the calendar to appear
 		await waitFor(() => {
@@ -1019,7 +1019,7 @@ export const DateValidationOverlappingReservations: Story = {
 		otherReservations: mockOtherReservations,
 		onReservationDatesChange: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvasElement).toBeTruthy();
 
@@ -1034,7 +1034,7 @@ export const DateValidationOverlappingReservations: Story = {
 		expect(datePicker).toBeTruthy();
 
 		// Click on the date picker to open it
-		await userEvent.click(datePicker);
+		if (datePicker) await userEvent.click(datePicker);
 
 		// Wait for the calendar to appear
 		await waitFor(() => {

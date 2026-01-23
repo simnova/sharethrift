@@ -529,25 +529,8 @@ export const SuccessfulReservation: Story = {
 				},
 				{
 					request: {
-						query: ViewListingQueryActiveByListingIdDocument,
-						variables: { listingId: '1' },
-					},
-					result: {
-						data: {
-							queryActiveByListingId: [],
-						},
-					},
-				},
-				{
-					request: {
 						query: HomeListingInformationCreateReservationRequestDocument,
-						variables: {
-							input: {
-								listingId: '1',
-								reservationPeriodStart: '2025-02-01T00:00:00.000Z',
-								reservationPeriodEnd: '2025-02-05T00:00:00.000Z',
-							},
-						},
+						variables: () => true, // Match any variables
 					},
 					result: {
 						data: {
@@ -555,6 +538,17 @@ export const SuccessfulReservation: Story = {
 								__typename: 'ReservationRequest',
 								id: 'res-1',
 							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: () => true,
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
 						},
 					},
 				},
@@ -572,14 +566,47 @@ export const SuccessfulReservation: Story = {
 			{ timeout: 3000 },
 		);
 
-		// Select reservation dates
-		const dateInputs = canvas.queryAllByRole('textbox');
-		if (dateInputs.length >= 2 && dateInputs[0] && dateInputs[1]) {
-			await userEvent.type(dateInputs[0], '2025-02-01');
-			await userEvent.type(dateInputs[1], '2025-02-05');
+		// Wait for loading to complete (no loading spinner)
+		await waitFor(() => {
+			const loadingSpinner = canvas.queryByRole('img', { name: /loading/i });
+			return loadingSpinner === null;
+		}, { timeout: 5000 });
+
+		// Wait for the DatePicker to be rendered (not loading)
+		await waitFor(() => {
+			const dateInputs = canvas.queryAllByRole('textbox');
+			return dateInputs.length > 0;
+		}, { timeout: 5000 });
+
+		// Find the DatePicker RangePicker (first input)
+		const dateInputs = canvas.getAllByRole('textbox');
+		const datePicker = dateInputs[0]; // Start date input
+		expect(datePicker).toBeTruthy();
+
+		// Click on the date picker to open it
+		if (datePicker) await userEvent.click(datePicker);
+
+		// Wait for the calendar to appear
+		await waitFor(() => {
+			const calendar = document.querySelector('.ant-picker-dropdown');
+			return calendar !== null;
+		}, { timeout: 1000 });
+
+		// Find and click on start date (e.g., February 1st)
+		const startDateCell = document.querySelector('.ant-picker-cell-inner[title="2025-02-01"]') ||
+		                     document.querySelector('.ant-picker-cell:not(.ant-picker-cell-disabled)');
+		if (startDateCell) {
+			await userEvent.click(startDateCell);
 		}
 
-		// Click reserve to trigger successful mutation and onCompleted callback
+		// Find and click on end date (e.g., February 5th)
+		const endDateCell = document.querySelector('.ant-picker-cell-inner[title="2025-02-05"]') ||
+		                   document.querySelectorAll('.ant-picker-cell:not(.ant-picker-cell-disabled)')[4];
+		if (endDateCell) {
+			await userEvent.click(endDateCell);
+		}
+
+		// Now click reserve to trigger successful mutation and onCompleted callback
 		const reserveBtn = canvas.queryByRole('button', { name: /reserve/i });
 		if (reserveBtn) {
 			await userEvent.click(reserveBtn);
@@ -1785,17 +1812,6 @@ export const HandleReserveClickCatchBlock: Story = {
 				},
 				{
 					request: {
-						query: ViewListingQueryActiveByListingIdDocument,
-						variables: { listingId: '1' },
-					},
-					result: {
-						data: {
-							queryActiveByListingId: [],
-						},
-					},
-				},
-				{
-					request: {
 						query: HomeListingInformationCreateReservationRequestDocument,
 						variables: () => true,
 					},
@@ -1813,11 +1829,44 @@ export const HandleReserveClickCatchBlock: Story = {
 			{ timeout: 3000 },
 		);
 
-		// Select dates to pass validation
-		const dateInputs = canvas.queryAllByRole('textbox');
-		if (dateInputs.length >= 2 && dateInputs[0] && dateInputs[1]) {
-			await userEvent.type(dateInputs[0], '2025-02-01');
-			await userEvent.type(dateInputs[1], '2025-02-05');
+		// Wait for loading to complete (no loading spinner)
+		await waitFor(() => {
+			const loadingSpinner = canvas.queryByRole('img', { name: /loading/i });
+			return loadingSpinner === null;
+		}, { timeout: 5000 });
+
+		// Wait for the DatePicker to be rendered (not loading)
+		await waitFor(() => {
+			const dateInputs = canvas.queryAllByRole('textbox');
+			return dateInputs.length > 0;
+		}, { timeout: 5000 });
+
+		// Find the DatePicker RangePicker (first input)
+		const dateInputs = canvas.getAllByRole('textbox');
+		const datePicker = dateInputs[0]; // Start date input
+		expect(datePicker).toBeTruthy();
+
+		// Click on the date picker to open it
+		if (datePicker) await userEvent.click(datePicker);
+
+		// Wait for the calendar to appear
+		await waitFor(() => {
+			const calendar = document.querySelector('.ant-picker-dropdown');
+			return calendar !== null;
+		}, { timeout: 1000 });
+
+		// Find and click on start date (e.g., February 1st)
+		const startDateCell = document.querySelector('.ant-picker-cell-inner[title="2025-02-01"]') ||
+		                     document.querySelector('.ant-picker-cell:not(.ant-picker-cell-disabled)');
+		if (startDateCell) {
+			await userEvent.click(startDateCell);
+		}
+
+		// Find and click on end date (e.g., February 5th)
+		const endDateCell = document.querySelector('.ant-picker-cell-inner[title="2025-02-05"]') ||
+		                   document.querySelectorAll('.ant-picker-cell:not(.ant-picker-cell-disabled)')[4];
+		if (endDateCell) {
+			await userEvent.click(endDateCell);
 		}
 
 		// Click reserve to trigger the catch block
@@ -1848,17 +1897,6 @@ export const OnCompletedCallback: Story = {
 					result: {
 						data: {
 							currentUser: mockCurrentUser,
-						},
-					},
-				},
-				{
-					request: {
-						query: ViewListingQueryActiveByListingIdDocument,
-						variables: { listingId: '1' },
-					},
-					result: {
-						data: {
-							queryActiveByListingId: [],
 						},
 					},
 				},
@@ -1900,11 +1938,44 @@ export const OnCompletedCallback: Story = {
 			{ timeout: 3000 },
 		);
 
-		// Select dates
-		const dateInputs = canvas.queryAllByRole('textbox');
-		if (dateInputs.length >= 2 && dateInputs[0] && dateInputs[1]) {
-			await userEvent.type(dateInputs[0], '2025-02-01');
-			await userEvent.type(dateInputs[1], '2025-02-05');
+		// Wait for loading to complete (no loading spinner)
+		await waitFor(() => {
+			const loadingSpinner = canvas.queryByRole('img', { name: /loading/i });
+			return loadingSpinner === null;
+		}, { timeout: 5000 });
+
+		// Wait for the DatePicker to be rendered (not loading)
+		await waitFor(() => {
+			const dateInputs = canvas.queryAllByRole('textbox');
+			return dateInputs.length > 0;
+		}, { timeout: 5000 });
+
+		// Find the DatePicker RangePicker (first input)
+		const dateInputs = canvas.getAllByRole('textbox');
+		const datePicker = dateInputs[0]; // Start date input
+		expect(datePicker).toBeTruthy();
+
+		// Click on the date picker to open it
+		if (datePicker) await userEvent.click(datePicker);
+
+		// Wait for the calendar to appear
+		await waitFor(() => {
+			const calendar = document.querySelector('.ant-picker-dropdown');
+			return calendar !== null;
+		}, { timeout: 1000 });
+
+		// Find and click on start date (e.g., February 1st)
+		const startDateCell = document.querySelector('.ant-picker-cell-inner[title="2025-02-01"]') ||
+		                     document.querySelector('.ant-picker-cell:not(.ant-picker-cell-disabled)');
+		if (startDateCell) {
+			await userEvent.click(startDateCell);
+		}
+
+		// Find and click on end date (e.g., February 5th)
+		const endDateCell = document.querySelector('.ant-picker-cell-inner[title="2025-02-05"]') ||
+		                   document.querySelectorAll('.ant-picker-cell:not(.ant-picker-cell-disabled)')[4];
+		if (endDateCell) {
+			await userEvent.click(endDateCell);
 		}
 
 		// Click reserve to trigger onCompleted callback

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, waitFor } from 'storybook/test';
+import { vi } from 'vitest';
 import { AdminListings } from './admin-listings-table.container.tsx';
 import { message } from 'antd';
 import {
@@ -1044,7 +1045,7 @@ export const UnblockMutationNetworkError: Story = {
 			{ timeout: 3000 },
 		);
 		// Mock message.error to verify it's called when unblock fails
-		const messageErrorSpy = vi.spyOn(message, 'error').mockImplementation(() => {});
+		const messageErrorSpy = vi.spyOn(message, 'error').mockImplementation(() => vi.fn() as any);
 		const unblockBtns = canvas.queryAllByText(/Unblock/i);
 		const unblockBtn = unblockBtns[0];
 		if (unblockBtn) {
