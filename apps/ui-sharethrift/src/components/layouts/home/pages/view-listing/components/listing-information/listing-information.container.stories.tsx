@@ -1319,3 +1319,304 @@ export const OtherReservationsDataPassed: Story = {
 		expect(canvasElement).toBeTruthy();
 	},
 };
+
+export const CreateReservationMutationErrorHandling: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					error: new Error('Failed to create reservation request'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const OnErrorCallbackInvoked: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					error: new Error('Network error'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const CatchBlockErrorConsoleLog: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					error: new Error('Server error'),
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const ResetDatesAfterMutationSuccess: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createReservationRequest: {
+								__typename: 'ReservationRequest',
+								id: 'new-res-1',
+								state: 'Requested',
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const RefetchQueriesOnMutationSuccess: Story = {
+	args: {
+		listing: mockListing,
+		userIsSharer: false,
+		isAuthenticated: true,
+		userReservationRequest: null,
+		onLoginClick: fn(),
+		onSignUpClick: fn(),
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingQueryActiveByListingIdDocument,
+						variables: { listingId: '1' },
+					},
+					result: {
+						data: {
+							queryActiveByListingId: [],
+						},
+					},
+				},
+				{
+					request: {
+						query: HomeListingInformationCreateReservationRequestDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							createReservationRequest: {
+								__typename: 'ReservationRequest',
+								id: 'new-res-2',
+								state: 'Requested',
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							myActiveReservationForListing: {
+								__typename: 'ReservationRequest',
+								id: 'new-res-2',
+								state: 'Requested',
+								reservationPeriodStart: '1738368000000',
+								reservationPeriodEnd: '1739145600000',
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};

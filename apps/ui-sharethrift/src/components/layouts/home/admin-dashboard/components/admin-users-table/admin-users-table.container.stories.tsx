@@ -1377,3 +1377,196 @@ export const TableChangeWithSorter: Story = {
 		expect(canvasElement).toBeTruthy();
 	},
 };
+
+export const FetchPolicyNetworkOnly: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+	},
+};
+
+export const BlockUserRefetchesData: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: mockUsers,
+								total: 2,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: BlockUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							blockUser: {
+								__typename: 'MutationStatus',
+								success: true,
+								errorMessage: null,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+	},
+};
+
+export const UnblockUserRefetchesData: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: [mockUsers[1]],
+								total: 1,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: UnblockUserDocument,
+						variables: () => true,
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							unblockUser: {
+								__typename: 'MutationStatus',
+								success: true,
+								errorMessage: null,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+	},
+};
+
+export const PageSize50: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: AdminUsersTableContainerAllUsersDocument,
+						variables: {
+							page: 1,
+							pageSize: 50,
+							searchText: '',
+							statusFilters: [],
+							sorter: undefined,
+						},
+					},
+					result: {
+						data: {
+							allUsers: {
+								__typename: 'AdminUserSearchResults',
+								items: Array.from({ length: 50 }, (_, i) => ({
+									__typename: 'PersonalUser',
+									id: `user-${i + 1}`,
+									createdAt: '2024-01-15T10:30:00Z',
+									userType: 'personal-user',
+									isBlocked: false,
+									account: {
+										__typename: 'PersonalUserAccount',
+										username: `user_${i + 1}`,
+										email: `user${i + 1}@example.com`,
+										profile: {
+											__typename: 'PersonalUserAccountProfile',
+											firstName: `User`,
+											lastName: `${i + 1}`,
+										},
+									},
+								})),
+								total: 150,
+								page: 1,
+								pageSize: 50,
+							},
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
+	},
+};

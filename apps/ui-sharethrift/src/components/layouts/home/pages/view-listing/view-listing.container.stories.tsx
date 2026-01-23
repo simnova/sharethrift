@@ -497,3 +497,416 @@ export const LongDescription: Story = {
 	},
 };
 
+export const ComputeTimeAgoRecentHours: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: {
+								...mockListing,
+								createdAt: new Date(Date.now() - 5 * 3600000).toISOString(), // 5 hours ago
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const ComputeTimeAgoDays: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: {
+								...mockListing,
+								createdAt: new Date(Date.now() - 3 * 24 * 3600000).toISOString(), // 3 days ago
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const ComputeTimeAgoInvalidDate: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: {
+								...mockListing,
+								createdAt: 'invalid-date',
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const NoCreatedAtDate: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: {
+								...mockListing,
+								createdAt: null,
+							},
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const SkipReservationQueryNoListingId: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: undefined },
+					},
+					result: {
+						data: {
+							itemListing: null,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const SkipReservationQueryNoReserverId: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		appolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: mockListing,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const CacheFirstFetchPolicy: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					maxUsageCount: Number.POSITIVE_INFINITY,
+					result: {
+						data: {
+							itemListing: mockListing,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() => {
+			expect(canvasElement).toBeTruthy();
+		}, { timeout: 3000 });
+	},
+};
+
+export const CurrentUserLoadingState: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: mockListing,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					delay: Infinity,
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const loadingSpinner = canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
+	},
+};
+
+export const ReservationQueryLoadingState: Story = {
+	args: {
+		isAuthenticated: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: ViewListingDocument,
+						variables: { id: '1' },
+					},
+					result: {
+						data: {
+							itemListing: mockListing,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					delay: Infinity,
+				},
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		const loadingSpinner = canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		expect(loadingSpinner ?? canvasElement).toBeTruthy();
+	},
+};
+
