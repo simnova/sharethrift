@@ -209,6 +209,7 @@ async function main() {
 				console.error('Failed to decode redirect_uri from code:', e);
 			}
 		}
+        
 
 		// Use different credentials based on portal type
 		const email = isAdminPortal

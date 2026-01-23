@@ -1,10 +1,5 @@
 version: v1.5.0
 ignore:
-  'SNYK-JS-UNDICI-14943963':
-    - '* > undici':
-        reason: 'Transitive dependency in @azure/functions; upgrade path has type errors'
-        expires: '2026-01-29T00:00:00.000Z'
-        created: '2026-01-15T11:04:00.000Z'
   'SNYK-JS-SIRV-12558119':
     - '* > sirv@2.0.4':
         reason: 'Transitive dependency in Docusaurus; not exploitable in static site serving context (dev-only asset handler)'
@@ -33,7 +28,22 @@ ignore:
         reason: 'Transitive dependency in Docusaurus; not exploitable in current usage.'
         expires: '2026-03-16T00:00:00.000Z'
         created: '2025-12-05T00:00:00.000Z'
+  'SNYK-JS-PNPMNPMCONF-14897556':
+    - '* > @pnpm/npm-conf@2.3.1':
+        reason: 'Transitive dependency in Docusaurus; not exploitable in static site serving context'
+        expires: '2026-06-01T00:00:00.000Z'
+        created: '2026-01-20T00:00:00.000Z'
+  'SNYK-JS-UNDICI-14943963':
+    - '* > undici@5.29.0':
+        reason: 'Transitive dependency in Azure Functions and payment services; upgrade blocked by upstream compatibility'
+        expires: '2026-06-01T00:00:00.000Z'
+        created: '2026-01-20T00:00:00.000Z'
   'SNYK-JS-QS-14724253':
+    - '* > qs@6.13.0':
+        reason: 'Transitive dependency in various packages (azurite, express); not exploitable in current usage context'
+        expires: '2026-06-01T00:00:00.000Z'
+        created: '2026-01-21T00:00:00.000Z'
+
     - '* > qs':
         reason: 'Transitive dependency in express, @docusaurus/core, @apollo/server, apollo-link-rest; not exploitable in current usage.'
         expires: '2026-01-19T00:00:00.000Z'
