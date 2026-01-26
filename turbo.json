@@ -68,6 +68,10 @@
 		"//#gen:watch": {
 			"cache": false,
 			"persistent": true
+		},
+		"//#localhost": {
+			"cache": false,
+			"persistent": true
 		}
 	}
 }
