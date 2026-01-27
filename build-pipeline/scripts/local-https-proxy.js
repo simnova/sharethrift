@@ -76,7 +76,7 @@ const server = https.createServer(
   }
 
   const options = {
-   hostname: 'localhost',      // trusted
+   hostname: 'localhost',
    port: TARGET_PORT,           // trusted
    method: req.method,
    path: getSafePath(req.url),  // constrained
@@ -85,8 +85,12 @@ const server = https.createServer(
     'x-forwarded-proto': 'https',
     'x-forwarded-host': 'data-access.sharethrift.localhost:7072',
     'x-forwarded-for': req.socket.remoteAddress || '127.0.0.1',
-    'content-type': req.headers['content-type'],
-    'Authorization': req.headers.Authorization,
+    ...(req.headers['content-type'] && { 'content-type': req.headers['content-type'] }),
+    ...(req.headers['content-length'] && { 'content-length': req.headers['content-length'] }),
+    ...(req.headers.authorization && { 'authorization': req.headers.authorization }),
+    ...(req.headers.origin && { 'origin': req.headers.origin }),
+    ...(req.headers['access-control-request-method'] && { 'access-control-request-method': req.headers['access-control-request-method'] }),
+    ...(req.headers['access-control-request-headers'] && { 'access-control-request-headers': req.headers['access-control-request-headers'] }),
    },
   };
 
