@@ -55,6 +55,22 @@ export class Conversation<props extends ConversationProps>
 		// this.addIntegrationEvent(ConversationCreatedEvent, { conversationId: this.props.id });
 	}
 
+	async loadSharer(): Promise<UserEntityReference> {
+		return await this.props.loadSharer();
+	}
+
+	async loadReserver(): Promise<UserEntityReference> {
+		return await this.props.loadReserver();
+	}
+
+	async loadMessages(): Promise<readonly MessageEntityReference[]> {
+		return await this.props.loadMessages();
+	}
+
+	async loadListing(): Promise<ItemListingEntityReference> {
+		return await this.props.loadListing();
+	}
+
 	get sharer(): UserEntityReference {
 		// Polymorphic instantiation based on userType
 		if (this.props.sharer.userType === 'admin-user') {
@@ -67,10 +83,6 @@ export class Conversation<props extends ConversationProps>
 			this.props.sharer as unknown as PersonalUserProps,
 			this.passport,
 		);
-	}
-
-	async loadSharer(): Promise<UserEntityReference> {
-		return await this.props.loadSharer();
 	}
 
 	private set sharer(sharer: UserEntityReference | null | undefined) {
@@ -106,10 +118,6 @@ export class Conversation<props extends ConversationProps>
 		);
 	}
 
-	async loadReserver(): Promise<UserEntityReference> {
-		return await this.props.loadReserver();
-	}
-
 	private set reserver(reserver: UserEntityReference | null | undefined) {
 		if (
 			!this.isNew &&
@@ -129,20 +137,12 @@ export class Conversation<props extends ConversationProps>
 		this.props.reserver = reserver;
 	}
 
-	async loadMessages(): Promise<readonly MessageEntityReference[]> {
-		return await this.props.loadMessages();
-	}
-
 	get messages(): readonly MessageEntityReference[] {
 		return this.props.messages;
 	}
 
 	get listing(): ItemListingEntityReference {
 		return new ItemListing(this.props.listing, this.passport);
-	}
-
-	async loadListing(): Promise<ItemListingEntityReference> {
-		return await this.props.loadListing();
 	}
 
 	private set listing(listing: ItemListingEntityReference | null | undefined) {

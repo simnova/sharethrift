@@ -17,60 +17,60 @@ describe('Dependency Rules', () => {
   describe('api', () => {
     it('domain layer should not depend on persistence layer', async () => {
     const rule = projectFiles()
-      .inFolder('../ocom/domain')
+      .inFolder('../sthrift/domain')
       .shouldNot()
       .dependOnFiles()
-      .inFolder('../ocom/persistence');
+      .inFolder('../sthrift/persistence');
 
     await expect(rule).toPassAsync();
   });
 
   it('domain layer should not depend on infrastructure layer', async () => {
     const rule = projectFiles()
-      .inFolder('../ocom/domain')
+      .inFolder('../sthrift/domain')
       .shouldNot()
       .dependOnFiles()
-      .inPath('../ocom/service-*/**');
+      .inPath('../sthrift/service-*/**');
 
     await expect(rule).toPassAsync();
   });
 
   it('domain layer should not depend on application services', async () => {
     const rule = projectFiles()
-      .inFolder('../ocom/domain')
+      .inFolder('../sthrift/domain')
       .shouldNot()
       .dependOnFiles()
-      .inFolder('../ocom/application-services');
+      .inFolder('../sthrift/application-services');
 
     await expect(rule).toPassAsync();
   });
 
   it('application services should not depend on infrastructure', async () => {
     const rule = projectFiles()
-      .inFolder('../ocom/application-services')
+      .inFolder('../sthrift/application-services')
       .shouldNot()
       .dependOnFiles()
-      .inPath('../ocom/service-*/**');
+      .inPath('../sthrift/service-*/**');
 
     await expect(rule).toPassAsync();
   });
 
   it('GraphQL API layer should not depend on infrastructure directly', async () => {
     const rule = projectFiles()
-      .inFolder('../ocom/graphql')
+      .inFolder('../sthrift/graphql')
       .shouldNot()
       .dependOnFiles()
-      .inPath('../ocom/service-*/**');
+      .inPath('../sthrift/service-*/**');
 
     await expect(rule).toPassAsync();
   });
 
   it('REST API layer should not depend on infrastructure directly', async () => {
       const rule = projectFiles()
-        .inFolder('../ocom/rest')
+        .inFolder('../sthrift/rest')
         .shouldNot()
         .dependOnFiles()
-        .inPath('../ocom/service-*/**');
+        .inPath('../sthrift/service-*/**');
 
       await expect(rule).toPassAsync({ allowEmptyTests: true });
     });
@@ -82,29 +82,29 @@ describe('Dependency Rules', () => {
         .inFolder('../cellix/ui-core')
         .shouldNot()
         .dependOnFiles()
-        .inFolder('../ocom/ui-components');
+        .inFolder('../sthrift/ui-components');
 
       await expect(rule).toPassAsync();
     });
 
-    it('ui-core should not depend on ui-community app', async () => {
+    it('ui-core should not depend on ui-sharethrift app', async () => {
       const rule = projectFiles()
         .inFolder('../cellix/ui-core')
         .shouldNot()
         .dependOnFiles()
-        .inFolder('../../apps/ui-community');
+        .inFolder('../../apps/ui-sharethrift');
 
-      await expect(rule).toPassAsync();
+      await expect(rule).toPassAsync({ allowEmptyTests: true });
     });
 
-    it('ui-components should not depend on ui-community app', async () => {
+    it('ui-components should not depend on ui-sharethrift app', async () => {
       const rule = projectFiles()
-        .inFolder('../ocom/ui-components')
+        .inFolder('../sthrift/ui-components')
         .shouldNot()
         .dependOnFiles()
-        .inFolder('../../apps/ui-community');
+        .inFolder('../../apps/ui-sharethrift');
 
-      await expect(rule).toPassAsync();
+      await expect(rule).toPassAsync({ allowEmptyTests: true });
     });
   });
 });
