@@ -12,6 +12,7 @@ pool:
   vmImage: ubuntu-latest
 
 variables:
+  - group: edgescan-credential-sharethrift
   - group: sonarcloud-credential-sharethrift
   - group: github-credential-sharethrift
   - group: ui-sharethrift-settings-sharethrift
