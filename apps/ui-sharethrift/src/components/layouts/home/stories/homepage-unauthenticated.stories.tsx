@@ -5,11 +5,11 @@ import { withMockApolloClient, withMockRouter } from "../../../../test-utils/sto
 import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof HomeRoutes> = {
-	title: "Pages/Home - Authenticated",
+	title: "Pages/Home - Unauthenticated",
 	component: HomeRoutes,
 	decorators: [
 		withMockApolloClient,
-		withMockRouter("/", true),
+		withMockRouter("/", false),
 	],
 };
 

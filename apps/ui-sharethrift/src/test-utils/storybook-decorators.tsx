@@ -88,9 +88,9 @@ export const withMockUserId =
  * ```
  */
 export const withMockRouter =
-	(initialRoute = '/'): Decorator =>
+	(initialRoute = '/', isAuthenticated = true): Decorator =>
 	(Story) => (
-		<MockAuthWrapper>
+		<MockAuthWrapper isAuthenticated={isAuthenticated}>
 			<MemoryRouter initialEntries={[initialRoute]}>
 				<Routes>
 					<Route path="*" element={<Story />} />

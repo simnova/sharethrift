@@ -83,6 +83,7 @@ const meta: Meta<typeof RequestsTableContainer> = {
 			],
 		},
 	},
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	decorators: [withMockApolloClient, withMockRouter('/my-listings/requests')],
 };
 

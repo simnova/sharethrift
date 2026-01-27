@@ -79,7 +79,7 @@ const mockAdminUser = {
 const meta: Meta<typeof SettingsViewContainer> = {
 	title: 'Containers/SettingsViewContainer',
 	component: SettingsViewContainer,
-	tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {

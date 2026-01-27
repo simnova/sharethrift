@@ -97,7 +97,7 @@ const meta: Meta<typeof ConversationBoxContainer> = {
 	parameters: {
 		layout: 'fullscreen',
 	},
-  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 export default meta;
 type Story = StoryObj<typeof ConversationBoxContainer>;

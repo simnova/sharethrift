@@ -41,7 +41,7 @@ const mockCurrentUser = {
 
 const meta: Meta<typeof ViewListingContainer> = {
 	title: 'Containers/ViewListingContainer',
-	tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
 
 	component: ViewListingContainer,
 	parameters: {

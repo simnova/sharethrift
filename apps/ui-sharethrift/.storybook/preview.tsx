@@ -18,8 +18,10 @@ const preview: Preview = {
 			storySort: {
 				order: [
 					'Pages', 
-            ['Signup', ['Select Account Type', 'Account Setup', 'Profile Setup', 'Terms', 'Payment'],
-            'Home',
+            ['Home - Unauthenticated',
+            'Login', 
+            'Signup', ['Select Account Type', 'Account Setup', 'Profile Setup', 'Terms', 'Payment'],
+            'Home - Authenticated',
             'My Listings',
             'My Reservations',
             'Messages',

@@ -5,7 +5,7 @@ import { MockUnauthWrapper } from '../../../test-utils/storybook-mock-auth-wrapp
 import { LoginSelection } from './login-selection.tsx';
 
 const meta: Meta<typeof LoginSelection> = {
-	title: 'Pages/LoginSelection',
+	title: 'Pages/Home - Unauthenticated/Login',
 	component: LoginSelection,
 	parameters: {
 		layout: 'fullscreen',
@@ -22,7 +22,7 @@ const meta: Meta<typeof LoginSelection> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof LoginSelection>;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	play: async ({ canvasElement }) => {

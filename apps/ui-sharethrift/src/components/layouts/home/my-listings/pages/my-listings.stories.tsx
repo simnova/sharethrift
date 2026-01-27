@@ -143,7 +143,7 @@ export const EmptyListings: Story = {
 
 export const FileExports: Story = {
 	name: 'File Exports',
-  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	render: () => (
 		<div data-testid="file-export-test">
 			<p>MyListingsMain component file exists and exports correctly</p>

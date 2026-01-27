@@ -18,7 +18,7 @@ const meta: Meta<typeof HandleLogoutTest> = {
 	parameters: {
 		layout: 'centered',
 	},
-  tags: ['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 
 export default meta;

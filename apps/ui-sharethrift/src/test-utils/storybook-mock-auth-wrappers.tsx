@@ -50,16 +50,18 @@ export const MockUnauthWrapper = ({
  */
 export const MockAuthWrapper = ({
 	children,
+	isAuthenticated = true,
 }: {
 	children: ReactNode;
+	isAuthenticated?: boolean;
 }): ReactElement => {
 	const mockAuth = useMemo(
 		() =>
 			createMockAuth({
-				isAuthenticated: true,
+				isAuthenticated: isAuthenticated,
 				user: createMockUser(),
 			}),
-		[],
+		[isAuthenticated],
 	);
 
   return <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>;
