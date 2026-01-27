@@ -63,3 +63,11 @@ stages:
       appSettingsJsonFileRelativePathPri: 'apps/api/build-pipelines/config/dev-pri.json'
       frontDoorProfileName: 'simnova-afd'
       frontDoorEndpointName: 'sth-fde-bzbjd6edbfhmcnam'
+
+
+  - template: ./build-pipeline/core/monorepo-edgescan-stage.yml
+    parameters:
+      stageName: 'EdgeScan_DEV'
+      dependsOn: 'DEV'
+      vmImageName: $(vmImageName)
+      esAssetId: $(ES_ASSET_ID_DEV)
