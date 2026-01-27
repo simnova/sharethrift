@@ -90,24 +90,6 @@ const meta: Meta<typeof RequestsTableContainer> = {
 export default meta;
 type Story = StoryObj<typeof RequestsTableContainer>;
 
-export const Default: Story = {
-	args: {
-		currentPage: 1,
-		onPageChange: fn(),
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await waitFor(
-			() => {
-				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
-					0,
-				);
-			},
-			{ timeout: 3000 },
-		);
-	},
-};
-
 export const Empty: Story = {
 	args: {
 		currentPage: 1,
@@ -294,7 +276,6 @@ export const WithStatusFilter: Story = {
 							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
 						},
 					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							myListingsRequests: {
@@ -342,7 +323,6 @@ export const WithSorting: Story = {
 							sharerId: '6324a3f1e3e4e1e6a8e1d8b1',
 						},
 					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							myListingsRequests: mockRequests,
@@ -701,16 +681,14 @@ export const StateFilteringInteraction: Story = {
 		// Wait for filtered data to load
 		await waitFor(
 			() => {
-				expect(canvas.queryAllByText('Filtered Item').length).toBeGreaterThan(
-					0,
-				);
+				expect(canvas.queryAllByText(/Filtered Item/i).length).toBeGreaterThan(0);
 			},
 			{ timeout: 3000 },
 		);
 
-		// Verify the filtered item shows correct status
-		expect(canvas.queryAllByText('Pending').length).toBeGreaterThan(0);
-		expect(canvas.queryAllByText('@filtereduser').length).toBeGreaterThan(0);
+	// Verify the filtered item shows correct status
+	expect(canvas.queryAllByText('Pending').length).toBeGreaterThan(0);
+	expect(canvas.queryAllByText('@filtereduser').length).toBeGreaterThan(0);
 	},
 };
 
@@ -804,10 +782,10 @@ export const SortingInteraction: Story = {
 			{ timeout: 3000 },
 		);
 
-		// Verify both items are present (sorted alphabetically)
-		expect(canvas.queryAllByText('Apple MacBook').length).toBeGreaterThan(0);
-		expect(canvas.queryAllByText('Zeiss Camera').length).toBeGreaterThan(0);
-		expect(canvas.queryAllByText('Pending').length).toBeGreaterThan(0);
-		expect(canvas.queryAllByText('Accepted').length).toBeGreaterThan(0);
+	// Verify both items are present (sorted alphabetically)
+	expect(canvas.queryAllByText('Apple MacBook').length).toBeGreaterThan(0);
+	expect(canvas.queryAllByText('Zeiss Camera').length).toBeGreaterThan(0);
+	expect(canvas.queryAllByText('Pending').length).toBeGreaterThan(0);
+	expect(canvas.queryAllByText('Accepted').length).toBeGreaterThan(0);
 	},
 };

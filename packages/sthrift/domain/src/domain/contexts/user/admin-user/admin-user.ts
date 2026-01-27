@@ -57,6 +57,10 @@ export class AdminUser<props extends AdminUserProps>
 		}
 	}
 
+	async loadRole(): Promise<AdminRoleEntityReference> {
+		return await this.props.loadRole();
+	}
+
 	get isNew() {
 		return this._isNew;
 	}
@@ -83,10 +87,6 @@ export class AdminUser<props extends AdminUserProps>
 
 	get role(): AdminRoleEntityReference {
 		return new AdminRole(this.props.role, this.passport);
-	}
-
-	async loadRole(): Promise<AdminRoleEntityReference> {
-		return await this.props.loadRole();
 	}
 
 	private set role(role: AdminRoleEntityReference) {

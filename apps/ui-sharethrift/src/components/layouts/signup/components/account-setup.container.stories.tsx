@@ -13,6 +13,7 @@ import {
 const mockCurrentUser = {
 	__typename: 'PersonalUser',
 	id: 'user-1',
+	userType: 'personal',
 	account: {
 		__typename: 'PersonalUserAccount',
 		email: 'test@example.com',

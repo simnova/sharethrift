@@ -1,10 +1,16 @@
+import { fileURLToPath } from 'node:url';
 import { setupEnvironment } from './setup-environment.js';
 import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
 import express from 'express';
+import https from 'node:https';
+import fs from 'node:fs';
+import path from 'node:path';
 import { exportJWK, generateKeyPair, SignJWT, type JWK } from 'jose';
 import { exportPKCS8 } from 'jose';
 
 setupEnvironment();
+
+
 const app = express();
 app.disable('x-powered-by');
 const port = 4000;
@@ -25,11 +31,15 @@ function normalizeUrl(urlString: string): string {
 const allowedRedirectUris = new Set([
 	'http://localhost:3000/auth-redirect-user',
 	'http://localhost:3000/auth-redirect-admin',
+	'https://sharethrift.localhost:3000/auth-redirect-user',
+	'https://sharethrift.localhost:3000/auth-redirect-admin',
 ]);
 // Map redirect URIs to their corresponding audience identifiers
 const redirectUriToAudience = new Map([
 	['http://localhost:3000/auth-redirect-user', 'user-portal'],
 	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
+	['https://sharethrift.localhost:3000/auth-redirect-user', 'user-portal'],
+	['https://sharethrift.localhost:3000/auth-redirect-admin', 'admin-portal'],
 ]);
 // Deprecated: kept for backwards compatibility
 const allowedRedirectUri =
@@ -53,6 +63,7 @@ async function buildTokenResponse(
 	profile: TokenProfile,
 	privateKey: webcrypto.CryptoKey | KeyObject | JWK | Uint8Array,
 	jwk: { alg?: string; kid?: string },
+	baseUrl: string,
 	existingRefreshToken?: string,
 ) {
 	const now = Math.floor(Date.now() / 1000);
@@ -61,7 +72,7 @@ async function buildTokenResponse(
 
 	// Manually sign the id_token as a JWT with all claims using jose
 	const idTokenPayload = {
-		iss: `http://localhost:${port}}`,
+		iss: baseUrl,
 		sub: profile.sub,
 		aud: profile.aud,
 		email: profile.email,
@@ -81,7 +92,7 @@ async function buildTokenResponse(
 
 	// Manually sign the access_token as a JWT with all claims using jose
 	const accessTokenPayload = {
-		iss: `http://localhost:${port}`,
+		iss: baseUrl,
 		sub: profile.sub,
 		aud: profile.aud,
 		email: profile.email,
@@ -110,7 +121,7 @@ async function buildTokenResponse(
 		profile: {
 			exp,
 			ver: '1.0',
-			iss: `http://localhost:${port}`,
+			iss: baseUrl,
 			sub: profile.sub,
 			aud: profile.aud,
 			iat: now,
@@ -125,6 +136,17 @@ async function buildTokenResponse(
 
 // Main async startup
 async function main() {
+	// Always resolve .certs from monorepo root (works regardless of script location or cwd)
+	const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
+	const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
+	const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
+	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
+
+	// Set BASE_URL based on whether we have certificates
+	const BASE_URL = hasCerts
+		? `https://mock-auth.sharethrift.localhost:${port}`
+		: `http://localhost:${port}`;
+
 	// Generate signing keypair with jose
 	const { publicKey, privateKey } = await generateKeyPair('RS256');
 	const publicJwk = await exportJWK(publicKey);
@@ -187,6 +209,7 @@ async function main() {
 				console.error('Failed to decode redirect_uri from code:', e);
 			}
 		}
+        
 
 		// Use different credentials based on portal type
 		const email = isAdminPortal
@@ -202,7 +225,7 @@ async function main() {
 		const profile: TokenProfile = {
 			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),
-			iss: `http://localhost:${port}`,
+			iss: BASE_URL,
 			email,
 			given_name,
 			family_name,
@@ -212,17 +235,18 @@ async function main() {
 			profile,
 			keyObject,
 			publicJwk,
+			BASE_URL,
 		);
 		res.json(tokenResponse);
 	});
 
 	app.get('/.well-known/openid-configuration', (_req, res) => {
 		res.json({
-			issuer: 'http://localhost:4000',
-			authorization_endpoint: 'http://localhost:4000/authorize',
-			token_endpoint: 'http://localhost:4000/token',
-			userinfo_endpoint: 'http://localhost:4000/userinfo',
-			jwks_uri: 'http://localhost:4000/.well-known/jwks.json',
+			issuer: BASE_URL,
+			authorization_endpoint: `${BASE_URL}/authorize`,
+			token_endpoint: `${BASE_URL}/token`,
+			userinfo_endpoint: `${BASE_URL}/userinfo`,
+			jwks_uri: `${BASE_URL}/.well-known/jwks.json`,
 			response_types_supported: ['code', 'token'],
 			subject_types_supported: ['public'],
 			id_token_signing_alg_values_supported: ['RS256'],
@@ -273,13 +297,34 @@ async function main() {
 		return;
 	});
 
-	app.listen(port, () => {
-		// eslint-disable-next-line no-console
-		console.log(`Mock OAuth2 server running on http://localhost:${port}`);
-		console.log(
-			`JWKS endpoint running on http://localhost:${port}/.well-known/jwks.json`,
-		);
-	});
+	// Load SSL certificates for HTTPS
+	if (hasCerts) {
+		const httpsOptions = {
+			key: fs.readFileSync(certKeyPath),
+			cert: fs.readFileSync(certPath),
+		};
+
+		https.createServer(httpsOptions, app).listen(port, 'mock-auth.sharethrift.localhost', () => {
+			// eslint-disable-next-line no-console
+			console.log(
+				`Mock OAuth2 server running on ${BASE_URL}`,
+			);
+			console.log(
+				`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`,
+			);
+		});
+	} else {
+		// Fallback to HTTP when certs don't exist (CI/CD)
+		app.listen(port, () => {
+			// eslint-disable-next-line no-console
+			console.log(
+				`Mock OAuth2 server running on ${BASE_URL} (no certs found)`,
+			);
+			console.log(
+				`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`,
+			);
+		});
+	}
 }
 
 main();

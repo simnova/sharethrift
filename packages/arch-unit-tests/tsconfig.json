@@ -1,0 +1,16 @@
+{
+  "extends": "@cellix/typescript-config/node.json",
+  "include": [
+    "src/**/*",
+    "../cellix/**/*.ts",
+    "../sthrift/**/*.ts",
+    "../../apps/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "**/node_modules",
+    "**/dist",
+    "**/coverage",
+    "**/*.test.ts"
+  ]
+}

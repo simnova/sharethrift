@@ -3,7 +3,7 @@ import { Footer, Header } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
 import { HandleLogout } from '../../shared/handle-logout.ts';
 import { useApolloClient } from '@apollo/client/react';
-import { useCreateListingNavigation } from '../home/components/create-listing/hooks/use-create-listing-navigation.ts';
+import { useCreateListingNavigation } from '../../shared/hooks/use-create-listing-navigation.ts';
 import { Card } from 'antd';
 
 export const SectionLayout: React.FC = () => {
