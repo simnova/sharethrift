@@ -41,6 +41,19 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 
 		return newInstance;
 	}
+
+	async loadUser(): Promise<PersonalUserEntityReference> {
+		return await this.props.loadUser();
+	}
+
+	async loadListing(): Promise<ItemListingEntityReference> {
+		return await this.props.loadListing();
+	}
+
+	async loadBlocker(): Promise<PersonalUserEntityReference> {
+		return await this.props.loadBlocker();
+	}
+
 	get user(): PersonalUserEntityReference {
 		return new PersonalUser(
 			// biome-ignore lint/suspicious/noExplicitAny: Required for cross-context entity references
@@ -49,20 +62,12 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 		) as PersonalUserEntityReference;
 	}
 
-	async loadUser(): Promise<PersonalUserEntityReference> {
-		return await this.props.loadUser();
-	}
-
 	get listing(): ItemListingEntityReference {
 		return new ItemListing(
 			// biome-ignore lint/suspicious/noExplicitAny: Required for cross-context entity references
 			this.props.listing as any,
 			this.passport,
 		) as ItemListingEntityReference;
-	}
-
-	async loadListing(): Promise<ItemListingEntityReference> {
-		return await this.props.loadListing();
 	}
 
 	get reason(): string {
@@ -107,10 +112,6 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 			this.props.blocker as any,
 			this.passport,
 		) as PersonalUserEntityReference;
-	}
-
-	async loadBlocker(): Promise<PersonalUserEntityReference> {
-		return await this.props.loadBlocker();
 	}
 
 	get createdAt(): Date {

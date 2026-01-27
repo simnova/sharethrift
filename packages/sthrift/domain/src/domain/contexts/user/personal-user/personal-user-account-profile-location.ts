@@ -22,6 +22,18 @@ export class PersonalUserAccountProfileLocation
 		this.root = root;
 		console.log(this.visa); // Temporary added to avoid unused variable error
 	}
+
+	private validateVisa(): void {
+		if (
+			!this.root.isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set location info',
+			);
+		}
+	}
+
 	// Primitive Field Getters
 	get address1() {
 		return this.props.address1;
@@ -40,17 +52,6 @@ export class PersonalUserAccountProfileLocation
 	}
 	get zipCode() {
 		return this.props.zipCode;
-	}
-
-	private validateVisa(): void {
-		if (
-			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'Unauthorized to set location info',
-			);
-		}
 	}
 
 	// Primitive Field Setters

@@ -71,6 +71,119 @@ export class ItemListing<props extends ItemListingProps>
 		this.isNew = true;
 	}
 
+	async loadSharer(): Promise<UserEntityReference> {
+		return await this.props.loadSharer();
+	}
+
+	public publish(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to publish this listing',
+			);
+		}
+
+		this.props.state = new ValueObjects.ListingState('Active').valueOf();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
+	}
+
+	public pause(): void {
+		if (
+			!this.visa.determineIf(
+				(permissions) => permissions.canUnpublishItemListing,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to pause this listing',
+			);
+		}
+
+		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
+	}
+
+	public cancel(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to cancel this listing',
+			);
+		}
+
+		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
+	}
+
+	/**
+	 * Set whether this listing is blocked.
+	 * - When setting blocked=false and the listing is currently Blocked, this will move the
+	 *   listing to AppealRequested (the previous `unblock()` behaviour).
+	 * - When setting blocked=true it will mark the listing as Blocked.
+	 * This is intentionally a setter-style API so callers can use a single update mutation
+	 * to toggle the blocked state.
+	 */
+	public setBlocked(blocked: boolean): void {
+		const current = this.props.state.valueOf();
+
+		if (!blocked) {
+			// unblocking: require publish permission (keeps previous behaviour)
+			if (
+				!this.visa.determineIf(
+					(permissions) => permissions.canPublishItemListing,
+				)
+			) {
+				throw new DomainSeedwork.PermissionError(
+					'You do not have permission to unblock this listing',
+				);
+			}
+
+			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
+			if (!isBlocked) return; // no-op if not blocked
+
+			this.props.state = ValueObjects.ListingStateEnum.Active;
+			return;
+		}
+
+		// setting blocked=true
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to block this listing',
+			);
+		}
+
+		if (current === ValueObjects.ListingStateEnum.Blocked) return; // already blocked
+		this.props.state = ValueObjects.ListingStateEnum.Blocked;
+	}
+
+/**
+ * Request deletion of this item listing (marks as deleted).
+ */
+public requestDelete(): void {
+	if (
+		!this.visa.determineIf(
+			(permissions) => permissions.canDeleteItemListing,
+		)
+	) {
+		throw new DomainSeedwork.PermissionError(
+			'You do not have permission to delete this listing',
+		);
+	}
+
+		if (!this.isDeleted) {
+			super.isDeleted = true;
+		}
+	}
+
+	/**
+	 * Create a reference to this entity for use in other contexts
+	 */
+	getEntityReference(): ItemListingEntityReference {
+		return this.props as ItemListingEntityReference;
+	}
+
 	//#endregion Methods
 
 	//#region Properties
@@ -86,10 +199,6 @@ export class ItemListing<props extends ItemListingProps>
 			this.props.sharer as unknown as PersonalUserProps,
 			this.passport,
 		);
-	}
-
-	async loadSharer(): Promise<UserEntityReference> {
-		return await this.props.loadSharer();
 	}
 
 	set sharer(value: UserEntityReference) {
@@ -253,108 +362,6 @@ export class ItemListing<props extends ItemListingProps>
 		return this.location;
 	}
 
-	public publish(): void {
-		if (
-			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to publish this listing',
-			);
-		}
-
-		this.props.state = new ValueObjects.ListingState('Active').valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
-	}
-
-	public pause(): void {
-		if (
-			!this.visa.determineIf(
-				(permissions) => permissions.canUnpublishItemListing,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to pause this listing',
-			);
-		}
-
-		this.props.state = new ValueObjects.ListingState('Paused').valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
-	}
-
-	public cancel(): void {
-		if (
-			!this.visa.determineIf((permissions) => permissions.canDeleteItemListing)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to cancel this listing',
-			);
-		}
-
-		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
-	}
-
-	/**
-	 * Set whether this listing is blocked.
-	 * - When setting blocked=false and the listing is currently Blocked, this will move the
-	 *   listing to AppealRequested (the previous `unblock()` behaviour).
-	 * - When setting blocked=true it will mark the listing as Blocked.
-	 * This is intentionally a setter-style API so callers can use a single update mutation
-	 * to toggle the blocked state.
-	 */
-	public setBlocked(blocked: boolean): void {
-		const current = this.props.state.valueOf();
-
-		if (!blocked) {
-			// unblocking: require publish permission (keeps previous behaviour)
-			if (
-				!this.visa.determineIf(
-					(permissions) => permissions.canPublishItemListing,
-				)
-			) {
-				throw new DomainSeedwork.PermissionError(
-					'You do not have permission to unblock this listing',
-				);
-			}
-
-			const isBlocked = current === ValueObjects.ListingStateEnum.Blocked;
-			if (!isBlocked) return; // no-op if not blocked
-
-			this.props.state = ValueObjects.ListingStateEnum.Active;
-			return;
-		}
-
-		// setting blocked=true
-		if (
-			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to block this listing',
-			);
-		}
-
-		if (current === ValueObjects.ListingStateEnum.Blocked) return; // already blocked
-		this.props.state = ValueObjects.ListingStateEnum.Blocked;
-	}
-
-/**
- * Request deletion of this item listing (marks as deleted).
- */
-public requestDelete(): void {
-	if (
-		!this.visa.determineIf(
-			(permissions) => permissions.canDeleteItemListing,
-		)
-	) {
-		throw new DomainSeedwork.PermissionError(
-			'You do not have permission to delete this listing',
-		);
-	}
-
-		if (!this.isDeleted) {
-			super.isDeleted = true;
-		}
-	}
-
 	get expiresAt(): Date | undefined {
 		return this.props.expiresAt;
 	}
@@ -368,13 +375,6 @@ public requestDelete(): void {
 			);
 		}
 		this.props.expiresAt = value;
-	}
-
-	/**
-	 * Create a reference to this entity for use in other contexts
-	 */
-	getEntityReference(): ItemListingEntityReference {
-		return this.props as ItemListingEntityReference;
 	}
 
 	get listingType(): string {

@@ -13,7 +13,8 @@ describe('ServiceMessagingMock Integration Tests', () => {
 	beforeAll(async () => {
 		process.env['MESSAGING_MOCK_URL'] = MOCK_SERVER_URL;
 		
-		mockServer = await startServer(MOCK_SERVER_PORT, true);
+		// Force HTTP mode for tests to avoid certificate issues
+		mockServer = await startServer(MOCK_SERVER_PORT, true, false);
 		
 		await new Promise((resolve) => setTimeout(resolve, 500));
 	}, 15000);
