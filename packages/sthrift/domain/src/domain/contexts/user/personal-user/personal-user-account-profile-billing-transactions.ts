@@ -23,6 +23,17 @@ export class PersonalUserAccountProfileBillingTransactions
 		this.root = root;
 	}
 
+	private validateVisa(): void {
+		if (
+			!this.root.isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set transaction info',
+			);
+		}
+	}
+
 	get transactionId(): string {
 		return this.props.transactionId;
 	}
@@ -40,17 +51,6 @@ export class PersonalUserAccountProfileBillingTransactions
 	}
 	get errorMessage(): string | null {
 		return this.props.errorMessage;
-	}
-
-	private validateVisa(): void {
-		if (
-			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'Unauthorized to set transaction info',
-			);
-		}
 	}
 
 	set transactionId(value: string) {

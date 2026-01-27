@@ -75,7 +75,7 @@ export function createApp(): Application {
 	return app;
 }
 
-export function startServer(port = 10000, seedData = false): Promise<Server> {
+export function startServer(port = 10000, seedData = false, useHttps = true): Promise<Server> {
 	return new Promise((resolve) => {
 		const app = createApp();
 			// Always resolve .certs from monorepo root (works regardless of script location or cwd)
@@ -83,7 +83,7 @@ export function startServer(port = 10000, seedData = false): Promise<Server> {
 			const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
 			const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
 			const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
-		if (hasCerts) {
+		if (hasCerts && useHttps) {
 			const httpsOptions = {
 				key: fs.readFileSync(certKeyPath),
 				cert: fs.readFileSync(certPath),
@@ -98,9 +98,10 @@ export function startServer(port = 10000, seedData = false): Promise<Server> {
 				resolve(server);
 			});
 		} else {
-			// Fallback to HTTP when certs don't exist (CI/CD)
+			// Fallback to HTTP when certs don't exist or useHttps=false (tests/CI/CD)
 			const server = http.createServer(app).listen(port, () => {
-				console.log(` Mock Messaging Server listening on http://localhost:${port} (no certs found)`);
+				const reason = !hasCerts ? '(no certs found)' : '(HTTP mode)';
+				console.log(` Mock Messaging Server listening on http://localhost:${port} ${reason}`);
 				if (seedData) {
 					seedMockData();
 				} else {
