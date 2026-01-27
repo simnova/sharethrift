@@ -96,5 +96,5 @@
 		"tsx",
 		"vite"
 	],
-	"ignoreBinaries": ["func"]
+	"ignoreBinaries": ["func", "container"]
 }
