@@ -2,6 +2,11 @@ import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.js';
 import { PopulateUserFromField } from '../../resolver-helper.ts';
 
+
+import type { GraphContext } from '../../../init/context.ts';
+import type { Resolvers } from '../../builder/generated.js';
+import { PopulateUserFromField } from '../../resolver-helper.ts';
+
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
 		sharer: PopulateUserFromField('sharer'),
