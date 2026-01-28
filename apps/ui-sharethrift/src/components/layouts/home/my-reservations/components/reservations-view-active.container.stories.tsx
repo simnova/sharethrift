@@ -15,7 +15,7 @@ import {
 const mockUser = {
 	__typename: 'PersonalUser',
 	id: 'user-1',
-	userType: 'personal',
+	userType: 'personal-user',
 	account: {
 		__typename: 'PersonalUserAccount',
 		profile: {
@@ -48,7 +48,7 @@ const mockActiveReservations = [
 		reserver: {
 			__typename: 'PersonalUser',
 			id: 'user-1',
-			userType: 'personal',
+			userType: 'personal-user',
 			profile: { firstName: 'John', lastName: 'Doe' },
 			account: {
 				__typename: 'PersonalUserAccount',
@@ -64,6 +64,8 @@ const mockActiveReservations = [
 
 const meta: Meta = {
 	title: 'Containers/ReservationsViewActiveContainer',
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	component: ReservationsViewActiveContainer,
 	parameters: {
 		layout: 'fullscreen',
@@ -192,7 +194,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
@@ -552,7 +554,7 @@ export const ReservationsLoading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);

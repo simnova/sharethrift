@@ -16,6 +16,7 @@ import {
 const meta: Meta<typeof AdminListings> = {
 	title: 'Containers/AdminListingsTableContainer',
 	component: AdminListings,
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {
@@ -215,7 +216,7 @@ export const LoadingState: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);

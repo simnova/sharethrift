@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof HeroSection> = {
-	title: 'Listing/Hero',
+	title: 'Components/Hero',
 	component: HeroSection,
 	parameters: {
 		layout: 'fullscreen',
@@ -15,7 +15,7 @@ type Story = StoryObj<typeof HeroSection>;
 
 export const Default: Story = {
 	render: () => <HeroSection />,
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		const heading = canvas.getByRole('heading');
@@ -32,8 +32,9 @@ export const Default: Story = {
 };
 
 export const WithInteraction: Story = {
+  tags:['!dev'], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	render: () => <HeroSection />,
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		const heading = canvas.getByRole('heading');
@@ -42,7 +43,7 @@ export const WithInteraction: Story = {
 		const buttons = canvasElement.querySelectorAll('button, a[class*="button"]');
 		expect(buttons.length).toBeGreaterThanOrEqual(0);
 		
-		const textContent = canvasElement.textContent;
+		const {textContent} = canvasElement;
 		expect(textContent).toBeTruthy();
 	},
 };

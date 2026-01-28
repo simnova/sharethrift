@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
-import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
+import { MockAuthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
 import { SectionLayout } from './section-layout.tsx';
 
 // Mock Apollo Client with MockLink
@@ -14,7 +14,7 @@ const mockApolloClient = new ApolloClient({
 });
 
 const meta: Meta<typeof SectionLayout> = {
-	title: 'Layouts/SectionLayout',
+	title: 'Components/Home/Layouts/SectionLayout',
 	component: SectionLayout,
 	parameters: {
 		layout: 'fullscreen',

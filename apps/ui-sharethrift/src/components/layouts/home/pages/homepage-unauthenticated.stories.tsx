@@ -5,11 +5,11 @@ import { withMockApolloClient, withMockRouter } from "../../../../test-utils/sto
 import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof HomeRoutes> = {
-	title: "Pages/Home - Authenticated",
+	title: "Pages/Home - Unauthenticated",
 	component: HomeRoutes,
 	decorators: [
 		withMockApolloClient,
-		withMockRouter("/", true),
+		withMockRouter("/", false),
 	],
 };
 
@@ -128,71 +128,6 @@ DefaultView.parameters = {
                 },
               },
             ],
-          },
-        },
-      },
-      {
-        request: {
-          query: {
-            kind: "Document",
-            definitions: [
-              {
-                kind: "OperationDefinition",
-                operation: "query",
-                name: { kind: "Name", value: "useUserIsAdmin" },
-                selectionSet: {
-                  kind: "SelectionSet",
-                  selections: [
-                    {
-                      kind: "Field",
-                      name: { kind: "Name", value: "currentUser" },
-                      selectionSet: {
-                        kind: "SelectionSet",
-                        selections: [
-                          {
-                            kind: "InlineFragment",
-                            typeCondition: {
-                              kind: "NamedType",
-                              name: { kind: "Name", value: "PersonalUser" },
-                            },
-                            selectionSet: {
-                              kind: "SelectionSet",
-                              selections: [
-                                { kind: "Field", name: { kind: "Name", value: "id" } },
-                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
-                              ],
-                            },
-                          },
-                          {
-                            kind: "InlineFragment",
-                            typeCondition: {
-                              kind: "NamedType",
-                              name: { kind: "Name", value: "AdminUser" },
-                            },
-                            selectionSet: {
-                              kind: "SelectionSet",
-                              selections: [
-                                { kind: "Field", name: { kind: "Name", value: "id" } },
-                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
-                              ],
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        },
-        result: {
-          data: {
-            currentUser: {
-              __typename: "PersonalUser",
-              id: "507f1f77bcf86cd799439099",
-              userIsAdmin: false,
-            },
           },
         },
       },

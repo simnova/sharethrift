@@ -36,6 +36,8 @@ const mockListings = [
 
 const meta: Meta<typeof AllListingsTableContainer> = {
 	title: 'Containers/AllListingsTableContainer',
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	component: AllListingsTableContainer,
 	args: {
 		currentPage: 1,
@@ -169,7 +171,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// Check for loading state
 		const loadingSpinner =

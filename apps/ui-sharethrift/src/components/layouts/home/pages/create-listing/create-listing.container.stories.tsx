@@ -10,6 +10,8 @@ import { HomeCreateListingContainerCreateItemListingDocument } from '../../../..
 const meta: Meta<typeof CreateListingContainer> = {
 	title: 'Containers/CreateListingContainer',
 	component: CreateListingContainer,
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {

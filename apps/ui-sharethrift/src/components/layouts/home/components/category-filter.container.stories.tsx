@@ -9,6 +9,8 @@ const meta: Meta<typeof CategoryFilterContainer> = {
 	parameters: {
 		layout: 'centered',
 	},
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. This is all functional testing story.
+
 	decorators: [
 		(Story) => (
 			<MemoryRouter>
@@ -28,7 +30,7 @@ export const Default: Story = {
 		selectedCategory: '',
 		onCategoryChange: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

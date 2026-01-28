@@ -32,6 +32,8 @@ const mockPersonalUser = {
 
 const meta: Meta<typeof ProfileSetupContainer> = {
 	title: 'Containers/ProfileSetupContainer',
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	component: ProfileSetupContainer,
 	parameters: {
 		layout: 'padded',
@@ -105,7 +107,7 @@ export const LoadingState: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
@@ -159,7 +161,7 @@ export const NoUserData: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		// Component should handle null user gracefully
 		expect(canvasElement).toBeTruthy();
 	},
