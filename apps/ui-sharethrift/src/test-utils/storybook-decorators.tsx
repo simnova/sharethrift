@@ -158,5 +158,3 @@ export const withAuthDecorator: Decorator = (Story) => (
 		</AuthProvider>
 	</MockedProvider>
 );
-
-export const mockEnvironment = { mockEnv, mockStorage };
