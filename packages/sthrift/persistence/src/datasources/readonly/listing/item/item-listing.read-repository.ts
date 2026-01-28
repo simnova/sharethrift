@@ -10,7 +10,7 @@ import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
 export interface ItemListingReadRepository {
 	getAll: (
-		options?: FindOptions,
+		options?: FindOptions & { excludeStates?: string[] },
 	) => Promise<
 		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
 	>;
@@ -58,14 +58,20 @@ class ItemListingReadRepositoryImpl
 	}
 
 	async getAll(
-		options?: FindOptions,
+		options?: FindOptions & { excludeStates?: string[] },
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
-		const result = await this.mongoDataSource.find(
-			{},
-			{
-				...options,
-			},
-		);
+		// Build filter query
+		const filter: Record<string, unknown> = {};
+
+		// Add state exclusion filter if provided
+		if (options?.excludeStates && options.excludeStates.length > 0) {
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+			filter['state'] = { $nin: options.excludeStates };
+		}
+
+		const result = await this.mongoDataSource.find(filter, {
+			...options,
+		});
 		if (!result || result.length === 0) return [];
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}

@@ -39,10 +39,11 @@ const itemListingResolvers: Resolvers = {
 			return await context.applicationServices.Listing.ItemListing.queryPaged(command);
 		},
 		itemListings: async (_parent, _args, context) => {
-			const allListings = await context.applicationServices.Listing.ItemListing.queryAll({});
-			// Filter out paused listings from search results for reservers
+			// Filter out paused listings from search results for reservers at the database level
 			// Paused listings should not be visible to reservers
-			return allListings.filter(listing => listing.state !== 'Paused');
+			return await context.applicationServices.Listing.ItemListing.queryAll({
+				excludeStates: ['Paused'],
+			});
 		},
 
 		itemListing: async (_parent, args, context) => {
@@ -113,7 +114,7 @@ const itemListingResolvers: Resolvers = {
 		cancelItemListing: async (
 			_parent: unknown,
 			args: { id: string },
-			context,
+			context: GraphContext,
 		) => ({
 			status: { success: true },
 			listing: await context.applicationServices.Listing.ItemListing.cancel({
@@ -126,17 +127,24 @@ const itemListingResolvers: Resolvers = {
 			args: { id: string },
 			context: GraphContext,
 		) => {
+			const listing =
+				await context.applicationServices.Listing.ItemListing.queryById({
+					id: args.id,
+				});
 			await context.applicationServices.Listing.ItemListing.deleteListings({
 				id: args.id,
 				userEmail:
 					context.applicationServices.verifiedUser?.verifiedJwt?.email ?? '',
 			});
-			return { status: { success: true } };
+			return {
+				status: { success: true },
+				listing,
+			};
 		},
 		pauseItemListing: async (
 			_parent: unknown,
 			args: { id: string },
-			context,
+			context: GraphContext,
 		) => {
 			const userEmail =
 				context.applicationServices.verifiedUser?.verifiedJwt?.email;
@@ -144,11 +152,10 @@ const itemListingResolvers: Resolvers = {
 				throw new Error('Authentication required');
 			}
 
-			const result =
-				await context.applicationServices.Listing.ItemListing.pause({
-					id: args.id,
-				});
-			return result;
+			return await context.applicationServices.Listing.ItemListing.pause({
+				id: args.id,
+				userEmail,
+			});
 		},
 	},
 };

@@ -3,6 +3,7 @@ import type { DataSources } from '@sthrift/persistence';
 
 export interface ItemListingPauseCommand {
 	id: string;
+	userEmail: string;
 }
 
 export const pause = (dataSources: DataSources) => {
@@ -19,6 +20,11 @@ export const pause = (dataSources: DataSources) => {
 					throw new Error('Listing not found');
 				}
 
+				// Ownership check: only the sharer who owns the listing can pause it
+				if (listing.sharer?.account?.email !== command.userEmail) {
+					throw new Error('Only the listing owner can pause this listing');
+				}
+
 				listing.pause();
 				itemListingToReturn = await repo.save(listing);
 			},
@@ -29,4 +35,3 @@ export const pause = (dataSources: DataSources) => {
 		return itemListingToReturn;
 	};
 };
-

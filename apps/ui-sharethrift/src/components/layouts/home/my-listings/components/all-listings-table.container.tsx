@@ -95,6 +95,7 @@ export const AllListingsTableContainer: React.FC<
 	);
 
 	const listings = data?.myListingsAll?.items ?? [];
+	console.log('Listings data:', data);
 	const total = data?.myListingsAll?.total ?? 0;
 
 	const handleSearch = (value: string) => {

@@ -125,6 +125,11 @@ function makeMockGraphContext(
 					update: vi.fn(),
 					cancel: vi.fn(),
 					pause: vi.fn(),
+<<<<<<< HEAD
+=======
+					deleteListings: vi.fn(),
+					unblock: vi.fn(),
+>>>>>>> bd488a89b1b24e6caab31f1bc89d06fba8ee8be2
 				},
 			},
 			User: {
@@ -165,7 +170,7 @@ test.for(feature, ({ Scenario }) => {
 			Then('it should call Listing.ItemListing.queryAll', () => {
 				expect(
 					context.applicationServices.Listing.ItemListing.queryAll,
-				).toHaveBeenCalledWith({});
+				).toHaveBeenCalledWith({ excludeStates: ['Paused'] });
 			});
 			And('it should return a list of item listings', () => {
 				expect(result).toBeDefined();
@@ -197,7 +202,7 @@ test.for(feature, ({ Scenario }) => {
 			Then('it should call Listing.ItemListing.queryAll', () => {
 				expect(
 					context.applicationServices.Listing.ItemListing.queryAll,
-				).toHaveBeenCalledWith({});
+				).toHaveBeenCalledWith({ excludeStates: ['Paused'] });
 			});
 			And('it should return all available listings', () => {
 				expect(result).toBeDefined();
@@ -813,6 +818,7 @@ test.for(feature, ({ Scenario }) => {
 	);
 
 	Scenario(
+<<<<<<< HEAD
 		'Querying myListingsAll with sorting by title ascending',
 		({ Given, And, When, Then }) => {
 			Given('a verified user and valid pagination arguments', () => {
@@ -865,11 +871,42 @@ test.for(feature, ({ Scenario }) => {
 				expect(result).toBeDefined();
 				const resultData = result as { items: ItemListingEntity[] };
 				expect(resultData.items.length).toBe(2);
+=======
+		'Pausing an item listing successfully',
+		({ Given, And, When, Then }) => {
+			Given('a user with a verifiedJwt in their context', () => {
+				context = makeMockGraphContext();
+			});
+			And('a valid listing ID for an active listing', () => {
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.pause,
+				).mockResolvedValue(
+					createMockListing({ id: 'listing-1', state: 'Paused' }),
+				);
+			});
+			When('the pauseItemListing mutation is executed', async () => {
+				const resolver = itemListingResolvers.Mutation
+					?.pauseItemListing as TestResolver<{ id: string }>;
+				result = await resolver({}, { id: 'listing-1' }, context, {} as never);
+			});
+			Then(
+				'it should call Listing.ItemListing.pause with the listing ID',
+				() => {
+				expect(
+					context.applicationServices.Listing.ItemListing.pause,
+				).toHaveBeenCalledWith({ id: 'listing-1', userEmail: 'test@example.com' });
+				},
+			);
+			And('it should return the paused listing with state "Paused"', () => {
+				expect(result).toBeDefined();
+				expect((result as { state: string }).state).toBe('Paused');
+>>>>>>> bd488a89b1b24e6caab31f1bc89d06fba8ee8be2
 			});
 		},
 	);
 
 	Scenario(
+<<<<<<< HEAD
 		'Querying myListingsAll with sorting by createdAt descending',
 		({ Given, And, When, Then }) => {
 			Given('a verified user and valid pagination arguments', () => {
@@ -993,6 +1030,60 @@ test.for(feature, ({ Scenario }) => {
 			expect(error?.message).toBe('Listing not found');
 		});
 	});
+=======
+		'Pausing an item listing without authentication',
+		({ Given, When, Then }) => {
+			Given('a user without a verifiedJwt in their context', () => {
+				context = makeMockGraphContext({
+					applicationServices: {
+						...makeMockGraphContext().applicationServices,
+						verifiedUser: null,
+					},
+				});
+			});
+			When('the pauseItemListing mutation is executed', async () => {
+				try {
+					const resolver = itemListingResolvers.Mutation
+						?.pauseItemListing as TestResolver<{ id: string }>;
+					await resolver({}, { id: 'listing-1' }, context, {} as never);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+			Then('it should throw an "Authentication required" error', () => {
+				expect(error).toBeDefined();
+				expect(error?.message).toBe('Authentication required');
+			});
+		},
+	);
+
+	Scenario(
+		'Pausing a non-existent item listing',
+		({ Given, And, When, Then }) => {
+			Given('a user with a verifiedJwt in their context', () => {
+				context = makeMockGraphContext();
+			});
+			And('a listing ID that does not match any record', () => {
+				vi.mocked(
+					context.applicationServices.Listing.ItemListing.pause,
+				).mockRejectedValue(new Error('Listing not found'));
+			});
+			When('the pauseItemListing mutation is executed', async () => {
+				try {
+					const resolver = itemListingResolvers.Mutation
+						?.pauseItemListing as TestResolver<{ id: string }>;
+					await resolver({}, { id: 'nonexistent-id' }, context, {} as never);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+			Then('it should propagate the error from the application service', () => {
+				expect(error).toBeDefined();
+				expect(error?.message).toBe('Listing not found');
+			});
+		},
+	);
+>>>>>>> bd488a89b1b24e6caab31f1bc89d06fba8ee8be2
 
 	Scenario('Error while pausing an item listing', ({ Given, When, Then }) => {
 		Given('Listing.ItemListing.pause throws an error', () => {
@@ -1003,7 +1094,12 @@ test.for(feature, ({ Scenario }) => {
 		});
 		When('the pauseItemListing mutation is executed', async () => {
 			try {
+<<<<<<< HEAD
 				const resolver = itemListingResolvers.Mutation?.pauseItemListing as TestResolver<{ id: string }>;
+=======
+				const resolver = itemListingResolvers.Mutation
+					?.pauseItemListing as TestResolver<{ id: string }>;
+>>>>>>> bd488a89b1b24e6caab31f1bc89d06fba8ee8be2
 				await resolver({}, { id: 'listing-1' }, context, {} as never);
 			} catch (e) {
 				error = e as Error;
@@ -1014,6 +1110,7 @@ test.for(feature, ({ Scenario }) => {
 			expect(error?.message).toBe('Pause failed');
 		});
 	});
+<<<<<<< HEAD
 
 	Scenario(
 		'Querying myListingsAll with invalid sorter order defaults to ascend',

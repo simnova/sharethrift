@@ -23,7 +23,9 @@ export interface ItemListingApplicationService {
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null>;
 	queryBySharer: (
 		command: ItemListingQueryBySharerCommand,
-	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]>;
+	) => Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	>;
 	queryAll: (
 		command: ItemListingQueryAllCommand,
 	) => Promise<
