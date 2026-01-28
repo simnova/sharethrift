@@ -3,7 +3,7 @@ import { Form } from 'antd';
 import { ListingForm } from './create-listing-form';
 
 const meta: Meta<typeof ListingForm> = {
-	title: 'CreateListing/ListingForm',
+	title: 'Components/CreateListing/ListingForm',
 	component: ListingForm,
 	parameters: {
 		layout: 'padded',

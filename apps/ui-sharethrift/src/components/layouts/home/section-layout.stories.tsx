@@ -14,7 +14,7 @@ const mockApolloClient = new ApolloClient({
 });
 
 const meta: Meta<typeof SectionLayout> = {
-	title: 'Components/Layouts/SectionLayout',
+	title: 'Components/Home/Layouts/SectionLayout',
 	component: SectionLayout,
 	parameters: {
 		layout: 'fullscreen',
