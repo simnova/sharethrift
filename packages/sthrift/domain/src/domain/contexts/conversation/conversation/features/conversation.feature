@@ -55,3 +55,75 @@ Feature: Conversation aggregate
     Then the messagingConversationId property should return the correct value
     And the createdAt property should return the correct date
     And the updatedAt property should return the correct date
+    And the schemaVersion property should return the correct value
+
+  Scenario: Setting listing to null
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the listing to null
+    Then a PermissionError should be thrown with message "listing cannot be null or undefined"
+
+  Scenario: Setting listing to undefined
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the listing to undefined
+    Then a PermissionError should be thrown with message "listing cannot be null or undefined"
+
+  Scenario: Getting messages from conversation
+    Given a Conversation aggregate with messages
+    When I access the messages property
+    Then it should return an array of messages
+
+  Scenario: Loading listing asynchronously
+    Given a Conversation aggregate
+    When I call loadListing()
+    Then it should return the listing asynchronously
+
+  Scenario: Setting reserver to null
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the reserver to null
+    Then a PermissionError should be thrown with message "reserver cannot be null or undefined"
+
+  Scenario: Setting reserver to undefined
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the reserver to undefined
+    Then a PermissionError should be thrown with message "reserver cannot be null or undefined"
+
+  Scenario: Setting sharer to null
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the sharer to null
+    Then a PermissionError should be thrown with message "sharer cannot be null or undefined"
+
+  Scenario: Setting sharer to undefined
+    Given a Conversation aggregate with permission to manage conversation
+    When I try to set the sharer to undefined
+    Then a PermissionError should be thrown with message "sharer cannot be null or undefined"
+
+  Scenario: Loading messages asynchronously
+    Given a Conversation aggregate
+    When I call loadMessages()
+    Then it should return the messages asynchronously
+
+  Scenario: Getting reserver when userType is admin-user
+    Given a Conversation aggregate with an admin-user reserver
+    When I access the reserver property
+    Then it should return an AdminUser instance
+
+  Scenario: Setting reserver without permission
+    Given a Conversation aggregate without permission to manage conversation
+    When I try to set the reserver
+    Then a PermissionError should be thrown about managing conversation
+
+  Scenario: Getting sharer when userType is admin-user
+    Given a Conversation aggregate with an admin-user sharer
+    When I access the sharer property
+    Then it should return an AdminUser instance for the sharer
+
+  Scenario: Loading sharer asynchronously
+    Given a Conversation aggregate
+    When I call loadSharer()
+    Then it should return the sharer asynchronously
+
+  Scenario: Loading reserver asynchronously
+    Given a Conversation aggregate
+    When I call loadReserver()
+    Then it should return the reserver asynchronously
+

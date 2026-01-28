@@ -1,0 +1,23 @@
+{
+  "extends": ["//"],
+  "tasks": {
+    "test:coverage": {
+      "dependsOn": [
+        "@cellix/vitest-config#build",
+        "@cellix/ui-core#build",
+        "@sthrift/domain#build",
+        "@sthrift/persistence#build",
+        "@sthrift/application-services#build",
+        "@sthrift/graphql#build",
+        "@sthrift/rest#build",
+        "@sthrift/service-mongoose#build",
+        "@sthrift/service-otel#build",
+        "@sthrift/service-blob-storage#build",
+        "@sthrift/service-token-validation#build",
+        "@sthrift/ui-components#build",
+        "@sthrift/api#build",
+        "@sthrift/ui-sharethrift#build"
+      ]
+    }
+  }
+}

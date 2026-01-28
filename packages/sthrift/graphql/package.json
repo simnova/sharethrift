@@ -18,16 +18,16 @@
 		"build": "tsc --build",
 		"watch": "tsc --build --watch",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
+		"test:coverage:node": "vitest run --coverage",
 		"test:watch": "vitest",
 		"lint": "biome lint",
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@apollo/server": "^4.11.3",
+		"@apollo/server": "^5.2.0",
 		"@apollo/utils.withrequired": "^3.0.0",
 		"@as-integrations/azure-functions": "^0.2.0",
-		"@azure/functions": "^4.0.0",
+		"@azure/functions": "4.8.0",
 		"@graphql-tools/json-file-loader": "^8.0.20",
 		"@graphql-tools/load": "^8.1.2",
 		"@graphql-tools/load-files": "^7.0.1",
@@ -37,6 +37,7 @@
 		"@sthrift/application-services": "workspace:*",
 		"@sthrift/domain": "workspace:*",
 		"graphql": "^16.10.0",
+		"graphql-depth-limit": "^1.1.0",
 		"graphql-middleware": "^6.1.35",
 		"graphql-scalars": "^1.24.2",
 		"mongoose": "catalog:"
@@ -44,7 +45,9 @@
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
+		"@types/graphql-depth-limit": "^1.1.6",
 		"rimraf": "^6.0.1",
 		"typescript": "^5.8.3"
-	}
+	},
+	"license": "MIT"
 }

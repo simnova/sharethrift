@@ -6,6 +6,7 @@ import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
 import type { Decorator, StoryContext } from '@storybook/react';
 import { createMockAuth, createMockUser } from '../test/utils/mockAuth.ts';
+import { UserIdProvider } from '../components/shared/user-context.tsx';
 
 /**
  * Reusable Apollo Client decorator for Storybook stories.
@@ -33,11 +34,11 @@ export const withMockApolloClient: Decorator = (Story, context: StoryContext) =>
 		cache: new InMemoryCache(),
 	});
 
-	return (
-		<ApolloProvider client={client}>
-			<Story />
-		</ApolloProvider>
-	);
+  return (
+    <ApolloProvider client={client}>
+      <Story />
+    </ApolloProvider>
+  );
 };
 
 /**
@@ -73,10 +74,59 @@ export const MockAuthWrapper = ({
 		[],
 	);
 
+  return <AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>;
+};
+
+/**
+ * Mock unauthenticated wrapper component for Storybook stories.
+ * Provides a mocked AuthContext that simulates an unauthenticated user.
+ *
+ * Use this when testing components that show different UI for logged-out users
+ * (e.g., Login/Sign Up buttons in headers).
+ */
+export const MockUnauthWrapper = ({
+	children,
+}: {
+	children: ReactNode;
+}): ReactElement => {
+	const mockAuth = useMemo(
+		() =>
+			createMockAuth({
+				isAuthenticated: false,
+				user: null,
+			}),
+		[],
+	);
+
 	return (
 		<AuthContext.Provider value={mockAuth}>{children}</AuthContext.Provider>
 	);
 };
+
+/**
+ * Mock UserIdProvider wrapper for Storybook stories.
+ * Provides a mocked user ID context for components that use useUserId().
+ *
+ * @param userId - The user ID to mock (defaults to 'user-1')
+ * @returns A Storybook decorator function
+ *
+ * @example
+ * ```tsx
+ * export default {
+ *   decorators: [
+ *     withMockApolloClient,
+ *     withMockUserId('user-123'),
+ *   ],
+ * } as Meta;
+ * ```
+ */
+export const withMockUserId =
+	(userId = 'user-1'): Decorator =>
+	(Story) => (
+		<UserIdProvider userId={userId}>
+			<Story />
+		</UserIdProvider>
+	);
 
 /**
  * Reusable Router decorator factory for Storybook stories.

@@ -37,16 +37,21 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 
 		return newInstance;
 	}
+
+	async loadUser(): Promise<PersonalUserEntityReference> {
+		return await this.props.loadUser();
+	}
+
+	async loadBlocker(): Promise<PersonalUserEntityReference> {
+		return await this.props.loadBlocker();
+	}
+
 	get user(): PersonalUserEntityReference {
 		return new PersonalUser(
 			// biome-ignore lint/suspicious/noExplicitAny: Required for cross-context entity references
 			this.props.user as any,
 			this.passport,
 		) as PersonalUserEntityReference;
-	}
-
-	async loadUser(): Promise<PersonalUserEntityReference> {
-		return await this.props.loadUser();
 	}
 
 	get reason(): string {
@@ -91,10 +96,6 @@ export class UserAppealRequest<props extends UserAppealRequestProps>
 			this.props.blocker as any,
 			this.passport,
 		) as PersonalUserEntityReference;
-	}
-
-	async loadBlocker(): Promise<PersonalUserEntityReference> {
-		return await this.props.loadBlocker();
 	}
 
 	get createdAt(): Date {

@@ -12,27 +12,34 @@ import {
 } from './apollo-client-links.tsx';
 import { ApolloManualMergeCacheFix } from './apollo-manual-merge-cache-fix.ts';
 
+
+const {
+	VITE_BLOB_STORAGE_CONFIG_URL,
+	VITE_FUNCTION_ENDPOINT,
+	NODE_ENV,
+} = import.meta.env;
+
 const restLinkForCountryDataSource = new HttpLink({
-	uri: `${import.meta.env['VITE_BLOB_STORAGE_CONFIG_URL']}`,
+	uri: `${VITE_BLOB_STORAGE_CONFIG_URL}`,
 });
 const restLinkForHealthProfessionsDataSource = new HttpLink({
-	uri: `${import.meta.env['VITE_BLOB_STORAGE_CONFIG_URL']}`,
-	fetch: (uri: RequestInfo | URL, options?: RequestInit) => 
+	uri: `${VITE_BLOB_STORAGE_CONFIG_URL}`,
+	fetch: (uri: RequestInfo | URL, options?: RequestInit) =>
 		fetch(uri, { ...options, cache: 'no-store' }),
 });
 const apolloBatchHttpLinkForGraphqlDataSource =
 	TerminatingApolloBatchLinkForGraphqlServer({
-		uri: `${import.meta.env['VITE_FUNCTION_ENDPOINT']}`,
+		uri: `${VITE_FUNCTION_ENDPOINT}`,
 		batchMax: 15,
 		batchInterval: 50,
 	});
 
 const apolloHttpLinkForGraphqlDataSource =
 	TerminatingApolloHttpLinkForGraphqlServer({
-		uri: `${import.meta.env['VITE_FUNCTION_ENDPOINT']}`,
+		uri: `${VITE_FUNCTION_ENDPOINT}`,
 	});
 
-export interface ApolloConnectionProps {
+interface ApolloConnectionProps {
 	children: React.ReactNode;
 }
 export const ApolloConnection: FC<ApolloConnectionProps> = (
@@ -85,7 +92,7 @@ export const ApolloConnection: FC<ApolloConnectionProps> = (
 					linkMap.default,
 				),
 			),
-			devtools: { enabled: import.meta.env['NODE_ENV'] !== 'production' },
+			devtools: { enabled: NODE_ENV !== 'production' },
 		});
 	}, [linkMap]);
 

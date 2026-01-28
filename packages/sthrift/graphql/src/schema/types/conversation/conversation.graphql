@@ -1,9 +1,9 @@
 type Conversation implements MongoBase {
-	sharer: PersonalUser!
-	reserver: PersonalUser!
+	sharer: User!
+	reserver: User!
 	listing: ItemListing!
 	messagingConversationId: String!
-    messages: [Message!]!
+	messages: [Message!]!
 	id: ObjectID!
 	schemaVersion: String!
 	createdAt: DateTime!
@@ -11,13 +11,12 @@ type Conversation implements MongoBase {
 }
 
 type Message {
-    id: ObjectID!
-    messagingMessageId: String!
-    authorId: ObjectID!
-    content: String!
-    createdAt: DateTime!
+	id: ObjectID!
+	messagingMessageId: String!
+	authorId: ObjectID!
+	content: String!
+	createdAt: DateTime!
 }
-
 
 extend type Query {
 	conversationsByUser(userId: ObjectID!): [Conversation]
@@ -28,6 +27,7 @@ extend type Mutation {
 	createConversation(
 		input: ConversationCreateInput!
 	): ConversationMutationResult!
+	sendMessage(input: SendMessageInput!): SendMessageMutationResult!
 }
 
 input ConversationCreateInput {
@@ -36,7 +36,17 @@ input ConversationCreateInput {
 	listingId: ObjectID!
 }
 
+input SendMessageInput {
+	conversationId: ObjectID!
+	content: String!
+}
+
 type ConversationMutationResult implements MutationResult {
 	status: MutationStatus!
 	conversation: Conversation
+}
+
+type SendMessageMutationResult implements MutationResult {
+	status: MutationStatus!
+	message: Message
 }

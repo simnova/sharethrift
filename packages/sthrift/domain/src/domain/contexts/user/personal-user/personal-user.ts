@@ -2,12 +2,11 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { UserVisa } from '../user.visa.ts';
 import { PersonalUserAccount } from './personal-user-account.ts';
-import { PersonalUserRole } from '../../role/personal-user-role/personal-user-role.ts';
-import type { PersonalUserRoleEntityReference } from '../../role/personal-user-role/personal-user-role.entity.ts';
 import type {
 	PersonalUserEntityReference,
 	PersonalUserProps,
 } from './personal-user.entity.ts';
+import { PersonalUserAccountProfileBillingTransactions } from './personal-user-account-profile-billing-transactions.ts';
 
 export interface PersonalUserAggregateRoot
 	extends DomainSeedwork.RootEventRegistry {
@@ -54,6 +53,35 @@ export class PersonalUser<props extends PersonalUserProps>
 		}
 	}
 
+	private requestNewAccountProfileBillingTransaction(): PersonalUserAccountProfileBillingTransactions {
+		const transaction =
+			this.props.account.profile.billing.transactions.getNewItem();
+		return new PersonalUserAccountProfileBillingTransactions(
+			transaction,
+			this.visa,
+			this,
+		);
+	}
+
+	public requestAddAccountProfileBillingTransaction(
+		transactionId: string,
+		amount: number,
+		referenceId: string,
+		status: string,
+		completedAt: Date,
+		errorMessage?: string,
+	): void {
+		const transaction = this.requestNewAccountProfileBillingTransaction();
+		transaction.transactionId = transactionId;
+		transaction.amount = amount;
+		transaction.referenceId = referenceId;
+		transaction.status = status;
+		transaction.completedAt = completedAt;
+		if (errorMessage !== undefined) {
+			transaction.errorMessage = errorMessage;
+		}
+	}
+
 	get isNew() {
 		return this._isNew;
 	}
@@ -81,39 +109,17 @@ export class PersonalUser<props extends PersonalUserProps>
 		return new PersonalUserAccount(this.props.account, this.visa, this);
 	}
 
-	get role(): PersonalUserRoleEntityReference {
-		return new PersonalUserRole(this.props.role, this.passport);
-	}
-
-	async loadRole(): Promise<PersonalUserRoleEntityReference> {
-		return await this.props.loadRole();
-	}
-
-	private set role(role: PersonalUserRoleEntityReference) {
-		if (
-			!this.isNew &&
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canCreateUser,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to change the sharer of this conversation',
-			);
-		}
-		if (role === null || role === undefined) {
-			throw new DomainSeedwork.PermissionError(
-				'sharer cannot be null or undefined',
-			);
-		}
-		this.props.role = role;
-	}
-
 	set userType(value: string) {
 		this.validateVisa();
 		this.props.userType = value;
 	}
 	set isBlocked(value: boolean) {
-		this.validateVisa();
+		// Only admins with canBlockUsers permission can block/unblock users
+		if (!this.visa.determineIf((permissions) => permissions.canBlockUsers)) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized: Only admins with canBlockUsers permission can block/unblock users',
+			);
+		}
 		this.props.isBlocked = value;
 	}
 	set hasCompletedOnboarding(value: boolean) {

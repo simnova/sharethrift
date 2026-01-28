@@ -3,6 +3,7 @@ import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+import { AdminUserDomainAdapter } from '../../user/admin-user/admin-user.domain-adapter.ts';
 
 export class ReservationRequestConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.ReservationRequest.ReservationRequest,
@@ -65,7 +66,9 @@ export class ReservationRequestDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			throw new Error('listing is not populated or is not of the correct type');
+			return {
+				id: this.doc.listing.toString(),
+			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 		}
 		return new ItemListingDomainAdapter(
 			this.doc.listing as Models.Listing.ItemListing,
@@ -91,33 +94,60 @@ export class ReservationRequestDomainAdapter
 		this.doc.set('listing', new MongooseSeedwork.ObjectId(value.id));
 	}
 
-	get reserver(): Domain.Contexts.User.PersonalUser.PersonalUserEntityReference {
+	get reserver():
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
-			throw new Error(
-				'reserver is not populated or is not of the correct type',
+			return {
+				id: this.doc.reserver.toString(),
+			} as Domain.Contexts.User.UserEntityReference;
+		}
+		// Check userType discriminator to determine which adapter to use
+		const reserverDoc = this.doc.reserver as
+			| Models.User.PersonalUser
+			| Models.User.AdminUser;
+		if (reserverDoc.userType === 'admin-user') {
+			return new AdminUserDomainAdapter(
+				this.doc.reserver as Models.User.AdminUser,
 			);
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
-	async loadReserver(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
+	async loadReserver(): Promise<
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference
+	> {
 		if (!this.doc.reserver) {
 			throw new Error('reserver is not populated');
 		}
 		if (this.doc.reserver instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('reserver');
 		}
-		return new PersonalUserDomainAdapter(
+		// Check userType discriminator to determine which adapter to use
+		const reserverDoc = this.doc.reserver as
+			| Models.User.PersonalUser
+			| Models.User.AdminUser;
+		if (reserverDoc.userType === 'admin-user') {
+			return new AdminUserDomainAdapter(
+				this.doc.reserver as Models.User.AdminUser,
+			);
+		}
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.reserver as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
-	set reserver(user: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) {
+	set reserver(user:
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.AdminUser.AdminUserEntityReference,) {
 		if (!user?.id) {
 			throw new Error('user reference is missing id');
 		}

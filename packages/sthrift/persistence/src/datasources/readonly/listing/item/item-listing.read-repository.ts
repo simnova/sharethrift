@@ -8,8 +8,6 @@ import type { FindOneOptions, FindOptions } from '../../mongo-data-source.ts';
 import { ItemListingConverter } from '../../../domain/listing/item/item-listing.domain-adapter.ts';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
-const populateFields = ['sharer'];
-
 export interface ItemListingReadRepository {
 	getAll: (
 		options?: FindOptions,
@@ -44,7 +42,7 @@ export interface ItemListingReadRepository {
 	>;
 }
 
-export class ItemListingReadRepositoryImpl
+class ItemListingReadRepositoryImpl
 	implements ItemListingReadRepository
 {
 	private readonly mongoDataSource: ItemListingDataSource;
@@ -62,10 +60,12 @@ export class ItemListingReadRepositoryImpl
 	async getAll(
 		options?: FindOptions,
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]> {
-		const result = await this.mongoDataSource.find({}, {
-			...options,
-			populateFields: populateFields,
-		});
+		const result = await this.mongoDataSource.find(
+			{},
+			{
+				...options,
+			},
+		);
 		if (!result || result.length === 0) return [];
 		return result.map((doc) => this.converter.toDomain(doc, this.passport));
 	}
@@ -125,7 +125,7 @@ export class ItemListingReadRepositoryImpl
 			const direction = args.sorter.order === 'ascend' ? 1 : -1;
 			// Map GraphQL field names to MongoDB field names
 			const fieldMapping: Record<string, string> = {
-				publishedAt: 'createdAt',
+				createdAt: 'createdAt',
 				reservationPeriod: 'sharingPeriodStart', // Sort by start date
 				status: 'state',
 			};
@@ -141,7 +141,11 @@ export class ItemListingReadRepositoryImpl
 
 		// Execute MongoDB queries in parallel
 		const [mongoItems, total] = await Promise.all([
-			this.mongoDataSource.find(query, { sort, skip, limit: args.pageSize }),
+			this.mongoDataSource.find(query, {
+				sort,
+				skip,
+				limit: args.pageSize,
+			}),
 			this.mongoDataSource
 				.find(query)
 				.then((result) => result?.length ?? 0), // Use find + length since count() not available
@@ -161,7 +165,6 @@ export class ItemListingReadRepositoryImpl
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null> {
 		const result = await this.mongoDataSource.findById(id, {
 			...options,
-			populateFields: populateFields,
 		});
 		if (!result) return null;
 		return this.converter.toDomain(result, this.passport);
@@ -177,20 +180,20 @@ export class ItemListingReadRepositoryImpl
 				{ sharer: new MongooseSeedwork.ObjectId(sharerId) },
 				{
 					...options,
-					populateFields: populateFields,
 				},
 			);
 			if (!result || result.length === 0) return [];
 			return result.map((doc) => this.converter.toDomain(doc, this.passport));
-		} catch (_error) {
+		} catch (error) {
+			console.error('Error fetching listings by sharer:', error);
 			return [];
 		}
 	}
 }
 
-export const getItemListingReadRepository = (
+export function getItemListingReadRepository(
 	models: ModelsContext,
 	passport: Domain.Passport,
-) => {
+): ItemListingReadRepository {
 	return new ItemListingReadRepositoryImpl(models, passport);
-};
+}

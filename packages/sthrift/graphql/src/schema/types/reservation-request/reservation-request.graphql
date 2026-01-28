@@ -6,7 +6,7 @@ type ReservationRequest {
 	createdAt: DateTime
 	updatedAt: DateTime
 	listing: ItemListing
-	reserver: PersonalUser
+	reserver: User
 	closeRequestedBySharer: Boolean
 	closeRequestedByReserver: Boolean
 }
@@ -19,6 +19,13 @@ enum ReservationRequestState {
 	Cancelled
 }
 
+type ReservationRequestPage {
+	items: [ReservationRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
 extend type Query {
 	myActiveReservations(userId: ObjectID!): [ReservationRequest!]!
 	myPastReservations(userId: ObjectID!): [ReservationRequest!]!
@@ -29,7 +36,7 @@ extend type Query {
 		statusFilters: [String!]!
 		sorter: SorterInput!
 		sharerId: ObjectID!
-	): ListingRequestPage!
+	): ReservationRequestPage!
 	myActiveReservationForListing(
 		listingId: ObjectID!
 		userId: ObjectID!

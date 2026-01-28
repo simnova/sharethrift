@@ -10,26 +10,30 @@ import {
 	type MessagingDataSource,
 	MessagingDataSourceImplementation,
 } from './messaging/index.ts';
+import { type PaymentDataSource,PaymentDataSourceImplementation } from './payment/index.ts';
+import type { PaymentService } from '@cellix/payment-service';
 
 export type DataSources = {
 	domainDataSource: DomainDataSource;
 	readonlyDataSource: ReadonlyDataSource;
 	messagingDataSource?: MessagingDataSource;
+	paymentDataSource?: PaymentDataSource;
 };
 
 export type DataSourcesFactory = {
-	withPassport: (passport: Domain.Passport, messagingService: MessagingService) => DataSources;
+	withPassport: (passport: Domain.Passport, messagingService: MessagingService, paymentService: PaymentService) => DataSources;
 	withSystemPassport: () => DataSources;
 };
 
 export const DataSourcesFactoryImpl = (
 	models: ModelsContext,
 ): DataSourcesFactory => {
-	const withPassport = (passport: Domain.Passport, messagingService: MessagingService): DataSources => {
+	const withPassport = (passport: Domain.Passport, messagingService: MessagingService, paymentService: PaymentService): DataSources => {
 		return {
 			domainDataSource: DomainDataSourceImplementation(models, passport),
 			readonlyDataSource: ReadonlyDataSourceImplementation(models, passport),
-			messagingDataSource: MessagingDataSourceImplementation(messagingService, passport),
+			messagingDataSource: MessagingDataSourceImplementation(messagingService),
+      paymentDataSource: PaymentDataSourceImplementation(paymentService, passport),
 		};
 	};
 

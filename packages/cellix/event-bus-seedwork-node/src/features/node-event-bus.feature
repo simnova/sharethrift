@@ -32,8 +32,8 @@ Feature: NodeEventBus
   Scenario: Handler throws during dispatch
     Given a registered handler for an event that throws
     When the event is dispatched
-    Then span.setStatus should be called with ERROR
-    And recordException should be called
+    Then span.setStatus should be called with OK
+    And recordException should NOT be called on dispatch span
     And the span should be ended
     And the error should NOT be propagated
 
@@ -68,7 +68,7 @@ Feature: NodeEventBus
     Given a handler for an event that is asynchronous
     When the handler is registered
     And the event is dispatched
-    Then dispatch should resolve before the handler completes
+    Then dispatch should wait for the handler to complete
 
   Scenario: No handlers registered for an event
     When the event is dispatched

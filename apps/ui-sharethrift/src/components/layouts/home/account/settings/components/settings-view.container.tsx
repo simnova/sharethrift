@@ -6,11 +6,13 @@ import { useState } from 'react';
 import {
 	HomeAccountSettingsViewContainerCurrentUserDocument,
 	HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
+	HomeAccountSettingsViewContainerUpdateAdminUserDocument,
 } from '../../../../../../generated.tsx';
 import { SettingsView } from '../pages/settings-view.tsx';
 import type {
 	CurrentUserSettingsQueryData,
 	SettingsUser,
+	SectionFormValues,
 } from './settings-view.types.ts';
 
 function SettingsViewLoader() {
@@ -25,12 +27,22 @@ function SettingsViewLoader() {
 	const [updateUserMutation, { loading: updateLoading, error: updateError }] =
 		useMutation(HomeAccountSettingsViewContainerUpdatePersonalUserDocument, {
 			onError: (err) => {
-				// eslint-disable-next-line no-console
 				console.error('[SettingsView] update mutation error', err);
 				const msg = err?.message || 'Update failed';
 				message.error(msg);
 			},
 		});
+
+	const [
+		updateAdminUserMutation,
+		{ loading: updateAdminLoading, error: updateAdminError },
+	] = useMutation(HomeAccountSettingsViewContainerUpdateAdminUserDocument, {
+		onError: (err) => {
+			console.error('[SettingsView] admin update mutation error', err);
+			const msg = err?.message || 'Update failed';
+			message.error(msg);
+		},
+	});
 
 	const [isSavingSection, setIsSavingSection] = useState(false);
 
@@ -49,15 +61,29 @@ function SettingsViewLoader() {
 		| 'plan'
 		| 'billing'
 		| 'password';
-	// Profile type alias for clarity
-	type UserProfile = NonNullable<
-		CurrentUserSettingsQueryData['currentPersonalUserAndCreateIfNotExists']
-	>['account']['profile'];
+	// Profile type alias for clarity (only PersonalUser has nested profile)
+	type UserProfile = {
+		firstName: string;
+		lastName: string;
+		location: {
+			address1?: string;
+			address2?: string;
+			city?: string;
+			state?: string;
+			country?: string;
+			zipCode?: string;
+		};
+		billing?: {
+			subscriptionId?: string;
+			cybersourceCustomerId?: string;
+		};
+		aboutMe?: string;
+	};
 
 	// Helper to construct the next profile given the section being edited
 	const buildNextProfile = (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
 		base: UserProfile,
 	): UserProfile => {
 		const isProfile = section === 'profile';
@@ -103,23 +129,83 @@ function SettingsViewLoader() {
 			...(isProfile && { aboutMe: values['aboutMe'] ?? base.aboutMe }),
 		};
 	};
-	const handleSaveSection = async (
+	const handlePasswordChange = (section: EditableSection) => {
+		if (section === 'password') {
+			globalThis.alert?.('Password change is not implemented yet.');
+			setIsSavingSection(false);
+			return true;
+		}
+		return false;
+	};
+
+	const handleAdminUserSave = async (
 		section: EditableSection,
-		values: Record<string, any>,
+		values: SectionFormValues,
+		user: CurrentUserSettingsQueryData['currentUser'],
 	) => {
-		if (!userData?.currentPersonalUserAndCreateIfNotExists) return;
-		const user = userData.currentPersonalUserAndCreateIfNotExists;
-		setIsSavingSection(true);
+		if (updateAdminLoading) {
+			setIsSavingSection(false);
+			return;
+		}
+
+		if (section === 'plan' || section === 'billing') {
+			message.info('Admin users cannot edit plan or billing information');
+			setIsSavingSection(false);
+			return;
+		}
+
+		try {
+			const base = user.account.profile;
+			const nextProfile = buildNextProfile(section, values, base);
+			const username =
+				section === 'profile'
+					? (values['username'] ?? user.account.username)
+					: user.account.username;
+
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const { billing: _billing, ...adminProfile } = nextProfile;
+
+			const result = await updateAdminUserMutation({
+				variables: {
+					input: {
+						id: user.id,
+						account: {
+							username,
+							profile: adminProfile,
+						},
+					},
+				},
+				refetchQueries: [
+					{ query: HomeAccountSettingsViewContainerCurrentUserDocument },
+				],
+			});
+
+			if (!result.data?.adminUserUpdate) {
+				throw new Error('Admin user update failed');
+			}
+
+			message.success('Updated successfully');
+		} catch (err: unknown) {
+			console.error('[SettingsView] admin update mutation error', err);
+			const msg =
+				err instanceof Error ? err.message : 'Admin user update failed';
+			message.error(msg);
+			throw err;
+		} finally {
+			setIsSavingSection(false);
+		}
+	};
+
+	const handlePersonalUserSave = async (
+		section: EditableSection,
+		values: SectionFormValues,
+		user: CurrentUserSettingsQueryData['currentUser'],
+	) => {
 		if (updateLoading) {
 			setIsSavingSection(false);
 			return;
 		}
-		// Password change not implemented yet; short-circuit
-		if (section === 'password') {
-			globalThis.alert?.('Password change is not implemented yet.');
-			setIsSavingSection(false);
-			return;
-		}
+
 		try {
 			const base = user.account.profile;
 			const nextProfile = buildNextProfile(section, values, base);
@@ -151,14 +237,31 @@ function SettingsViewLoader() {
 			if (!result.data?.personalUserUpdate) {
 				throw new Error('Update failed');
 			}
-		} catch (err: any) {
-			// eslint-disable-next-line no-console
+		} catch (err: unknown) {
 			console.error('[SettingsView] update mutation error', err);
-			const msg = err?.message ?? 'Update failed';
+			const msg = err instanceof Error ? err.message : 'Update failed';
 			message.error(msg);
-			throw err; // propagate so view's save handler catch preserves edit mode
+			throw err;
 		} finally {
 			setIsSavingSection(false);
+		}
+	};
+
+	const handleSaveSection = async (
+		section: EditableSection,
+		values: SectionFormValues,
+	) => {
+		if (!userData?.currentUser) return;
+		const user = userData.currentUser;
+
+		setIsSavingSection(true);
+
+		if (handlePasswordChange(section)) return;
+
+		if (user.userType === 'admin-user') {
+			await handleAdminUserSave(section, values, user);
+		} else {
+			await handlePersonalUserSave(section, values, user);
 		}
 	};
 
@@ -170,11 +273,11 @@ function SettingsViewLoader() {
 		return <div>Loading account settings...</div>;
 	}
 
-	if (!userData?.currentPersonalUserAndCreateIfNotExists) {
+	if (!userData?.currentUser) {
 		return <div>User not found</div>;
 	}
 
-	const user = userData.currentPersonalUserAndCreateIfNotExists;
+	const user = userData.currentUser;
 
 	const mappedUser: SettingsUser = {
 		id: user.id,
@@ -185,22 +288,24 @@ function SettingsViewLoader() {
 		email: user.account.email,
 		accountType: user.account.accountType,
 		location: {
-			address1: user.account.profile.location.address1,
-			address2: user.account.profile.location.address2,
-			city: user.account.profile.location.city,
-			state: user.account.profile.location.state,
-			country: user.account.profile.location.country,
-			zipCode: user.account.profile.location.zipCode,
+			address1: user.account.profile.location.address1 ?? '',
+			address2: user.account.profile.location.address2 ?? '',
+			city: user.account.profile.location.city ?? '',
+			state: user.account.profile.location.state ?? '',
+			country: user.account.profile.location.country ?? '',
+			zipCode: user.account.profile.location.zipCode ?? '',
 		},
-		billing: user.account.profile.billing,
+		billing: user.userType === 'personal-user' && 'billing' in user.account.profile
+			? user.account.profile.billing
+			: undefined,
 		createdAt: user.createdAt,
 	};
 
-	const errorMessage = userError ?? updateError;
+	const errorMessage = userError ?? updateError ?? updateAdminError;
 
 	return (
 		<ComponentQueryLoader
-			loading={userLoading || updateLoading}
+			loading={userLoading || updateLoading || updateAdminLoading}
 			error={errorMessage}
 			hasData={userData}
 			hasDataComponent={

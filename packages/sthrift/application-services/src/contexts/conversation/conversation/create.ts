@@ -22,11 +22,11 @@ export const create = (dataSources: DataSources) => {
 		}
 
 		const sharer =
-			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getById(
+			await dataSources.readonlyDataSource.User.User.UserReadRepo.getById(
 				command.sharerId,
 			);
 		const reserver =
-			await dataSources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getById(
+			await dataSources.readonlyDataSource.User.User.UserReadRepo.getById(
 				command.reserverId,
 			);
 		const listing =
@@ -43,49 +43,54 @@ export const create = (dataSources: DataSources) => {
 				`Personal user (reserver) not found for id ${command.reserverId}`,
 			);
 		}
-	if (!listing) {
-		throw new Error(`Listing not found for id ${command.listingId}`);
-	}
-
-	let messagingConversationId: string;
-	try {
-		if (!dataSources.messagingDataSource) {
-			throw new Error('Messaging data source is not available');
+		if (!listing) {
+			throw new Error(`Listing not found for id ${command.listingId}`);
 		}
-		
-		const displayName = `${sharer.account.username} & ${reserver.account.username}`;
-		const uniqueName = `conversation-${listing.id}-${sharer.id}-${reserver.id}`;
-		
-		const messagingConversation =
-			await dataSources.messagingDataSource.Conversation.Conversation.MessagingConversationRepo.createConversation(
-				displayName,
-				uniqueName,
-			);
-		
-		messagingConversationId = messagingConversation.id;
-	} catch (error) {
-		console.error('Failed to create messaging conversation - Full error:', error);
-		throw new Error(`Failed to create messaging conversation: ${error instanceof Error ? error.message : String(error)}`);
-	}
 
-	let conversationToReturn:
-		| Domain.Contexts.Conversation.Conversation.ConversationEntityReference
-		| undefined;
-	await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
-		async (repo) => {
-			const newConversation = await repo.getNewInstance(
-				sharer,
-				reserver,
-				listing,
-				messagingConversationId,
+		let messagingConversationId: string;
+		try {
+			if (!dataSources.messagingDataSource) {
+				throw new Error('Messaging data source is not available');
+			}
+
+			const displayName = `${sharer.account.username} & ${reserver.account.username}`;
+			const uniqueName = `conversation-${listing.id}-${sharer.id}-${reserver.id}`;
+
+			const messagingConversation =
+				await dataSources.messagingDataSource.Conversation.Conversation.MessagingConversationRepo.createConversation(
+					displayName,
+					uniqueName,
+				);
+
+			messagingConversationId = messagingConversation.id;
+		} catch (error) {
+			console.error(
+				'Failed to create messaging conversation - Full error:',
+				error,
 			);
-			conversationToReturn = await repo.save(newConversation);
-		},
-	);
-	if (!conversationToReturn) {
-		throw new Error('Conversation not found');
-	}
-    
-	return conversationToReturn;
+			throw new Error(
+				`Failed to create messaging conversation: ${error instanceof Error ? error.message : String(error)}`,
+			);
+		}
+
+		let conversationToReturn:
+			| Domain.Contexts.Conversation.Conversation.ConversationEntityReference
+			| undefined;
+		await dataSources.domainDataSource.Conversation.Conversation.ConversationUnitOfWork.withScopedTransaction(
+			async (repo) => {
+				const newConversation = await repo.getNewInstance(
+					sharer,
+					reserver,
+					listing,
+					messagingConversationId,
+				);
+				conversationToReturn = await repo.save(newConversation);
+			},
+		);
+		if (!conversationToReturn) {
+			throw new Error('Conversation not found');
+		}
+
+		return conversationToReturn;
 	};
 };

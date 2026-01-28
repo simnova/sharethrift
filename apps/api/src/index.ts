@@ -23,7 +23,11 @@ import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
-import { ServiceCybersource } from '@sthrift/service-cybersource';
+
+import type {PaymentService} from '@cellix/payment-service';
+import { PaymentServiceMock } from '@sthrift/payment-service-mock';
+import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
+
 
 const { NODE_ENV } = process.env;
 const isDevelopment = NODE_ENV === 'development';
@@ -45,7 +49,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
 			)
-			.registerInfrastructureService(new ServiceCybersource());
+			.registerInfrastructureService(
+        isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource()
+      );
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -58,6 +64,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		const messagingService = isDevelopment
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
+    
+    const paymentService = isDevelopment
+      ? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
+      : serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		RegisterEventHandlers(domainDataSource);
@@ -68,11 +78,8 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
 					ServiceTokenValidation,
 				),
-			paymentService:
-				serviceRegistry.getInfrastructureService<ServiceCybersource>(
-					ServiceCybersource,
-				),
-			messagingService,
+			paymentService,
+      messagingService,
 		};
 	})
 	.initializeApplicationServices((context) =>

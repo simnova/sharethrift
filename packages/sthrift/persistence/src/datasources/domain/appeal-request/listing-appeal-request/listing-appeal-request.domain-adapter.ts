@@ -2,6 +2,9 @@ import { Domain } from '@sthrift/domain';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { PersonalUserDomainAdapter } from '../../user/personal-user/personal-user.domain-adapter.ts';
+
+// Helper functions for user getter/setter/loadUser
+// Removed helper functions for user getter/setter/loadUser
 import { ItemListingDomainAdapter } from '../../listing/item/item-listing.domain-adapter.ts';
 
 export class ListingAppealRequestConverter extends MongooseSeedwork.MongoTypeConverter<
@@ -13,7 +16,8 @@ export class ListingAppealRequestConverter extends MongooseSeedwork.MongoTypeCon
 	constructor() {
 		super(
 			ListingAppealRequestDomainAdapter,
-			Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequest<ListingAppealRequestDomainAdapter>,
+			Domain.Contexts.AppealRequest.ListingAppealRequest
+				.ListingAppealRequest<ListingAppealRequestDomainAdapter>,
 		);
 	}
 }
@@ -28,11 +32,12 @@ export class ListingAppealRequestDomainAdapter
 			throw new Error('user is not populated');
 		}
 		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
-			return {
-				id: this.doc.user.toString(),
-			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+			throw new TypeError('user is not populated');
 		}
-		return new PersonalUserDomainAdapter(this.doc.user as Models.User.PersonalUser);
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.user as Models.User.PersonalUser,
+		);
+		return adapter.entityReference;
 	}
 
 	async loadUser(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
@@ -42,16 +47,15 @@ export class ListingAppealRequestDomainAdapter
 		if (this.doc.user instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('user');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.user as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
-	set user(
-		user:
-			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
-			| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,
-	) {
+	set user(user:
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,) {
 		if (!user?.id) {
 			throw new Error('user reference is missing id');
 		}
@@ -63,11 +67,11 @@ export class ListingAppealRequestDomainAdapter
 			throw new Error('listing is not populated');
 		}
 		if (this.doc.listing instanceof MongooseSeedwork.ObjectId) {
-			return {
-				id: this.doc.listing.toString(),
-			} as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+			throw new TypeError('listing is not populated');
 		}
-		return new ItemListingDomainAdapter(this.doc.listing as Models.Listing.ItemListing);
+		return new ItemListingDomainAdapter(
+			this.doc.listing as Models.Listing.ItemListing,
+		);
 	}
 
 	async loadListing(): Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference> {
@@ -82,11 +86,9 @@ export class ListingAppealRequestDomainAdapter
 		);
 	}
 
-	set listing(
-		listing:
-			| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
-			| Domain.Contexts.Listing.ItemListing.ItemListing<ItemListingDomainAdapter>,
-	) {
+	set listing(listing:
+		| Domain.Contexts.Listing.ItemListing.ItemListingEntityReference
+		| Domain.Contexts.Listing.ItemListing.ItemListing<ItemListingDomainAdapter>,) {
 		if (!listing?.id) {
 			throw new Error('listing reference is missing id');
 		}
@@ -102,7 +104,10 @@ export class ListingAppealRequestDomainAdapter
 				id: this.doc.blocker.toString(),
 			} as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 		}
-		return new PersonalUserDomainAdapter(this.doc.blocker as Models.User.PersonalUser);
+		const adapter = new PersonalUserDomainAdapter(
+			this.doc.blocker as Models.User.PersonalUser,
+		);
+		return adapter.entityReference;
 	}
 
 	async loadBlocker(): Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference> {
@@ -112,16 +117,15 @@ export class ListingAppealRequestDomainAdapter
 		if (this.doc.blocker instanceof MongooseSeedwork.ObjectId) {
 			await this.doc.populate('blocker');
 		}
-		return new PersonalUserDomainAdapter(
+		const adapter = new PersonalUserDomainAdapter(
 			this.doc.blocker as Models.User.PersonalUser,
 		);
+		return adapter.entityReference;
 	}
 
-	set blocker(
-		blocker:
-			| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
-			| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,
-	) {
+	set blocker(blocker:
+		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
+		| Domain.Contexts.User.PersonalUser.PersonalUser<PersonalUserDomainAdapter>,) {
 		if (!blocker?.id) {
 			throw new Error('blocker reference is missing id');
 		}

@@ -1,3 +1,23 @@
+fragment HomeAllListingsTableContainerListingFields on ListingAll {
+  id
+  title
+  state
+  images
+  createdAt
+  sharingPeriodStart
+  sharingPeriodEnd
+}
+
+fragment HomeAllListingsTableContainerItemListingFields on ItemListing {
+  id
+  title
+  state
+  images
+  createdAt
+  sharingPeriodStart
+  sharingPeriodEnd
+}
+
 query HomeAllListingsTableContainerMyListingsAll(
   $page: Int!
   $pageSize: Int!
@@ -21,20 +41,31 @@ query HomeAllListingsTableContainerMyListingsAll(
   }
 }
 
-fragment HomeAllListingsTableContainerListingFields on ListingAll {
-  id
-  title
-  state
-  images
-  createdAt
-  sharingPeriodStart
-  sharingPeriodEnd
-}
-
 mutation HomeAllListingsTableContainerPauseItemListing($id: ObjectID!) {
   pauseItemListing(id: $id) {
     id
     state
     updatedAt
+  }
+}
+
+mutation HomeAllListingsTableContainerCancelItemListing($id: ObjectID!) {
+  cancelItemListing(id: $id) {
+    status {
+      success
+      errorMessage
+    }
+    listing {
+      ...HomeAllListingsTableContainerItemListingFields
+    }
+  }
+}
+
+mutation HomeAllListingsTableContainerDeleteListing($id: ObjectID!) {
+  deleteItemListing(id: $id) {
+    status {
+      success
+      errorMessage
+    }
   }
 }

@@ -4,7 +4,7 @@
 	"private": true,
 	"scripts": {
 		"docusaurus": "docusaurus",
-		"start": "docusaurus start --port 3002",
+		"start": "docusaurus start --port 3002 --host docs.sharethrift.localhost --no-open",
 		"build": "docusaurus build",
 		"swizzle": "docusaurus swizzle",
 		"deploy": "docusaurus deploy",
@@ -30,17 +30,16 @@
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
 		"@docusaurus/module-type-aliases": "3.9.2",
-		"@docusaurus/tsconfig": "3.9.2",
+		"@docusaurus/plugin-content-docs": "3.9.2",
 		"@docusaurus/types": "3.9.2",
 		"@testing-library/jest-dom": "^6.6.3",
 		"@testing-library/react": "^16.1.0",
-		"@testing-library/user-event": "^14.5.2",
 		"@types/react": "^19.1.11",
 		"@types/react-dom": "^19.1.6",
-		"@vitest/coverage-v8": "^3.2.4",
+		"@vitest/coverage-v8": "catalog:",
 		"jsdom": "^26.1.0",
-		"typescript": "~5.6.2",
-		"vitest": "^3.2.4"
+		"typescript": "^5.8.3",
+		"vitest": "catalog:"
 	},
 	"browserslist": {
 		"production": [
@@ -56,5 +55,6 @@
 	},
 	"engines": {
 		"node": ">=18.0"
-	}
+	},
+	"license": "MIT"
 }

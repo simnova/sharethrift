@@ -4,7 +4,7 @@ import type { ReservationRequestVisa } from '../reservation-request.visa.ts';
 import { ReservationRequestStates } from './reservation-request.value-objects.ts';
 import * as ValueObjects from './reservation-request.value-objects.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
+import type { UserEntityReference } from '../../user/index.ts';
 import type {
 	ReservationRequestEntityReference,
 	ReservationRequestProps,
@@ -31,7 +31,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		newProps: props,
 		state: string,
 		listing: ItemListingEntityReference,
-		reserver: PersonalUserEntityReference,
+		reserver: UserEntityReference,
 		reservationPeriodStart: Date,
 		reservationPeriodEnd: Date,
 		passport: Passport,
@@ -59,191 +59,7 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		this.isNew = true;
 	}
 
-	//#region Properties
-	get state(): string {
-		return this.props.state;
-	}
-	set state(value: string) {
-		switch (value) {
-			case ReservationRequestStates.ACCEPTED:
-				this.accept();
-				break;
-			case ReservationRequestStates.REJECTED:
-				this.reject();
-				break;
-			case ReservationRequestStates.CANCELLED:
-				this.cancel();
-				break;
-			case ReservationRequestStates.CLOSED:
-				this.close();
-				break;
-			case ReservationRequestStates.REQUESTED:
-				this.request();
-				break;
-		}
-	}
-
-	get reservationPeriodStart(): Date {
-		return this.props.reservationPeriodStart;
-	}
-	set reservationPeriodStart(value: Date) {
-		if (!this.isNew) {
-			throw new DomainSeedwork.PermissionError(
-				'Reservation period start date cannot be updated after creation',
-			);
-		}
-		if (!value) {
-			throw new DomainSeedwork.PermissionError(
-				'value cannot be null or undefined',
-			);
-		}
-
-		if (value.getTime() < Date.now()) {
-			throw new DomainSeedwork.PermissionError(
-				'Reservation period start date must be today or in the future',
-			);
-		}
-
-		if (
-			this.props.reservationPeriodEnd &&
-			value.getTime() >= this.props.reservationPeriodEnd.getTime()
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'Reservation period start date must be before the end date',
-			);
-		}
-		this.props.reservationPeriodStart = value;
-	}
-
-	get reservationPeriodEnd(): Date {
-		return this.props.reservationPeriodEnd;
-	}
-	set reservationPeriodEnd(value: Date) {
-		if (!this.isNew) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to update this reservation period',
-			);
-		}
-		if (!value) {
-			throw new DomainSeedwork.PermissionError(
-				'value cannot be null or undefined',
-			);
-		}
-
-		if (value.getTime() < Date.now()) {
-			throw new DomainSeedwork.PermissionError(
-				'Reservation period end date must be in the future',
-			);
-		}
-
-		if (
-			this.props.reservationPeriodStart &&
-			value.getTime() <= this.props.reservationPeriodStart.getTime()
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'Reservation period end date must be after the start date',
-			);
-		}
-		this.props.reservationPeriodEnd = value;
-	}
-
-	get createdAt(): Date {
-		return this.props.createdAt;
-	}
-
-	get updatedAt(): Date {
-		return this.props.updatedAt;
-	}
-
-	get schemaVersion(): string {
-		return this.props.schemaVersion;
-	}
-
-	get listing(): ItemListingEntityReference {
-		return this.props.listing;
-	}
-	set listing(value: ItemListingEntityReference) {
-		if (!this.isNew) {
-			throw new DomainSeedwork.PermissionError(
-				'Listing can only be set when creating a new reservation request',
-			);
-		}
-		if (value === null || value === undefined) {
-			throw new DomainSeedwork.PermissionError(
-				'value cannot be null or undefined',
-			);
-		}
-
-		if (value.state !== 'Published') {
-			throw new DomainSeedwork.PermissionError(
-				'Cannot create reservation request for listing that is not published',
-			);
-		}
-		this.props.listing = value;
-	}
-
-	get reserver(): PersonalUserEntityReference {
-		return this.props.reserver;
-	}
-	set reserver(value: PersonalUserEntityReference) {
-		if (!this.isNew) {
-			throw new DomainSeedwork.PermissionError(
-				'Reserver can only be set when creating a new reservation request',
-			);
-		}
-		if (value === null || value === undefined) {
-			throw new DomainSeedwork.PermissionError(
-				'value cannot be null or undefined',
-			);
-		}
-		this.props.reserver = value;
-	}
-
-	get closeRequestedBySharer(): boolean {
-		return this.props.closeRequestedBySharer;
-	}
-	set closeRequestedBySharer(value: boolean) {
-		if (
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canCloseRequest,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to request close for this reservation request',
-			);
-		}
-
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
-			throw new Error('Cannot close reservation in current state');
-		}
-
-		this.props.closeRequestedBySharer = value;
-	}
-
-	get closeRequestedByReserver(): boolean {
-		return this.props.closeRequestedByReserver;
-	}
-	set closeRequestedByReserver(value: boolean) {
-		if (
-			!this.visa.determineIf(
-				(domainPermissions) => domainPermissions.canCloseRequest,
-			)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to request close for this reservation request',
-			);
-		}
-
-		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
-			throw new Error('Cannot close reservation in current state');
-		}
-
-		this.props.closeRequestedByReserver = value;
-	}
-
-	//#endregion Properties
-
-	async loadReserver(): Promise<PersonalUserEntityReference> {
+	async loadReserver(): Promise<UserEntityReference> {
 		return await this.props.loadReserver();
 	}
 
@@ -361,4 +177,188 @@ export class ReservationRequest<props extends ReservationRequestProps>
 			ReservationRequestStates.REQUESTED,
 		).valueOf();
 	}
+
+	//#region Properties
+	get state(): string {
+		return this.props.state;
+	}
+	set state(value: string) {
+		switch (value) {
+			case ReservationRequestStates.ACCEPTED:
+				this.accept();
+				break;
+			case ReservationRequestStates.REJECTED:
+				this.reject();
+				break;
+			case ReservationRequestStates.CANCELLED:
+				this.cancel();
+				break;
+			case ReservationRequestStates.CLOSED:
+				this.close();
+				break;
+			case ReservationRequestStates.REQUESTED:
+				this.request();
+				break;
+		}
+	}
+
+	get reservationPeriodStart(): Date {
+		return this.props.reservationPeriodStart;
+	}
+	set reservationPeriodStart(value: Date) {
+		if (!this.isNew) {
+			throw new DomainSeedwork.PermissionError(
+				'Reservation period start date cannot be updated after creation',
+			);
+		}
+		if (!value) {
+			throw new DomainSeedwork.PermissionError(
+				'value cannot be null or undefined',
+			);
+		}
+
+		if (value.getTime() < Date.now()) {
+			throw new DomainSeedwork.PermissionError(
+				'Reservation period start date must be today or in the future',
+			);
+		}
+
+		if (
+			this.props.reservationPeriodEnd &&
+			value.getTime() >= this.props.reservationPeriodEnd.getTime()
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Reservation period start date must be before the end date',
+			);
+		}
+		this.props.reservationPeriodStart = value;
+	}
+
+	get reservationPeriodEnd(): Date {
+		return this.props.reservationPeriodEnd;
+	}
+	set reservationPeriodEnd(value: Date) {
+		if (!this.isNew) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to update this reservation period',
+			);
+		}
+		if (!value) {
+			throw new DomainSeedwork.PermissionError(
+				'value cannot be null or undefined',
+			);
+		}
+
+		if (value.getTime() < Date.now()) {
+			throw new DomainSeedwork.PermissionError(
+				'Reservation period end date must be in the future',
+			);
+		}
+
+		if (
+			this.props.reservationPeriodStart &&
+			value.getTime() <= this.props.reservationPeriodStart.getTime()
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Reservation period end date must be after the start date',
+			);
+		}
+		this.props.reservationPeriodEnd = value;
+	}
+
+	get createdAt(): Date {
+		return this.props.createdAt;
+	}
+
+	get updatedAt(): Date {
+		return this.props.updatedAt;
+	}
+
+	get schemaVersion(): string {
+		return this.props.schemaVersion;
+	}
+
+	get listing(): ItemListingEntityReference {
+		return this.props.listing;
+	}
+	set listing(value: ItemListingEntityReference) {
+		if (!this.isNew) {
+			throw new DomainSeedwork.PermissionError(
+				'Listing can only be set when creating a new reservation request',
+			);
+		}
+		if (value === null || value === undefined) {
+			throw new DomainSeedwork.PermissionError(
+				'value cannot be null or undefined',
+			);
+		}
+
+		if (value.state !== 'Active') {
+			throw new DomainSeedwork.PermissionError(
+				'Cannot create reservation request for listing that is not active',
+			);
+		}
+		this.props.listing = value;
+	}
+
+	get reserver(): UserEntityReference {
+		return this.props.reserver;
+	}
+	set reserver(value: UserEntityReference) {
+		if (!this.isNew) {
+			throw new DomainSeedwork.PermissionError(
+				'Reserver can only be set when creating a new reservation request',
+			);
+		}
+		if (value === null || value === undefined) {
+			throw new DomainSeedwork.PermissionError(
+				'value cannot be null or undefined',
+			);
+		}
+		this.props.reserver = value;
+	}
+
+	get closeRequestedBySharer(): boolean {
+		return this.props.closeRequestedBySharer;
+	}
+	set closeRequestedBySharer(value: boolean) {
+		if (
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canCloseRequest,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to request close for this reservation request',
+			);
+		}
+
+		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
+			throw new Error('Cannot close reservation in current state');
+		}
+
+		this.props.closeRequestedBySharer = value;
+	}
+
+	get closeRequestedByReserver(): boolean {
+		return this.props.closeRequestedByReserver;
+	}
+	set closeRequestedByReserver(value: boolean) {
+		if (
+			!this.visa.determineIf(
+				(domainPermissions) => domainPermissions.canCloseRequest,
+			)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to request close for this reservation request',
+			);
+		}
+
+		if (this.props.state.valueOf() !== ReservationRequestStates.ACCEPTED) {
+			throw new Error('Cannot close reservation in current state');
+		}
+
+		this.props.closeRequestedByReserver = value;
+	}
+
+	//#endregion Properties
 }

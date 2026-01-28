@@ -24,11 +24,31 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
-function makeMockUser(overrides: Partial<Models.User.PersonalUser> = {}): Models.User.PersonalUser {
+function createMockModelWithNullFindById(baseModel: Models.User.PersonalUserModelType): Models.User.PersonalUserModelType {
+	return {
+		...baseModel,
+		findById: vi.fn(() => ({ exec: vi.fn(async () => null) })),
+	} as unknown as Models.User.PersonalUserModelType;
+}
+
+function createMockModelWithNullFindOne(baseModel: Models.User.PersonalUserModelType): Models.User.PersonalUserModelType {
+	return {
+		...baseModel,
+		findOne: vi.fn(() => ({ lean: vi.fn(() => null) })),
+	} as unknown as Models.User.PersonalUserModelType;
+}
+
+function createModelsContext(personalUserModel: Models.User.PersonalUserModelType): ModelsContext {
+	return { User: { PersonalUser: personalUserModel } } as unknown as ModelsContext;
+}
+
+function makeMockUser(
+	overrides: Partial<Models.User.PersonalUser> = {},
+): Models.User.PersonalUser {
 	const base = {
 		_id: new MongooseSeedwork.ObjectId(),
 		id: 'user-1',
-		userType: 'end-user',
+		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: false,
 		account: {
@@ -128,106 +148,136 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		});
 	});
 
-	Scenario(
-		'Getting all users with pagination',
-		({ Given, When, Then }) => {
-			Given('multiple PersonalUser documents exist in the database', () => {
-				mockUsers = [
-					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011') }),
-					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012') }),
-					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439013') }),
-				];
-			});
-			When('I call getAllUsers with page 1 and pageSize 10', async () => {
-				result = await repository.getAllUsers({ page: 1, pageSize: 10 });
-			});
-			Then(
-				'I should receive a paginated result with items, total, page, and pageSize',
-				() => {
-					expect(result).toHaveProperty('items');
-					expect(result).toHaveProperty('total');
-					expect(result).toHaveProperty('page', 1);
-					expect(result).toHaveProperty('pageSize', 10);
-					expect(Array.isArray((result as { items: unknown[] }).items)).toBe(true);
-				},
-			);
-		},
-	);
+	Scenario('Getting all personal users with no results', ({ Given, When, Then }) => {
+					Given('no PersonalUser documents exist in the database', () => {
+						const mockDataSource = repository.mongoDataSource as unknown as {
+				find: ReturnType<typeof vi.fn>;
+			};
+			mockDataSource.find = vi.fn(() => Promise.resolve([]));
+		});
 
-	Scenario(
-		'Getting all users with search text',
-		({ Given, When, Then }) => {
-			Given('PersonalUser documents with various emails and names', () => {
-				mockUsers = [
-					makeMockUser({
-						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
-						account: {
-							...makeMockUser().account,
-							email: 'john@example.com',
-							profile: {
-								...makeMockUser().account.profile,
-								firstName: 'John',
-							} as unknown as Models.User.PersonalUserAccountProfile,
-						} as unknown as Models.User.PersonalUserAccount,
-					}),
-					makeMockUser({
-						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
-						account: {
-							...makeMockUser().account,
-							email: 'jane@example.com',
-							profile: {
-								...makeMockUser().account.profile,
-								firstName: 'Jane',
-							} as unknown as Models.User.PersonalUserAccountProfile,
-						} as unknown as Models.User.PersonalUserAccount,
-					}),
-				];
+		When('I call getAll', async () => {
+			result = await repository.getAll();
+		});
+
+		Then('I should receive an empty array', () => {
+			expect(result).toEqual([]);
+		});
+	});
+
+	Scenario('Getting all users with pagination', ({ Given, When, Then }) => {
+		Given('multiple PersonalUser documents exist in the database', () => {
+			mockUsers = [
+				makeMockUser({
+					id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+				}),
+				makeMockUser({
+					id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+				}),
+				makeMockUser({
+					id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439013'),
+				}),
+			];
+		});
+		When('I call getAllUsers with page 1 and pageSize 10', async () => {
+			result = await repository.getAllUsers({ page: 1, pageSize: 10 });
+		});
+		Then(
+			'I should receive a paginated result with items, total, page, and pageSize',
+			() => {
+				expect(result).toHaveProperty('items');
+				expect(result).toHaveProperty('total');
+				expect(result).toHaveProperty('page', 1);
+				expect(result).toHaveProperty('pageSize', 10);
+				expect(Array.isArray((result as { items: unknown[] }).items)).toBe(
+					true,
+				);
+			},
+		);
+	});
+
+	Scenario('Getting all users with search text', ({ Given, When, Then }) => {
+		Given('PersonalUser documents with various emails and names', () => {
+			mockUsers = [
+				makeMockUser({
+					id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+					account: {
+						...makeMockUser().account,
+						email: 'john@example.com',
+						profile: {
+							...makeMockUser().account.profile,
+							firstName: 'John',
+						} as unknown as Models.User.PersonalUserAccountProfile,
+					} as unknown as Models.User.PersonalUserAccount,
+				}),
+				makeMockUser({
+					id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+					account: {
+						...makeMockUser().account,
+						email: 'jane@example.com',
+						profile: {
+							...makeMockUser().account.profile,
+							firstName: 'Jane',
+						} as unknown as Models.User.PersonalUserAccountProfile,
+					} as unknown as Models.User.PersonalUserAccount,
+				}),
+			];
+		});
+		When('I call getAllUsers with searchText "john"', async () => {
+			result = await repository.getAllUsers({
+				page: 1,
+				pageSize: 10,
+				searchText: 'john',
 			});
-			When('I call getAllUsers with searchText "john"', async () => {
+		});
+		Then('I should receive only users matching the search text', () => {
+			expect(
+				(result as { items: unknown[] }).items.length,
+			).toBeGreaterThanOrEqual(0);
+			// The filtering logic would filter to John, but since we're mocking,
+			// we just verify the result structure
+			expect(result).toHaveProperty('items');
+		});
+	});
+
+	Scenario('Getting all users with status filters', ({ Given, When, Then }) => {
+		Given('PersonalUser documents with different statuses', () => {
+			mockUsers = [
+				makeMockUser({
+					id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+					isBlocked: false,
+				}),
+				makeMockUser({
+					id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+					isBlocked: true,
+				}),
+			];
+		});
+		When(
+			'I call getAllUsers with statusFilters including "Active"',
+			async () => {
 				result = await repository.getAllUsers({
 					page: 1,
 					pageSize: 10,
-					searchText: 'john',
+					statusFilters: ['Active'],
 				});
-			});
-			Then('I should receive only users matching the search text', () => {
-				expect((result as { items: unknown[] }).items.length).toBeGreaterThanOrEqual(0);
-				// The filtering logic would filter to John, but since we're mocking,
-				// we just verify the result structure
-				expect(result).toHaveProperty('items');
-			});
-		},
-	);
-
-	Scenario(
-		'Getting all users with status filters',
-		({ Given, When, Then }) => {
-			Given('PersonalUser documents with different statuses', () => {
-				mockUsers = [
-					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'), isBlocked: false }),
-					makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'), isBlocked: true }),
-				];
-			});
-			When(
-				'I call getAllUsers with statusFilters including "Active"',
-				async () => {
-					result = await repository.getAllUsers({
-						page: 1,
-						pageSize: 10,
-						statusFilters: ['Active'],
-					});
-				},
-			);
-			Then('I should receive only active users', () => {
-				expect((result as { items: unknown[] }).items.length).toBeGreaterThanOrEqual(0);
-				expect(result).toHaveProperty('items');
-			});
-		},
-	);
+			},
+		);
+		Then('I should receive only active users', () => {
+			expect(
+				(result as { items: unknown[] }).items.length,
+			).toBeGreaterThanOrEqual(0);
+			expect(result).toHaveProperty('items');
+		});
+	});
 
 	Scenario('Getting a personal user by ID', ({ Given, When, Then }) => {
 		Given('a PersonalUser document with id "user-1"', () => {
-			mockUsers = [makeMockUser({ id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011') })];
+			mockUsers = [
+				makeMockUser({
+					id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+				}),
+			];
 		});
 		When('I call getById with "user-1"', async () => {
 			result = await repository.getById('507f1f77bcf86cd799439011');
@@ -240,22 +290,11 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario(
-		'Getting a personal user by ID that doesn\'t exist',
+		"Getting a personal user by ID that doesn't exist",
 		({ When, Then }) => {
 			When('I call getById with "nonexistent-id"', async () => {
-				mockModel = {
-					...mockModel,
-					findById: vi.fn(() => ({
-						exec: vi.fn(async () => null),
-					})),
-				} as unknown as Models.User.PersonalUserModelType;
-
-				const modelsContext = {
-					User: {
-						PersonalUser: mockModel,
-					},
-				} as unknown as ModelsContext;
-
+				mockModel = createMockModelWithNullFindById(mockModel);
+				const modelsContext = createModelsContext(mockModel);
 				repository = new PersonalUserReadRepositoryImpl(modelsContext, passport);
 				result = await repository.getById('nonexistent-id');
 			});
@@ -265,58 +304,206 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		},
 	);
 
+	Scenario('Getting a personal user by email', ({ Given, When, Then }) => {
+		Given('a PersonalUser document with email "test@example.com"', () => {
+			mockUsers = [
+				makeMockUser({
+					account: {
+						...makeMockUser().account,
+						email: 'test@example.com',
+					} as unknown as Models.User.PersonalUserAccount,
+				}),
+			];
+		});
+		When('I call getByEmail with "test@example.com"', async () => {
+			result = await repository.getByEmail('test@example.com');
+		});
+		Then(
+			'I should receive a PersonalUser domain object with that email',
+			() => {
+				expect(result).toBeInstanceOf(
+					Domain.Contexts.User.PersonalUser.PersonalUser,
+				);
+			},
+		);
+	});
+
 	Scenario(
-		'Getting a personal user by email',
+		"Getting a personal user by email that doesn't exist",
+		({ When, Then }) => {
+			When('I call getByEmail with "nonexistent@example.com"', async () => {
+				mockModel = createMockModelWithNullFindOne(mockModel);
+				const modelsContext = createModelsContext(mockModel);
+				repository = new PersonalUserReadRepositoryImpl(modelsContext, passport);
+				result = await repository.getByEmail('nonexistent@example.com');
+			});
+			Then('I should receive null', () => {
+				expect(result).toBeNull();
+			});
+		},
+	);
+
+	Scenario(
+		'Getting all users with sorter by email ascending',
 		({ Given, When, Then }) => {
-			Given('a PersonalUser document with email "test@example.com"', () => {
+			Given('PersonalUser documents with various emails', () => {
 				mockUsers = [
 					makeMockUser({
-						account: { ...makeMockUser().account, email: 'test@example.com' } as unknown as Models.User.PersonalUserAccount,
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						account: {
+							...makeMockUser().account,
+							email: 'charlie@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						account: {
+							...makeMockUser().account,
+							email: 'alice@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439013'),
+						account: {
+							...makeMockUser().account,
+							email: 'bob@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
 					}),
 				];
 			});
-			When('I call getByEmail with "test@example.com"', async () => {
-				result = await repository.getByEmail('test@example.com');
-			});
+			When(
+				'I call getAllUsers with sorter field "email" and order "ascend"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'email', order: 'ascend' },
+					});
+				},
+			);
 			Then(
-				'I should receive a PersonalUser domain object with that email',
+				'I should receive users sorted by email in ascending order',
 				() => {
-					expect(result).toBeInstanceOf(
-						Domain.Contexts.User.PersonalUser.PersonalUser,
-					);
+					expect(result).toHaveProperty('items');
+					const items = (result as { items: { account?: { email?: string } }[] })
+						.items;
+					expect(items.length).toBe(3);
+					expect(items[0]?.account?.email).toBe('alice@example.com');
+					expect(items[1]?.account?.email).toBe('bob@example.com');
+					expect(items[2]?.account?.email).toBe('charlie@example.com');
 				},
 			);
 		},
 	);
 
 	Scenario(
-		'Getting a personal user by email that doesn\'t exist',
-		({ When, Then }) => {
+		'Getting all users with sorter by email descending',
+		({ Given, When, Then }) => {
+			Given('PersonalUser documents with various emails', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						account: {
+							...makeMockUser().account,
+							email: 'alice@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						account: {
+							...makeMockUser().account,
+							email: 'bob@example.com',
+						} as unknown as Models.User.PersonalUserAccount,
+					}),
+				];
+			});
 			When(
-				'I call getByEmail with "nonexistent@example.com"',
+				'I call getAllUsers with sorter field "email" and order "descend"',
 				async () => {
-					mockModel = {
-						...mockModel,
-						findOne: vi.fn(() => ({
-							lean: vi.fn(() => null),
-						})),
-					} as unknown as Models.User.PersonalUserModelType;
-
-					const modelsContext = {
-						User: {
-							PersonalUser: mockModel,
-						},
-					} as unknown as ModelsContext;
-
-					repository = new PersonalUserReadRepositoryImpl(
-						modelsContext,
-						passport,
-					);
-					result = await repository.getByEmail('nonexistent@example.com');
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						sorter: { field: 'email', order: 'descend' },
+					});
 				},
 			);
-			Then('I should receive null', () => {
-				expect(result).toBeNull();
+			Then(
+				'I should receive users sorted by email in descending order',
+				() => {
+					expect(result).toHaveProperty('items');
+					const items = (result as { items: { account?: { email?: string } }[] })
+						.items;
+					expect(items.length).toBe(2);
+					expect(items[0]?.account?.email).toBe('bob@example.com');
+					expect(items[1]?.account?.email).toBe('alice@example.com');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Getting all users with Blocked status filter',
+		({ Given, When, Then }) => {
+			Given('PersonalUser documents with different statuses', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						isBlocked: false,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						isBlocked: true,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with statusFilters including "Blocked"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						statusFilters: ['Blocked'],
+					});
+				},
+			);
+			Then('I should receive only blocked users', () => {
+				expect(result).toHaveProperty('items');
+				const items = (result as { items: { isBlocked?: boolean }[] }).items;
+				expect(items.length).toBe(1);
+				expect(items[0]?.isBlocked).toBe(true);
+			});
+		},
+	);
+
+	Scenario(
+		'Getting all users with both Active and Blocked status filters',
+		({ Given, When, Then }) => {
+			Given('PersonalUser documents with different statuses', () => {
+				mockUsers = [
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439011'),
+						isBlocked: false,
+					}),
+					makeMockUser({
+						id: new MongooseSeedwork.ObjectId('507f1f77bcf86cd799439012'),
+						isBlocked: true,
+					}),
+				];
+			});
+			When(
+				'I call getAllUsers with statusFilters including both "Active" and "Blocked"',
+				async () => {
+					result = await repository.getAllUsers({
+						page: 1,
+						pageSize: 10,
+						statusFilters: ['Active', 'Blocked'],
+					});
+				},
+			);
+			Then('I should receive all users regardless of status', () => {
+				expect(result).toHaveProperty('items');
+				const items = (result as { items: unknown[] }).items;
+				expect(items.length).toBe(2);
 			});
 		},
 	);

@@ -3,27 +3,41 @@ import { Footer, Header } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
 import { HandleLogout } from '../../shared/handle-logout.ts';
 import { useApolloClient } from '@apollo/client/react';
-import { useCreateListingNavigation } from '../home/components/create-listing/hooks/use-create-listing-navigation.ts';
+import { useCreateListingNavigation } from '../../shared/hooks/use-create-listing-navigation.ts';
+import { Card } from 'antd';
 
-// biome-ignore lint/suspicious/noEmptyInterface: <explanation>
-interface SectionLayoutProps {}
-
-export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
+export const SectionLayout: React.FC = () => {
 	const auth = useAuth();
 	const apolloClient = useApolloClient();
 
+	const isProduction = import.meta.env.MODE === 'production';
+
 	const handleOnLogin = () => {
-		auth.signinRedirect();
+		if (isProduction) {
+			globalThis.sessionStorage.setItem('loginPortalType', 'UserPortal');
+			globalThis.location.href = '/auth-redirect-user';
+		} else {
+			auth.signinRedirect();
+		}
+	};
+
+	const handleOnAdminLogin = () => {
+		if (isProduction) {
+			globalThis.sessionStorage.setItem('loginPortalType', 'AdminPortal');
+			globalThis.location.href = '/auth-redirect-admin';
+		} else {
+			auth.signinRedirect();
+		}
 	};
 
 	const handleOnSignUp = () => {
-		auth.signinRedirect({ extraQueryParams: { option: "signup" } })
+        auth.signinRedirect({ extraQueryParams: { option: "signup" } });
 	};
 
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-        HandleLogout(auth, apolloClient, window.location.origin);
+        HandleLogout(auth, apolloClient, globalThis.location.origin);
 	};
 
 	return (
@@ -39,6 +53,7 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={handleOnLogin}
+				onAdminLogin={handleOnAdminLogin}
 				onSignUp={handleOnSignUp}
 				onLogout={handleLogOut}
 				onCreateListing={handleCreateListing}
@@ -53,7 +68,26 @@ export const SectionLayout: React.FC<SectionLayoutProps> = (_props) => {
 				}}
 			>
 				<main style={{ width: '100%' }}>
-					<Outlet />
+					<div
+						style={{
+							display: 'flex',
+							justifyContent: 'center',
+							alignItems: 'center',
+							minHeight: 'calc(100vh - 128px)',
+							padding: '20px',
+						}}
+					>
+						<Card
+							style={{
+								maxWidth: '100%',
+								width: '100%',
+								backgroundColor: 'transparent',
+								border: 'none',
+							}}
+						>
+							<Outlet />
+						</Card>
+					</div>
 				</main>
 			</div>
 			<Footer />

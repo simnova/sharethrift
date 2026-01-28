@@ -67,8 +67,8 @@ export class ConversationRepository
 
 	// biome-ignore lint:noRequireAwait
 	async getNewInstance(
-		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
-		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+		sharer: Domain.Contexts.User.UserEntityReference,
+		reserver: Domain.Contexts.User.UserEntityReference,
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
 		messagingConversationId?: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType>> {
@@ -76,19 +76,17 @@ export class ConversationRepository
 		// Set a placeholder messagingConversationId for new conversations
 		// In production, this would typically be set when creating the messaging conversation
 		newDoc.messagingConversationId = `temp-${Date.now()}-${crypto.randomUUID()}`;
-		
+
 		const adapter = this.typeConverter.toAdapter(newDoc);
-		
-		return Promise.resolve(
-			Domain.Contexts.Conversation.Conversation.Conversation.getNewInstance(
-				adapter,
-				sharer,
-				reserver,
-				listing,
-				[], // Empty messages array for new conversations
-				messagingConversationId,
-				this.passport,
-			),
+
+		return Domain.Contexts.Conversation.Conversation.Conversation.getNewInstance(
+			adapter,
+			sharer,
+			reserver,
+			listing,
+			[], // Empty messages array for new conversations
+			messagingConversationId,
+			this.passport,
 		);
 	}
 }

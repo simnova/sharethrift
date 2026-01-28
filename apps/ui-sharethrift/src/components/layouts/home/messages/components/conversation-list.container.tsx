@@ -1,7 +1,7 @@
 import { ConversationList } from './conversation-list.tsx';
 import { useQuery } from '@apollo/client/react';
 import {
-    HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+    HomeConversationListContainerCurrentUserDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	type Conversation,
 } from '../../../../../generated.tsx';
@@ -14,16 +14,20 @@ interface ConversationListContainerProps {
 	selectedConversationId: string | null;
 }
 
+const getFirstErrorMessage = (
+	...errors: (Error | undefined | null)[]
+): string => {
+	return errors.find(Boolean)?.message || 'Unknown error';
+};
+
 export const ConversationListContainer: React.FC<
 	ConversationListContainerProps
 > = (props) => {
 	const {
-		data: currentPersonalUserData,
-		loading: currentPersonalUserLoading,
-		error: currentPersonalUserError,
-	} = useQuery(
-		HomeConversationListContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
-	);
+		data: currentUserData,
+		loading: currentUserLoading,
+		error: currentUserError,
+	} = useQuery(HomeConversationListContainerCurrentUserDocument);
 
 	const {
 		data: currentUserConversationsData,
@@ -31,10 +35,9 @@ export const ConversationListContainer: React.FC<
 		error: conversationsError,
 	} = useQuery(HomeConversationListContainerConversationsByUserDocument, {
 		variables: {
-			userId:
-				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
+			userId: currentUserData?.currentUser.id,
 		},
-        skip: !currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists.id,
+		skip: !currentUserData?.currentUser.id,
 	});
 
 	useEffect(() => {
@@ -50,27 +53,26 @@ export const ConversationListContainer: React.FC<
 		currentUserConversationsData,
 		props.selectedConversationId,
 		props.onConversationSelect,
-        props,
+		props,
 	]);
+
+	const errorMessage = getFirstErrorMessage(
+		conversationsError,
+		currentUserError,
+	);
 
 	return (
 		<ComponentQueryLoader
-			loading={loadingConversations || currentPersonalUserLoading}
+			loading={loadingConversations || currentUserLoading}
 			hasData={
 				currentUserConversationsData?.conversationsByUser &&
-				currentPersonalUserData?.currentPersonalUserAndCreateIfNotExists
+				currentUserData?.currentUser
 			}
-			error={conversationsError || currentPersonalUserError}
+			error={conversationsError || currentUserError}
 			errorComponent={
 				<Result
 					status="error"
-					title={
-						conversationsError
-							? conversationsError.message
-							: currentPersonalUserError
-								? currentPersonalUserError.message
-								: 'Unknown error'
-					}
+					title={errorMessage}
 				/>
 			}
 			noDataComponent={

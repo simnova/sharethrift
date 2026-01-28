@@ -6,6 +6,7 @@ import type { Models } from '@sthrift/data-sources-mongoose-models';
 import { Domain } from '@sthrift/domain';
 import type mongoose from 'mongoose';
 import { expect, vi } from 'vitest';
+import { makeNewableMock } from '@cellix/test-utils';
 import { PersonalUserConverter } from './personal-user.domain-adapter.ts';
 import { PersonalUserRepository } from './personal-user.repository.ts';
 
@@ -32,6 +33,8 @@ function makeEventBus(): DomainSeedwork.EventBus {
 	} as DomainSeedwork.EventBus);
 }
 
+// use shared makeNewableMock from test-utils
+
 function makeSession(): mongoose.ClientSession {
 	return vi.mocked({} as mongoose.ClientSession);
 }
@@ -52,7 +55,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		mockDoc = {
 			_id: 'user-1',
 			id: 'user-1',
-			userType: 'end-user',
+			userType: 'personal-user',
 			isBlocked: false,
 			hasCompletedOnboarding: false,
 			account: {
@@ -178,14 +181,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			'I call getNewInstance with email "new@example.com", firstName "New", and lastName "User"',
 			async () => {
 				const newDoc = { ...mockDoc };
-				// Create a proper constructor function mock
-				const ModelConstructor = vi.fn().mockImplementation(() => newDoc);
-				// Add the other mongoose model methods that might be needed
+				const ModelConstructor = makeNewableMock(() => newDoc);
 				Object.assign(ModelConstructor, {
 					findOne: mockModel.findOne,
 					findById: mockModel.findById,
 				});
-				
+
 				repository = new PersonalUserRepository(
 					passport,
 					ModelConstructor as unknown as Models.User.PersonalUserModelType,

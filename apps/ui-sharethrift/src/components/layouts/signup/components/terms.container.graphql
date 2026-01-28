@@ -1,0 +1,25 @@
+query TermsContainerCurrentPersonalUserAndCreateIfNotExists {
+  currentPersonalUserAndCreateIfNotExists {
+    id
+    hasCompletedOnboarding
+    account {
+      accountType
+    }
+  }
+}
+
+mutation TermsContainerPersonalUserUpdate($input: PersonalUserUpdateInput!) {
+  personalUserUpdate(input: $input) {
+    status {
+      success
+      errorMessage
+    }
+    personalUser {
+      id
+      hasCompletedOnboarding
+      account {
+        accountType
+      }
+    }
+  }
+}

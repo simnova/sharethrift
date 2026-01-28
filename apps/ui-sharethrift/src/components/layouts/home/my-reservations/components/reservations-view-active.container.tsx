@@ -13,7 +13,7 @@ import { ReservationsView } from './reservations-view.tsx';
 
 const RESERVATION_REQUEST_TYPENAME = 'ReservationRequest';
 
-export type ReservationsViewActiveContainerProps = Record<string, never>;
+type ReservationsViewActiveContainerProps = Record<string, never>;
 
 export const ReservationsViewActiveContainer: React.FC<
 	ReservationsViewActiveContainerProps
@@ -26,7 +26,7 @@ export const ReservationsViewActiveContainer: React.FC<
 	} = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument, {
 		fetchPolicy: 'cache-first',
 	});
-	const userId = userData?.currentPersonalUserAndCreateIfNotExists?.id;
+	const userId = userData?.currentUser?.id;
 
 	// Get active reservations
 	const {
@@ -121,4 +121,3 @@ export const ReservationsViewActiveContainer: React.FC<
 	);
 };
 
-export default ReservationsViewActiveContainer;

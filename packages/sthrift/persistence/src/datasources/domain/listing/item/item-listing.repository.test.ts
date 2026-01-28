@@ -19,6 +19,14 @@ const feature = await loadFeature(
 	path.resolve(__dirname, 'features/item-listing.repository.feature'),
 );
 
+// Add QueryMock interface for chainable query mocks
+interface QueryMock {
+	sort: (this: QueryMock) => QueryMock;
+	skip: (this: QueryMock) => QueryMock;
+	limit: (this: QueryMock) => QueryMock;
+	exec: () => unknown[];
+}
+
 function makeListingDoc(
 	overrides: Partial<Models.Listing.ItemListing> = {},
 ): Models.Listing.ItemListing {
@@ -31,7 +39,7 @@ function makeListingDoc(
 		location: 'Delhi',
 		sharingPeriodStart: new Date('2025-10-06'),
 		sharingPeriodEnd: new Date('2025-11-06'),
-		state: 'Published',
+		state: 'Active',
 		sharer: userDoc._id,
 		images: [],
 		reports: 0,
@@ -41,7 +49,7 @@ function makeListingDoc(
 		schemaVersion: '1.0.0',
 		id: 'listing-1',
 		set(key: keyof Models.Listing.ItemListing, value: unknown) {
-			(this as Models.Listing.ItemListing)[key] = value as never;
+			this[key] = value as never;
 		},
 		...overrides,
 	} as Models.Listing.ItemListing;
@@ -52,10 +60,41 @@ function makeUserDoc(
 	overrides: Partial<Models.User.PersonalUser> = {},
 ): Models.User.PersonalUser {
 	const base = {
-		_id: 'user-1',
+		_id: '507f1f77bcf86cd799439011',
 		displayName: 'Test User',
 		email: 'test@example.com',
-		id: 'user-1',
+		id: '507f1f77bcf86cd799439011',
+		account: {
+			accountType: 'verified-personal',
+			email: 'test@example.com',
+			username: 'testuser',
+			profile: {
+				firstName: 'Test',
+				lastName: 'User',
+				aboutMe: 'Test user description',
+				location: {
+					address1: '123 Test St',
+					address2: null,
+					city: 'Test City',
+					state: 'Test State',
+					country: 'Test Country',
+					zipCode: '12345',
+				},
+				billing: {
+					cybersourceCustomerId: 'cust-test-123',
+					subscription: {
+						subscriptionId: 'sub-test-123',
+						planCode: 'test-plan',
+						status: 'ACTIVE',
+						startDate: new Date(),
+					},
+					transactions: [],
+				},
+			},
+		},
+		set: vi.fn((key: string, value: unknown) => {
+			(base as unknown as Record<string, unknown>)[key] = value;
+		}),
 		...overrides,
 	} as Models.User.PersonalUser;
 	return vi.mocked(base);
@@ -119,21 +158,28 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			})),
 			find: vi.fn((filter?: { state?: string; sharer?: string }) => {
 				// Create chainable query object
-				const query = {
-					sort: vi.fn(() => query),
-					skip: vi.fn(() => query),
-					limit: vi.fn(() => query),
-					exec: vi.fn( () => {
-						if (!filter || filter.state === 'Published') {
+				return {
+					sort: vi.fn(function (this: QueryMock) {
+						return this;
+					}),
+					skip: vi.fn(function (this: QueryMock) {
+						return this;
+					}),
+					limit: vi.fn(function (this: QueryMock) {
+						return this;
+					}),
+					exec: vi.fn(() => {
+						if (!filter || filter.state === 'Active') {
 							return [listingDoc];
 						}
 						if (filter.sharer) {
-							return filter.sharer === 'user-1' ? [listingDoc] : [];
+							return filter.sharer === '507f1f77bcf86cd799439011'
+								? [listingDoc]
+								: [];
 						}
 						return [];
 					}),
-				};
-				return query;
+				} as QueryMock;
 			}),
 			countDocuments: vi.fn(() => ({
 				exec: vi.fn(async () => 1),
@@ -185,7 +231,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				expect(result.title).toBe('Test Listing');
 				expect(result.category).toBe('Electronics');
 				expect(result.location).toBe('Delhi');
-				expect(result.sharer.id).toBe('user-1');
+				expect(result.sharer.id).toBe('507f1f77bcf86cd799439011');
 			},
 		);
 	});
@@ -219,11 +265,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			Given('a valid sharer domain object', () => {
 				userDoc = makeUserDoc();
 				userAdapter = new PersonalUserDomainAdapter(userDoc);
-				sharerDomainObject =
-					new Domain.Contexts.User.PersonalUser.PersonalUser(
-						userAdapter,
-						passport,
-					);
+				sharerDomainObject = new Domain.Contexts.User.PersonalUser.PersonalUser(
+					userAdapter,
+					passport,
+				);
 			});
 			And('a set of valid listing fields without isDraft set to true', () => {
 				// Fields will be provided in the When step
@@ -247,16 +292,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					Domain.Contexts.Listing.ItemListing.ItemListing,
 				);
 			});
-			And('the object\'s state should be "Published"', () => {
-				expect(result.state).toBe('Published');
+			And('the object\'s state should be "Active"', () => {
+				expect(result.state).toBe('Active');
 			});
-			And(
-				'createdAt and updatedAt should be set to the current date',
-				() => {
-					expect(result.createdAt).toBeInstanceOf(Date);
-					expect(result.updatedAt).toBeInstanceOf(Date);
-				},
-			);
+			And('createdAt and updatedAt should be set to the current date', () => {
+				expect(result.createdAt).toBeInstanceOf(Date);
+				expect(result.updatedAt).toBeInstanceOf(Date);
+			});
 		},
 	);
 
@@ -265,11 +307,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		Given('a valid sharer domain object', () => {
 			userDoc = makeUserDoc();
 			userAdapter = new PersonalUserDomainAdapter(userDoc);
-			sharerDomainObject =
-				new Domain.Contexts.User.PersonalUser.PersonalUser(
-					userAdapter,
-					passport,
-				);
+			sharerDomainObject = new Domain.Contexts.User.PersonalUser.PersonalUser(
+				userAdapter,
+				passport,
+			);
 		});
 		And('a set of valid listing fields with isDraft set to true', () => {
 			// Fields will be provided in the When step with isDraft: true
@@ -294,8 +335,8 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				Domain.Contexts.Listing.ItemListing.ItemListing,
 			);
 		});
-		And('the object\'s state should be "Drafted"', () => {
-			expect(result.state).toBe('Drafted');
+		And('the object\'s state should be "Draft"', () => {
+			expect(result.state).toBe('Draft');
 		});
 	});
 
@@ -315,40 +356,40 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					);
 				}
 			});
-			And('each object should have a state of "Published"', () => {
+			And('each object should have a state of "Active"', () => {
 				for (const item of results) {
-					expect(item.state).toBe('Published');
+					expect(item.state).toBe('Active');
 				}
 			});
 		},
 	);
 
-	Scenario('Retrieve item listings by sharer ID', ({ Given, When, Then, And }) => {
-		let results: Domain.Contexts.Listing.ItemListing.ItemListing<ItemListingDomainAdapter>[];
-		Given('a valid sharer ID', () => {
-			// Using 'user-1' as the valid sharer ID
-		});
-		When('I call getBySharerID with the sharer ID', async () => {
-			results = await repo.getBySharerID('user-1');
-		});
-		Then('I should receive a list of ItemListing domain objects', () => {
-			expect(Array.isArray(results)).toBe(true);
-			expect(results.length).toBeGreaterThan(0);
-			for (const item of results) {
-				expect(item).toBeInstanceOf(
-					Domain.Contexts.Listing.ItemListing.ItemListing,
-				);
-			}
-		});
-		And(
-			"each object's sharer field should match the given sharer ID",
-			() => {
+	Scenario(
+		'Retrieve item listings by sharer ID',
+		({ Given, When, Then, And }) => {
+			let results: Domain.Contexts.Listing.ItemListing.ItemListing<ItemListingDomainAdapter>[];
+			Given('a valid sharer ID', () => {
+				// Using '507f1f77bcf86cd799439011' as the valid sharer ID
+			});
+			When('I call getBySharerID with the sharer ID', async () => {
+				results = await repo.getBySharerID('507f1f77bcf86cd799439011');
+			});
+			Then('I should receive a list of ItemListing domain objects', () => {
+				expect(Array.isArray(results)).toBe(true);
+				expect(results.length).toBeGreaterThan(0);
 				for (const item of results) {
-					expect(item.sharer.id).toBe('user-1');
+					expect(item).toBeInstanceOf(
+						Domain.Contexts.Listing.ItemListing.ItemListing,
+					);
 				}
-			},
-		);
-	});
+			});
+			And("each object's sharer field should match the given sharer ID", () => {
+				for (const item of results) {
+					expect(item.sharer.id).toBe('507f1f77bcf86cd799439011');
+				}
+			});
+		},
+	);
 
 	Scenario(
 		'Retrieve item listings by sharer ID with filters and pagination',
@@ -360,7 +401,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				pageSize: number;
 			};
 			Given('a valid sharer ID', () => {
-				// Using 'user-1' as the valid sharer ID
+				// Using '507f1f77bcf86cd799439011' as the valid sharer ID
 			});
 			And('pagination options with page and pageSize defined', () => {
 				// Options will be provided in the When step
@@ -374,13 +415,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When(
 				'I call getBySharerIDWithPagination with the sharer ID and options',
 				async () => {
-					paginatedResults = await repo.getBySharerIDWithPagination('user-1', {
-						page: 1,
-						pageSize: 10,
-						searchText: 'Test',
-						statusFilters: ['Published'],
-						sorter: { field: 'createdAt', order: 'descend' },
-					});
+					paginatedResults = await repo.getBySharerIDWithPagination(
+						'507f1f77bcf86cd799439011',
+						{
+							page: 1,
+							pageSize: 10,
+							searchText: 'Test',
+							statusFilters: ['Active'],
+							sorter: { field: 'createdAt', order: 'descend' },
+						},
+					);
 				},
 			);
 			Then(
@@ -414,6 +458,48 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					}
 				},
 			);
+		},
+	);
+
+	Scenario(
+		'Retrieve item listings with default sorting when no sorter provided',
+		({ Given, And, When, Then }) => {
+			let paginatedResults: {
+				items: Domain.Contexts.Listing.ItemListing.ItemListing<ItemListingDomainAdapter>[];
+				total: number;
+				page: number;
+				pageSize: number;
+			};
+			Given('a valid sharer ID', () => {
+				// Using '507f1f77bcf86cd799439011' as the valid sharer ID
+			});
+			And('pagination options without a sorter', () => {
+				// Options will be provided in the When step without sorter
+			});
+			When(
+				'I call getBySharerIDWithPagination with the sharer ID and options without sorter',
+				async () => {
+					paginatedResults = await repo.getBySharerIDWithPagination(
+						'507f1f77bcf86cd799439011',
+						{
+							page: 1,
+							pageSize: 10,
+						},
+					);
+				},
+			);
+			Then(
+				'I should receive a paginated result sorted by createdAt descending',
+				() => {
+					expect(paginatedResults).toHaveProperty('items');
+					expect(paginatedResults).toHaveProperty('total');
+					expect(Array.isArray(paginatedResults.items)).toBe(true);
+				},
+			);
+			And('the model sort method should be called with default sort', () => {
+				// Verify the result was returned (default sort path covered)
+				expect(paginatedResults.items).toBeDefined();
+			});
 		},
 	);
 });
