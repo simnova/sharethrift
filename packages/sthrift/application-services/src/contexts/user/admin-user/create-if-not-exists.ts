@@ -9,6 +9,7 @@ export interface AdminUserCreateCommand {
 	roleId: string;
 }
 
+
 export const createIfNotExists = (dataSources: DataSources) => {
 	return async (
 		command: AdminUserCreateCommand,
