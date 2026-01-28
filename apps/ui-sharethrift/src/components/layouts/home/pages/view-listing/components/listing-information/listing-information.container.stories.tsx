@@ -29,6 +29,7 @@ const mockCurrentUser = {
 
 const meta: Meta<typeof ListingInformationContainer> = {
 	title: 'Containers/ListingInformationContainer',
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	component: ListingInformationContainer,
 	parameters: {
 		layout: 'padded',

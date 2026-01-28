@@ -14,6 +14,7 @@ import {
 const meta: Meta<typeof AdminViewListing> = {
 	title: 'Containers/AdminViewListing',
 	component: AdminViewListing,
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {
