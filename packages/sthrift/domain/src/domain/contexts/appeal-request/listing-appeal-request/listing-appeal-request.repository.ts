@@ -1,5 +1,5 @@
 import type { ListingAppealRequestProps } from './listing-appeal-request.entity.ts';
-import type { ListingAppealRequest } from './listing-appeal-request.ts';
+import type { ListingAppealRequest } from './listing-appeal-request.aggregate.ts';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 
 /**

@@ -1,5 +1,5 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { AdminRole } from './admin-role.ts';
+import type { AdminRole } from './admin-role.aggregate.ts';
 import type { AdminRoleProps } from './admin-role.entity.ts';
 
 export interface AdminRoleRepository<props extends AdminRoleProps>

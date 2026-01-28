@@ -83,6 +83,7 @@ export const AdminRoleSchema = new Schema<
 				canEditUsers: { type: Boolean, required: true, default: false },
 				canDeleteUsers: { type: Boolean, required: true, default: false },
 				canManageUserRoles: { type: Boolean, required: true, default: false },
+				canManageStaffRolesAndPermissions: { type: Boolean, required: true, default: false },
 				canAccessAnalytics: { type: Boolean, required: true, default: false },
 				canManageRoles: { type: Boolean, required: true, default: false },
 				canViewReports: { type: Boolean, required: true, default: false },

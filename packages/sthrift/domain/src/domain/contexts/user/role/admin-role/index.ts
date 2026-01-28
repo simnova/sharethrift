@@ -1,4 +1,4 @@
-export { AdminRole } from './admin-role.ts';
+export { AdminRole } from './admin-role.aggregate.ts';
 export type {
 	AdminRoleProps,
 	AdminRoleEntityReference,

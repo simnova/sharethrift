@@ -2,7 +2,7 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { ConversationProps } from './conversation.entity.ts';
 import type { ConversationRepository } from './conversation.repository.ts';
-import type { Conversation } from './conversation.ts';
+import type { Conversation } from './conversation.aggregate.ts';
 
 export interface ConversationUnitOfWork
 	extends DomainSeedwork.UnitOfWork<

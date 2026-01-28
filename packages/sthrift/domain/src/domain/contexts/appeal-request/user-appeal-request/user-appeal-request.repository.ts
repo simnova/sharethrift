@@ -1,5 +1,5 @@
 import type { UserAppealRequestProps } from './user-appeal-request.entity.ts';
-import type { UserAppealRequest } from './user-appeal-request.ts';
+import type { UserAppealRequest } from './user-appeal-request.aggregate.ts';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 
 /**

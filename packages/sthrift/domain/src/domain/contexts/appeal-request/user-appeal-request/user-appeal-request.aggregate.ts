@@ -7,7 +7,7 @@ import type {
 	UserAppealRequestProps,
 } from './user-appeal-request.entity.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.ts';
 
 export class UserAppealRequest<props extends UserAppealRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>

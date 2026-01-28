@@ -8,8 +8,8 @@ import type {
 } from './listing-appeal-request.entity.ts';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
-import { ItemListing } from '../../listing/item/item-listing.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.ts';
+import { ItemListing } from '../../listing/item/item-listing.aggregate.ts';
 
 export class ListingAppealRequest<props extends ListingAppealRequestProps>
 	extends DomainSeedwork.AggregateRoot<props, Passport>

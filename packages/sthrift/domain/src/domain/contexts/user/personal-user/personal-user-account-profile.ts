@@ -1,6 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { UserVisa } from '../user.visa.ts';
-import type { PersonalUserAggregateRoot } from './personal-user.ts';
+import type { PersonalUserAggregateRoot } from './personal-user.aggregate.ts';
 import type {
 	PersonalUserProfileEntityReference,
 	PersonalUserProfileProps,

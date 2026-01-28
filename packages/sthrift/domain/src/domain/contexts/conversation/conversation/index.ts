@@ -3,8 +3,8 @@ export type {
 	ConversationProps,
 } from './conversation.entity.ts';
 export type { ConversationRepository } from './conversation.repository.ts';
-export type {} from './conversation.ts';
-export { Conversation } from './conversation.ts';
+export type {} from './conversation.aggregate.ts';
+export { Conversation } from './conversation.aggregate.ts';
 export type { ConversationUnitOfWork } from './conversation.uow.ts';
 export type { MessageEntityReference } from './message.entity.ts';
 export { Message } from './message.entity.ts';

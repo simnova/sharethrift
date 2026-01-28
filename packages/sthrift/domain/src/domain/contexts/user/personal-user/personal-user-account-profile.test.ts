@@ -7,7 +7,7 @@ import { PersonalUserAccountProfileLocation } from './personal-user-account-prof
 import { PersonalUserAccountProfileBilling } from './personal-user-account-profile-billing.ts';
 import type { PersonalUserProfileProps } from './personal-user-account-profile.entity.ts';
 import type { UserVisa } from '../user.visa.ts';
-import type { PersonalUserAggregateRoot } from './personal-user.ts';
+import type { PersonalUserAggregateRoot } from './personal-user.aggregate.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

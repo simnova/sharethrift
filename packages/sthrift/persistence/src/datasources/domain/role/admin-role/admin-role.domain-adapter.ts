@@ -6,16 +6,16 @@ export class AdminRoleConverter extends MongooseSeedwork.MongoTypeConverter<
 	Models.Role.AdminRole,
 	AdminRoleDomainAdapter,
 	Domain.Passport,
-	Domain.Contexts.Role.AdminRole.AdminRole<AdminRoleDomainAdapter>
+	Domain.Contexts.User.Role.AdminRole.AdminRole<AdminRoleDomainAdapter>
 > {
 	constructor() {
-		super(AdminRoleDomainAdapter, Domain.Contexts.Role.AdminRole.AdminRole);
+		super(AdminRoleDomainAdapter, Domain.Contexts.User.Role.AdminRole.AdminRole);
 	}
 }
 
 export class AdminRoleDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Role.AdminRole>
-	implements Domain.Contexts.Role.AdminRole.AdminRoleProps
+	implements Domain.Contexts.User.Role.AdminRole.AdminRoleProps
 {
 	get roleName(): string {
 		return this.doc.roleName;
@@ -31,7 +31,7 @@ export class AdminRoleDomainAdapter
 		this.doc.isDefault = value;
 	}
 
-	get permissions(): Domain.Contexts.Role.AdminRole.AdminRolePermissionsProps {
+	get permissions(): Domain.Contexts.User.Role.AdminRole.AdminRolePermissionsProps {
 		if (!this.doc.permissions) {
 			this.doc.set('permissions', {} as Models.Role.AdminRolePermissions);
 		}
@@ -44,14 +44,14 @@ export class AdminRoleDomainAdapter
 }
 
 class AdminRolePermissionsDomainAdapter
-	implements Domain.Contexts.Role.AdminRole.AdminRolePermissionsProps
+	implements Domain.Contexts.User.Role.AdminRole.AdminRolePermissionsProps
 {
 	public readonly props: Models.Role.AdminRolePermissions;
 	constructor(props: Models.Role.AdminRolePermissions) {
 		this.props = props;
 	}
 
-	get userPermissions(): Domain.Contexts.Role.AdminRole.AdminRoleUserPermissionsProps {
+	get userPermissions(): Domain.Contexts.User.Role.AdminRole.AdminRoleUserPermissionsProps {
 		if (!this.props.userPermissions) {
 			this.props.set('userPermissions', {});
 		}
@@ -60,7 +60,7 @@ class AdminRolePermissionsDomainAdapter
 		);
 	}
 
-	get conversationPermissions(): Domain.Contexts.Role.AdminRole.AdminRoleConversationPermissionsProps {
+	get conversationPermissions(): Domain.Contexts.User.Role.AdminRole.AdminRoleConversationPermissionsProps {
 		if (!this.props.conversationPermissions) {
 			this.props.set('conversationPermissions', {});
 		}
@@ -69,7 +69,7 @@ class AdminRolePermissionsDomainAdapter
 		);
 	}
 
-	get listingPermissions(): Domain.Contexts.Role.AdminRole.AdminRoleListingPermissionsProps {
+	get listingPermissions(): Domain.Contexts.User.Role.AdminRole.AdminRoleListingPermissionsProps {
 		if (!this.props.listingPermissions) {
 			this.props.set('listingPermissions', {});
 		}
@@ -78,7 +78,7 @@ class AdminRolePermissionsDomainAdapter
 		);
 	}
 
-	get reservationRequestPermissions(): Domain.Contexts.Role.AdminRole.AdminRoleReservationRequestPermissionsProps {
+	get reservationRequestPermissions(): Domain.Contexts.User.Role.AdminRole.AdminRoleReservationRequestPermissionsProps {
 		if (!this.props.reservationRequestPermissions) {
 			this.props.set('reservationRequestPermissions', {});
 		}
@@ -89,7 +89,7 @@ class AdminRolePermissionsDomainAdapter
 }
 
 class AdminRoleUserPermissionsDomainAdapter
-	implements Domain.Contexts.Role.AdminRole.AdminRoleUserPermissionsProps
+	implements Domain.Contexts.User.Role.AdminRole.AdminRoleUserPermissionsProps
 {
 	public readonly props: Models.Role.AdminRoleUserPermissions;
 	constructor(props: Models.Role.AdminRoleUserPermissions) {
@@ -162,7 +162,7 @@ class AdminRoleUserPermissionsDomainAdapter
 
 class AdminRoleConversationPermissionsDomainAdapter
 	implements
-		Domain.Contexts.Role.AdminRole.AdminRoleConversationPermissionsProps
+		Domain.Contexts.User.Role.AdminRole.AdminRoleConversationPermissionsProps
 {
 	public readonly props: Models.Role.AdminRoleConversationPermissions;
 	constructor(props: Models.Role.AdminRoleConversationPermissions) {
@@ -206,7 +206,7 @@ class AdminRoleConversationPermissionsDomainAdapter
 }
 
 class AdminRoleListingPermissionsDomainAdapter
-	implements Domain.Contexts.Role.AdminRole.AdminRoleListingPermissionsProps
+	implements Domain.Contexts.User.Role.AdminRole.AdminRoleListingPermissionsProps
 {
 	public readonly props: Models.Role.AdminRoleListingPermissions;
 	constructor(props: Models.Role.AdminRoleListingPermissions) {
@@ -279,7 +279,7 @@ class AdminRoleListingPermissionsDomainAdapter
 
 class AdminRoleReservationRequestPermissionsDomainAdapter
 	implements
-		Domain.Contexts.Role.AdminRole.AdminRoleReservationRequestPermissionsProps
+		Domain.Contexts.User.Role.AdminRole.AdminRoleReservationRequestPermissionsProps
 {
 	public readonly props: Models.Role.AdminRoleReservationRequestPermissions;
 	constructor(props: Models.Role.AdminRoleReservationRequestPermissions) {

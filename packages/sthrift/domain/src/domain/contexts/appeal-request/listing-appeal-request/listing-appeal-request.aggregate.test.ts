@@ -3,12 +3,12 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
-import { ListingAppealRequest } from './listing-appeal-request.ts';
+import { ListingAppealRequest } from './listing-appeal-request.aggregate.ts';
 import type { ListingAppealRequestProps } from './listing-appeal-request.entity.ts';
 import type { Passport } from '../../passport.ts';
 import type { AppealRequestVisa } from '../appeal-request.visa.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
-import { ItemListing } from '../../listing/item/item-listing.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.ts';
+import { ItemListing } from '../../listing/item/item-listing.aggregate.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

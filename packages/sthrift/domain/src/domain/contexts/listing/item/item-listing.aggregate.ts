@@ -7,9 +7,9 @@ import type {
 	ItemListingEntityReference,
 	ItemListingProps,
 } from './item-listing.entity.ts';
-import { AdminUser } from '../../user/admin-user/admin-user.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.aggregate.ts';
 import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 
 export class ItemListing<props extends ItemListingProps>

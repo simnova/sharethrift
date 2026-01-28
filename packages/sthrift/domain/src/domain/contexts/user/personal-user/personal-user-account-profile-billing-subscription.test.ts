@@ -5,7 +5,7 @@ import { expect } from 'vitest';
 import { PersonalUserAccountProfileBillingSubscription } from './personal-user-account-profile-billing-subscription.ts';
 import type { PersonalUserAccountProfileBillingSubscriptionProps } from './personal-user-account-profile-billing-subscription.entity.ts';
 import type { UserVisa } from '../user.visa.ts';
-import type { PersonalUserAggregateRoot } from './personal-user.ts';
+import type { PersonalUserAggregateRoot } from './personal-user.aggregate.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

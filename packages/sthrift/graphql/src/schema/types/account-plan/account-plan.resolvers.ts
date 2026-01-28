@@ -1,3 +1,4 @@
+import type { GraphContext } from '../../../init/context.ts';
 import type { Resolvers } from '../../builder/generated.ts';
 import type { Domain } from '@sthrift/domain';
 
@@ -20,12 +21,12 @@ const AccountPlanMutationResolver = async (
 
 const accountPlan: Resolvers = {
 	Query: {
-		accountPlans: async (_parent, _args, context) => {
+		accountPlans: async (_parent, _args, context: GraphContext) => {
 			return await context.applicationServices.AccountPlan.AccountPlan.queryAll(
 				{},
 			);
 		},
-		accountPlan: async (_parent, _args, context) => {
+		accountPlan: async (_parent, _args, context: GraphContext) => {
 			return await context.applicationServices.AccountPlan.AccountPlan.queryById(
 				{ accountPlanId: _args.accountPlanId },
 			);
@@ -33,7 +34,7 @@ const accountPlan: Resolvers = {
 	},
 
 	Mutation: {
-		accountPlanCreate: async (_parent, _args, context) => {
+		accountPlanCreate: async (_parent, _args, context: GraphContext) => {
 			return await AccountPlanMutationResolver(
 				context.applicationServices.AccountPlan.AccountPlan.create({
 					..._args.input,
