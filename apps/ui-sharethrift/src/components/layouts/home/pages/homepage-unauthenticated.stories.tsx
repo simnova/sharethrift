@@ -3,6 +3,7 @@ import { HomeRoutes } from "../index.tsx";
 import { ListingsPageContainerGetListingsDocument } from "../../../../generated.tsx";
 import { withMockApolloClient, withMockRouter } from "../../../../test-utils/storybook-decorators.tsx";
 import { expect, within } from 'storybook/test';
+import { userIsAdminMockRequest } from "../../../../test-utils/storybook-helpers.ts";
 
 const meta: Meta<typeof HomeRoutes> = {
 	title: "Pages/Home - Unauthenticated",
@@ -26,6 +27,7 @@ DefaultView.play = async ({ canvasElement }) => {
 DefaultView.parameters = {
   apolloClient: {
     mocks: [
+      userIsAdminMockRequest('personal-user-123', false),
       {
         request: {
           query: ListingsPageContainerGetListingsDocument,
