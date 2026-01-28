@@ -33,6 +33,10 @@ function makePassport(
 						canBlockUsers,
 					}),
 			})),
+			forAdminRole: vi.fn(() => ({
+				determineIf: (fn: (p: { canManageUserRoles: boolean }) => boolean) =>
+					fn({ canManageUserRoles }),
+			})),
 		},
 	} as unknown as Passport);
 }

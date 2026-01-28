@@ -3,7 +3,6 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { Domain } from '@sthrift/domain';
 import { expect, vi } from 'vitest';
 import { AdminRoleDomainAdapter } from '../../role/admin-role/admin-role.domain-adapter.ts';
 import { AdminUserDomainAdapter } from './admin-user.domain-adapter.ts';
@@ -319,8 +318,11 @@ describe('AdminUserDomainAdapter - Additional Coverage', () => {
 		const adapter = new AdminUserDomainAdapter(doc);
 		const roleDoc = makeRoleDoc();
 		const roleAdapter = new AdminRoleDomainAdapter(roleDoc);
-		const roleEntity = new Domain.Contexts.User.Role.AdminRole.AdminRole(roleAdapter);
-		adapter.role = roleEntity as never;
-		expect(doc.set).toHaveBeenCalledWith('role', roleDoc);
+		// Use the adapter directly as the role reference
+		adapter.role = roleAdapter as never;
+		// When setting with an adapter (not entity), it extracts the id and creates ObjectId
+		const call = (doc.set as ReturnType<typeof vi.fn>).mock.calls[0];
+		expect(call[0]).toBe('role');
+		expect(call[1]).toBeInstanceOf(MongooseSeedwork.ObjectId);
 	});
 });

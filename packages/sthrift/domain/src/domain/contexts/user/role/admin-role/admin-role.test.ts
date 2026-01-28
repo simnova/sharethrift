@@ -15,7 +15,14 @@ const feature = await loadFeature(
 );
 
 function makePassport(): Passport {
-	return vi.mocked({} as unknown as Passport);
+	return vi.mocked({
+		user: {
+			forAdminRole: vi.fn(() => ({
+				determineIf: (fn: (p: { canManageUserRoles: boolean }) => boolean) =>
+					fn({ canManageUserRoles: true }),
+			})),
+		},
+	} as unknown as Passport);
 }
 
 test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
@@ -430,7 +437,14 @@ import { AdminRole } from './admin-role.ts';
 import type { SystemPassport } from '../../../iam/system/system.passport.ts';
 
 describe('AdminRole - Direct Unit Tests', () => {
-	const mockPassport = {} as SystemPassport;
+	const mockPassport = {
+		user: {
+			forAdminRole: vi.fn(() => ({
+				determineIf: (fn: (p: { canManageUserRoles: boolean }) => boolean) =>
+					fn({ canManageUserRoles: true }),
+			})),
+		},
+	} as unknown as SystemPassport;
 
 	const makeRoleProps = (): AdminRoleProps => ({
 		id: 'test-role-id',
