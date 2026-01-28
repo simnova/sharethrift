@@ -34,7 +34,7 @@ export const createIfNotExists = (dataSources: DataSources) => {
 				// Assign role by ID (will be validated on save)
 				newAdminUser.props.role = {
 					id: command.roleId,
-				} as Domain.Contexts.Role.AdminRole.AdminRoleEntityReference;
+				} as Domain.Contexts.User.Role.AdminRole.AdminRoleEntityReference;
 
 				const saved = await repo.save(newAdminUser);
 				savedAdminUserId = saved.id;

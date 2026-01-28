@@ -1,5 +1,5 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { Passport } from '../../passport.ts';
+import type { Passport } from '../../../passport.ts';
 import type { AdminRoleRepository } from './admin-role.repository.ts';
 import type { AdminRole } from './admin-role.ts';
 import type { AdminRoleProps } from './admin-role.entity.ts';

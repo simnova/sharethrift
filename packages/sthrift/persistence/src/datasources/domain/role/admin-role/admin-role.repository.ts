@@ -11,13 +11,13 @@ export class AdminRoleRepository
 		AdminRoleModelType,
 		PropType,
 		Domain.Passport,
-		Domain.Contexts.Role.AdminRole.AdminRole<PropType>
+		Domain.Contexts.User.Role.AdminRole.AdminRole<PropType>
 	>
-	implements Domain.Contexts.Role.AdminRole.AdminRoleRepository<PropType>
+	implements Domain.Contexts.User.Role.AdminRole.AdminRoleRepository<PropType>
 {
 	async getById(
 		id: string,
-	): Promise<Domain.Contexts.Role.AdminRole.AdminRole<PropType>> {
+	): Promise<Domain.Contexts.User.Role.AdminRole.AdminRole<PropType>> {
 		const mongoAdminRole = await this.model.findById(id).exec();
 		if (!mongoAdminRole) {
 			throw new Error(`AdminRole with id ${id} not found`);
@@ -29,10 +29,10 @@ export class AdminRoleRepository
 	async getNewInstance(
 		roleName: string,
 		isDefault: boolean,
-	): Promise<Domain.Contexts.Role.AdminRole.AdminRole<PropType>> {
+	): Promise<Domain.Contexts.User.Role.AdminRole.AdminRole<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
 		return Promise.resolve(
-			Domain.Contexts.Role.AdminRole.AdminRole.getNewInstance(
+			Domain.Contexts.User.Role.AdminRole.AdminRole.getNewInstance(
 				adapter,
 				this.passport,
 				roleName,

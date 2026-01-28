@@ -319,7 +319,7 @@ describe('AdminUserDomainAdapter - Additional Coverage', () => {
 		const adapter = new AdminUserDomainAdapter(doc);
 		const roleDoc = makeRoleDoc();
 		const roleAdapter = new AdminRoleDomainAdapter(roleDoc);
-		const roleEntity = new Domain.Contexts.Role.AdminRole.AdminRole(roleAdapter);
+		const roleEntity = new Domain.Contexts.User.Role.AdminRole.AdminRole(roleAdapter);
 		adapter.role = roleEntity as never;
 		expect(doc.set).toHaveBeenCalledWith('role', roleDoc);
 	});
