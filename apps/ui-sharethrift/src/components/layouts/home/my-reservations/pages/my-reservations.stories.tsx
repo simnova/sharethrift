@@ -1,5 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { withMockApolloClient,withMockRouter } from '../../../../../test-utils/storybook-decorators.tsx';
+import {
+	withMockApolloClient,
+	withMockRouter,
+} from '../../../../../test-utils/storybook-decorators.tsx';
 import {
 	STORYBOOK_RESERVATION_USER_ID,
 	reservationStoryMocks,
@@ -10,13 +13,14 @@ import {
 	ViewListingCurrentUserDocument,
 } from '../../../../../generated.tsx';
 import { App } from '../../../../../App.tsx';
+import { userIsAdminMockRequest } from '../../../../../test-utils/storybook-helpers.ts';
 
 const meta: Meta<typeof App> = {
 	title: 'Pages/My Reservations',
 	component: App,
-  parameters:{
-    layout: 'fullscreen',
-  },
+	parameters: {
+		layout: 'fullscreen',
+	},
 	decorators: [withMockApolloClient, withMockRouter('/my-reservations')],
 };
 
@@ -33,22 +37,24 @@ const defaultMocks = [
 				currentUser: {
 					__typename: 'PersonalUser',
 					id: STORYBOOK_RESERVATION_USER_ID,
-          userType: 'personal-user',
+					userType: 'personal-user',
 				},
 			},
 		},
 	},
+	userIsAdminMockRequest(STORYBOOK_RESERVATION_USER_ID, false),
+
 	// Plus common reservation mocks
 	...reservationStoryMocks,
 ];
 
 // Default needs no extra mocks
 export const Default: Story = {
-  parameters: {
-    apolloClient: {
-      mocks: defaultMocks,
-    },
-  },
+	parameters: {
+		apolloClient: {
+			mocks: defaultMocks,
+		},
+	},
 };
 
 // Loading only needs its delay-override

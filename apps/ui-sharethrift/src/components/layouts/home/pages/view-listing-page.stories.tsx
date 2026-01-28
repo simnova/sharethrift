@@ -9,7 +9,7 @@ import {
 	ViewListingDocument,
 	ViewListingCurrentUserDocument,
 	ViewListingActiveReservationRequestForListingDocument,
-    ViewListingQueryActiveByListingIdDocument,
+	ViewListingQueryActiveByListingIdDocument,
 } from '../../../../generated.tsx';
 import { HomeRoutes } from '../index.tsx';
 import { userIsAdminMockRequest } from '../../../../test-utils/storybook-helpers.ts';
@@ -130,7 +130,6 @@ const meta: Meta<typeof HomeRoutes> = {
 						},
 					},
 				},
-        
 			],
 		},
 	},
@@ -150,12 +149,34 @@ export const Loading: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
+				userIsAdminMockRequest('user-1', false),
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
 				{
 					request: {
 						query: ViewListingDocument,
 						variables: { id: '1' },
 					},
 					delay: Infinity,
+				},
+        {
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-1' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
 				},
 			],
 		},

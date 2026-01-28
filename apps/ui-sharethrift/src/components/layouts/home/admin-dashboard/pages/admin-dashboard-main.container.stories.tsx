@@ -32,7 +32,7 @@ export const Default: Story = {
 						query: AdminListingsTableContainerAdminListingsDocument,
 						variables: { page: 1, pageSize: 6, statusFilters: ['Blocked'] },
 					},
-
+          maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							adminListings: {
@@ -58,22 +58,41 @@ export const Default: Story = {
 				{
 					request: {
 						query: AdminUsersTableContainerAllUsersDocument,
-						variables: { page: 1, pageSize: 6 },
+						variables: {
+							page: 1,
+							pageSize: 50,
+							searchText: '',
+							statusFilters: [],
+						},
 					},
+          maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
 							allUsers: {
 								items: [
 									{
+										__typename: 'PersonalUser',
 										id: 'user-1',
 										email: 'test@example.com',
 										firstName: 'John',
 										lastName: 'Doe',
 										roleNames: ['User'],
 										isBlocked: false,
+										createdAt: '2024-01-01T00:00:00Z',
+										userType: 'personal-user',
+										account: {
+											username: 'johndoe',
+											email: 'test@example.com',
+											profile: {
+												firstName: 'John',
+												lastName: 'Doe',
+											},
+										},
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 50,
 							},
 						},
 					},
@@ -87,7 +106,9 @@ export const Default: Story = {
 		expect(canvasElement).toBeTruthy();
 		const canvas = within(canvasElement);
 		// wait for the admin dashboard H1 heading to appear after Apollo mocks resolve
-		const adminDashboardText = await canvas.findByRole('heading', { name: /Admin Dashboard/i });
+		const adminDashboardText = await canvas.findByRole('heading', {
+			name: /Admin Dashboard/i,
+		});
 		expect(adminDashboardText).toBeTruthy();
 	},
 };
