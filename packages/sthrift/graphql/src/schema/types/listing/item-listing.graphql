@@ -70,13 +70,14 @@ input CreateItemListingInput {
 }
 
 type ItemListingMutationResult implements MutationResult {
-  status: MutationStatus!
-  listing: ItemListing
+	status: MutationStatus!
+	listing: ItemListing
 }
 
 extend type Mutation {
 	createItemListing(input: CreateItemListingInput!): ItemListing!
 	cancelItemListing(id: ObjectID!): ItemListingMutationResult!
+	pauseItemListing(id: ObjectID!): ItemListing!
 	deleteItemListing(id: ObjectID!): ItemListingMutationResult!
 	unblockListing(id: ObjectID!): Boolean!
 }

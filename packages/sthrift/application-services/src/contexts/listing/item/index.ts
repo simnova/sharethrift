@@ -8,6 +8,7 @@ import {
 } from './query-by-sharer.ts';
 import { type ItemListingQueryAllCommand, queryAll } from './query-all.ts';
 import { type ItemListingCancelCommand, cancel } from './cancel.ts';
+import { type ItemListingPauseCommand, pause } from './pause.ts';
 import { type ItemListingDeleteCommand, deleteListings } from './delete.ts';
 import { type ItemListingUpdateCommand, update } from './update.ts';
 import { type ItemListingUnblockCommand, unblock } from './unblock.ts';
@@ -22,7 +23,9 @@ export interface ItemListingApplicationService {
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference | null>;
 	queryBySharer: (
 		command: ItemListingQueryBySharerCommand,
-	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]>;
+	) => Promise<
+		Domain.Contexts.Listing.ItemListing.ItemListingEntityReference[]
+	>;
 	queryAll: (
 		command: ItemListingQueryAllCommand,
 	) => Promise<
@@ -30,6 +33,9 @@ export interface ItemListingApplicationService {
 	>;
 	cancel: (
 		command: ItemListingCancelCommand,
+	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
+	pause: (
+		command: ItemListingPauseCommand,
 	) => Promise<Domain.Contexts.Listing.ItemListing.ItemListingEntityReference>;
 	update: (
 		command: ItemListingUpdateCommand,
@@ -62,8 +68,9 @@ export const ItemListing = (
 		queryBySharer: queryBySharer(dataSources),
 		queryAll: queryAll(dataSources),
 		cancel: cancel(dataSources),
+		pause: pause(dataSources),
 		update: update(dataSources),
-	deleteListings: deleteListings(dataSources),
+		deleteListings: deleteListings(dataSources),
 		unblock: unblock(dataSources),
 		queryPaged: queryPaged(dataSources),
 	};

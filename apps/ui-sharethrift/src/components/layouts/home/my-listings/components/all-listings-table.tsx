@@ -63,14 +63,18 @@ export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 		// Conditional actions based on status
 		if (status === 'Active' || status === 'Reserved') {
 			buttons.push(
-				<Button
+				<Popconfirm
 					key="pause"
-					type="link"
-					size="small"
-					onClick={() => onAction('pause', record.id)}
+					title="Pause this listing?"
+					description="Are you sure you want to pause this listing? It will be removed from search results and marked as inactive until you unpause it."
+					onConfirm={() => onAction('pause', record.id)}
+					okText="Yes"
+					cancelText="No"
 				>
-					Pause
-				</Button>
+					<Button type="link" size="small">
+						Pause
+					</Button>
+				</Popconfirm>,
 			);
 		}
 
