@@ -1,12 +1,12 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
-import { ItemListing } from '../../listing/item/item-listing.ts';
+import { ItemListing } from '../../listing/item/item-listing.aggregate.ts';
 import type { Passport } from '../../passport.ts';
 import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
-import { AdminUser } from '../../user/admin-user/admin-user.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.aggregate.ts';
 import type { UserEntityReference } from '../../user/index.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.ts';
 import type { ConversationVisa } from '../conversation.visa.ts';
 import type {
 	ConversationEntityReference,

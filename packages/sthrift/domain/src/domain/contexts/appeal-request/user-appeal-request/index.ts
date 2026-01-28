@@ -1,4 +1,4 @@
-export { UserAppealRequest } from './user-appeal-request.ts';
+export { UserAppealRequest } from './user-appeal-request.aggregate.ts';
 export type {
 	UserAppealRequestProps,
 	UserAppealRequestEntityReference,

@@ -2,7 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
-import { AccountPlan } from './account-plan.ts';
+import { AccountPlan } from './account-plan.aggregate.ts';
 import type { AccountPlanProps } from './account-plan.entity.ts';
 import type { Passport } from '../../passport.ts';
 

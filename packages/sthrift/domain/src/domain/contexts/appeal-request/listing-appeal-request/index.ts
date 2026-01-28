@@ -1,4 +1,4 @@
-export { ListingAppealRequest } from './listing-appeal-request.ts';
+export { ListingAppealRequest } from './listing-appeal-request.aggregate.ts';
 export type {
 	ListingAppealRequestProps,
 	ListingAppealRequestEntityReference,

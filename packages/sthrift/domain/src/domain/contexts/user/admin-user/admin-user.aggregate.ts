@@ -2,7 +2,7 @@ import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 import type { UserVisa } from '../user.visa.ts';
 import { AdminUserAccount } from './admin-user-account.ts';
-import { AdminRole } from '../role/admin-role/admin-role.ts';
+import { AdminRole } from '../role/admin-role/admin-role.aggregate.ts';
 import type { AdminRoleEntityReference } from '../role/admin-role/admin-role.entity.ts';
 import type {
 	AdminUserEntityReference,

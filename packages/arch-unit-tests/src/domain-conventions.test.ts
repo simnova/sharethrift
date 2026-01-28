@@ -140,10 +140,10 @@ describe('Domain Layer Conventions', () => {
 	});
 
 	describe('Aggregate Root Files', () => {
-		it('aggregate root files must export a class extending DomainSeedwork.AggregateRoot', async () => {
+		it('aggregate root files must be named with .aggregate.ts extension', async () => {
 			const allViolations: string[] = [];
 			const ruleDesc =
-				'Aggregate root files must export a class extending DomainSeedwork.AggregateRoot';
+				'Files extending DomainSeedwork.AggregateRoot must use .aggregate.ts extension';
 
 			await projectFiles()
 				.inFolder('../sthrift/domain/src/domain/contexts/**')
@@ -174,6 +174,33 @@ describe('Domain Layer Conventions', () => {
 						return true;
 					}
 
+					// Check if file extends AggregateRoot
+					const extendsAggregateRoot =
+						/extends\s+DomainSeedwork\.AggregateRoot</.test(file.content);
+					
+					if (extendsAggregateRoot && !file.path.includes('.aggregate.ts')) {
+						allViolations.push(
+							`[${file.path}] Aggregate root file must use .aggregate.ts extension`,
+						);
+						return false;
+					}
+					return true;
+				}, ruleDesc)
+				.check();
+
+			expect(allViolations).toStrictEqual([]);
+		});
+
+		it('aggregate root files must export a class extending DomainSeedwork.AggregateRoot', async () => {
+			const allViolations: string[] = [];
+			const ruleDesc =
+				'Aggregate root files must export a class extending DomainSeedwork.AggregateRoot';
+
+			await projectFiles()
+				.inFolder('../sthrift/domain/src/domain/contexts/**')
+				.withName('*.aggregate.ts')
+				.should()
+				.adhereTo((file) => {
 					const extendsAggregateRoot =
 						/extends\s+DomainSeedwork\.AggregateRoot</.test(file.content);
 					if (!extendsAggregateRoot) {
@@ -196,33 +223,9 @@ describe('Domain Layer Conventions', () => {
 
 			await projectFiles()
 				.inFolder('../sthrift/domain/src/domain/contexts/**')
-				.withName('*.ts')
+				.withName('*.aggregate.ts')
 				.should()
 				.adhereTo((file) => {
-					// Skip non-aggregate files
-					if (
-						file.path.includes('.entity.ts') ||
-						file.path.includes('.repository.ts') ||
-						file.path.includes('.uow.ts') ||
-						file.path.includes('.value-objects.ts') ||
-						file.path.includes('.visa.ts') ||
-						file.path.includes('.test.ts') ||
-						file.path.includes('.helpers.ts') ||
-						file.path.includes('index.ts') ||
-						file.path.includes('passport.ts') ||
-						file.path.includes('permissions.ts')
-					) {
-						return true;
-					}
-
-					// Skip if it's a nested entity or value object class (doesn't extend AggregateRoot)
-					const extendsEntity = /extends\s+DomainSeedwork\.Entity/.test(file.content);
-					const extendsValueObject = /extends\s+DomainSeedwork\.ValueObject/.test(file.content);
-					const extendsDomainEntity = /extends\s+DomainSeedwork\.DomainEntity/.test(file.content);
-					if (extendsEntity || extendsValueObject || extendsDomainEntity) {
-						return true;
-					}
-
 					const hasGetNewInstance = /static\s+getNewInstance/.test(
 						file.content,
 					);
@@ -246,33 +249,9 @@ describe('Domain Layer Conventions', () => {
 
 			await projectFiles()
 				.inFolder('../sthrift/domain/src/domain/contexts/**')
-				.withName('*.ts')
+				.withName('*.aggregate.ts')
 				.should()
 				.adhereTo((file) => {
-					// Skip non-aggregate files
-					if (
-						file.path.includes('.entity.ts') ||
-						file.path.includes('.repository.ts') ||
-						file.path.includes('.uow.ts') ||
-						file.path.includes('.value-objects.ts') ||
-						file.path.includes('.visa.ts') ||
-						file.path.includes('.test.ts') ||
-						file.path.includes('.helpers.ts') ||
-						file.path.includes('index.ts') ||
-						file.path.includes('passport.ts') ||
-						file.path.includes('permissions.ts')
-					) {
-						return true;
-					}
-
-					// Skip if it's a nested entity or value object class (doesn't extend AggregateRoot)
-					const extendsEntity = /extends\s+DomainSeedwork\.Entity/.test(file.content);
-					const extendsValueObject = /extends\s+DomainSeedwork\.ValueObject/.test(file.content);
-					const extendsDomainEntity = /extends\s+DomainSeedwork\.DomainEntity/.test(file.content);
-					if (extendsEntity || extendsValueObject || extendsDomainEntity) {
-						return true;
-					}
-
 					const importsPassport = /import.*Passport.*from.*passport/.test(
 						file.content,
 					);

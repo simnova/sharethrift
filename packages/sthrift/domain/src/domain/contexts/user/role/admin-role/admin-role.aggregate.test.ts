@@ -4,8 +4,8 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
 import type { AdminRoleProps } from './admin-role.entity.ts';
-import { AdminRole as AdminRoleClass } from './admin-role.ts';
-import type { AdminRole } from './admin-role.ts';
+import { AdminRole as AdminRoleClass } from './admin-role.aggregate.ts';
+import type { AdminRole } from './admin-role.aggregate.ts';
 import type { AdminRolePermissions } from './admin-role-permissions.ts';
 
 const test = { for: describeFeature };
@@ -433,7 +433,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 });
 
 import { describe, it } from 'vitest';
-import { AdminRole } from './admin-role.ts';
+import { AdminRole } from './admin-role.aggregate.ts';
 import type { SystemPassport } from '../../../iam/system/system.passport.ts';
 
 describe('AdminRole - Direct Unit Tests', () => {

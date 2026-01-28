@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { AdminUserProps } from './admin-user.entity.ts';
-import { AdminUser } from './admin-user.ts';
+import { AdminUser } from './admin-user.aggregate.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 
