@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/react-vite';
 import "@sthrift/ui-components/src/styles/theme.css";
 import '../src/index.css';
 import '../src/App.css'
+import '@ant-design/v5-patch-for-react-19';
 
 const preview: Preview = {
 	parameters: {
