@@ -1,4 +1,4 @@
-export { AccountPlan } from './account-plan.ts';
+export { AccountPlan } from './account-plan.aggregate.ts';
 export type {
 	AccountPlanProps,
 	AccountPlanEntityReference,

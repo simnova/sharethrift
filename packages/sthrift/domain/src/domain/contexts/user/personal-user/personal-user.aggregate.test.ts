@@ -3,14 +3,14 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { PersonalUserProps } from './personal-user.entity.ts';
-import { PersonalUser } from './personal-user.ts';
+import { PersonalUser } from './personal-user.aggregate.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/personal-user.feature'),
+	path.resolve(__dirname, 'features/personal-user.aggregate.feature'),
 );
 
 function makePassport(canCreateUser = false, canBlockUsers = false): Passport {

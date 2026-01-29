@@ -4,19 +4,19 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { expect, vi } from 'vitest';
 import type { ItemListingProps } from '../../listing/item/item-listing.entity.ts';
-import { ItemListing } from '../../listing/item/item-listing.ts';
+import { ItemListing } from '../../listing/item/item-listing.aggregate.ts';
 import type { Passport } from '../../passport.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.ts';
 import type { UserEntityReference } from '../../user/index.ts';
 import type { ConversationProps } from './conversation.entity.ts';
-import { Conversation } from './conversation.ts';
+import { Conversation } from './conversation.aggregate.ts';
 import type { MessageEntityReference } from './message.entity.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/conversation.feature'),
+	path.resolve(__dirname, 'features/conversation.aggregate.feature'),
 );
 
 function makePassport(canManageConversation = false): Passport {

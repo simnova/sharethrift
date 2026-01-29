@@ -3,14 +3,14 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { AdminUserProps } from './admin-user.entity.ts';
-import { AdminUser } from './admin-user.ts';
+import { AdminUser } from './admin-user.aggregate.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/admin-user.feature'),
+	path.resolve(__dirname, 'features/admin-user.aggregate.feature'),
 );
 
 function makePassport(
@@ -32,6 +32,10 @@ function makePassport(
 						canManageUserRoles,
 						canBlockUsers,
 					}),
+			})),
+			forAdminRole: vi.fn(() => ({
+				determineIf: (fn: (p: { canManageUserRoles: boolean }) => boolean) =>
+					fn({ canManageUserRoles }),
 			})),
 		},
 	} as unknown as Passport);

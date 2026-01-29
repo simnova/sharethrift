@@ -4,15 +4,15 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
-import { PersonalUser } from '../../user/personal-user/personal-user.ts';
+import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
 import type { ItemListingProps } from './item-listing.entity.ts';
-import { ItemListing } from './item-listing.ts';
+import { ItemListing } from './item-listing.aggregate.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/item-listing.feature'),
+	path.resolve(__dirname, 'features/item-listing.aggregate.feature'),
 );
 
 function makePassport(

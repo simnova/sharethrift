@@ -4,18 +4,25 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
 import type { AdminRoleProps } from './admin-role.entity.ts';
-import { AdminRole as AdminRoleClass } from './admin-role.ts';
-import type { AdminRole } from './admin-role.ts';
+import { AdminRole as AdminRoleClass } from './admin-role.aggregate.ts';
+import type { AdminRole } from './admin-role.aggregate.ts';
 import type { AdminRolePermissions } from './admin-role-permissions.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/admin-role.feature'),
+	path.resolve(__dirname, 'features/admin-role.aggregate.feature'),
 );
 
 function makePassport(): Passport {
-	return vi.mocked({} as unknown as Passport);
+	return vi.mocked({
+		user: {
+			forAdminRole: vi.fn(() => ({
+				determineIf: (fn: (p: { canManageUserRoles: boolean }) => boolean) =>
+					fn({ canManageUserRoles: true }),
+			})),
+		},
+	} as unknown as Passport);
 }
 
 test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
@@ -426,11 +433,18 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 });
 
 import { describe, it } from 'vitest';
-import { AdminRole } from './admin-role.ts';
+import { AdminRole } from './admin-role.aggregate.ts';
 import type { SystemPassport } from '../../../iam/system/system.passport.ts';
 
 describe('AdminRole - Direct Unit Tests', () => {
-	const mockPassport = {} as SystemPassport;
+	const mockPassport = {
+		user: {
+			forAdminRole: vi.fn(() => ({
+				determineIf: (fn: (p: { canManageUserRoles: boolean }) => boolean) =>
+					fn({ canManageUserRoles: true }),
+			})),
+		},
+	} as unknown as SystemPassport;
 
 	const makeRoleProps = (): AdminRoleProps => ({
 		id: 'test-role-id',

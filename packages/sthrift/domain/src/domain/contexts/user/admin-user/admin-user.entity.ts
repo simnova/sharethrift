@@ -3,7 +3,7 @@ import type {
 	AdminUserAccountEntityReference,
 	AdminUserAccountProps,
 } from './admin-user-account.entity.ts';
-import type { AdminRoleEntityReference } from '../../role/admin-role/admin-role.entity.ts';
+import type { AdminRoleEntityReference } from '../role/admin-role/admin-role.entity.ts';
 
 export interface AdminUserProps extends DomainSeedwork.DomainEntityProps {
 	userType: string;
