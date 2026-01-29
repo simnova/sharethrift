@@ -18,14 +18,13 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 
 		const updatedPermissions: UserDomainPermissions = {
 			canBlockUsers: false,
-      canBlockListings: false,
+			canBlockListings: false,
 			canUnblockUsers: false,
 			canUnblockListings: false,
 			canRemoveListings: false,
 			canViewListingReports: false,
 			canViewUserReports: false,
 			canManageUserRoles: false,
-
 			isEditingOwnAccount: this.user.id === this.root.id,
 		};
 

@@ -11,7 +11,7 @@ import { AdminRoleRepository } from './admin-role.repository.ts';
 export const getAdminRoleUnitOfWork = (
 	adminRoleModel: Models.Role.AdminRoleModelType,
 	passport: Domain.Passport,
-): Domain.Contexts.Role.AdminRole.AdminRoleUnitOfWork => {
+): Domain.Contexts.User.Role.AdminRole.AdminRoleUnitOfWork => {
 	const unitOfWork = new MongooseSeedwork.MongoUnitOfWork(
 		InProcEventBusInstance,
 		NodeEventBusInstance,

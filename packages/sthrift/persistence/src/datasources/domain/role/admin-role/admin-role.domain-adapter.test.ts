@@ -134,7 +134,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Accessing user permissions', ({ When, Then, And }) => {
-		let userPermissions: Domain.Contexts.Role.AdminRole.AdminRoleUserPermissionsProps;
+		let userPermissions: Domain.Contexts.User.Role.AdminRole.AdminRoleUserPermissionsProps;
 
 		When('I access the permissions', () => {
 			// Accessing permissions property
@@ -159,7 +159,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Modifying user permissions', ({ When, Then, And }) => {
-		let userPermissions: Domain.Contexts.Role.AdminRole.AdminRoleUserPermissionsProps;
+		let userPermissions: Domain.Contexts.User.Role.AdminRole.AdminRoleUserPermissionsProps;
 
 		When('I access the permissions', () => {
 			userPermissions = adapter.permissions.userPermissions;
@@ -239,7 +239,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Accessing conversation permissions', ({ When, Then, And }) => {
-		let conversationPermissions: Domain.Contexts.Role.AdminRole.AdminRoleConversationPermissionsProps;
+		let conversationPermissions: Domain.Contexts.User.Role.AdminRole.AdminRoleConversationPermissionsProps;
 
 		When('I access the permissions', () => {
 			// Accessing permissions property
@@ -260,7 +260,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Modifying conversation permissions', ({ When, Then, And }) => {
-		let conversationPermissions: Domain.Contexts.Role.AdminRole.AdminRoleConversationPermissionsProps;
+		let conversationPermissions: Domain.Contexts.User.Role.AdminRole.AdminRoleConversationPermissionsProps;
 
 		When('I access the permissions', () => {
 			conversationPermissions = adapter.permissions.conversationPermissions;
@@ -308,7 +308,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Accessing listing permissions', ({ When, Then, And }) => {
-		let listingPermissions: Domain.Contexts.Role.AdminRole.AdminRoleListingPermissionsProps;
+		let listingPermissions: Domain.Contexts.User.Role.AdminRole.AdminRoleListingPermissionsProps;
 
 		When('I access the permissions', () => {
 			// Accessing permissions property
@@ -333,7 +333,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Modifying listing permissions', ({ When, Then, And }) => {
-		let listingPermissions: Domain.Contexts.Role.AdminRole.AdminRoleListingPermissionsProps;
+		let listingPermissions: Domain.Contexts.User.Role.AdminRole.AdminRoleListingPermissionsProps;
 
 		When('I access the permissions', () => {
 			listingPermissions = adapter.permissions.listingPermissions;
@@ -413,7 +413,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Accessing reservation request permissions', ({ When, Then, And }) => {
-		let reservationRequestPermissions: Domain.Contexts.Role.AdminRole.AdminRoleReservationRequestPermissionsProps;
+		let reservationRequestPermissions: Domain.Contexts.User.Role.AdminRole.AdminRoleReservationRequestPermissionsProps;
 
 		When('I access the permissions', () => {
 			// Accessing permissions property
@@ -435,7 +435,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario('Modifying reservation request permissions', ({ When, Then, And }) => {
-		let reservationRequestPermissions: Domain.Contexts.Role.AdminRole.AdminRoleReservationRequestPermissionsProps;
+		let reservationRequestPermissions: Domain.Contexts.User.Role.AdminRole.AdminRoleReservationRequestPermissionsProps;
 
 		When('I access the permissions', () => {
 			reservationRequestPermissions = adapter.permissions.reservationRequestPermissions;

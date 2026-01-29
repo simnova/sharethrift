@@ -35,7 +35,7 @@ const updateBasicFields = (
 	if (command.roleId) {
 		user.props.role = {
 			id: command.roleId,
-		} as Domain.Contexts.Role.AdminRole.AdminRoleEntityReference;
+		} as Domain.Contexts.User.Role.AdminRole.AdminRoleEntityReference;
 	}
 };
 

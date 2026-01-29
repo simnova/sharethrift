@@ -2,7 +2,7 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import type { UserEntityReference } from '../../user/index.ts';
 import type { ConversationProps } from './conversation.entity.ts';
-import type { Conversation } from './conversation.ts';
+import type { Conversation } from './conversation.aggregate.ts';
 
 export interface ConversationRepository<props extends ConversationProps>
 	extends DomainSeedwork.Repository<Conversation<props>> {

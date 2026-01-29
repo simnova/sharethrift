@@ -1,5 +1,5 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { AccountPlan } from './account-plan.ts';
+import type { AccountPlan } from './account-plan.aggregate.ts';
 import type { AccountPlanProps } from './account-plan.entity.ts';
 
 export interface AccountPlanRepository<props extends AccountPlanProps>

@@ -36,7 +36,7 @@ export class AdminUserDomainAdapter
 		this.doc.isBlocked = value;
 	}
 
-	get role(): Domain.Contexts.Role.AdminRole.AdminRoleProps {
+	get role(): Domain.Contexts.User.Role.AdminRole.AdminRoleProps {
 		if (!this.doc.role) {
 			throw new Error('role is not populated');
 		}
@@ -49,7 +49,7 @@ export class AdminUserDomainAdapter
 		return new AdminRoleDomainAdapter(this.doc.role);
 	}
 
-	async loadRole(): Promise<Domain.Contexts.Role.AdminRole.AdminRoleProps> {
+	async loadRole(): Promise<Domain.Contexts.User.Role.AdminRole.AdminRoleProps> {
 		if (!this.doc.role) {
 			throw new Error('role is not populated');
 		}
@@ -60,9 +60,9 @@ export class AdminUserDomainAdapter
 	}
 
 	set role(role:
-		| Domain.Contexts.Role.AdminRole.AdminRoleEntityReference
-		| Domain.Contexts.Role.AdminRole.AdminRole<AdminRoleDomainAdapter>,) {
-		if (role instanceof Domain.Contexts.Role.AdminRole.AdminRole) {
+		| Domain.Contexts.User.Role.AdminRole.AdminRoleEntityReference
+		| Domain.Contexts.User.Role.AdminRole.AdminRole<AdminRoleDomainAdapter>,) {
+		if (role instanceof Domain.Contexts.User.Role.AdminRole.AdminRole) {
 			this.doc.set('role', role.props.doc);
 			return;
 		}
