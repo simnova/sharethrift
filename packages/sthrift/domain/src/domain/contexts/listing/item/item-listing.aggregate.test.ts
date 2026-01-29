@@ -12,7 +12,7 @@ import { ItemListing } from './item-listing.aggregate.ts';
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/item-listing.feature'),
+	path.resolve(__dirname, 'features/item-listing.aggregate.feature'),
 );
 
 function makePassport(

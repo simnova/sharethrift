@@ -10,7 +10,7 @@ import type { Passport } from '../../passport.ts';
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/personal-user.feature'),
+	path.resolve(__dirname, 'features/personal-user.aggregate.feature'),
 );
 
 function makePassport(canCreateUser = false, canBlockUsers = false): Passport {

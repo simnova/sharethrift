@@ -9,7 +9,7 @@ import type { Passport } from '../../passport.ts';
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/account-plan.feature'),
+	path.resolve(__dirname, 'features/account-plan.aggregate.feature'),
 );
 
 function makePassport(

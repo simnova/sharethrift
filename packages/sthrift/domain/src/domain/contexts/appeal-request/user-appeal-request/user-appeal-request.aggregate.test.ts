@@ -12,7 +12,7 @@ import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.t
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/user-appeal-request.feature'),
+	path.resolve(__dirname, 'features/user-appeal-request.aggregate.feature'),
 );
 
 test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {

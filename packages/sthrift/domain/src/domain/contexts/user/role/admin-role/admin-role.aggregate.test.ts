@@ -11,7 +11,7 @@ import type { AdminRolePermissions } from './admin-role-permissions.ts';
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/admin-role.feature'),
+	path.resolve(__dirname, 'features/admin-role.aggregate.feature'),
 );
 
 function makePassport(): Passport {

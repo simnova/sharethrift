@@ -13,7 +13,7 @@ import { ItemListing } from '../../listing/item/item-listing.aggregate.ts';
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/listing-appeal-request.feature'),
+	path.resolve(__dirname, 'features/listing-appeal-request.aggregate.feature'),
 );
 
 test.for(feature, ({ Background, BeforeEachScenario, Scenario }) => {
