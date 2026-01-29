@@ -13,7 +13,7 @@ import type { UserEntityReference } from '../../user/index.ts';
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(
-	path.resolve(__dirname, 'features/reservation-request.feature'),
+	path.resolve(__dirname, 'features/reservation-request.aggregate.feature'),
 );
 
 function makePassport(
