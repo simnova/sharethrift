@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { Conversation } from './Conversation.tsx';
+import { Conversation } from './conversation.tsx';
 
 const meta: Meta<typeof Conversation> = {
 	title: 'Pages/Messages/Conversation',

@@ -8,7 +8,7 @@ type CreateReservationRequestInput,
 type ItemListing,
 type ViewListingActiveReservationRequestForListingQuery, 
 type ViewListingQueryActiveByListingIdQuery,
-type ViewListingQueryActiveByListingIdQueryVariables} from '../../../../../../../generated';
+type ViewListingQueryActiveByListingIdQueryVariables} from '../../../../../../generated';
 import { ListingInformation } from './listing-information.tsx';
 
 

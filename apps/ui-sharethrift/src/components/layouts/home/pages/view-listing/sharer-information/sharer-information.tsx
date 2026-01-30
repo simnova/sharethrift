@@ -5,7 +5,7 @@ import { useMutation } from '@apollo/client/react';
 import { useNavigate } from 'react-router-dom';
 import { CreateConversationDocument,
 HomeConversationListContainerConversationsByUserDocument,
-type CreateConversationMutation,type CreateConversationMutationVariables } from '../../../../../../../generated.tsx';
+type CreateConversationMutation,type CreateConversationMutationVariables } from '../../../../../../generated.tsx';
 
 
 type Sharer = {

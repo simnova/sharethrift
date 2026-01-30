@@ -4,7 +4,7 @@ import type { Dayjs } from 'dayjs';
 import { LoadingOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import type { ViewListingActiveReservationRequestForListingQuery, ItemListing, ViewListingQueryActiveByListingIdQuery } from '../../../../../../../generated';
+import type { ViewListingActiveReservationRequestForListingQuery, ItemListing, ViewListingQueryActiveByListingIdQuery } from '../../../../../../generated';
 
 // Manual isBetween logic for Dayjs
 function isBetweenManual(

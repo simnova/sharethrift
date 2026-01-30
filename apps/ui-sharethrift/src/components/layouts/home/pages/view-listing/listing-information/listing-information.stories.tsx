@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, waitFor, fn } from 'storybook/test';
 import { ListingInformation } from './listing-information.tsx';
-import { withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
+import { withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
 
 const mockListing = {
 	__typename: 'ItemListing' as const,

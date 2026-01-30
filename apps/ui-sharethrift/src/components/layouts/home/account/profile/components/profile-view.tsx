@@ -11,7 +11,7 @@ import {
 } from 'antd';
 import { ListingsGrid } from '@sthrift/ui-components';
 import { SettingOutlined, UserOutlined } from '@ant-design/icons';
-import '../components/profile-view.overrides.css';
+import './profile-view.overrides.css';
 import type { ItemListing } from '../../../../../../generated';
 import type { ProfileUser } from './profile-view.types';
 

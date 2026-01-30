@@ -14,7 +14,7 @@ import { HandleLogout } from '../../shared/handle-logout.ts';
 import { Footer, Header, Navigation } from '@sthrift/ui-components';
 import { useCreateListingNavigation } from '../../shared/hooks/use-create-listing-navigation.ts';
 import { useApolloClient } from '@apollo/client/react';
-import { useUserIsAdmin } from '../../shared/hooks/useUserIsAdmin.ts';
+import { useUserIsAdmin } from '../../shared/hooks/use-user-is-admin.ts';
 
 export const SectionLayout: React.FC = () => {
 	const navigate = useNavigate();

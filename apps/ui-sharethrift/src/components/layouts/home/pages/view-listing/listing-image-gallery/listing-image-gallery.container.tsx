@@ -1,6 +1,6 @@
 import { useQuery } from "@apollo/client/react";
 import { ListingImageGallery } from './listing-image-gallery.tsx';
-import { ViewListingImageGalleryGetImagesDocument,type ViewListingImageGalleryGetImagesQuery } from '../../../../../../../generated.tsx';
+import { ViewListingImageGalleryGetImagesDocument,type ViewListingImageGalleryGetImagesQuery } from '../../../../../../generated.tsx';
 
 
 interface ListingImageGalleryContainerProps {
