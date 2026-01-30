@@ -327,3 +327,123 @@ export const CombinedDecorators: Story = {
 		expect(routerTest?.textContent).toContain('Current Path: /combined');
 	},
 };
+
+/**
+ * Test withAuthDecorator with auth state
+ * Verifies that the auth decorator provides auth context with user data
+ */
+export const WithAuthDecoratorState: Story = {
+	decorators: [withAuthDecorator],
+	render: () => <AuthStateTestComponent />,
+	play: ({ canvasElement }) => {
+		const authState = canvasElement.querySelector('[data-testid="auth-state"]');
+		expect(authState).toBeTruthy();
+		// withAuthDecorator sets up AuthProvider but without actual authentication
+		// so isAuthenticated should be false initially
+		expect(authState?.textContent).toContain('Unauthenticated');
+	},
+};
+
+/**
+ * Test Apollo error handling
+ * Verifies that the decorator handles query errors properly
+ */
+export const WithMockApolloClientError: Story = {
+	decorators: [withMockApolloClient],
+	render: () => <ApolloQueryTestComponent />,
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: TEST_QUERY,
+					},
+					error: new Error('Network error'),
+				},
+			],
+			showWarnings: false,
+		},
+	},
+	play: async ({ canvasElement }) => {
+		await waitFor(() =>
+			expect(
+				canvasElement.querySelector('[data-testid="apollo-query"]')
+					?.textContent,
+			).toBe('Error'),
+		);
+	},
+};
+
+/**
+ * Test Apollo loading state
+ * Verifies that the decorator properly shows error when no mock matches
+ */
+export const WithMockApolloClientNoMatch: Story = {
+	decorators: [withMockApolloClient],
+	render: () => <ApolloQueryTestComponent />,
+	parameters: {
+		apolloClient: {
+			mocks: [],
+			showWarnings: false,
+		},
+	},
+	play: async ({ canvasElement }) => {
+		// When no mock matches, Apollo returns an error
+		await waitFor(() => {
+			const apolloQuery = canvasElement.querySelector('[data-testid="apollo-query"]');
+			expect(apolloQuery).toBeTruthy();
+			expect(apolloQuery?.textContent).toBe('Error');
+		});
+	},
+};
+
+/**
+ * Test withMockRouter with multiple route variations
+ * Verifies router handles complex paths
+ */
+export const WithMockRouterComplexPath: Story = {
+	decorators: [withMockRouter('/users/123/settings', true)],
+	render: () => <RouterTestComponent />,
+	play: ({ canvasElement }) => {
+		const routerTest = canvasElement.querySelector('[data-testid="router-test"]');
+		expect(routerTest).toBeTruthy();
+		expect(routerTest?.textContent).toContain('Current Path: /users/123/settings');
+	},
+};
+
+/**
+ * Test all decorators together with full integration
+ * Verifies the complete decorator stack works correctly
+ */
+export const FullDecoratorStack: Story = {
+	decorators: [
+		withAuthDecorator,
+		withMockApolloClient,
+		withMockUserId('stack-user'),
+		withMockRouter('/full-stack'),
+	],
+	render: () => (
+		<div>
+			<AuthTestComponent />
+			<ApolloTestComponent />
+			<UserIdTestComponent />
+			<RouterTestComponent />
+		</div>
+	),
+	parameters: {
+		apolloClient: {
+			mocks: [],
+		},
+	},
+	play: ({ canvasElement }) => {
+		const authTest = canvasElement.querySelector('[data-testid="auth-test"]');
+		const apolloTest = canvasElement.querySelector('[data-testid="apollo-test"]');
+		const userIdTest = canvasElement.querySelector('[data-testid="userid-test"]');
+		const routerTest = canvasElement.querySelector('[data-testid="router-test"]');
+
+		expect(authTest?.textContent).toBe('Auth Provider Active');
+		expect(apolloTest?.textContent).toBe('Apollo Client Connected');
+		expect(userIdTest?.textContent).toBe('stack-user');
+		expect(routerTest?.textContent).toContain('Current Path: /full-stack');
+	},
+};
