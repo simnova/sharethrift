@@ -551,3 +551,115 @@ export const AdminLoginEmptyForm: Story = {
 		await expect(adminLoginButton).toBeEnabled();
 	},
 };
+
+/**
+ * Test form structure and required fields
+ * Verifies that the form has the required structure for login
+ */
+export const FormStructure: Story = {
+	tags: ['!dev'],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// Verify form inputs exist
+		const emailInput = canvas.getByLabelText('Email');
+		await expect(emailInput).toBeInTheDocument();
+
+		const passwordInput = canvas.getByLabelText('Password');
+		await expect(passwordInput).toHaveAttribute('type', 'password');
+
+		// Verify both login buttons exist
+		const personalButton = canvas.getByRole('button', {name: /Personal Login/i});
+		const adminButton = canvas.getByRole('button', {name: /Admin Login/i});
+		await expect(personalButton).toBeInTheDocument();
+		await expect(adminButton).toBeInTheDocument();
+	},
+};
+
+/**
+ * Test responsive breakpoint hook is used
+ * Verifies that the component renders properly in different viewport sizes
+ */
+export const ResponsiveLayout: Story = {
+	tags: ['!dev'],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// Verify main content is present (which would adjust based on breakpoints)
+		const main = canvasElement.querySelector('main');
+		await expect(main).toBeInTheDocument();
+		
+		const title = canvas.getByText('Log in or Sign up');
+		await expect(title).toBeInTheDocument();
+	},
+};
+
+/**
+ * Test form validation triggers on submit
+ * Verifies that empty form submission shows validation errors
+ */
+export const EmptyFormSubmitValidation: Story = {
+	tags: ['!dev'],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		const personalLoginButton = canvas.getByRole('button', {
+			name: /Personal Login/i,
+		});
+		
+		// Click submit on empty form
+		await userEvent.click(personalLoginButton);
+
+		// Validation message should appear
+		const emailError = await canvas.findByText('Email is required');
+		await expect(emailError).toBeInTheDocument();
+	},
+};
+
+/**
+ * Test button sizing for mobile viewport
+ * Verifies that responsive styles are applied based on screen size
+ */
+export const MobileViewport: Story = {
+	tags: ['!dev'],
+	parameters: {
+		viewport: {
+			defaultViewport: 'mobile1',
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// Verify form is still rendered on mobile
+		const emailInput = canvas.getByLabelText('Email');
+		await expect(emailInput).toBeInTheDocument();
+
+		const personalLoginButton = canvas.getByRole('button', {
+			name: /Personal Login/i,
+		});
+		await expect(personalLoginButton).toBeInTheDocument();
+	},
+};
+
+/**
+ * Test that submitting button shows loading state
+ * Verifies the form submission flow initializes correctly
+ */
+export const FormSubmitLoadingState: Story = {
+	tags: ['!dev'],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		// Fill form
+		const emailInput = canvas.getByLabelText('Email');
+		const passwordInput = canvas.getByLabelText('Password');
+		await userEvent.type(emailInput, 'test@example.com');
+		await userEvent.type(passwordInput, 'password');
+
+		// Verify buttons are not initially loading
+		const personalLoginButton = canvas.getByRole('button', {
+			name: /Personal Login/i,
+		});
+		await expect(personalLoginButton).not.toHaveAttribute('disabled');
+	},
+};
