@@ -12,21 +12,24 @@ informed: cxa-team
 
 # Integrate Agent Skills for AI-Assisted Development
 
-## Context and Rationale
+## Context and Problem Statement
 
-AI coding assistants like GitHub Copilot provide general programming assistance but lack project-specific architectural context and patterns. As the ShareThrift project grows in complexity with DDD architecture, microservices patterns, event sourcing, CQRS, and enterprise patterns, AI agents need deeper understanding of:
-
-1. **Project-specific patterns**: Our DDD tactical patterns (aggregates, entities, value objects, repositories, unit of work)
-2. **Technology-specific best practices**: Apollo GraphQL, Turborepo, React 19 patterns, Azure Functions
-3. **Architectural constraints**: Bounded contexts, consistency boundaries, saga patterns, API gateway patterns
-4. **Framework conventions**: Naming conventions, file structures, testing patterns
-5. **Enterprise patterns**: Event sourcing, CQRS, circuit breakers, resilience patterns
+AI coding assistants like GitHub Copilot provide general programming assistance but lack project-specific architectural context and patterns. As the ShareThrift project grows in complexity with DDD architecture, microservices patterns, event sourcing, CQRS, and enterprise patterns, we need to provide AI agents with structured understanding of our architecture and best practices.
 
 Agent Skills provide structured, discoverable context in a standardized format that AI agents can consume effectively. The Skills CLI enables easy installation, updating, and management of both community-maintained and custom skills.
 
-### New Skills Installation Guide
+## Decision Drivers
 
-#### 1. **Skills CLI Integration**
+- **Contextual AI assistance**: Enable AI agents to understand project-specific architecture and patterns
+- **Pattern consistency**: Ensure AI-generated code follows established DDD, CQRS, and enterprise patterns
+- **Technology expertise**: Provide AI agents with Apollo GraphQL, Turborepo, React 19, and Azure best practices
+- **Maintainability**: Use industry-standard skill format that's easy to update and extend
+- **Team alignment**: Share common understanding of patterns across human developers and AI agents
+- **Version control**: Track skills changes alongside code changes in git
+
+## Implementation Strategy
+
+### 1. Skills CLI Integration
 
 **Installation and Management**:
 ```bash
@@ -45,7 +48,7 @@ pnpm dlx skills remove <skill-name>
 
 When given options, select symlink, project wide for the installation, and github copilot and the only agent.
 
-#### 2. **Installed Skills**
+### 2. Installed Skills
 
 **Technology-Specific Skills** (from public repositories):
 
@@ -110,7 +113,7 @@ Each skill contains a `SKILL.md` file with:
 - **Best practices**: Dos and don'ts
 - **Common pitfalls**: Anti-patterns to avoid
 
-#### 3. **Skills Update Workflow**
+### 3. Skills Update Workflow
 
 **Limitation**: The `pnpm dlx skills update` command has limitations:
 - Updates **modified files** in skills
@@ -129,7 +132,7 @@ pnpm dlx skills add <repository> --skill <skill-name>
 - Review skill changes before committing updates
 - Test AI agent behavior after major skill updates
 
-#### 6. **Custom Skills (Future)**
+### 4. Custom Skills (Future)
 
 For ShareThrift-specific patterns not available in public repositories:
 - Domain models for ShareThrift business logic
@@ -143,30 +146,40 @@ For ShareThrift-specific patterns not available in public repositories:
 pnpm dlx skills add simnova/sharethrift --skill sharethrift-domain-patterns
 ```
 
-## Benefits and Outcomes
+## Consequences
 
-- **Enhanced AI understanding**: AI agents have deep context about DDD, CQRS, event sourcing, and enterprise patterns
-- **Pattern consistency**: AI-generated code follows established architectural patterns
-- **Technology expertise**: AI agents understand Apollo GraphQL, Turborepo, React 19 best practices
-- **Reduced anti-patterns**: AI agents avoid common pitfalls (N+1 queries, cache anti-patterns, Turborepo bypasses)
-- **Faster development**: AI agents suggest solutions aligned with project architecture
-- **Knowledge sharing**: Skills serve as living documentation for both AI and human developers
-- **Community leverage**: Benefit from Apollo, Vercel, and community-maintained skills
-- **Easy management**: Skills CLI simplifies installation and updates
-- **Version control**: Skills tracked in git alongside code
-- **CI/CD consistency**: Same skills available locally and in pipelines
+### Positive
 
-## Validation
+- Enhanced AI understanding of DDD, CQRS, event sourcing, and enterprise patterns
+- AI-generated code follows established architectural patterns consistently
+- AI agents understand Apollo GraphQL, Turborepo, React 19 best practices
+- Reduced anti-patterns (N+1 queries, cache anti-patterns, Turborepo bypasses)
+- Faster development with AI agents suggesting architecture-aligned solutions
+- Skills serve as living documentation for both AI and human developers
+- Benefit from Apollo, Vercel, and community-maintained skills
+- Skills CLI simplifies installation and updates
+- Skills tracked in git alongside code
+- Same skills available locally and in CI/CD pipelines
 
-### Local Development Validation
+### Negative
+
+- Team must maintain skills directory and keep skills updated periodically
+- Developers need to understand skills concept and CLI commands
+- Skills must be updated periodically to stay current with upstream changes
+- `skills update` doesn't restore deleted files, requires full reinstall
+- Skills CLI doesn't generate version lock files (unlike npm/pnpm)
+
+<!-- This is an optional element. Feel free to remove. -->
+
+## More Information
+
+### Validation
+
+Local development validation criteria:
 - AI agents reference skills when suggesting code changes
 - Code suggestions align with DDD patterns, Apollo best practices, and Turborepo conventions
 - AI agents identify anti-patterns (N+1 queries, prebuild scripts, manual cache updates)
 - Skills content is visible when asking AI agents about architectural patterns
-
-
-
-## More Information
 
 ### Installed Skills Sources
 
@@ -222,8 +235,5 @@ pnpm dlx skills remove apollo-client
   - Currently not supported by Skills CLI
 
 ### Related Documents
-- **0003-domain-driven-design.md**: DDD patterns that enterprise-architecture-patterns skill reinforces
-- **0001-madr-architecture-decisions.md**: Decision documentation process this ADR follows
-
-### Key Implementation Files
-- `.agents/skills/`: All installed skills directory
+- [0003-domain-driven-design.md](./0003-domain-driven-design.md): DDD patterns that enterprise-architecture-patterns skill reinforces
+- [0001-madr-architecture-decisions.md](./0001-madr-architecture-decisions.md): Decision documentation process this ADR follows
