@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { useCreateListingNavigation } from './use-create-listing-navigation.ts';
 import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
 import { AuthContext } from 'react-oidc-context';
-import { createMockAuth, createMockUser } from '../../../test/utils/mockAuth.ts';
+import { createMockAuth, createMockUser } from '../../../test/utils/mock-auth.ts';
 
 const NavigationTestComponent = () => {
 	const handleCreateListing = useCreateListingNavigation();
