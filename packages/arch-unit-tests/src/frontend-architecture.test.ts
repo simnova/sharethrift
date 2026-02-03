@@ -164,27 +164,6 @@ describe("Frontend Architecture - UI ShareThrift", () => {
 	});
 
 	describe("Layout Requirements", () => {
-		it("should have root directory in every layout", () => {
-			const layoutsPath = path.join(
-				UI_SHARETHRIFT_PATH,
-				"components/layouts",
-			);
-			if (!fs.existsSync(layoutsPath)) return;
-
-			const layoutDirs = getDirectories(layoutsPath);
-			for (const layoutDir of layoutDirs) {
-				const rootPath = path.join(layoutsPath, layoutDir, "root");
-				// Root directory is optional in new CellixJs pattern
-				// Layouts can have section-layout.tsx directly instead
-				if (fs.existsSync(rootPath)) {
-					expect(
-						fs.existsSync(rootPath),
-						`Layout '${layoutDir}' has a root/ directory`,
-					).toBe(true);
-				}
-			}
-		});
-
 		it("should have section-layout.tsx in every layout", () => {
 			const layoutsPath = path.join(
 				UI_SHARETHRIFT_PATH,
@@ -308,15 +287,26 @@ describe("Frontend Architecture - UI ShareThrift", () => {
 			);
 
 			for (const containerFile of containerFiles) {
-				const graphqlFile = containerFile.replace(
-					".container.tsx",
-					".container.graphql",
-				);
-				// If GraphQL file exists, validate it's paired with container
-				if (fs.existsSync(graphqlFile)) {
+				const content = fs.readFileSync(containerFile, "utf-8");
+				
+				// Check if container uses GraphQL by looking for:
+				// 1. useQuery or useMutation from Apollo Client
+				// 2. GraphQL Document imports (generated types ending in 'Document')
+				const usesGraphQL =
+					(content.includes("useQuery") ||
+						content.includes("useMutation") ||
+						content.includes("useLazyQuery")) &&
+					(content.includes("@apollo/client") ||
+						/\w+Document/.test(content));
+
+				if (usesGraphQL) {
+					const graphqlFile = containerFile.replace(
+						".container.tsx",
+						".container.graphql",
+					);
 					expect(
-						fs.existsSync(containerFile),
-						`GraphQL file should be paired with container: ${path.basename(graphqlFile)}`,
+						fs.existsSync(graphqlFile),
+						`Container '${path.basename(containerFile)}' uses GraphQL but missing '${path.basename(graphqlFile)}'`,
 					).toBe(true);
 				}
 			}
