@@ -1,7 +1,7 @@
 import type { FC } from "react";
 import { useQuery } from "@apollo/client/react";
 import { AppContainerCurrentUserDocument } from "./generated.tsx";
-import { App } from "./app.tsx";
+import { App } from "./App.tsx";
 import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { useAuth } from "react-oidc-context";
 import { UserIdProvider } from "./components/shared/user-context.tsx";

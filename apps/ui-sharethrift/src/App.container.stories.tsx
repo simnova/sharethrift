@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { AppContainer } from './app.container.tsx';
+import { AppContainer } from './App.container.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,

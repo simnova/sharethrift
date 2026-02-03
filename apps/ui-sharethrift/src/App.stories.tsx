@@ -3,7 +3,7 @@ import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthProvider } from 'react-oidc-context';
 import { MockedProvider } from '@apollo/client/testing/react';
-import { App } from './app.tsx';
+import { App } from './App.tsx';
 
 const mockEnv = {
 	VITE_FUNCTION_ENDPOINT: 'https://mock-functions.example.com',

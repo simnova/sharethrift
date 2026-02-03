@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from 'react-oidc-context';
 import { oidcConfig } from './config/oidc-config.tsx';
 import { ApolloConnection } from './components/shared/apollo-connection.tsx';
-import { AppContainer } from './app.container.tsx';
+import { AppContainer } from './App.container.tsx';
 import { oidcConfigAdmin } from './config/oidc-config-admin.tsx';
 import '@ant-design/v5-patch-for-react-19';
 
