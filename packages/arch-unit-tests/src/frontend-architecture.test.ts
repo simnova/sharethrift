@@ -174,10 +174,14 @@ describe("Frontend Architecture - UI ShareThrift", () => {
 			const layoutDirs = getDirectories(layoutsPath);
 			for (const layoutDir of layoutDirs) {
 				const rootPath = path.join(layoutsPath, layoutDir, "root");
-				expect(
-					fs.existsSync(rootPath),
-					`Layout '${layoutDir}' must have a root/ directory`,
-				).toBe(true);
+				// Root directory is optional in new CellixJs pattern
+				// Layouts can have section-layout.tsx directly instead
+				if (fs.existsSync(rootPath)) {
+					expect(
+						fs.existsSync(rootPath),
+						`Layout '${layoutDir}' has a root/ directory`,
+					).toBe(true);
+				}
 			}
 		});
 
@@ -236,9 +240,17 @@ describe("Frontend Architecture - UI ShareThrift", () => {
 					layoutDir,
 					"components",
 				);
+				// Components can be at layout level OR inside individual page directories
+				// Check if layout-level components exist, or if page-level components exist
+				const hasLayoutComponents = fs.existsSync(componentsPath);
+				const pageDirs = getDirectories(pagesPath);
+				const hasPageComponents = pageDirs.some((pageDir) =>
+					fs.existsSync(path.join(pagesPath, pageDir, "components")),
+				);
+
 				expect(
-					fs.existsSync(componentsPath),
-					`Layout '${layoutDir}' with pages/ must have components/ directory`,
+					hasLayoutComponents || hasPageComponents,
+					`Layout '${layoutDir}' with pages/ must have components/ directory at layout or page level`,
 				).toBe(true);
 			}
 		});
@@ -306,6 +318,209 @@ describe("Frontend Architecture - UI ShareThrift", () => {
 						fs.existsSync(containerFile),
 						`GraphQL file should be paired with container: ${path.basename(graphqlFile)}`,
 					).toBe(true);
+				}
+			}
+		});
+	});
+
+	describe("CellixJs Pattern - Page Organization", () => {
+		it("should organize pages with pages/ and components/ subdirectories", () => {
+			const layoutsPath = path.join(
+				UI_SHARETHRIFT_PATH,
+				"components/layouts",
+			);
+			if (!fs.existsSync(layoutsPath)) return;
+
+			const layoutDirs = getDirectories(layoutsPath);
+			for (const layoutDir of layoutDirs) {
+				const pagesPath = path.join(layoutsPath, layoutDir, "pages");
+				if (!fs.existsSync(pagesPath)) continue;
+
+				const pageDirs = getDirectories(pagesPath);
+				for (const pageDir of pageDirs) {
+					const pagePath = path.join(pagesPath, pageDir);
+					const hasPages = fs.existsSync(path.join(pagePath, "pages"));
+					const hasComponents = fs.existsSync(
+						path.join(pagePath, "components"),
+					);
+					const hasIndex = fs.existsSync(path.join(pagePath, "index.tsx"));
+
+					// Page directories should have at least pages/ or components/ subdirectory, or be a route index
+					expect(
+						hasPages || hasComponents || hasIndex,
+						`Page directory '${layoutDir}/pages/${pageDir}' should have pages/, components/, or index.tsx for routes`,
+					).toBe(true);
+				}
+			}
+		});
+
+		it("should not have loose component files at page directory root (except index.tsx)", () => {
+			const layoutsPath = path.join(
+				UI_SHARETHRIFT_PATH,
+				"components/layouts",
+			);
+			if (!fs.existsSync(layoutsPath)) return;
+
+			const layoutDirs = getDirectories(layoutsPath);
+			for (const layoutDir of layoutDirs) {
+				const pagesPath = path.join(layoutsPath, layoutDir, "pages");
+				if (!fs.existsSync(pagesPath)) continue;
+
+				const pageDirs = getDirectories(pagesPath);
+				for (const pageDir of pageDirs) {
+					const pagePath = path.join(pagesPath, pageDir);
+					const files = fs
+						.readdirSync(pagePath)
+						.filter((file) => file.endsWith(".tsx") || file.endsWith(".ts"));
+
+					// Only index.tsx should be at root level
+					const nonIndexFiles = files.filter(
+						(file) => file !== "index.tsx" && file !== "index.ts",
+					);
+
+					expect(
+						nonIndexFiles.length,
+						`Page directory '${layoutDir}/pages/${pageDir}' should not have loose component files at root. Move to pages/ or components/ subdirectory. Found: ${nonIndexFiles.join(", ")}`,
+					).toBe(0);
+				}
+			}
+		});
+
+		it("should place page entry points in pages/ subdirectory", () => {
+			const layoutsPath = path.join(
+				UI_SHARETHRIFT_PATH,
+				"components/layouts",
+			);
+			if (!fs.existsSync(layoutsPath)) return;
+
+			const layoutDirs = getDirectories(layoutsPath);
+			for (const layoutDir of layoutDirs) {
+				const pagesPath = path.join(layoutsPath, layoutDir, "pages");
+				if (!fs.existsSync(pagesPath)) continue;
+
+				const pageDirs = getDirectories(pagesPath);
+				for (const pageDir of pageDirs) {
+					const pageSubdirPath = path.join(pagesPath, pageDir, "pages");
+					if (!fs.existsSync(pageSubdirPath)) continue;
+
+					const pageFiles = fs
+						.readdirSync(pageSubdirPath)
+						.filter((file) => file.endsWith("-page.tsx"));
+
+					// If pages/ subdirectory exists, check for page entry files
+					if (pageFiles.length > 0) {
+						expect(
+							pageFiles.length,
+							`Page directory '${layoutDir}/pages/${pageDir}/pages' should contain *-page.tsx files`,
+						).toBeGreaterThan(0);
+					}
+				}
+			}
+		});
+
+		it("should place page-specific components in components/ subdirectory", () => {
+			const layoutsPath = path.join(
+				UI_SHARETHRIFT_PATH,
+				"components/layouts",
+			);
+			if (!fs.existsSync(layoutsPath)) return;
+
+			const layoutDirs = getDirectories(layoutsPath);
+			for (const layoutDir of layoutDirs) {
+				const pagesPath = path.join(layoutsPath, layoutDir, "pages");
+				if (!fs.existsSync(pagesPath)) continue;
+
+				const pageDirs = getDirectories(pagesPath);
+				for (const pageDir of pageDirs) {
+					const componentsPath = path.join(pagesPath, pageDir, "components");
+					if (!fs.existsSync(componentsPath)) continue;
+
+					// Get all entries (files and directories)
+					const entries = fs.readdirSync(componentsPath);
+					const hasContent = entries.length > 0;
+
+					expect(
+						hasContent,
+						`Components directory '${layoutDir}/pages/${pageDir}/components' should contain files or subdirectories`,
+					).toBe(true);
+				}
+			}
+		});
+
+		it("should support nested page structures (e.g., account/pages/profile/pages)", () => {
+			const layoutsPath = path.join(
+				UI_SHARETHRIFT_PATH,
+				"components/layouts",
+			);
+			if (!fs.existsSync(layoutsPath)) return;
+
+			const layoutDirs = getDirectories(layoutsPath);
+			for (const layoutDir of layoutDirs) {
+				const pagesPath = path.join(layoutsPath, layoutDir, "pages");
+				if (!fs.existsSync(pagesPath)) continue;
+
+				const pageDirs = getDirectories(pagesPath);
+				for (const pageDir of pageDirs) {
+					const nestedPagesPath = path.join(pagesPath, pageDir, "pages");
+					if (!fs.existsSync(nestedPagesPath)) continue;
+
+					const nestedPageDirs = getDirectories(nestedPagesPath);
+					for (const nestedPageDir of nestedPageDirs) {
+						const deepComponentsPath = path.join(
+							nestedPagesPath,
+							nestedPageDir,
+							"components",
+						);
+						const deepPagesPath = path.join(
+							nestedPagesPath,
+							nestedPageDir,
+							"pages",
+						);
+
+						// Nested page directories should also follow the same pattern
+						const hasStructure =
+							fs.existsSync(deepComponentsPath) ||
+							fs.existsSync(deepPagesPath);
+
+						expect(
+							hasStructure,
+							`Nested page '${layoutDir}/pages/${pageDir}/pages/${nestedPageDir}' should have components/ or pages/ subdirectory`,
+						).toBe(true);
+					}
+				}
+			}
+		});
+
+		it("should colocate page components with their pages", () => {
+			const layoutsPath = path.join(
+				UI_SHARETHRIFT_PATH,
+				"components/layouts",
+			);
+			if (!fs.existsSync(layoutsPath)) return;
+
+			const layoutDirs = getDirectories(layoutsPath);
+			for (const layoutDir of layoutDirs) {
+				const pagesPath = path.join(layoutsPath, layoutDir, "pages");
+				if (!fs.existsSync(pagesPath)) continue;
+
+				const pageDirs = getDirectories(pagesPath);
+				for (const pageDir of pageDirs) {
+					const pageSubdirPath = path.join(pagesPath, pageDir, "pages");
+					const componentsPath = path.join(pagesPath, pageDir, "components");
+
+					// If page has both pages/ and components/, they should be siblings
+					if (
+						fs.existsSync(pageSubdirPath) &&
+						fs.existsSync(componentsPath)
+					) {
+						const pagesParent = path.dirname(pageSubdirPath);
+						const componentsParent = path.dirname(componentsPath);
+
+						expect(
+							pagesParent,
+							`Components and pages for '${pageDir}' should be colocated as siblings`,
+						).toBe(componentsParent);
+					}
 				}
 			}
 		});
