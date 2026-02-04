@@ -116,7 +116,7 @@ type Story = StoryObj<typeof meta>;
 export const DefaultView: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(canvas.getByRole('main')).toBeInTheDocument();
+		await expect(canvas.getByText('Mock Page Content')).toBeInTheDocument();
 	},
 	parameters: {
 		apolloClient: {

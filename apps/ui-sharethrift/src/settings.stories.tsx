@@ -25,7 +25,7 @@ export const FileExports: Story = {
 		</div>
 	),
 	play: async () => {
-		const { Settings } = await import('./settings.tsx');
+		const { Settings } = await import('./components/layouts/app/pages/account/pages/settings/pages/settings.tsx');
 		expect(Settings).toBeDefined();
 		expect(typeof Settings).toBe('function');
 	},

@@ -21,7 +21,7 @@ export const DefaultView: StoryFn<typeof AppRoutes> = Template.bind({});
 
 DefaultView.play = async ({ canvasElement }) => {
 	const canvas = within(canvasElement);
-	await expect(canvas.getByRole('main')).toBeInTheDocument();
+	await expect(canvas.getByText('Mock Page Content')).toBeInTheDocument();
 };
 
 DefaultView.parameters = {

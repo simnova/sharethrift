@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { fn } from 'storybook/test';
-import { ConversationList } from '../components/conversation-list.tsx';
+import { ConversationList } from './components/layouts/app/pages/messages/components/conversation-list.tsx';
 
 const meta: Meta<typeof ConversationList> = {
 	title: 'Components/Messages/ConversationList',

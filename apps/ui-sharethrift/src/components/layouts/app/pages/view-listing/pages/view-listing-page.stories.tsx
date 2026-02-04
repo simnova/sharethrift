@@ -37,6 +37,7 @@ const mockListing = {
 const mockCurrentUser = {
 	__typename: 'PersonalUser',
 	id: 'user-2',
+	userType: 'personal-user',
 };
 
 const meta: Meta<typeof ViewListing> = {

@@ -38,7 +38,11 @@ export default defineConfig((_env) => {
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom'],
-            ui: ['antd', '@ant-design/icons'],
+            'ui-core': ['antd/lib/button', 'antd/lib/layout', 'antd/lib/space', 'antd/lib/typography'],
+            'ui-forms': ['antd/lib/form', 'antd/lib/input', 'antd/lib/select', 'antd/lib/checkbox', 'antd/lib/radio'],
+            'ui-data': ['antd/lib/table', 'antd/lib/list', 'antd/lib/pagination'],
+            'ui-feedback': ['antd/lib/modal', 'antd/lib/message', 'antd/lib/notification'],
+            icons: ['@ant-design/icons'],
             graphql: ['@apollo/client', 'graphql'],
             router: ['react-router-dom'],
             utils: ['lodash', 'dayjs', 'crypto-hash'],

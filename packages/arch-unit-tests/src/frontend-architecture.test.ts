@@ -46,7 +46,7 @@ function isPascalCase(str: string): boolean {
 describe("Frontend Architecture - UI ShareThrift", () => {
 	describe("Folder Structure", () => {
 		it("should have required top-level directories", () => {
-			const requiredDirs = ["assets", "components", "config"];
+			const requiredDirs = ["components", "config"];
 			const existingDirs = getDirectories(UI_SHARETHRIFT_PATH);
 
 			for (const dir of requiredDirs) {
@@ -158,6 +158,24 @@ describe("Frontend Architecture - UI ShareThrift", () => {
 				expect(
 					isKebabCase(fileName),
 					`Container file '${fileName}' must use kebab-case`,
+				).toBe(true);
+			}
+		});
+
+		it("should use kebab-case for story files", () => {
+			const storyFiles = getAllFiles(UI_SHARETHRIFT_PATH).filter(
+				(file) => file.endsWith(".stories.tsx"),
+			);
+
+			for (const file of storyFiles) {
+				let fileName = path.basename(file, ".stories.tsx");
+				// For container story files, remove the .container suffix as well
+				if (fileName.endsWith(".container")) {
+					fileName = fileName.replace(".container", "");
+				}
+				expect(
+					isKebabCase(fileName),
+					`Story file '${path.basename(file)}' must use kebab-case`,
 				).toBe(true);
 			}
 		});

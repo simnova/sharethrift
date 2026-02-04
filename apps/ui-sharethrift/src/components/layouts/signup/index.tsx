@@ -2,7 +2,6 @@ import { lazy, Suspense } from "react";
 import { Route, Routes } from "react-router-dom";
 import { SectionLayout } from "./section-layout.tsx";
 
-// Lazy load signup pages for code splitting
 const SelectAccountTypePage = lazy(() => import("./pages/select-account-type-page.tsx"));
 const AccountSetupPage = lazy(() => import("./pages/account-setup-page.tsx"));
 const ProfileSetupPage = lazy(() => import("./pages/profile-setup-page.tsx"));

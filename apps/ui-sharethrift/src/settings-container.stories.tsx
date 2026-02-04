@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "@storybook/react";
 import { expect, within, waitFor } from "storybook/test";
-import { SettingsViewContainer } from "../components/settings-view.container.tsx";
+import { SettingsViewContainer } from "./components/layouts/app/pages/account/pages/settings/components/settings-view.container.tsx";
 import {
 	HomeAccountSettingsViewContainerCurrentUserDocument,
 	HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
 	HomeAccountSettingsViewContainerUpdateAdminUserDocument,
-} from "../../../../../../../../generated.tsx";
-import { withMockApolloClient, withMockRouter } from "../../../../../../../../test-utils/storybook-decorators.tsx";
+} from "./generated.tsx";
+import { withMockApolloClient, withMockRouter } from "./test-utils/storybook-decorators.tsx";
 
 const mockPersonalUser = {
 	__typename: "PersonalUser",

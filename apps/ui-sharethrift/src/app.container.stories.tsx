@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { AppContainer } from './App.container.tsx';
+import { AppContainer } from './app.container.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
@@ -27,7 +27,7 @@ const mockAuthenticatedCompletedOnboarding = {
 	},
 	result: {
 		data: {
-			currentUser: {
+			currentUserAndCreateIfNotExists: {
 				__typename: 'PersonalUser' as const,
 				id: 'user-123',
 				userType: 'personal-user',
