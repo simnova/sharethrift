@@ -3,8 +3,8 @@ import { expect, userEvent, within } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { useCreateListingNavigation } from './use-create-listing-navigation.ts';
 import { AuthContext } from 'react-oidc-context';
-import { createMockAuth, createMockUser } from '../../../test/utils/mockAuth.ts';
 import { MockAuthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
+import { createMockAuth,createMockUser } from '../../../test/utils/mock-auth.ts';
 
 const NavigationTestComponent = () => {
 	const handleCreateListing = useCreateListingNavigation();

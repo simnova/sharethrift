@@ -7,7 +7,7 @@ import {
 	TermsContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	type PersonalUser,
 } from '../../../../generated.tsx';
-import { SignupRoutes } from '../Index.tsx';
+import { SignupRoutes } from '../index.tsx';
 
 const meta: Meta<typeof SignupRoutes> = {
 	title: 'Pages/Signup/Terms',

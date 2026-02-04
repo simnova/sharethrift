@@ -1,6 +1,6 @@
 import { type ReactElement, type ReactNode, useMemo } from 'react';
 import { AuthContext } from 'react-oidc-context';
-import { createMockAuth, createMockUser } from '../test/utils/mockAuth.ts';
+import { createMockAuth,createMockUser } from '../test/utils/mock-auth';
 
 /**
  * Mock unauthenticated wrapper component for Storybook stories.

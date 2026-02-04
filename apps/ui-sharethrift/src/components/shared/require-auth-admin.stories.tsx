@@ -5,8 +5,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from 'react-oidc-context';
 import { RequireAuthAdmin } from './require-auth-admin.tsx';
 import { UseUserIsAdminDocument } from '../../generated.tsx';
-import { createMockAuth } from '../../test/utils/mockAuth.ts';
 import { MockAuthWrapper } from '../../test-utils/storybook-mock-auth-wrappers.tsx';
+import { createMockAuth } from '../../test/utils/mock-auth.ts';
 
 const meta: Meta<typeof RequireAuthAdmin> = {
 	title: 'Shared/RequireAuthAdmin',
