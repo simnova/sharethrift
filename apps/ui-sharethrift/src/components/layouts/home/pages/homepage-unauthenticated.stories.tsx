@@ -18,13 +18,13 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 
-export const DefaultView: Story = {};
-DefaultView.play = async ({ canvasElement }) => {
+export const Default: Story = {};
+Default.play = async ({ canvasElement }) => {
 	const canvas = within(canvasElement);
 	await expect(canvas.getByRole('main')).toBeInTheDocument();
 };
 
-DefaultView.parameters = {
+Default.parameters = {
   apolloClient: {
     mocks: [
       userIsAdminMockRequest('personal-user-123', false),

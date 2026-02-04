@@ -68,6 +68,7 @@ export const Default: Story = {
 };
 
 export const WithEnvironment: Story = {
+    tags: ['!dev'],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -85,6 +86,7 @@ export const WithEnvironment: Story = {
 };
 
 export const FillLoginForm: Story = {
+    tags: ['!dev'],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
