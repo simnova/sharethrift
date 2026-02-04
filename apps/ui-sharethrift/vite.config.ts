@@ -30,10 +30,24 @@ const localServerConfig = {
   open: hasCerts ? 'https://sharethrift.localhost:3000' : 'http://localhost:3000',
 };
 
-// https://vite.dev/config/
-export default defineConfig(() => {
+export default defineConfig((_env) => {
   return {
     plugins: [react()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom'],
+            ui: ['antd', '@ant-design/icons'],
+            graphql: ['@apollo/client', 'graphql'],
+            router: ['react-router-dom'],
+            utils: ['lodash', 'dayjs', 'crypto-hash'],
+          },
+        },
+      },
+      minify: 'esbuild',
+      chunkSizeWarningLimit: 1000,
+    },
     server: isDev ? localServerConfig : baseServerConfig,
   };
 });

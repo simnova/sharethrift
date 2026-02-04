@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { ProfileSetupPage } from './profile-setup-page.tsx';
+import ProfileSetupPage from './profile-setup-page.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,

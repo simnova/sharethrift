@@ -1,5 +1,5 @@
 import { InMemoryCache } from '@apollo/client';
-import _ from 'lodash';
+import merge from 'lodash/merge';
 
 export const ApolloManualMergeCacheFix = new InMemoryCache({
 	typePolicies: {
@@ -7,7 +7,7 @@ export const ApolloManualMergeCacheFix = new InMemoryCache({
 			fields: {
 				account: {
 					merge(existing, incoming) {
-						return _.merge({}, existing, incoming);
+						return merge({}, existing, incoming);
 					},
 				},
 			},
