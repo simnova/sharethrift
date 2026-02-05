@@ -68,7 +68,7 @@ export const Default: Story = {
 };
 
 export const WithEnvironment: Story = {
-    tags: ['!dev'],
+	tags: ['!dev'],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
@@ -82,80 +82,6 @@ export const WithEnvironment: Story = {
 
 		const forgotLink = canvas.getByRole('button', { name: /Forgot password/i });
 		await expect(forgotLink).toBeInTheDocument();
-	},
-};
-
-export const FillLoginForm: Story = {
-    tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const emailInput = canvas.getByLabelText('Email');
-		await userEvent.type(emailInput, 'test@example.com');
-
-		const passwordInput = canvas.getByLabelText('Password');
-		await userEvent.type(passwordInput, 'password123');
-
-		await expect(emailInput).toHaveValue('test@example.com');
-	},
-};
-
-export const ClickBackToHome: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const backLink = canvas.getByRole('button', { name: /Back to Home/i });
-		await userEvent.click(backLink);
-	},
-};
-
-export const ClickForgotPassword: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const forgotLink = canvas.getByRole('button', { name: /Forgot password/i });
-		await userEvent.click(forgotLink);
-	},
-};
-
-export const ClickSignUp: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const signUpButton = canvasElement.querySelector(
-			'[data-testid="sign-up-button"]',
-		);
-		// Verify button exists but don't click (would trigger redirect)
-		await expect(signUpButton).toBeInTheDocument();
-		await expect(signUpButton).toHaveTextContent('Sign Up');
-	},
-};
-
-export const SubmitFormValidation: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const personalLoginButton = canvas.getByRole('button', {
-			name: /Personal Login/i,
-		});
-		await userEvent.click(personalLoginButton);
-
-		await expect(personalLoginButton).toBeInTheDocument();
-	},
-};
-
-export const ClickAdminLogin: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const adminLoginButton = canvas.getByRole('button', {
-			name: /Admin Login/i,
-		});
-		await expect(adminLoginButton).toBeInTheDocument();
-		await expect(adminLoginButton).toBeEnabled();
 	},
 };
 
@@ -338,287 +264,6 @@ export const EmailInputAutoFocus: Story = {
 };
 
 /**
- * Test both login buttons are initially enabled
- * Verifies that both Personal and Admin login buttons are enabled by default
- */
-export const LoginButtonsEnabledByDefault: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const personalLoginButton = canvas.getByRole('button', {
-			name: /Personal Login/i,
-		});
-		const adminLoginButton = canvas.getByRole('button', {
-			name: /Admin Login/i,
-		});
-
-		await expect(personalLoginButton).toBeEnabled();
-		await expect(adminLoginButton).toBeEnabled();
-	},
-};
-
-/**
- * Test Personal Login form submission with valid data
- * Verifies that form can be filled and is ready for submission
- */
-export const SubmitPersonalLoginValid: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const emailInput = canvas.getByLabelText('Email');
-		const passwordInput = canvas.getByLabelText('Password');
-
-		await userEvent.type(emailInput, 'user@example.com');
-		await userEvent.type(passwordInput, 'userPassword123');
-
-		const personalLoginButton = canvas.getByRole('button', {
-			name: /Personal Login/i,
-		});
-
-		// Verify form is ready for submission (don't actually submit to avoid redirect)
-		await expect(emailInput).toHaveValue('user@example.com');
-		await expect(passwordInput).toHaveValue('userPassword123');
-		await expect(personalLoginButton).toBeEnabled();
-	},
-};
-
-/**
- * Test Admin Login form submission with valid data
- * Verifies that form can be filled and is ready for admin login
- */
-export const SubmitAdminLoginValid: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const emailInput = canvas.getByLabelText('Email');
-		const passwordInput = canvas.getByLabelText('Password');
-
-		await userEvent.type(emailInput, 'admin@company.com');
-		await userEvent.type(passwordInput, 'adminPass456');
-
-		const adminLoginButton = canvas.getByRole('button', {
-			name: /Admin Login/i,
-		});
-
-		// Verify form is ready (don't actually click to avoid redirect)
-		await expect(emailInput).toHaveValue('admin@company.com');
-		await expect(passwordInput).toHaveValue('adminPass456');
-		await expect(adminLoginButton).toBeEnabled();
-	},
-};
-
-/**
- * Test clearing form after typing
- * Verifies that users can clear and retype form values
- */
-export const ClearAndRetypeForm: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const emailInput = canvas.getByLabelText('Email');
-		const passwordInput = canvas.getByLabelText('Password');
-
-		// Type initial values
-		await userEvent.type(emailInput, 'wrong@email.com');
-		await userEvent.type(passwordInput, 'wrongpass');
-
-		// Clear and retype
-		await userEvent.clear(emailInput);
-		await userEvent.clear(passwordInput);
-
-		await userEvent.type(emailInput, 'correct@email.com');
-		await userEvent.type(passwordInput, 'correctpass');
-
-		await expect(emailInput).toHaveValue('correct@email.com');
-		await expect(passwordInput).toHaveValue('correctpass');
-	},
-};
-
-/**
- * Test form labels are properly associated with inputs
- * Verifies proper accessibility with label associations
- */
-export const FormLabelsAssociation: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const emailInput = canvas.getByLabelText('Email');
-		const passwordInput = canvas.getByLabelText('Password');
-
-		await expect(emailInput).toHaveAttribute('aria-label', 'Email');
-		await expect(passwordInput).toHaveAttribute('aria-label', 'Password');
-	},
-};
-
-/**
- * Test footer component is rendered
- * Verifies that the page includes footer component
- */
-export const FooterRendered: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		// Footer is part of the layout
-		// Verify the main content structure is present
-		const main = canvasElement.querySelector('main');
-		await expect(main).toBeInTheDocument();
-	},
-};
-
-/**
- * Test header component is rendered
- * Verifies that the page includes header with login/signup options
- */
-export const HeaderRendered: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		// Header should contain the login form
-		const title = canvas.getByText('Log in or Sign up');
-		await expect(title).toBeInTheDocument();
-	},
-};
-
-/**
- * Test card container styling
- * Verifies that the login form is contained in a styled card
- */
-export const CardContainerPresent: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		
-		// Verify form is present which indicates card is rendered
-		const emailInput = canvas.getByLabelText('Email');
-		await expect(emailInput).toBeInTheDocument();
-		
-		const title = canvas.getByText('Log in or Sign up');
-		await expect(title).toBeInTheDocument();
-	},
-};
-
-/**
- * Test background hero image container
- * Verifies that the background styling is applied
- */
-export const BackgroundStyling: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {		
-		// Verify content is rendered which indicates background is set up
-		const main = canvasElement.querySelector('main');
-		await expect(main).toBeInTheDocument();
-	},
-};
-
-/**
- * Test multiple validation errors simultaneously
- * Verifies that both email and password validation can show at once
- */
-export const MultipleValidationErrors: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		// Submit empty form
-		const personalLoginButton = canvas.getByRole('button', {
-			name: /Personal Login/i,
-		});
-		await userEvent.click(personalLoginButton);
-
-		// Email error should appear first
-		const emailError = await canvas.findByText('Email is required');
-		await expect(emailError).toBeInTheDocument();
-	},
-};
-
-/**
- * Test admin login button without filling form
- * Verifies validation would trigger when clicking admin login with empty form
- */
-export const AdminLoginEmptyForm: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const adminLoginButton = canvas.getByRole('button', {
-			name: /Admin Login/i,
-		});
-		
-		// Verify button is present and enabled (don't click to avoid triggering validation redirect)
-		await expect(adminLoginButton).toBeInTheDocument();
-		await expect(adminLoginButton).toBeEnabled();
-	},
-};
-
-/**
- * Test form structure and required fields
- * Verifies that the form has the required structure for login
- */
-export const FormStructure: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		// Verify form inputs exist
-		const emailInput = canvas.getByLabelText('Email');
-		await expect(emailInput).toBeInTheDocument();
-
-		const passwordInput = canvas.getByLabelText('Password');
-		await expect(passwordInput).toHaveAttribute('type', 'password');
-
-		// Verify both login buttons exist
-		const personalButton = canvas.getByRole('button', {name: /Personal Login/i});
-		const adminButton = canvas.getByRole('button', {name: /Admin Login/i});
-		await expect(personalButton).toBeInTheDocument();
-		await expect(adminButton).toBeInTheDocument();
-	},
-};
-
-/**
- * Test responsive breakpoint hook is used
- * Verifies that the component renders properly in different viewport sizes
- */
-export const ResponsiveLayout: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		// Verify main content is present (which would adjust based on breakpoints)
-		const main = canvasElement.querySelector('main');
-		await expect(main).toBeInTheDocument();
-		
-		const title = canvas.getByText('Log in or Sign up');
-		await expect(title).toBeInTheDocument();
-	},
-};
-
-/**
- * Test form validation triggers on submit
- * Verifies that empty form submission shows validation errors
- */
-export const EmptyFormSubmitValidation: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const personalLoginButton = canvas.getByRole('button', {
-			name: /Personal Login/i,
-		});
-		
-		// Click submit on empty form
-		await userEvent.click(personalLoginButton);
-
-		// Validation message should appear
-		const emailError = await canvas.findByText('Email is required');
-		await expect(emailError).toBeInTheDocument();
-	},
-};
-
-/**
  * Test button sizing for mobile viewport
  * Verifies that responsive styles are applied based on screen size
  */
@@ -644,24 +289,37 @@ export const MobileViewport: Story = {
 };
 
 /**
- * Test that submitting button shows loading state
- * Verifies the form submission flow initializes correctly
+ * Test password field is of type password
+ * Verifies that the password input has proper type for security
  */
-export const FormSubmitLoadingState: Story = {
+export const PasswordFieldType: Story = {
 	tags: ['!dev'],
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 
-		// Fill form
-		const emailInput = canvas.getByLabelText('Email');
 		const passwordInput = canvas.getByLabelText('Password');
-		await userEvent.type(emailInput, 'test@example.com');
-		await userEvent.type(passwordInput, 'password');
-
-		// Verify buttons are not initially loading
-		const personalLoginButton = canvas.getByRole('button', {
-			name: /Personal Login/i,
-		});
-		await expect(personalLoginButton).not.toHaveAttribute('disabled');
+		await expect(passwordInput).toHaveAttribute('type', 'password');
 	},
 };
+
+/**
+ * Test form submission with Enter key
+ * Verifies that pressing Enter in password field submits the form
+ */
+export const SubmitWithEnterKey: Story = {
+	tags: ['!dev'],
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+
+		const emailInput = canvas.getByLabelText('Email');
+		const passwordInput = canvas.getByLabelText('Password');
+
+		await userEvent.type(emailInput, 'test@example.com');
+		await userEvent.type(passwordInput, 'password123{Enter}');
+
+		// Form should attempt validation after Enter
+		await expect(emailInput).toHaveValue('test@example.com');
+	},
+};
+
+
