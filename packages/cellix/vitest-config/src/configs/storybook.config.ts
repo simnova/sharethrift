@@ -48,8 +48,6 @@ export function createStorybookVitestConfig(
 			// when using Storybook + Vitest browser mode with Playwright
 			// Local development benefits from parallel execution for faster feedback
 			fileParallelism: !isCI,
-			// Limit concurrent tests to prevent overwhelming Storybook dev server in CI
-			...(isCI ? { maxConcurrency: 5 } : {}),
 			projects: [
 				{
 					extends: true,
@@ -63,10 +61,7 @@ export function createStorybookVitestConfig(
 						browser: {
 							enabled: true,
 							headless: true,
-							provider: playwright({
-								// Increase action timeout for slow CI environments
-								actionTimeout: isCI ? 60000 : 30000,
-							}),
+							provider: playwright(),
 							instances,
 						},
 						setupFiles,

@@ -7,7 +7,7 @@ import {
 	ViewListingCurrentUserDocument,
 	ViewListingDocument,
 } from '../../../../../../generated.tsx';
-import { ViewListing } from './view-listing.tsx';
+import { ViewListing } from './view-listing';
 
 function computeTimeAgo(isoDate: string): string {
 	try {
