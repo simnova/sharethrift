@@ -848,14 +848,14 @@ importers:
   packages/sthrift/graphql:
     dependencies:
       '@apollo/server':
-        specifier: ^5.2.0
-        version: 5.2.0(graphql@16.12.0)
+        specifier: ^5.4.0
+        version: 5.4.0(graphql@16.12.0)
       '@apollo/utils.withrequired':
         specifier: ^3.0.0
         version: 3.0.0
       '@as-integrations/azure-functions':
         specifier: ^0.2.0
-        version: 0.2.3(@apollo/server@5.2.0(graphql@16.12.0))
+        version: 0.2.3(@apollo/server@5.4.0(graphql@16.12.0))
       '@azure/functions':
         specifier: 4.8.0
         version: 4.8.0
@@ -1553,8 +1553,8 @@ packages:
     peerDependencies:
       graphql: 14.x || 15.x || 16.x
 
-  '@apollo/server@5.2.0':
-    resolution: {integrity: sha512-OEAl5bwVitkvVkmZlgWksSnQ10FUr6q2qJMdkexs83lsvOGmd/y81X5LoETmKZux8UiQsy/A/xzP00b8hTHH/w==}
+  '@apollo/server@5.4.0':
+    resolution: {integrity: sha512-E0/2C5Rqp7bWCjaDh4NzYuEPDZ+dltTf2c0FI6GCKJA6GBetVferX3h1//1rS4+NxD36wrJsGGJK+xyT/M3ysg==}
     engines: {node: '>=20'}
     peerDependencies:
       graphql: ^16.11.0
@@ -12177,7 +12177,7 @@ snapshots:
       '@apollo/utils.logger': 3.0.0
       graphql: 16.12.0
 
-  '@apollo/server@5.2.0(graphql@16.12.0)':
+  '@apollo/server@5.4.0(graphql@16.12.0)':
     dependencies:
       '@apollo/cache-control-types': 1.0.3(graphql@16.12.0)
       '@apollo/server-gateway-interface': 2.0.0(graphql@16.12.0)
@@ -12192,6 +12192,7 @@ snapshots:
       '@graphql-tools/schema': 10.0.31(graphql@16.12.0)
       async-retry: 1.3.3
       body-parser: 2.2.2
+      content-type: 1.0.5
       cors: 2.8.5
       finalhandler: 2.1.1
       graphql: 16.12.0
@@ -12272,9 +12273,9 @@ snapshots:
     transitivePeerDependencies:
       - encoding
 
-  '@as-integrations/azure-functions@0.2.3(@apollo/server@5.2.0(graphql@16.12.0))':
+  '@as-integrations/azure-functions@0.2.3(@apollo/server@5.4.0(graphql@16.12.0))':
     dependencies:
-      '@apollo/server': 5.2.0(graphql@16.12.0)
+      '@apollo/server': 5.4.0(graphql@16.12.0)
       '@azure/functions': 3.5.1
       '@azure/functions-v4': '@azure/functions@4.8.0'
 
