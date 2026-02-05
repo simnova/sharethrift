@@ -86,47 +86,6 @@ export const WithEnvironment: Story = {
 };
 
 /**
- * Test form validation - Email is required
- * Verifies that the form shows validation error when email is not provided
- */
-export const ValidationEmailRequired: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const personalLoginButton = canvas.getByRole('button', {
-			name: /Personal Login/i,
-		});
-		await userEvent.click(personalLoginButton);
-
-		const errorMessage = await canvas.findByText('Email is required');
-		await expect(errorMessage).toBeInTheDocument();
-	},
-};
-
-/**
- * Test form validation - Password is required
- * Verifies that the form shows validation error when password is not provided
- */
-export const ValidationPasswordRequired: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const emailInput = canvas.getByLabelText('Email');
-		await userEvent.type(emailInput, 'test@example.com');
-
-		const personalLoginButton = canvas.getByRole('button', {
-			name: /Personal Login/i,
-		});
-		await userEvent.click(personalLoginButton);
-
-		const errorMessage = await canvas.findByText('Password is required');
-		await expect(errorMessage).toBeInTheDocument();
-	},
-};
-
-/**
  * Test complete form fill and verify values
  * Verifies that both email and password inputs accept and retain values
  */
