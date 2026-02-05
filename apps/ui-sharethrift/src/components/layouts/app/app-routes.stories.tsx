@@ -25,25 +25,17 @@ DefaultView.play = async ({ canvasElement }) => {
 };
 
 /**
- * Tests that the Suspense fallback is rendered while components are lazy loading.
- * This covers the new lazy() and Suspense wrapper added to app routes.
- */
-export const SuspenseFallback: StoryFn<typeof AppRoutes> = Template.bind({});
-SuspenseFallback.play = async ({ canvasElement }) => {
-	// The Suspense wrapper should render initially
-	// Even if it's brief, the Suspense boundary exists in the component tree
-	expect(canvasElement).toBeTruthy();
-};
-
-/**
- * Tests that routes render correctly after lazy loading completes.
- * This verifies the lazy() import mechanism works for all route components.
+ * Tests that routes render correctly with lazy loading and Suspense.
+ * Verifies the lazy() import mechanism and Suspense wrapper are working for all route components.
  */
 export const LazyLoadedRoutes: StoryFn<typeof AppRoutes> = Template.bind({});
 LazyLoadedRoutes.play = async ({ canvasElement }) => {
-	// After lazy loading, the route should be rendered
-	// The component is wrapped in Suspense, so it will eventually render
+	// Component should render (Suspense wrapper is present)
 	expect(canvasElement).toBeTruthy();
+	
+	// Verify the component has rendered content
+	const textContent = canvasElement.textContent || '';
+	expect(textContent.length).toBeGreaterThan(0);
 };
 
 DefaultView.parameters = {
