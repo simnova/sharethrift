@@ -9,10 +9,10 @@ import {
 	ListingsPageContainerGetListingsDocument,
 	SelectAccountTypeContainerAccountPlansDocument,
 	SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
-	UseUserIsAdminDocument,
 } from './generated.tsx';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { MockUnauthWrapper } from './test-utils/storybook-mock-auth-wrappers.tsx';
+import { userIsAdminMockRequest } from './test-utils/storybook-helpers.ts';
 
 const mockListings = [
 	{
@@ -58,28 +58,22 @@ const buildListingsMock = (listings = mockListings) => ({
 	result: { data: { itemListings: listings } },
 });
 
-const buildUseUserIsAdminMock = (isAdmin = false) => ({
-	request: { query: UseUserIsAdminDocument },
-	result: { data: { currentUser: { useUserIsAdmin: isAdmin } } },
-});
-
 const meta: Meta<typeof AppContainer> = {
 	title: 'App/AppContainer',
 	component: AppContainer,
 	parameters: {
 		layout: 'fullscreen',
 	},
-  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
 // Helper to build a current-user mock
-const buildCurrentUserMock = (opts: {
-	id?: string;
-	hasCompletedOnboarding?: boolean;
-} = {}) => ({
+const buildCurrentUserMock = (
+	opts: { id?: string; hasCompletedOnboarding?: boolean } = {},
+) => ({
 	request: {
 		query: AppContainerCurrentUserDocument,
 		variables: {},
@@ -110,7 +104,11 @@ export const AuthenticatedCompletedOnboarding: Story = {
 	decorators: [withMockApolloClient, withMockRouter('/')],
 	parameters: {
 		apolloClient: {
-			mocks: [mockAuthenticatedCompletedOnboarding, buildListingsMock(), buildUseUserIsAdminMock(false)],
+			mocks: [
+				mockAuthenticatedCompletedOnboarding,
+				buildListingsMock(),
+				userIsAdminMockRequest('user-123', false),
+			],
 		},
 	},
 };
@@ -138,7 +136,7 @@ export const AuthenticatedNotCompletedOnboarding: Story = {
 					},
 				},
 				buildListingsMock(),
-				buildUseUserIsAdminMock(false),
+				userIsAdminMockRequest('user-456', false),
 				{
 					request: { query: SelectAccountTypeContainerAccountPlansDocument },
 					result: {
@@ -214,7 +212,7 @@ export const AuthenticatedNotCompletedOnboarding: Story = {
 									__typename: 'AccountPlan',
 								},
 							],
-					},
+						},
 					},
 				},
 			],
@@ -237,10 +235,7 @@ export const Unauthenticated: Story = {
 	],
 	parameters: {
 		apolloClient: {
-			mocks: [
-        buildListingsMock(),
-        buildUseUserIsAdminMock(false),
-      ],
+			mocks: [buildListingsMock(), userIsAdminMockRequest('user-456', false)],
 		},
 	},
 };
