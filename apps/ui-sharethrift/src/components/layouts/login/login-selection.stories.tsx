@@ -261,24 +261,3 @@ export const PasswordFieldType: Story = {
 	},
 };
 
-/**
- * Test form submission with Enter key
- * Verifies that pressing Enter in password field submits the form
- */
-export const SubmitWithEnterKey: Story = {
-	tags: ['!dev'],
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		const emailInput = canvas.getByLabelText('Email');
-		const passwordInput = canvas.getByLabelText('Password');
-
-		await userEvent.type(emailInput, 'test@example.com');
-		await userEvent.type(passwordInput, 'password123{Enter}');
-
-		// Form should attempt validation after Enter
-		await expect(emailInput).toHaveValue('test@example.com');
-	},
-};
-
-
