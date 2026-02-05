@@ -1,7 +1,7 @@
 import type { Meta, StoryFn } from '@storybook/react';
 import { SignupRoutes } from './index.tsx';
 import { withMockApolloClient, withMockRouter } from '../../../test-utils/storybook-decorators.tsx';
-import { expect, within } from 'storybook/test';
+import { expect } from 'storybook/test';
 
 const meta: Meta<typeof SignupRoutes> = {
 	title: 'Layouts/Signup Routes',
