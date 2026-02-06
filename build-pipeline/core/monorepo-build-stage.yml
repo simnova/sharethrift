@@ -505,10 +505,22 @@ stages:
         archiveFile: $(Build.ArtifactStagingDirectory)/ui-sharethrift-$(Build.BuildId).zip
         replaceExistingArchive: true
 
+    # Build Docs if they have changes
+    - task: Bash@3
+      displayName: 'Build Docs'
+      condition: and(succeeded(), eq(variables['BuildJob.HAS_DOCS_CHANGES'], 'true'))
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          echo "Building docs..."
+          pnpm run build --filter=@sthrift/docs
+        workingDirectory: ''
+
     # Package Docs compiled assets into artifact
     - task: ArchiveFiles@2
       displayName: 'Artifact: Prepare Docs'
-      # condition: and(succeeded(), eq(variables['BuildJob.HAS_DOCS_CHANGES'], 'true'), ne(variables['Build.Reason'], 'PullRequest'))
+      condition: and(succeeded(), eq(variables['BuildJob.HAS_DOCS_CHANGES'], 'true'))
       inputs:
         rootFolderOrFile: 'apps/docs/build'
         includeRootFolder: false
@@ -531,5 +543,5 @@ stages:
     # Upload Docs artifact as build result
     - publish: $(Build.ArtifactStagingDirectory)/docs-$(Build.BuildId).zip
       displayName: 'Artifact: Publish Docs'
-      condition: and(succeeded(), eq(variables['BuildJob.HAS_DOCS_CHANGES'], 'true'), ne(variables['Build.Reason'], 'PullRequest'))
+      condition: and(succeeded(), eq(variables['BuildJob.HAS_DOCS_CHANGES'], 'true'))
       artifact: docs
