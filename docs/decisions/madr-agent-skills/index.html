@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en" dir="ltr" class="docs-wrapper plugin-docs plugin-id-default docs-version-current docs-doc-page docs-doc-id-decisions/madr-agent-skills" data-has-hydrated="false">
+<head>
+<meta charset="UTF-8">
+<meta name="generator" content="Docusaurus v3.9.2">
+<title data-rh="true">Integrate Agent Skills for AI-Assisted Development | Sharethrift Docs</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://developers.sharethrift.com/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://developers.sharethrift.com/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://developers.sharethrift.com/docs/decisions/madr-agent-skills"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Integrate Agent Skills for AI-Assisted Development | Sharethrift Docs"><meta data-rh="true" name="description" content="Decision record for integrating Agent Skills to enhance AI-assisted development with domain-specific context."><meta data-rh="true" property="og:description" content="Decision record for integrating Agent Skills to enhance AI-assisted development with domain-specific context."><link data-rh="true" rel="icon" href="/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://developers.sharethrift.com/docs/decisions/madr-agent-skills"><link data-rh="true" rel="alternate" href="https://developers.sharethrift.com/docs/decisions/madr-agent-skills" hreflang="en"><link data-rh="true" rel="alternate" href="https://developers.sharethrift.com/docs/decisions/madr-agent-skills" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Decisions","item":"https://developers.sharethrift.com/docs/category/decisions"},{"@type":"ListItem","position":2,"name":"0024 Agent Skills Integration","item":"https://developers.sharethrift.com/docs/decisions/madr-agent-skills"}]}</script><link rel="alternate" type="application/rss+xml" href="/blog/rss.xml" title="Sharethrift Docs RSS Feed">
+<link rel="alternate" type="application/atom+xml" href="/blog/atom.xml" title="Sharethrift Docs Atom Feed"><link rel="stylesheet" href="/assets/css/styles.081213ac.css">
+<script src="/assets/js/runtime~main.eaba0abf.js" defer="defer"></script>
+<script src="/assets/js/main.cdbf1bd1.js" defer="defer"></script>
+</head>
+<body class="navigation-with-keyboard">
+<svg style="display: none;"><defs>
+<symbol id="theme-svg-external-link" viewBox="0 0 24 24"><path fill="currentColor" d="M21 13v10h-21v-19h12v2h-10v15h17v-8h2zm3-12h-10.988l4.035 4-6.977 7.07 2.828 2.828 6.977-7.07 4.125 4.172v-11z"/></symbol>
+</defs></svg>
+<script>!function(){var t=function(){try{return new URLSearchParams(window.location.search).get("docusaurus-theme")}catch(t){}}()||function(){try{return window.localStorage.getItem("theme")}catch(t){}}();document.documentElement.setAttribute("data-theme",t||"light"),document.documentElement.setAttribute("data-theme-choice",t||"light")}(),function(){try{const c=new URLSearchParams(window.location.search).entries();for(var[t,e]of c)if(t.startsWith("docusaurus-data-")){var a=t.replace("docusaurus-data-","data-");document.documentElement.setAttribute(a,e)}}catch(t){}}()</script><div id="__docusaurus"><link rel="preload" as="image" href="/img/logo.svg"><div role="region" aria-label="Skip to main content"><a class="skipToContent_YnJl" href="#__docusaurus_skipToContent_fallback">Skip to main content</a></div><nav aria-label="Main" class="theme-layout-navbar navbar navbar--fixed-top"><div class="navbar__inner"><div class="theme-layout-navbar-left navbar__items"><button aria-label="Toggle navigation bar" aria-expanded="false" class="navbar__toggle clean-btn" type="button"><svg width="30" height="30" viewBox="0 0 30 30" aria-hidden="true"><path stroke="currentColor" stroke-linecap="round" stroke-miterlimit="10" stroke-width="2" d="M4 7h22M4 15h22M4 23h22"></path></svg></button><a class="navbar__brand" href="/"><div class="navbar__logo"><img src="/img/logo.svg" alt="Sharethrift Logo" class="themedComponent_jyE1 themedComponent--light_OUff"><img src="/img/logo.svg" alt="Sharethrift Logo" class="themedComponent_jyE1 themedComponent--dark_aDxZ"></div><b class="navbar__title text--truncate">Home</b></a><a aria-current="page" class="navbar__item navbar__link navbar__link--active" href="/docs/intro">Doc</a><a class="navbar__item navbar__link" href="/blog">Blog</a></div><div class="theme-layout-navbar-right navbar__items navbar__items--right"><a href="https://github.com/simnova/sharethrift" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_z7OM"><use href="#theme-svg-external-link"></use></svg></a><div class="toggle_YFSN colorModeToggle__ti1"><button class="clean-btn toggleButton_R2F7 toggleButtonDisabled_Mxo2" type="button" disabled="" title="system mode" aria-label="Switch between dark and light mode (currently system mode)"><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_MtKO lightToggleIcon_r026"><path fill="currentColor" d="M12,9c1.65,0,3,1.35,3,3s-1.35,3-3,3s-3-1.35-3-3S10.35,9,12,9 M12,7c-2.76,0-5,2.24-5,5s2.24,5,5,5s5-2.24,5-5 S14.76,7,12,7L12,7z M2,13l2,0c0.55,0,1-0.45,1-1s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S1.45,13,2,13z M20,13l2,0c0.55,0,1-0.45,1-1 s-0.45-1-1-1l-2,0c-0.55,0-1,0.45-1,1S19.45,13,20,13z M11,2v2c0,0.55,0.45,1,1,1s1-0.45,1-1V2c0-0.55-0.45-1-1-1S11,1.45,11,2z M11,20v2c0,0.55,0.45,1,1,1s1-0.45,1-1v-2c0-0.55-0.45-1-1-1C11.45,19,11,19.45,11,20z M5.99,4.58c-0.39-0.39-1.03-0.39-1.41,0 c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0s0.39-1.03,0-1.41L5.99,4.58z M18.36,16.95 c-0.39-0.39-1.03-0.39-1.41,0c-0.39,0.39-0.39,1.03,0,1.41l1.06,1.06c0.39,0.39,1.03,0.39,1.41,0c0.39-0.39,0.39-1.03,0-1.41 L18.36,16.95z M19.42,5.99c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06c-0.39,0.39-0.39,1.03,0,1.41 s1.03,0.39,1.41,0L19.42,5.99z M7.05,18.36c0.39-0.39,0.39-1.03,0-1.41c-0.39-0.39-1.03-0.39-1.41,0l-1.06,1.06 c-0.39,0.39-0.39,1.03,0,1.41s1.03,0.39,1.41,0L7.05,18.36z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_MtKO darkToggleIcon_ikf3"><path fill="currentColor" d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3L12,3z"></path></svg><svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" class="toggleIcon_MtKO systemToggleIcon_N3nO"><path fill="currentColor" d="m12 21c4.971 0 9-4.029 9-9s-4.029-9-9-9-9 4.029-9 9 4.029 9 9 9zm4.95-13.95c1.313 1.313 2.05 3.093 2.05 4.95s-0.738 3.637-2.05 4.95c-1.313 1.313-3.093 2.05-4.95 2.05v-14c1.857 0 3.637 0.737 4.95 2.05z"></path></svg></button></div><div class="navbarSearchContainer_vbMF"></div></div></div><div role="presentation" class="navbar-sidebar__backdrop"></div></nav><div id="__docusaurus_skipToContent_fallback" class="theme-layout-main main-wrapper mainWrapper_UNGN"><div class="docsWrapper_m18Q"><button aria-label="Scroll back to top" class="clean-btn theme-back-to-top-button backToTopButton_pFY2" type="button"></button><div class="docRoot_oo5D"><aside class="theme-doc-sidebar-container docSidebarContainer_leLC"><div class="sidebarViewport_MSxz"><div class="sidebar_NAmV"><nav aria-label="Docs sidebar" class="menu thin-scrollbar menu_Dek_"><ul class="theme-doc-sidebar-menu menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-1 menu__list-item"><a class="menu__link" href="/docs/intro"><span title="Introduction 👋" class="linkLabel_P7mk">Introduction 👋</span></a></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_PIrx menu__link menu__link--sublist" href="/docs/category/technical-overview"><span title="Technical Overview" class="categoryLinkLabel_xVlR">Technical Overview</span></a><button aria-label="Expand sidebar category &#x27;Technical Overview&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item"><div class="menu__list-item-collapsible"><a class="categoryLink_PIrx menu__link menu__link--sublist menu__link--active" href="/docs/category/decisions"><span title="Decisions" class="categoryLinkLabel_xVlR">Decisions</span></a><button aria-label="Collapse sidebar category &#x27;Decisions&#x27;" aria-expanded="true" type="button" class="clean-btn menu__caret"></button></div><ul class="menu__list"><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/madr-architecture-decisions"><span title="0001 MADR Architecture Decisions" class="linkLabel_P7mk">0001 MADR Architecture Decisions</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/open-telemetry"><span title="0002 Open Telemetry" class="linkLabel_P7mk">0002 Open Telemetry</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/domain-driven-design"><span title="0003 Domain Driven Design" class="linkLabel_P7mk">0003 Domain Driven Design</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/identity-access"><span title="0004 Identity and Access Control" class="linkLabel_P7mk">0004 Identity and Access Control</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/authorization"><span title="0005 Authorization and Access Pattern" class="linkLabel_P7mk">0005 Authorization and Access Pattern</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/maps"><span title="0006 Azure Maps Integration Decision" class="linkLabel_P7mk">0006 Azure Maps Integration Decision</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/serenityjs"><span title="0007 SerenityJS" class="linkLabel_P7mk">0007 SerenityJS</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/cache-purging"><span title="0009 Cache Purging" class="linkLabel_P7mk">0009 Cache Purging</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/react-router-loaders"><span title="0010 React Router Loadeer" class="linkLabel_P7mk">0010 React Router Loadeer</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/bicep"><span title="0011 Bicep" class="linkLabel_P7mk">0011 Bicep</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/linter"><span title="0012 Linter Oxlint vs Biome" class="linkLabel_P7mk">0012 Linter Oxlint vs Biome</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/test-suite"><span title="0013 Test Suite Selection" class="linkLabel_P7mk">0013 Test Suite Selection</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/azure-infrastructure-deployments"><span title="0014 Azure Infrastructure Deployments" class="linkLabel_P7mk">0014 Azure Infrastructure Deployments</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/sonarcloud"><span title="0015 SonarCloud Node16 EOL" class="linkLabel_P7mk">0015 SonarCloud Node16 EOL</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/adr-template"><span title="ADR Template" class="linkLabel_P7mk">ADR Template</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/sonarcloud-code-duplication-checks"><span title="0016 SonarCloud Code Duplication Checks" class="linkLabel_P7mk">0016 SonarCloud Code Duplication Checks</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/adr-short-template"><span title="ADR Short Template" class="linkLabel_P7mk">ADR Short Template</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/chrome-content-overrides"><span title="0017 Chrome Content Overrides" class="linkLabel_P7mk">0017 Chrome Content Overrides</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/docusaurus-azure-pipeline-stages"><span title="0018 Docusaurus Azure Pipeline Stages" class="linkLabel_P7mk">0018 Docusaurus Azure Pipeline Stages</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/existing-azure-upload"><span title="0022 Existing Azure Upload" class="linkLabel_P7mk">0022 Existing Azure Upload</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link" tabindex="0" href="/docs/decisions/snyk-security-integration"><span title="snyk-security-integration" class="linkLabel_P7mk">snyk-security-integration</span></a></li><li class="theme-doc-sidebar-item-link theme-doc-sidebar-item-link-level-2 menu__list-item"><a class="menu__link menu__link--active" aria-current="page" tabindex="0" href="/docs/decisions/madr-agent-skills"><span title="0024 Agent Skills Integration" class="linkLabel_P7mk">0024 Agent Skills Integration</span></a></li></ul></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_PIrx menu__link menu__link--sublist" href="/docs/category/security-overview"><span title="Security Overview" class="categoryLinkLabel_xVlR">Security Overview</span></a><button aria-label="Expand sidebar category &#x27;Security Overview&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_PIrx menu__link menu__link--sublist" href="/docs/category/security-requirements"><span title="Security Requirements" class="categoryLinkLabel_xVlR">Security Requirements</span></a><button aria-label="Expand sidebar category &#x27;Security Requirements&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li><li class="theme-doc-sidebar-item-category theme-doc-sidebar-item-category-level-1 menu__list-item menu__list-item--collapsed"><div class="menu__list-item-collapsible"><a class="categoryLink_PIrx menu__link menu__link--sublist" href="/docs/category/threat-assessments"><span title="Threat Assessments" class="categoryLinkLabel_xVlR">Threat Assessments</span></a><button aria-label="Expand sidebar category &#x27;Threat Assessments&#x27;" aria-expanded="false" type="button" class="clean-btn menu__caret"></button></div></li></ul></nav></div></div></aside><main class="docMainContainer_ZAAI"><div class="container padding-top--md padding-bottom--lg"><div class="row"><div class="col docItemCol_kgUi"><div class="docItemContainer_rSGg"><article><nav class="theme-doc-breadcrumbs breadcrumbsContainer_EQ2J" aria-label="Breadcrumbs"><ul class="breadcrumbs"><li class="breadcrumbs__item"><a aria-label="Home page" class="breadcrumbs__link" href="/"><svg viewBox="0 0 24 24" class="breadcrumbHomeIcon_CfSP"><path d="M10 19v-5h4v5c0 .55.45 1 1 1h3c.55 0 1-.45 1-1v-7h1.7c.46 0 .68-.57.33-.87L12.67 3.6c-.38-.34-.96-.34-1.34 0l-8.36 7.53c-.34.3-.13.87.33.87H5v7c0 .55.45 1 1 1h3c.55 0 1-.45 1-1z" fill="currentColor"></path></svg></a></li><li class="breadcrumbs__item"><a class="breadcrumbs__link" href="/docs/category/decisions"><span>Decisions</span></a></li><li class="breadcrumbs__item breadcrumbs__item--active"><span class="breadcrumbs__link">0024 Agent Skills Integration</span></li></ul></nav><div class="tocCollapsible_KgiJ theme-doc-toc-mobile tocMobile_I2QL"><button type="button" class="clean-btn tocCollapsibleButton_HE7g">On this page</button></div><div class="theme-doc-markdown markdown"><header><h1>Integrate Agent Skills for AI-Assisted Development</h1></header>
+<h2 class="anchor anchorTargetStickyNavbar_Yx5z" id="context-and-problem-statement">Context and Problem Statement<a href="#context-and-problem-statement" class="hash-link" aria-label="Direct link to Context and Problem Statement" title="Direct link to Context and Problem Statement" translate="no">​</a></h2>
+<p>AI coding assistants like GitHub Copilot provide general programming assistance but lack project-specific architectural context and patterns. As the ShareThrift project grows in complexity with DDD architecture, microservices patterns, event sourcing, CQRS, and enterprise patterns, we need to provide AI agents with structured understanding of our architecture and best practices.</p>
+<p>Agent Skills provide structured, discoverable context in a standardized format that AI agents can consume effectively. The Skills CLI enables easy installation, updating, and management of both community-maintained and custom skills.</p>
+<h2 class="anchor anchorTargetStickyNavbar_Yx5z" id="decision-drivers">Decision Drivers<a href="#decision-drivers" class="hash-link" aria-label="Direct link to Decision Drivers" title="Direct link to Decision Drivers" translate="no">​</a></h2>
+<ul>
+<li class=""><strong>Contextual AI assistance</strong>: Enable AI agents to understand project-specific architecture and patterns</li>
+<li class=""><strong>Pattern consistency</strong>: Ensure AI-generated code follows established DDD, CQRS, and enterprise patterns</li>
+<li class=""><strong>Technology expertise</strong>: Provide AI agents with Apollo GraphQL, Turborepo, React 19, and Azure best practices</li>
+<li class=""><strong>Maintainability</strong>: Use industry-standard skill format that&#x27;s easy to update and extend</li>
+<li class=""><strong>Team alignment</strong>: Share common understanding of patterns across human developers and AI agents</li>
+<li class=""><strong>Version control</strong>: Track skills changes alongside code changes in git</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Yx5z" id="implementation-strategy">Implementation Strategy<a href="#implementation-strategy" class="hash-link" aria-label="Direct link to Implementation Strategy" title="Direct link to Implementation Strategy" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="1-skills-cli-integration">1. Skills CLI Integration<a href="#1-skills-cli-integration" class="hash-link" aria-label="Direct link to 1. Skills CLI Integration" title="Direct link to 1. Skills CLI Integration" translate="no">​</a></h3>
+<p><strong>Installation and Management</strong>:</p>
+<div class="language-bash codeBlockContainer_pcba theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_i37J"><pre tabindex="0" class="prism-code language-bash codeBlock_vlrX thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_oa44"><span class="token-line" style="color:#393A34"><span class="token plain"># Install skills via pnpm (preferred over npx)</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills add &lt;repository&gt; --skill &lt;skill-name&gt;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># List installed skills</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills list</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># Update all skills to latest versions</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills update</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"># Remove a skill</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills remove &lt;skill-name&gt;</span><br></span></code></pre></div></div>
+<p>When given options, select symlink, project wide for the installation, and github copilot and the only agent.</p>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="2-installed-skills">2. Installed Skills<a href="#2-installed-skills" class="hash-link" aria-label="Direct link to 2. Installed Skills" title="Direct link to 2. Installed Skills" translate="no">​</a></h3>
+<p><strong>Technology-Specific Skills</strong> (from public repositories):</p>
+<ol>
+<li class="">
+<p><strong>apollo-client</strong> (from <code>apollographql/skills</code>)</p>
+<ul>
+<li class="">Apollo Client 4.x best practices</li>
+<li class="">Cache configuration and optimization</li>
+<li class="">Suspense hooks and modern React patterns</li>
+<li class="">Data masking and component boundaries</li>
+<li class="">Source: Apollo GraphQL official skills</li>
+</ul>
+</li>
+<li class="">
+<p><strong>apollo-server</strong> (from <code>apollographql/skills</code>)</p>
+<ul>
+<li class="">Apollo Server 4.x patterns</li>
+<li class="">DataLoader for N+1 query prevention</li>
+<li class="">Error handling and logging standards</li>
+<li class="">Context management and authentication</li>
+<li class="">Source: Apollo GraphQL official skills</li>
+</ul>
+</li>
+<li class="">
+<p><strong>graphql-operations</strong> (from <code>apollographql/skills</code>)</p>
+<ul>
+<li class="">GraphQL query/mutation best practices</li>
+<li class="">Fragment composition</li>
+<li class="">Operation naming conventions</li>
+<li class="">Source: Apollo GraphQL official skills</li>
+</ul>
+</li>
+<li class="">
+<p><strong>graphql-schema</strong> (from <code>apollographql/skills</code>)</p>
+<ul>
+<li class="">GraphQL schema design patterns</li>
+<li class="">Type system best practices</li>
+<li class="">Schema federation (if applicable)</li>
+<li class="">Source: Apollo GraphQL official skills</li>
+</ul>
+</li>
+<li class="">
+<p><strong>turborepo</strong> (from <code>vercel/turborepo</code>)</p>
+<ul>
+<li class="">Turborepo task orchestration</li>
+<li class="">Caching strategies</li>
+<li class="">Pipeline dependencies</li>
+<li class="">Workspace configuration</li>
+<li class="">Source: Vercel/Turborepo official skills</li>
+</ul>
+</li>
+<li class="">
+<p><strong>vercel-react-best-practices</strong> (from <code>vercel-labs/agent-skills</code>)</p>
+<ul>
+<li class="">React 19 patterns and best practices</li>
+<li class="">Performance optimization</li>
+<li class="">Component composition</li>
+<li class="">Hook patterns</li>
+<li class="">Source: Vercel official skills</li>
+</ul>
+</li>
+</ol>
+<p><strong>Enterprise Architecture Skills</strong> (from specialized repositories):</p>
+<ol start="7">
+<li class=""><strong>enterprise-architecture-patterns</strong> (from <code>manutej/luxor-claude-marketplace</code>)<!-- -->
+<ul>
+<li class="">Domain-Driven Design (Strategic &amp; Tactical patterns)</li>
+<li class="">Event Sourcing with snapshots</li>
+<li class="">CQRS (Command Query Responsibility Segregation)</li>
+<li class="">Saga Pattern (Orchestration &amp; Choreography)</li>
+<li class="">API Gateway &amp; Backend-for-Frontend (BFF) patterns</li>
+<li class="">Service Mesh configuration</li>
+<li class="">Resilience Patterns (Circuit Breaker, Retry, Bulkhead)</li>
+<li class="">Distributed systems design</li>
+<li class="">Source: Community-maintained enterprise patterns skill (2457 lines)</li>
+</ul>
+</li>
+</ol>
+<p><strong>Skill File Format</strong>:
+Each skill contains a <code>SKILL.md</code> file with:</p>
+<ul>
+<li class=""><strong>Metadata header</strong>: Name, description, tags, tier</li>
+<li class=""><strong>When to use</strong>: Contextual guidance for AI agents</li>
+<li class=""><strong>Patterns and examples</strong>: Concrete code examples</li>
+<li class=""><strong>Best practices</strong>: Dos and don&#x27;ts</li>
+<li class=""><strong>Common pitfalls</strong>: Anti-patterns to avoid</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="3-skills-update-workflow">3. Skills Update Workflow<a href="#3-skills-update-workflow" class="hash-link" aria-label="Direct link to 3. Skills Update Workflow" title="Direct link to 3. Skills Update Workflow" translate="no">​</a></h3>
+<p><strong>Limitation</strong>: The <code>pnpm dlx skills update</code> command has limitations:</p>
+<ul>
+<li class="">Updates <strong>modified files</strong> in skills</li>
+<li class="">Does <strong>NOT restore deleted files</strong></li>
+<li class="">Performs diff/comparison, not full restoration</li>
+</ul>
+<p><strong>To restore corrupted skills</strong>:</p>
+<div class="language-bash codeBlockContainer_pcba theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_i37J"><pre tabindex="0" class="prism-code language-bash codeBlock_vlrX thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_oa44"><span class="token-line" style="color:#393A34"><span class="token plain"># Remove and reinstall</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills remove &lt;skill-name&gt;</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills add &lt;repository&gt; --skill &lt;skill-name&gt;</span><br></span></code></pre></div></div>
+<p><strong>Update cadence</strong>:</p>
+<ul>
+<li class="">Run <code>pnpm dlx skills update</code> weekly or when skills repositories announce updates</li>
+<li class="">Review skill changes before committing updates</li>
+<li class="">Test AI agent behavior after major skill updates</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="4-custom-skills-future">4. Custom Skills (Future)<a href="#4-custom-skills-future" class="hash-link" aria-label="Direct link to 4. Custom Skills (Future)" title="Direct link to 4. Custom Skills (Future)" translate="no">​</a></h3>
+<p>For ShareThrift-specific patterns not available in public repositories:</p>
+<ul>
+<li class="">Domain models for ShareThrift business logic</li>
+<li class="">Cellix framework patterns and conventions</li>
+<li class="">Azure Functions + DDD integration patterns</li>
+<li class="">Custom bounded context structures</li>
+</ul>
+<p><strong>Creating custom skills</strong>:</p>
+<div class="language-bash codeBlockContainer_pcba theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_i37J"><pre tabindex="0" class="prism-code language-bash codeBlock_vlrX thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_oa44"><span class="token-line" style="color:#393A34"><span class="token plain"># Add custom skill from ShareThrift repository</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills add simnova/sharethrift --skill sharethrift-domain-patterns</span><br></span></code></pre></div></div>
+<h2 class="anchor anchorTargetStickyNavbar_Yx5z" id="consequences">Consequences<a href="#consequences" class="hash-link" aria-label="Direct link to Consequences" title="Direct link to Consequences" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="positive">Positive<a href="#positive" class="hash-link" aria-label="Direct link to Positive" title="Direct link to Positive" translate="no">​</a></h3>
+<ul>
+<li class="">Enhanced AI understanding of DDD, CQRS, event sourcing, and enterprise patterns</li>
+<li class="">AI-generated code follows established architectural patterns consistently</li>
+<li class="">AI agents understand Apollo GraphQL, Turborepo, React 19 best practices</li>
+<li class="">Reduced anti-patterns (N+1 queries, cache anti-patterns, Turborepo bypasses)</li>
+<li class="">Faster development with AI agents suggesting architecture-aligned solutions</li>
+<li class="">Skills serve as living documentation for both AI and human developers</li>
+<li class="">Benefit from Apollo, Vercel, and community-maintained skills</li>
+<li class="">Skills CLI simplifies installation and updates</li>
+<li class="">Skills tracked in git alongside code</li>
+<li class="">Same skills available locally and in CI/CD pipelines</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="negative">Negative<a href="#negative" class="hash-link" aria-label="Direct link to Negative" title="Direct link to Negative" translate="no">​</a></h3>
+<ul>
+<li class="">Team must maintain skills directory and keep skills updated periodically</li>
+<li class="">Developers need to understand skills concept and CLI commands</li>
+<li class="">Skills must be updated periodically to stay current with upstream changes</li>
+<li class=""><code>skills update</code> doesn&#x27;t restore deleted files, requires full reinstall</li>
+<li class="">Skills CLI doesn&#x27;t generate version lock files (unlike npm/pnpm)</li>
+</ul>
+<h2 class="anchor anchorTargetStickyNavbar_Yx5z" id="more-information">More Information<a href="#more-information" class="hash-link" aria-label="Direct link to More Information" title="Direct link to More Information" translate="no">​</a></h2>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="validation">Validation<a href="#validation" class="hash-link" aria-label="Direct link to Validation" title="Direct link to Validation" translate="no">​</a></h3>
+<p>Local development validation criteria:</p>
+<ul>
+<li class="">AI agents reference skills when suggesting code changes</li>
+<li class="">Code suggestions align with DDD patterns, Apollo best practices, and Turborepo conventions</li>
+<li class="">AI agents identify anti-patterns (N+1 queries, prebuild scripts, manual cache updates)</li>
+<li class="">Skills content is visible when asking AI agents about architectural patterns</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="installed-skills-sources">Installed Skills Sources<a href="#installed-skills-sources" class="hash-link" aria-label="Direct link to Installed Skills Sources" title="Direct link to Installed Skills Sources" translate="no">​</a></h3>
+<ol>
+<li class="">
+<p><strong>Apollo Skills</strong>: <a href="https://github.com/apollographql/skills" target="_blank" rel="noopener noreferrer" class="">https://github.com/apollographql/skills</a></p>
+<ul>
+<li class="">apollo-client, apollo-server, graphql-operations, graphql-schema</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Turborepo Skills</strong>: <a href="https://github.com/vercel/turborepo" target="_blank" rel="noopener noreferrer" class="">https://github.com/vercel/turborepo</a></p>
+<ul>
+<li class="">turborepo</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Vercel Skills</strong>: <a href="https://github.com/vercel-labs/agent-skills" target="_blank" rel="noopener noreferrer" class="">https://github.com/vercel-labs/agent-skills</a></p>
+<ul>
+<li class="">vercel-react-best-practices</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Enterprise Architecture Skills</strong>: <a href="https://github.com/manutej/luxor-claude-marketplace" target="_blank" rel="noopener noreferrer" class="">https://github.com/manutej/luxor-claude-marketplace</a></p>
+<ul>
+<li class="">enterprise-architecture-patterns (comprehensive DDD, CQRS, Saga, Event Sourcing guide)</li>
+</ul>
+</li>
+</ol>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="skills-cli-documentation">Skills CLI Documentation<a href="#skills-cli-documentation" class="hash-link" aria-label="Direct link to Skills CLI Documentation" title="Direct link to Skills CLI Documentation" translate="no">​</a></h3>
+<ul>
+<li class=""><strong>Skills CLI GitHub</strong>: <a href="https://github.com/skills-sh/skills" target="_blank" rel="noopener noreferrer" class="">https://github.com/skills-sh/skills</a></li>
+<li class=""><strong>Skills Format</strong>: Skills are markdown files with YAML frontmatter</li>
+<li class=""><strong>Installation</strong>: Via npx or pnpm dlx (pnpm dlx preferred for this project)</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="usage-examples">Usage Examples<a href="#usage-examples" class="hash-link" aria-label="Direct link to Usage Examples" title="Direct link to Usage Examples" translate="no">​</a></h3>
+<p><strong>Installing a skill</strong>:</p>
+<div class="language-bash codeBlockContainer_pcba theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_i37J"><pre tabindex="0" class="prism-code language-bash codeBlock_vlrX thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_oa44"><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills add apollographql/skills --skill apollo-client</span><br></span></code></pre></div></div>
+<p><strong>Viewing installed skills</strong>:</p>
+<div class="language-bash codeBlockContainer_pcba theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_i37J"><pre tabindex="0" class="prism-code language-bash codeBlock_vlrX thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_oa44"><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills list</span><br></span></code></pre></div></div>
+<p><strong>Updating all skills</strong>:</p>
+<div class="language-bash codeBlockContainer_pcba theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_i37J"><pre tabindex="0" class="prism-code language-bash codeBlock_vlrX thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_oa44"><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills update</span><br></span></code></pre></div></div>
+<p><strong>Removing a skill</strong>:</p>
+<div class="language-bash codeBlockContainer_pcba theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_i37J"><pre tabindex="0" class="prism-code language-bash codeBlock_vlrX thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_oa44"><span class="token-line" style="color:#393A34"><span class="token plain">pnpm dlx skills remove apollo-client</span><br></span></code></pre></div></div>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="future-considerations">Future Considerations<a href="#future-considerations" class="hash-link" aria-label="Direct link to Future Considerations" title="Direct link to Future Considerations" translate="no">​</a></h3>
+<ul>
+<li class="">
+<p><strong>Custom ShareThrift skills</strong>: Create custom skills for domain-specific patterns:</p>
+<ul>
+<li class="">ShareThrift bounded contexts (Listings, Reservations, Members, IAM)</li>
+<li class="">Cellix framework conventions</li>
+<li class="">Azure Functions + DDD integration patterns</li>
+</ul>
+</li>
+<li class="">
+<p><strong>Lock file consideration</strong>: Monitor Skills CLI for lock file feature (similar to package-lock.json)</p>
+<ul>
+<li class="">Would enable reproducible AI context across environments</li>
+<li class="">Currently not supported by Skills CLI</li>
+</ul>
+</li>
+</ul>
+<h3 class="anchor anchorTargetStickyNavbar_Yx5z" id="related-documents">Related Documents<a href="#related-documents" class="hash-link" aria-label="Direct link to Related Documents" title="Direct link to Related Documents" translate="no">​</a></h3>
+<ul>
+<li class=""><a class="" href="/docs/decisions/domain-driven-design">0003-domain-driven-design.md</a>: DDD patterns that enterprise-architecture-patterns skill reinforces</li>
+<li class=""><a class="" href="/docs/decisions/madr-architecture-decisions">0001-madr-architecture-decisions.md</a>: Decision documentation process this ADR follows</li>
+</ul></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_bE00"><a href="https://github.com/simnova/sharethrift/tree/main/packages/docs/docs/decisions/0024-madr-agent-skills.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_K7ge" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_SpmY"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/docs/decisions/snyk-security-integration"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">snyk-security-integration</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/docs/category/security-overview"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Security Overview</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_ecJo thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#context-and-problem-statement" class="table-of-contents__link toc-highlight">Context and Problem Statement</a></li><li><a href="#decision-drivers" class="table-of-contents__link toc-highlight">Decision Drivers</a></li><li><a href="#implementation-strategy" class="table-of-contents__link toc-highlight">Implementation Strategy</a><ul><li><a href="#1-skills-cli-integration" class="table-of-contents__link toc-highlight">1. Skills CLI Integration</a></li><li><a href="#2-installed-skills" class="table-of-contents__link toc-highlight">2. Installed Skills</a></li><li><a href="#3-skills-update-workflow" class="table-of-contents__link toc-highlight">3. Skills Update Workflow</a></li><li><a href="#4-custom-skills-future" class="table-of-contents__link toc-highlight">4. Custom Skills (Future)</a></li></ul></li><li><a href="#consequences" class="table-of-contents__link toc-highlight">Consequences</a><ul><li><a href="#positive" class="table-of-contents__link toc-highlight">Positive</a></li><li><a href="#negative" class="table-of-contents__link toc-highlight">Negative</a></li></ul></li><li><a href="#more-information" class="table-of-contents__link toc-highlight">More Information</a><ul><li><a href="#validation" class="table-of-contents__link toc-highlight">Validation</a></li><li><a href="#installed-skills-sources" class="table-of-contents__link toc-highlight">Installed Skills Sources</a></li><li><a href="#skills-cli-documentation" class="table-of-contents__link toc-highlight">Skills CLI Documentation</a></li><li><a href="#usage-examples" class="table-of-contents__link toc-highlight">Usage Examples</a></li><li><a href="#future-considerations" class="table-of-contents__link toc-highlight">Future Considerations</a></li><li><a href="#related-documents" class="table-of-contents__link toc-highlight">Related Documents</a></li></ul></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/docs/intro">Doc</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/sharethrift" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_z7OM"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://discordapp.com/invite/sharethrift" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_z7OM"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://x.com/sharethrift" target="_blank" rel="noopener noreferrer" class="footer__link-item">X<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_z7OM"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/blog">Blog</a></li><li class="footer__item"><a href="https://github.com/simnova/sharethrift" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_z7OM"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2026 Simnova, Inc.</div></div></div></footer></div>
+</body>
+</html>
