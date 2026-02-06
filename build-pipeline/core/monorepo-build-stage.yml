@@ -425,13 +425,36 @@ stages:
         SONAR_SCANNER_SKIP_JRE_PROVISIONING: true
         SONAR_TOKEN: $(SONAR_TOKEN)
 
-    # SonarCloud: Break the build if it doesn't pass the Quality Gate
+        # SonarCloud: Break the build if it doesn't pass the Quality Gate
     - task: sonarcloud-buildbreaker@2
       displayName: 'SonarCloud: Break the build if it does not pass the Quality'
       condition: and(succeeded(), eq(${{parameters.disableSonarCloudTasks}}, False))
       inputs:
         SonarCloud: ${{parameters.SonarCloud}}
         organization: ${{parameters.SonarCloud_organization}}
+
+    # Build Docs if they have changes
+    - task: Bash@3
+      displayName: 'Build Docs'
+      condition: and(succeeded(), eq(variables['BuildJob.HAS_DOCS_CHANGES'], 'true'))
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          echo "Building docs..."
+          pnpm run build --filter=@sthrift/docs
+        workingDirectory: ''
+
+    # Package Docs compiled assets into artifact
+    - task: ArchiveFiles@2
+      displayName: 'Artifact: Prepare Docs'
+      condition: and(succeeded(), eq(variables['BuildJob.HAS_DOCS_CHANGES'], 'true'))
+      inputs:
+        rootFolderOrFile: 'apps/docs/build'
+        includeRootFolder: false
+        archiveType: zip
+        archiveFile: $(Build.ArtifactStagingDirectory)/docs-$(Build.BuildId).zip
+        replaceExistingArchive: true
 
     # Deploy API package with production dependencies
     - task: Bash@3
@@ -504,18 +527,6 @@ stages:
         archiveType: zip
         archiveFile: $(Build.ArtifactStagingDirectory)/ui-sharethrift-$(Build.BuildId).zip
         replaceExistingArchive: true
-
-    # Build Docs if they have changes
-    - task: Bash@3
-      displayName: 'Build Docs'
-      condition: and(succeeded(), eq(variables['BuildJob.HAS_DOCS_CHANGES'], 'true'))
-      inputs:
-        targetType: 'inline'
-        script: |
-          set -euo pipefail
-          echo "Building docs..."
-          pnpm run build --filter=@sthrift/docs
-        workingDirectory: ''
 
     # Package Docs compiled assets into artifact
     - task: ArchiveFiles@2
