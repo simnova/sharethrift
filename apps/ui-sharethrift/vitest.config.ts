@@ -16,7 +16,6 @@ export default defineConfig(
 			'**/index.tsx',
 			'**/Index.tsx',
 			'src/main.tsx',
-			'src/test-utils/**/*.stories.*',
 			'src/config/**',
 			'src/test/**',
 			'**/*.d.ts',
