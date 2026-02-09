@@ -183,7 +183,6 @@ export const CategoryFilterInteraction: Story = {
 		selectedCategory: 'All',
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
 				expect(canvasElement).toBeTruthy();
@@ -199,7 +198,7 @@ export const ListingClickInteraction: Story = {
 	args: {
 		isAuthenticated: true,
 	},
-	play: async ({ canvasElement, args }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		await waitFor(
@@ -250,7 +249,6 @@ export const EmptyListings: Story = {
 		totalListings: 0,
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
 				expect(canvasElement).toBeTruthy();
@@ -268,8 +266,7 @@ export const WithSearchQuery: Story = {
 		searchQuery: 'drill',
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		const searchInput = canvas.getByRole('textbox') as HTMLInputElement;
+		const searchInput = canvasElement.querySelector('input[type="text"]') as HTMLInputElement;
 		
 		await waitFor(
 			() => {
@@ -286,7 +283,6 @@ export const WithCategoryFilter: Story = {
 		selectedCategory: 'Tools & Equipment',
 	},
 	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
 				expect(canvasElement).toBeTruthy();
