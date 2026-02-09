@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, waitFor } from 'storybook/test';
 import { gql } from '@apollo/client';
-import { useQuery } from '@apollo/client/react';
-import { useApolloClient } from '@apollo/client/react';
+import { useQuery, useApolloClient } from '@apollo/client/react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from 'react-oidc-context';
 import { useUserId } from '../components/shared/user-context.tsx';
