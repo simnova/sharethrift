@@ -924,8 +924,8 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/messaging-service
       axios:
-        specifier: ^1.13.2
-        version: 1.13.2
+        specifier: ^1.13.5
+        version: 1.13.5
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -1085,8 +1085,8 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/payment-service
       axios:
-        specifier: ^1.13.2
-        version: 1.13.2
+        specifier: ^1.13.5
+        version: 1.13.5
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -24374,7 +24374,7 @@ snapshots:
 
   twilio@5.11.2:
     dependencies:
-      axios: 1.13.2
+      axios: 1.13.5
       dayjs: 1.11.19
       https-proxy-agent: 5.0.1
       jsonwebtoken: 9.0.3
