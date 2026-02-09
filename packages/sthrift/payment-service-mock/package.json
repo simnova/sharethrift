@@ -19,7 +19,7 @@
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
 		"@cellix/payment-service": "workspace:*",
-		"axios": "^1.13.2"
+		"axios": "^1.13.5"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
