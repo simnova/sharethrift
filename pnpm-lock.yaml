@@ -34,6 +34,7 @@ catalogs:
 overrides:
   '@pnpm/npm-conf': '>=3.0.2'
   '@types/node': ^24.10.7
+  axios: '>=1.13.5'
   lodash: ^4.17.23
 
 importers:
@@ -924,7 +925,7 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/messaging-service
       axios:
-        specifier: ^1.13.5
+        specifier: '>=1.13.5'
         version: 1.13.5
     devDependencies:
       '@cellix/typescript-config':
@@ -1057,7 +1058,7 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/payment-service
       axios:
-        specifier: ^1.13.5
+        specifier: '>=1.13.5'
         version: 1.13.5
       cybersource-rest-client:
         specifier: ^0.0.73
@@ -1085,7 +1086,7 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/payment-service
       axios:
-        specifier: ^1.13.5
+        specifier: '>=1.13.5'
         version: 1.13.5
     devDependencies:
       '@cellix/typescript-config':
@@ -5709,20 +5710,8 @@ packages:
     resolution: {integrity: sha512-9vpE3y/a2l2Vs2XEJE4L2z0GWnlpJ4Xj+kDaoCtrpPfS1J3oikXBrxRJX6H62/ZcelOGe+519yW7mqXCIoPXuw==}
     engines: {node: '>=14.18.0 <15.0.0 || >=16.0.0'}
     peerDependencies:
-      axios: '>=0.20.0'
+      axios: '>=1.13.5'
       tough-cookie: '>=4.0.0'
-
-  axios@0.21.4:
-    resolution: {integrity: sha512-ut5vewkiu8jjGBdqpM44XxjuCjq9LAKeHVmoVfHVzy8eHgxxq8SbAVQNovDA8mVi05kP0Ea/n/UzcSHcTJQfNg==}
-
-  axios@0.27.2:
-    resolution: {integrity: sha512-t+yRIyySRTp/wua5xEr+z1q60QmLq8ABsS5O9Me1AsE5dfKqgnCFzwiCZZ/cGNd1lq4/7akDWMxdhVlucjmnOQ==}
-
-  axios@1.12.0:
-    resolution: {integrity: sha512-oXTDccv8PcfjZmPGlWsPSwtOJCZ/b6W5jAMCNcfwJbCzDckwG0jrYJFaWH1yvivfCXjVzV/SPDEhMB3Q+DSurg==}
-
-  axios@1.13.2:
-    resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
 
   axios@1.13.5:
     resolution: {integrity: sha512-cz4ur7Vb0xS4/KUN0tPWe44eqxrIu31me+fbang3ijiNscE129POzipJJA6zniq2C/Z6sJCjMimjS8Lc/GAs8Q==}
@@ -12490,7 +12479,7 @@ snapshots:
   '@azure/ms-rest-js@1.11.2':
     dependencies:
       '@azure/core-auth': 1.10.1
-      axios: 0.21.4
+      axios: 1.13.5
       form-data: 2.5.5
       tough-cookie: 2.5.0
       tslib: 1.14.1
@@ -16467,7 +16456,7 @@ snapshots:
     dependencies:
       '@serenity-js/core': 3.37.1
       agent-base: 7.1.4
-      axios: 1.13.2
+      axios: 1.13.5
       http-proxy-agent: 7.0.2
       https-proxy-agent: 7.0.6
       lru-cache: 11.2.4
@@ -16482,7 +16471,7 @@ snapshots:
       '@serenity-js/core': 3.37.1
       '@serenity-js/rest': 3.37.1
       ansi-regex: 5.0.1
-      axios: 1.13.2
+      axios: 1.13.5
       chalk: 4.1.2
       find-java-home: 2.0.0
       progress: 2.0.3
@@ -16533,7 +16522,7 @@ snapshots:
   '@sonar/scan@4.3.4':
     dependencies:
       adm-zip: 0.5.16
-      axios: 1.13.2
+      axios: 1.13.5
       commander: 13.1.0
       fs-extra: 11.3.3
       hpagent: 1.2.0
@@ -17753,43 +17742,14 @@ snapshots:
 
   axe-core@4.11.1: {}
 
-  axios-cookiejar-support@4.0.7(axios@1.12.0)(tough-cookie@4.1.3)(undici@5.29.0):
+  axios-cookiejar-support@4.0.7(axios@1.13.5)(tough-cookie@4.1.3)(undici@5.29.0):
     dependencies:
-      axios: 1.12.0
+      axios: 1.13.5
       http-cookie-agent: 5.0.4(tough-cookie@4.1.3)(undici@5.29.0)
       tough-cookie: 4.1.3
     transitivePeerDependencies:
       - deasync
       - undici
-
-  axios@0.21.4:
-    dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
-    transitivePeerDependencies:
-      - debug
-
-  axios@0.27.2:
-    dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
-      form-data: 4.0.5
-    transitivePeerDependencies:
-      - debug
-
-  axios@1.12.0:
-    dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
-      form-data: 4.0.5
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
-
-  axios@1.13.2:
-    dependencies:
-      follow-redirects: 1.15.11(debug@4.4.3)
-      form-data: 4.0.5
-      proxy-from-env: 1.1.0
-    transitivePeerDependencies:
-      - debug
 
   axios@1.13.5:
     dependencies:
@@ -17804,7 +17764,7 @@ snapshots:
       '@azure/ms-rest-js': 1.11.2
       applicationinsights: 2.9.8
       args: 5.0.3
-      axios: 0.27.2
+      axios: 1.13.5
       etag: 1.8.1
       express: 4.22.1
       fs-extra: 11.3.3
@@ -18642,8 +18602,8 @@ snapshots:
     dependencies:
       agentkeepalive: 4.6.0
       app-root-path: 3.1.0
-      axios: 1.12.0
-      axios-cookiejar-support: 4.0.7(axios@1.12.0)(tough-cookie@4.1.3)(undici@5.29.0)
+      axios: 1.13.5
+      axios-cookiejar-support: 4.0.7(axios@1.13.5)(tough-cookie@4.1.3)(undici@5.29.0)
       chai: 4.5.0
       chai-as-promised: 7.1.2(chai@4.5.0)
       https-proxy-agent: 7.0.6
