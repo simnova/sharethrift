@@ -273,6 +273,8 @@ stages:
         targetType: 'inline'
         script: |
           set -euo pipefail
+          echo "Ensuring all packages are built before running knip..."
+          pnpm run build
           echo "Running knip to detect unused dependencies..."
           pnpm knip
         workingDirectory: ''
