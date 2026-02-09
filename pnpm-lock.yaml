@@ -924,8 +924,8 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/messaging-service
       axios:
-        specifier: ^1.13.2
-        version: 1.13.2
+        specifier: ^1.13.5
+        version: 1.13.5
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -1057,8 +1057,8 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/payment-service
       axios:
-        specifier: ^1.13.2
-        version: 1.13.2
+        specifier: ^1.13.5
+        version: 1.13.5
       cybersource-rest-client:
         specifier: ^0.0.73
         version: 0.0.73(undici@5.29.0)
@@ -1085,8 +1085,8 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/payment-service
       axios:
-        specifier: ^1.13.2
-        version: 1.13.2
+        specifier: ^1.13.5
+        version: 1.13.5
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -5723,6 +5723,9 @@ packages:
 
   axios@1.13.2:
     resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
+
+  axios@1.13.5:
+    resolution: {integrity: sha512-cz4ur7Vb0xS4/KUN0tPWe44eqxrIu31me+fbang3ijiNscE129POzipJJA6zniq2C/Z6sJCjMimjS8Lc/GAs8Q==}
 
   azurite@3.35.0:
     resolution: {integrity: sha512-GzKmi+/5U0baNRjEEVtBMLpLuIKEJ0uSh0VWBzOI4qe4f5ziJyoZQmcTO7QhxZTF6+rphj7TZS3PtJY7uiiacA==}
@@ -16378,7 +16381,7 @@ snapshots:
   '@sendgrid/client@8.1.6':
     dependencies:
       '@sendgrid/helpers': 8.0.0
-      axios: 1.13.2
+      axios: 1.13.5
     transitivePeerDependencies:
       - debug
 
@@ -17781,6 +17784,14 @@ snapshots:
       - debug
 
   axios@1.13.2:
+    dependencies:
+      follow-redirects: 1.15.11(debug@4.4.3)
+      form-data: 4.0.5
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
+  axios@1.13.5:
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.5
@@ -24363,7 +24374,7 @@ snapshots:
 
   twilio@5.11.2:
     dependencies:
-      axios: 1.13.2
+      axios: 1.13.5
       dayjs: 1.11.19
       https-proxy-agent: 5.0.1
       jsonwebtoken: 9.0.3
