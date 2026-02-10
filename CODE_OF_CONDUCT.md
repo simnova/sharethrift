@@ -2,8 +2,6 @@
 
 We aim to foster a respectful, inclusive, and collaborative environment for everyone involved in building ShareThrift.
 
-
-
 ## Our Pledge
 We as contributors and maintainers pledge to make participation in the ShareThrift ecosystem a harassment-free experience for everyone, regardless of:
 - Age, body size, visible or invisible disability
