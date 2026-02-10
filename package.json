@@ -7,7 +7,7 @@
     "license": "MIT",
     "packageManager": "pnpm@10.18.2",
     "scripts": {
-        "analyze": "pnpm dlx @e18e/cli analyze",
+        "analyze": "pnpm dlx @e18e/cli analyze --log-level error",
         "build": "turbo run build",
         "test": "turbo run test",
         "lint": "turbo run lint",
