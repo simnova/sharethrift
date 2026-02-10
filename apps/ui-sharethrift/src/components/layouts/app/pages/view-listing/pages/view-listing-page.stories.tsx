@@ -105,6 +105,27 @@ export const Loading: Story = {
 					},
 					delay: Infinity,
 				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
+				},
 			],
 		},
 	},

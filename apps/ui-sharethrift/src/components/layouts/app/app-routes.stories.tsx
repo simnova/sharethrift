@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from "@storybook/react";
 import { AppRoutes } from "./index.tsx";
-import { ListingsPageContainerGetListingsDocument } from "../../../generated.tsx";
+import { ListingsPageContainerGetListingsDocument, UseUserIsAdminDocument } from "../../../generated.tsx";
 import { withMockApolloClient, withMockRouter } from "../../../test-utils/storybook-decorators.tsx";
 import { expect } from 'storybook/test';
 
@@ -148,58 +148,7 @@ DefaultView.parameters = {
       },
       {
         request: {
-          query: {
-            kind: "Document",
-            definitions: [
-              {
-                kind: "OperationDefinition",
-                operation: "query",
-                name: { kind: "Name", value: "useUserIsAdmin" },
-                selectionSet: {
-                  kind: "SelectionSet",
-                  selections: [
-                    {
-                      kind: "Field",
-                      name: { kind: "Name", value: "currentUser" },
-                      selectionSet: {
-                        kind: "SelectionSet",
-                        selections: [
-                          {
-                            kind: "InlineFragment",
-                            typeCondition: {
-                              kind: "NamedType",
-                              name: { kind: "Name", value: "PersonalUser" },
-                            },
-                            selectionSet: {
-                              kind: "SelectionSet",
-                              selections: [
-                                { kind: "Field", name: { kind: "Name", value: "id" } },
-                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
-                              ],
-                            },
-                          },
-                          {
-                            kind: "InlineFragment",
-                            typeCondition: {
-                              kind: "NamedType",
-                              name: { kind: "Name", value: "AdminUser" },
-                            },
-                            selectionSet: {
-                              kind: "SelectionSet",
-                              selections: [
-                                { kind: "Field", name: { kind: "Name", value: "id" } },
-                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
-                              ],
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
+          query: UseUserIsAdminDocument,
         },
         result: {
           data: {
