@@ -36,22 +36,44 @@ export default defineConfig((_env) => {
     build: {
       rollupOptions: {
         output: {
-          manualChunks: {
-            vendor: ['react', 'react-dom'],
-            'ui-core': ['antd/lib/button', 'antd/lib/layout', 'antd/lib/space', 'antd/lib/typography'],
-            'ui-forms': ['antd/lib/form', 'antd/lib/input', 'antd/lib/select', 'antd/lib/checkbox', 'antd/lib/radio'],
-            'ui-data': ['antd/lib/table', 'antd/lib/list', 'antd/lib/pagination'],
-            'ui-feedback': ['antd/lib/modal', 'antd/lib/message', 'antd/lib/notification'],
-            icons: ['@ant-design/icons'],
-            graphql: ['@apollo/client', 'graphql'],
-            router: ['react-router-dom'],
-            utils: ['lodash', 'dayjs', 'crypto-hash'],
+          manualChunks(id) {
+            if (!id.includes('node_modules')) return;
+
+            let packageName: string;
+            
+            if (id.includes('.pnpm')) {
+              const segments = id.split('node_modules/');
+              const lastSegment = segments[segments.length - 1];
+              const parts = lastSegment.split('/');
+              packageName = parts[0].startsWith('@')
+                ? `${parts[0]}/${parts[1]}`
+                : parts[0];
+            } 
+
+            else {
+              const parts = id.split('node_modules/')[1].split('/');
+              packageName = parts[0].startsWith('@')
+                ? `${parts[0]}/${parts[1]}`
+                : parts[0];
+            }
+
+            if (packageName === 'react' || packageName === 'react-dom') {
+              return 'vendor-react';
+            }
+
+            return `vendor-${packageName.replace(/[@\/]/g, '-')}`;
           },
         },
       },
       minify: 'esbuild',
+      target: 'es2020',
+      cssCodeSplit: true,
       chunkSizeWarningLimit: 1000,
     },
     server: isDev ? localServerConfig : baseServerConfig,
+    esbuild: {
+      legalComments: 'none',
+      treeShaking: true,
+    },
   };
 });
