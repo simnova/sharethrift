@@ -34,8 +34,8 @@ catalogs:
 overrides:
   '@pnpm/npm-conf': '>=3.0.2'
   '@types/node': ^24.10.7
+  axios: '>=1.13.5'
   lodash: ^4.17.23
-  axios: ^1.13.5
 
 importers:
 
@@ -925,7 +925,7 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/messaging-service
       axios:
-        specifier: ^1.13.5
+        specifier: '>=1.13.5'
         version: 1.13.5
     devDependencies:
       '@cellix/typescript-config':
@@ -1058,7 +1058,7 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/payment-service
       axios:
-        specifier: ^1.13.5
+        specifier: '>=1.13.5'
         version: 1.13.5
       cybersource-rest-client:
         specifier: ^0.0.73
@@ -1086,7 +1086,7 @@ importers:
         specifier: workspace:*
         version: link:../../cellix/payment-service
       axios:
-        specifier: ^1.13.5
+        specifier: '>=1.13.5'
         version: 1.13.5
     devDependencies:
       '@cellix/typescript-config':
@@ -5710,7 +5710,7 @@ packages:
     resolution: {integrity: sha512-9vpE3y/a2l2Vs2XEJE4L2z0GWnlpJ4Xj+kDaoCtrpPfS1J3oikXBrxRJX6H62/ZcelOGe+519yW7mqXCIoPXuw==}
     engines: {node: '>=14.18.0 <15.0.0 || >=16.0.0'}
     peerDependencies:
-      axios: ^1.13.5
+      axios: '>=1.13.5'
       tough-cookie: '>=4.0.0'
 
   axios@1.13.5:
