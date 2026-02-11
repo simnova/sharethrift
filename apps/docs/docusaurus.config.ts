@@ -6,6 +6,7 @@ import fs from 'node:fs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+
 const config: Config = {
 	title: 'Sharethrift Docs',
 	tagline: 'Domain-Driven Design for Modern Azure Applications',
