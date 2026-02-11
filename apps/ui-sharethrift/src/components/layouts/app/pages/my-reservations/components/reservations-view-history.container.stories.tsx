@@ -13,6 +13,7 @@ import {
 const mockUser = {
 	__typename: 'PersonalUser',
 	id: 'user-1',
+	userType: 'personal-user',
 };
 
 const mockPastReservations = [
@@ -35,8 +36,18 @@ const mockPastReservations = [
 		reserver: {
 			__typename: 'PersonalUser',
 			id: 'user-1',
-			profile: { firstName: 'John', lastName: 'Doe' },
+			account: {
+				__typename: 'PersonalUserAccount',
+				username: 'john_doe',
+				profile: {
+					__typename: 'PersonalUserAccountProfile',
+					firstName: 'John',
+					lastName: 'Doe',
+				},
+			},
 		},
+		closeRequestedBySharer: false,
+		closeRequestedByReserver: false,
 	},
 	{
 		__typename: 'ReservationRequest',
@@ -57,8 +68,18 @@ const mockPastReservations = [
 		reserver: {
 			__typename: 'PersonalUser',
 			id: 'user-1',
-			profile: { firstName: 'John', lastName: 'Doe' },
+			account: {
+				__typename: 'PersonalUserAccount',
+				username: 'john_doe',
+				profile: {
+					__typename: 'PersonalUserAccountProfile',
+					firstName: 'John',
+					lastName: 'Doe',
+				},
+			},
 		},
+		closeRequestedBySharer: false,
+		closeRequestedByReserver: false,
 	},
 ];
 

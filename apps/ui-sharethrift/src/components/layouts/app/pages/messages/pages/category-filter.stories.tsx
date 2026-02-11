@@ -1,4 +1,4 @@
-import { CategoryFilter } from '../components/category-filter.tsx';
+import { CategoryFilter } from '../../home/components/category-filter';
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 

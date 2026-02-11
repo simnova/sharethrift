@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, within } from 'storybook/test';
-import type { Conversation } from '../../../../../../generated.tsx';
-import { ConversationBox } from '../components/conversation-box.tsx';
+import type { Conversation } from './generated.tsx';
+import { ConversationBox } from './components/layouts/app/pages/messages/components/conversation-box.tsx';
 
 const mockConversation = {
 	__typename: 'Conversation',

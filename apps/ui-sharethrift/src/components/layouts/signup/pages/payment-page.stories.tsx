@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { PaymentPage } from './payment-page.tsx';
+import PaymentPage from './payment-page.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,

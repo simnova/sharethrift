@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within } from 'storybook/test';
-import { MessageThread } from '../components/message-thread.tsx';
+import { MessageThread } from './components/layouts/app/pages/messages/components/message-thread.tsx';
 
 const mockMessages = [
 	{

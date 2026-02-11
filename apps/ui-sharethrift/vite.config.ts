@@ -30,10 +30,33 @@ const localServerConfig = {
   open: hasCerts ? 'https://sharethrift.localhost:3000' : 'http://localhost:3000',
 };
 
-// https://vite.dev/config/
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+  const isDev = mode === 'development';
+
   return {
-    plugins: [react()],
+    plugins: [
+        react(),     
+    ],
+    build: {
+      target: 'es2020',
+      minify: 'esbuild',
+      cssCodeSplit: true,
+      chunkSizeWarningLimit: 1000,
+      rollupOptions: {
+        output: {
+          // Single vendor chunk (recommended baseline)
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              return 'vendor';
+            }
+          },
+        },
+      },
+    },
+    esbuild: {
+      legalComments: 'none',
+      treeShaking: true,
+    },
     server: isDev ? localServerConfig : baseServerConfig,
   };
 });
