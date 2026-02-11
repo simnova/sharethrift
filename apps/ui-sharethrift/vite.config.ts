@@ -30,50 +30,33 @@ const localServerConfig = {
   open: hasCerts ? 'https://sharethrift.localhost:3000' : 'http://localhost:3000',
 };
 
-export default defineConfig((_env) => {
+export default defineConfig(({ mode }) => {
+  const isDev = mode === 'development';
+
   return {
-    plugins: [react()],
+    plugins: [
+        react(),     
+    ],
     build: {
+      target: 'es2020',
+      minify: 'esbuild',
+      cssCodeSplit: true,
+      chunkSizeWarningLimit: 1000,
       rollupOptions: {
         output: {
+          // Single vendor chunk (recommended baseline)
           manualChunks(id) {
-            if (!id.includes('node_modules')) return;
-
-            let packageName: string;
-            
-            if (id.includes('.pnpm')) {
-              const segments = id.split('node_modules/');
-              const lastSegment = segments[segments.length - 1];
-              const parts = lastSegment.split('/');
-              packageName = parts[0].startsWith('@')
-                ? `${parts[0]}/${parts[1]}`
-                : parts[0];
-            } 
-
-            else {
-              const parts = id.split('node_modules/')[1].split('/');
-              packageName = parts[0].startsWith('@')
-                ? `${parts[0]}/${parts[1]}`
-                : parts[0];
+            if (id.includes('node_modules')) {
+              return 'vendor';
             }
-
-            if (packageName === 'react' || packageName === 'react-dom') {
-              return 'vendor-react';
-            }
-
-            return `vendor-${packageName.replace(/[@\/]/g, '-')}`;
           },
         },
       },
-      minify: 'esbuild',
-      target: 'es2020',
-      cssCodeSplit: true,
-      chunkSizeWarningLimit: 1000,
     },
-    server: isDev ? localServerConfig : baseServerConfig,
     esbuild: {
       legalComments: 'none',
       treeShaking: true,
     },
+    server: isDev ? localServerConfig : baseServerConfig,
   };
 });
