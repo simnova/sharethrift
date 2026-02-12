@@ -450,7 +450,7 @@ stages:
     # Copy Serenity reports to Docusaurus static folder for deployment
     - task: Bash@3
       displayName: 'Artifact: Prepare Serenity Reports'
-      condition: eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true'), ne(variables['Build.Reason'], 'PullRequest'))
+      condition: and(succeeded(), eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true'), ne(variables['Build.Reason'], 'PullRequest'))
       inputs:
         targetType: 'inline'
         script: |
