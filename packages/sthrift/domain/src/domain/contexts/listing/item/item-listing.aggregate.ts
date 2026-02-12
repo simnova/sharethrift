@@ -46,10 +46,10 @@ export class ItemListing<props extends ItemListingProps>
 		const newInstance = new ItemListing(newProps, passport);
 		newInstance.markAsNew();
 		newInstance.sharer = sharer;
-		newInstance.title = title;
-		newInstance.description = description;
-		newInstance.category = category;
-		newInstance.location = location;
+		newInstance.props.title = new ValueObjects.Title(title).valueOf();
+		newInstance.props.description = new ValueObjects.Description(description).valueOf();
+		newInstance.props.category = new ValueObjects.Category(category).valueOf();
+		newInstance.props.location = new ValueObjects.Location(location).valueOf();
 		newInstance.sharingPeriodStart = sharingPeriodStart;
 		newInstance.sharingPeriodEnd = sharingPeriodEnd;
 		if (images !== undefined) {
@@ -230,7 +230,7 @@ public requestDelete(): void {
 	}
 
 	get description(): string {
-		return this.props.description.valueOf();
+		return this.props.description;
 	}
 	set description(value: string) {
 		if (
