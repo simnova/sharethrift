@@ -30,7 +30,6 @@ const localServerConfig = {
   open: hasCerts ? 'https://sharethrift.localhost:3000' : 'http://localhost:3000',
 };
 
-// https://vite.dev/config/
 export default defineConfig(() => {
   return {
     plugins: [react()],

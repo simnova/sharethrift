@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { SelectAccountTypePage } from './select-account-type-page.tsx';
+import SelectAccountTypePage from './select-account-type-page.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,

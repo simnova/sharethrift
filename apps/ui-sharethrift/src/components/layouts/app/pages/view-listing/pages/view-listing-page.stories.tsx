@@ -37,6 +37,7 @@ const mockListing = {
 const mockCurrentUser = {
 	__typename: 'PersonalUser',
 	id: 'user-2',
+	userType: 'personal-user',
 };
 
 const meta: Meta<typeof ViewListing> = {
@@ -103,6 +104,27 @@ export const Loading: Story = {
 						variables: { id: '1' },
 					},
 					delay: Infinity,
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
+				},
+				{
+					request: {
+						query: ViewListingActiveReservationRequestForListingDocument,
+						variables: { listingId: '1', reserverId: 'user-2' },
+					},
+					result: {
+						data: {
+							myActiveReservationForListing: null,
+						},
+					},
 				},
 			],
 		},

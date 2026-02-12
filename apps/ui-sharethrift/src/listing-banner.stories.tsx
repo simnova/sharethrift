@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import type { ComponentProps } from 'react';
-import type { PersonalUser } from '../../../../../../generated.tsx';
-import { ListingBanner } from '../components/listing-banner.tsx';
+import type { PersonalUser } from './generated.tsx';
+import { ListingBanner } from './components/layouts/app/pages/messages/components/listing-banner.tsx';
 
 // Mock PersonalUser object for Storybook
 const mockUser: PersonalUser = {

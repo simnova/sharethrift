@@ -1,5 +1,7 @@
 import { AccountSetUpContainer } from "../components/account-setup.container.tsx";
 
-export const AccountSetupPage: React.FC = () => {
+const AccountSetupPage: React.FC = () => {
   return <AccountSetUpContainer />;
 };
+
+export default AccountSetupPage;

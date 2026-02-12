@@ -78,7 +78,7 @@
 		"**/tests/**",
 		"vitest.shims.d.ts",
 		"**/vitest.config.ts",
-		"**/vitest.config.js"
+		"**/vite.config.ts"
 	],
 	"ignoreDependencies": [
 		"@types/*",
