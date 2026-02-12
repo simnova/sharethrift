@@ -6,7 +6,7 @@ import ProfileSetupPage from "./pages/profile-setup-page.tsx";
 import PaymentPage from "./pages/payment-page.tsx";
 import TermsPage from "./pages/terms-page.tsx";
 
-const SignupRoutes: React.FC = () => {
+export const SignupRoutes: React.FC = () => {
   return (
     <Routes>
       <Route element={<SectionLayout />}>
@@ -20,4 +20,3 @@ const SignupRoutes: React.FC = () => {
   );
 };
 
-export default SignupRoutes;
