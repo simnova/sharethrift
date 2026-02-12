@@ -6,10 +6,10 @@ And valid ReservationRequest documents exist in the database
 And each ReservationRequest document includes populated 'listing' and 'reserver' fields
 
   Scenario: Getting a reservation request by ID
-    Given a ReservationRequest document with id "reservation-1", state "PENDING", and a populated reserver
+    Given a ReservationRequest document with id "reservation-1", state "Pending", and a populated reserver
     When I call getById with "reservation-1"
     Then I should receive a ReservationRequest domain object
-    And the domain object's state should be "PENDING"
+    And the domain object's state should be "Pending"
     And the domain object's reserver should be a PersonalUser domain object with correct user data
     And the domain object's listing should be a Listing domain object with correct listing data
 
@@ -26,9 +26,9 @@ And each ReservationRequest document includes populated 'listing' and 'reserver'
     Given a valid Listing domain entity reference
     And a valid PersonalUser domain entity reference as reserver
     And reservation period from "2025-10-20" to "2025-10-25"
-    When I call getNewInstance with state "PENDING", the listing, the reserver, and the reservation period
+    When I call getNewInstance with state "Pending", the listing, the reserver, and the reservation period
     Then I should receive a new ReservationRequest domain object
-    And the domain object's state should be "PENDING"
+    And the domain object's state should be "Pending"
     And the reservation period should be from "2025-10-20" to "2025-10-25"
     And the reserver should be the given user
 
@@ -46,5 +46,5 @@ And each ReservationRequest document includes populated 'listing' and 'reserver'
 
   Scenario: Creating a reservation request instance with invalid data
     Given an invalid reserver reference
-    When I call getNewInstance with state "PENDING", a valid listing, and the invalid reserver
+    When I call getNewInstance with state "Pending", a valid listing, and the invalid reserver
     Then an error should be thrown indicating the reserver is not valid

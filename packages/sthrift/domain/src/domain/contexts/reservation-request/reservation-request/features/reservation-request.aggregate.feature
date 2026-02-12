@@ -12,6 +12,12 @@ Feature: <AggregateRoot> ReservationRequest
     And the reservation request's listing should reference "listing1"
     And the reservation request's reserver should reference "reserverUser"	
         
+  Scenario: Creating a new reservation request instance with pending state
+    When I create a new ReservationRequest aggregate using getNewInstance with state "PENDING", listing "listing1", reserver "reserverUser", reservationPeriodStart "tomorrow", and reservationPeriodEnd "next month"
+    Then the reservation request's state should be "PENDING"
+    And the reservation request's listing should reference "listing1"
+    And the reservation request's reserver should reference "reserverUser"	
+        
   Scenario: Setting reservation period start in the past	
     Given a new ReservationRequest aggregate being created	
     When I try to set the reservationPeriodStart to a past date	
@@ -201,3 +207,13 @@ Feature: <AggregateRoot> ReservationRequest
     Given a new ReservationRequest aggregate being created
     When I create a reservation request with a valid active listing
     Then the listing should be set correctly
+
+  Scenario: Setting state to PENDING after creation should fail
+    Given an existing ReservationRequest aggregate
+    When I try to set state to "PENDING"
+    Then a PermissionError should be thrown
+
+  Scenario: Setting state to REQUESTED after creation should fail
+    Given an existing ReservationRequest aggregate
+    When I try to set state to "REQUESTED"
+    Then a PermissionError should be thrown

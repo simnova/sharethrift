@@ -18,6 +18,12 @@ Feature: Create Item Listing
     When the create command is executed
     Then a listing with images should be created
 
+  Scenario: Creating a listing with expiration date
+    Given valid listing details
+    And an expiration date is provided
+    When the create command is executed
+    Then a listing with expiration date should be created
+
   Scenario: Creating a listing with isDraft explicitly set to false
     Given valid listing details
     And the isDraft flag is false

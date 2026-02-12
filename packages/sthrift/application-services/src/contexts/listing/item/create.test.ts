@@ -166,6 +166,46 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
 		});
 	});
 
+	Scenario('Creating a listing with expiration date', ({ Given, And, When, Then }) => {
+		Given('valid listing details', () => {
+			command.title = 'Limited Time Offer';
+			command.description = 'Item available for limited time';
+			command.category = 'Specials';
+		});
+
+		And('an expiration date is provided', () => {
+			command.expiresAt = new Date('2025-12-31T23:59:59Z');
+			const mockListing = {
+				id: 'listing-exp-123',
+				title: 'Limited Time Offer',
+				expiresAt: new Date('2025-12-31T23:59:59Z'),
+			};
+			(
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock access
+				mockDataSources.domainDataSource as any
+			).Listing.ItemListing.ItemListingUnitOfWork.withScopedTransaction.mockImplementation(
+				// biome-ignore lint/suspicious/noExplicitAny: Test mock callback
+				async (callback: any) => {
+					const mockRepo = {
+						getNewInstance: vi.fn().mockResolvedValue(mockListing),
+						save: vi.fn().mockResolvedValue(mockListing),
+					};
+					await callback(mockRepo);
+				},
+			);
+		});
+
+		When('the create command is executed', async () => {
+			const createFn = create(mockDataSources);
+			result = await createFn(command);
+		});
+
+		Then('a listing with expiration date should be created', () => {
+			expect(result).toBeDefined();
+			expect(result.expiresAt).toEqual(new Date('2025-12-31T23:59:59Z'));
+		});
+	});
+
 	Scenario(
 		'Creating a listing with isDraft explicitly set to false',
 		({ Given, And, When, Then }) => {

@@ -50,8 +50,9 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		instance.reserver = reserver;
 		instance.reservationPeriodStart = reservationPeriodStart;
 		instance.reservationPeriodEnd = reservationPeriodEnd;
-		// Initialize state directly on props to avoid coupling with isNew-dependent transition logic.
-		instance.props.state = state;
+		// Initialize state via setter to ensure validation, but bypass isNew checks
+		instance.isNew = true; // Temporarily set to true to allow state setting
+		instance.state = state;
 		instance.isNew = false;
 		return instance;
 	}

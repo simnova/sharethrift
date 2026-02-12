@@ -111,6 +111,7 @@ function makeBaseProps(
 
 function toStateEnum(value: string): string {
 	const mapping: Record<string, string> = {
+		PENDING: ReservationRequestStates.PENDING,
 		REQUESTED: ReservationRequestStates.REQUESTED,
 		ACCEPTED: ReservationRequestStates.ACCEPTED,
 		REJECTED: ReservationRequestStates.REJECTED,
@@ -178,6 +179,41 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			);
 			Then('the reservation request\'s state should be "REQUESTED"', () => {
 				expect(aggregate.state).toBe(ReservationRequestStates.REQUESTED);
+			});
+			And(
+				'the reservation request\'s listing should reference "listing1"',
+				() => {
+					expect(aggregate.listing.id).toBe('listing-1');
+				},
+			);
+			And(
+				'the reservation request\'s reserver should reference "reserverUser"',
+				() => {
+					expect(aggregate.reserver.id).toBe('reserver-1');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Creating a new reservation request instance with pending state',
+		({ When, Then, And }) => {
+			When(
+				'I create a new ReservationRequest aggregate using getNewInstance with state "PENDING", listing "listing1", reserver "reserverUser", reservationPeriodStart "tomorrow", and reservationPeriodEnd "next month"',
+				() => {
+					aggregate = ReservationRequest.getNewInstance(
+						baseProps,
+						toStateEnum('PENDING'),
+						listing,
+						reserver,
+						baseProps.reservationPeriodStart,
+						baseProps.reservationPeriodEnd,
+						passport,
+					);
+				},
+			);
+			Then('the reservation request\'s state should be "PENDING"', () => {
+				expect(aggregate.state).toBe(ReservationRequestStates.PENDING);
 			});
 			And(
 				'the reservation request\'s listing should reference "listing1"',
@@ -1291,6 +1327,58 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			Then('the listing should be set correctly', () => {
 				expect(aggregate.listing.id).toBe('listing-1');
 				expect(aggregate.listing.state).toBe('Active');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to PENDING after creation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('an existing ReservationRequest aggregate', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			When('I try to set state to "PENDING"', () => {
+				act = () => {
+					aggregate.state = toStateEnum('PENDING');
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(act).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to REQUESTED after creation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('an existing ReservationRequest aggregate', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			When('I try to set state to "REQUESTED"', () => {
+				act = () => {
+					aggregate.state = toStateEnum('REQUESTED');
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(act).toThrow(DomainSeedwork.PermissionError);
 			});
 		},
 	);

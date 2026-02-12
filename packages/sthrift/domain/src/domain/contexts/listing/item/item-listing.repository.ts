@@ -28,6 +28,7 @@ export interface ItemListingRepository<props extends ItemListingProps>
 			sharingPeriodEnd: Date;
 			images?: string[];
 			isDraft?: boolean;
+			expiresAt?: Date;
 		},
 	): Promise<ItemListing<props>>;
 }

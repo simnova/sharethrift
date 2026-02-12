@@ -35,6 +35,7 @@ export class ItemListingRepository<
 			sharingPeriodEnd: Date;
 			images?: string[];
 			isDraft?: boolean;
+			expiresAt?: Date;
 		},
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
@@ -50,6 +51,7 @@ export class ItemListingRepository<
 			fields.sharingPeriodEnd,
 			fields.images,
 			fields.isDraft,
+			fields.expiresAt,
 		);
 	}	async getActiveItemListings() {
 		const mongoItems = await this.model.find({ state: 'Active' }).exec();
