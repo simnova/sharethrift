@@ -23,6 +23,14 @@ export class PersonalUserReservationRequestVisa<
 			canEditReservationRequest:
 				this.user.id === this.root.listing.sharer.id ||
 				this.user.id === this.root.reserver.id,
+			canAcceptRequest: this.user.id === this.root.listing.sharer.id,
+			canRejectRequest: this.user.id === this.root.listing.sharer.id,
+			canCancelRequest:
+				this.user.id === this.root.listing.sharer.id ||
+				this.user.id === this.root.reserver.id,
+			canCloseRequest:
+				this.user.id === this.root.listing.sharer.id ||
+				this.user.id === this.root.reserver.id,
 		};
 
 		return func(updatedPermissions);

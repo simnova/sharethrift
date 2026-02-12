@@ -18,6 +18,7 @@ const feature = await loadFeature(
 
 function makePassport(
 	perms: Partial<{
+		canEditReservationRequest: boolean;
 		canAcceptRequest: boolean;
 		canRejectRequest: boolean;
 		canCancelRequest: boolean;
@@ -25,6 +26,7 @@ function makePassport(
 	}> = {},
 ): Passport {
 	const defaults = {
+		canEditReservationRequest: true,
 		canAcceptRequest: true,
 		canRejectRequest: true,
 		canCancelRequest: true,

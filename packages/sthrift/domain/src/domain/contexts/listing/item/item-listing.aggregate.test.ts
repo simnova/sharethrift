@@ -6,7 +6,7 @@ import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
-import { AdminUser } from '../../user/admin-user/admin-user.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.aggregate.ts';
 import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
 import type { ItemListingProps } from './item-listing.entity.ts';
 import { ItemListing } from './item-listing.aggregate.ts';

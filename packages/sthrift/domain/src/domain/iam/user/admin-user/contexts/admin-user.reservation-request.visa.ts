@@ -27,6 +27,14 @@ export class AdminUserReservationRequestVisa<
 			// Admins can edit reservation requests if they have moderation permissions
 			canEditReservationRequest:
 				rolePermissions?.listingPermissions?.canModerateListings ?? false,
+			canAcceptRequest:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
+			canRejectRequest:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
+			canCancelRequest:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
+			canCloseRequest:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
 		};
 
 		return func(updatedPermissions);

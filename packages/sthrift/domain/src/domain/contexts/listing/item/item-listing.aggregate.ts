@@ -111,6 +111,19 @@ export class ItemListing<props extends ItemListingProps>
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
 	}
 
+	public reinstate(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to reinstate this listing',
+			);
+		}
+
+		this.props.state = new ValueObjects.ListingState('Active').valueOf();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
+	}
+
 	/**
 	 * Set whether this listing is blocked.
 	 * - When setting blocked=false and the listing is currently Blocked, this will move the
