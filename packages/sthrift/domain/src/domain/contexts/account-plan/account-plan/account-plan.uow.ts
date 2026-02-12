@@ -1,6 +1,6 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
-import type { AccountPlan } from './account-plan.ts';
+import type { AccountPlan } from './account-plan.aggregate.ts';
 import type { AccountPlanRepository } from './account-plan.repository.ts';
 import type { AccountPlanProps } from './account-plan.entity.ts';
 

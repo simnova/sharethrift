@@ -1,5 +1,6 @@
 export * as PersonalUser from './personal-user/index.ts';
 export * as AdminUser from './admin-user/index.ts';
+export * as Role from './role/index.ts';
 
 // User union type - accepts either PersonalUser or AdminUser
 import type { PersonalUserEntityReference } from './personal-user/personal-user.entity.ts';

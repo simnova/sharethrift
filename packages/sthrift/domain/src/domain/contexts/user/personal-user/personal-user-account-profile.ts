@@ -1,6 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { UserVisa } from '../user.visa.ts';
-import type { PersonalUserAggregateRoot } from './personal-user.ts';
+import type { PersonalUserAggregateRoot } from './personal-user.aggregate.ts';
 import type {
 	PersonalUserProfileEntityReference,
 	PersonalUserProfileProps,
@@ -23,6 +23,18 @@ export class PersonalUserProfile
 		this.visa = visa;
 		this.root = root;
 	}
+
+	private validateVisa(): void {
+		if (
+			!this.root.isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set account profile details',
+			);
+		}
+	}
+
 	// Primitive Field Getters
 	get firstName() {
 		return this.props.firstName;
@@ -53,17 +65,6 @@ export class PersonalUserProfile
 	// PopulateDoc Field Getters
 
 	// DocumentArray Field Getters
-
-	private validateVisa(): void {
-		if (
-			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'Unauthorized to set account profile details',
-			);
-		}
-	}
 
 	// Primitive Field Setters
 	set firstName(value: string) {

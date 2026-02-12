@@ -68,6 +68,7 @@
 	],
 	"ignore": [
 		"build-pipeline/scripts/**",
+		"local-https-proxy.js",
 		"**/*.test.ts",
 		"**/*.spec.ts",
 		"**/*.stories.tsx",
@@ -75,7 +76,9 @@
 		"**/coverage/**",
 		"**/__tests__/**",
 		"**/tests/**",
-		"vitest.shims.d.ts"
+		"vitest.shims.d.ts",
+		"**/vitest.config.ts",
+		"**/vitest.config.js"
 	],
 	"ignoreDependencies": [
 		"@types/*",

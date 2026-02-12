@@ -1,6 +1,8 @@
 import { themes as prismThemes } from 'prism-react-renderer';
 import type { Config } from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
+import path from 'node:path';
+import fs from 'node:fs';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
@@ -39,6 +41,9 @@ const config: Config = {
 		defaultLocale: 'en',
 		locales: ['en'],
 	},
+
+	// Removed swc-loader webpack config (swc-loader not installed)
+	// Docusaurus uses its own default loader (esbuild or babel)
 
 	presets: [
 		[
@@ -152,6 +157,36 @@ const config: Config = {
 			darkTheme: prismThemes.dracula,
 		},
 	} satisfies Preset.ThemeConfig,
+
+	// Custom webpack configuration for HTTPS dev server
+	plugins: [
+		function httpsPlugin() {
+			return {
+				name: 'https-plugin',
+				configureWebpack() {
+					const workspaceRoot = path.resolve(__dirname, '../../');
+					const certKeyPath = path.join(workspaceRoot, '.certs/sharethrift.localhost-key.pem');
+					const certPath = path.join(workspaceRoot, '.certs/sharethrift.localhost.pem');
+					const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
+
+					if (hasCerts) {
+						return {
+							devServer: {
+								server: {
+									type: 'https',
+									options: {
+										key: fs.readFileSync(certKeyPath),
+										cert: fs.readFileSync(certPath),
+									},
+								},
+							},
+						};
+					}
+					return {};
+				},
+			};
+		},
+	],
 };
 
 export default config;

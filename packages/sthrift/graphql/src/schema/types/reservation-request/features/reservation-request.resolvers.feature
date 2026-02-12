@@ -53,10 +53,10 @@ So that I can view my reservations and make new ones through the GraphQL API
     Then only listings whose titles include "camera" should be returned
 
   Scenario: Filtering myListingsRequests by status
-    Given reservation requests with mixed statuses ["Pending", "Approved"]
-    And a statusFilters ["Approved"]
+    Given reservation requests with mixed statuses ["Pending", "Accepted"]
+    And a statusFilters ["Accepted"]
     When the myListingsRequests query is executed
-    Then only requests with status "Approved" should be included
+    Then only requests with status "Accepted" should be included
 
   Scenario: Sorting myListingsRequests by requestedOn descending
     Given reservation requests with varying createdAt timestamps
@@ -126,19 +126,50 @@ So that I can view my reservations and make new ones through the GraphQL API
     When the createReservationRequest mutation is executed
     Then it should propagate the error message
 
-  Scenario: Mapping listing request fields
-    Given a ListingRequestDomainShape object with title, state, and reserver username
-    When paginateAndFilterListingRequests is called
-    Then it should map title, requestedBy, requestedOn, reservationPeriod, and status into ListingRequestUiShape
-    And missing fields should default to 'Unknown', '@unknown', or 'Pending' as appropriate
-
   Scenario: Paginating listing requests
     Given 25 listing requests and a pageSize of 10
-    When paginateAndFilterListingRequests is called for page 2
-    Then it should return 10 items starting from index 10 and total 25
+    When the myListingsRequests query is executed for page 2
+    Then it should return 10 items for page 2 and total 25
 
   Scenario: Sorting listing requests by title ascending
     Given multiple listing requests with varying titles
     And sorter field "title" with order "ascend"
-    When paginateAndFilterListingRequests is called
+    When the myListingsRequests query is executed
     Then the results should be sorted alphabetically by title
+
+  Scenario: Sorting myListingsRequests by state descending
+    Given reservation requests with different states
+    And sorter field "state" with order "descend"
+    When the myListingsRequests query is executed
+    Then results should be sorted by state in descending order
+
+  Scenario: Sorting myListingsRequests by createdAt ascending
+    Given reservation requests with different creation dates
+    And sorter field "createdAt" with order "ascend"
+    When the myListingsRequests query is executed
+    Then results should be sorted by createdAt in ascending order
+
+  Scenario: myListingsRequests with invalid sorter order defaults to null
+    Given reservation requests for a sharer
+    And a sorter with invalid order value
+    When the myListingsRequests query is executed
+    Then it should call queryListingRequestsBySharerId with sorter order set to null
+
+  Scenario: myListingsRequests with combined search, filters, and sorting
+    Given reservation requests with mixed properties
+    And search text "camera", status filters ["Accepted"], and sorter by title ascending
+    When the myListingsRequests query is executed
+    Then it should call queryListingRequestsBySharerId with all combined parameters
+    And it should return filtered and sorted results
+
+  Scenario: myListingsRequests with no matching results after filtering
+    Given reservation requests for a sharer
+    And no requests match the strict filter criteria
+    When the myListingsRequests query is executed
+    Then it should return empty results with total 0
+
+  Scenario: myListingsRequests with null sorter field
+    Given reservation requests for a sharer
+    And a sorter with null field
+    When the myListingsRequests query is executed
+    Then it should call queryListingRequestsBySharerId with sorter field set to null

@@ -7,7 +7,7 @@ import { PersonalUserAccountProfileBillingSubscription } from './personal-user-a
 import { PersonalUserAccountProfileBillingTransactions } from './personal-user-account-profile-billing-transactions.ts';
 import type { PersonalUserAccountProfileBillingProps } from './personal-user-account-profile-billing.entity.ts';
 import type { UserVisa } from '../user.visa.ts';
-import type { PersonalUserAggregateRoot } from './personal-user.ts';
+import type { PersonalUserAggregateRoot } from './personal-user.aggregate.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

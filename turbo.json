@@ -78,6 +78,10 @@
 		"//#gen:watch": {
 			"cache": false,
 			"persistent": true
+		},
+		"//#proxy:start": {
+			"cache": false,
+			"persistent": true
 		}
 	}
 }

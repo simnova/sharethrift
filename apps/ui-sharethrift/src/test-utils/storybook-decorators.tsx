@@ -5,7 +5,7 @@ import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
 import type { Decorator, StoryContext } from '@storybook/react';
-import { createMockAuth, createMockUser } from '../test/utils/mockAuth.ts';
+import { createMockAuth, createMockUser } from '../test/utils/mock-auth.ts';
 import { UserIdProvider } from '../components/shared/user-context.tsx';
 
 /**

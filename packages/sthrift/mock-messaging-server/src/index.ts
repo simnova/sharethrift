@@ -1,4 +1,9 @@
+import { fileURLToPath } from 'node:url';
 import express from 'express';
+import https from 'node:https';
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
 import type { Request, Response, Application } from 'express';
 import type { Server } from 'node:http';
 import { config } from 'dotenv';
@@ -8,7 +13,11 @@ import { setupParticipantRoutes } from './routes/participants.ts';
 import { setupMockUtilRoutes } from './routes/mock-utils.ts';
 import { seedMockData } from './seed/seed-data.ts';
 
+
+
 config();
+
+
 
 export function createApp(): Application {
 	const app = express();
@@ -66,20 +75,41 @@ export function createApp(): Application {
 	return app;
 }
 
-export function startServer(port = 10000, seedData = false): Promise<Server> {
+export function startServer(port = 10000, seedData = false, useHttps = true): Promise<Server> {
 	return new Promise((resolve) => {
 		const app = createApp();
-		const server = app.listen(port, () => {
-			console.log(`Mock Twilio Server listening on port ${port}`);
-			
-			if (seedData) {
-				seedMockData();
-			} else {
-				console.log('Starting with empty data store (set seedData=true to seed)');
-			}
-			
-			resolve(server);
-		});
+			// Always resolve .certs from monorepo root (works regardless of script location or cwd)
+			const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
+			const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
+			const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
+			const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
+		if (hasCerts && useHttps) {
+			const httpsOptions = {
+				key: fs.readFileSync(certKeyPath),
+				cert: fs.readFileSync(certPath),
+			};
+			const server = https.createServer(httpsOptions, app).listen(port, 'mock-messaging.sharethrift.localhost', () => {
+				console.log(` Mock Messaging Server listening on https://mock-messaging.sharethrift.localhost:${port}`);
+				if (seedData) {
+					seedMockData();
+				} else {
+					console.log('Starting with empty data store (set seedData=true to seed)');
+				}
+				resolve(server);
+			});
+		} else {
+			// Fallback to HTTP when certs don't exist or useHttps=false (tests/CI/CD)
+			const server = http.createServer(app).listen(port, () => {
+				const reason = !hasCerts ? '(no certs found)' : '(HTTP mode)';
+				console.log(` Mock Messaging Server listening on http://localhost:${port} ${reason}`);
+				if (seedData) {
+					seedMockData();
+				} else {
+					console.log('Starting with empty data store (set seedData=true to seed)');
+				}
+				resolve(server);
+			});
+		}
 	});
 }
 
@@ -89,7 +119,7 @@ export function stopServer(server: Server): Promise<void> {
 			if (err) {
 				reject(err);
 			} else {
-				console.log('Mock Twilio Server stopped');
+				console.log('Mock Messaging Server stopped');
 				resolve();
 			}
 		});

@@ -1,6 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { UserVisa } from '../user.visa.ts';
-import type { PersonalUserAggregateRoot } from './personal-user.ts';
+import type { PersonalUserAggregateRoot } from './personal-user.aggregate.ts';
 import type {
 	PersonalUserAccountProfileBillingSubscriptionEntityReference,
 	PersonalUserAccountProfileBillingSubscriptionProps,
@@ -23,6 +23,17 @@ export class PersonalUserAccountProfileBillingSubscription
 		this.root = root;
 	}
 
+	private validateVisa(): void {
+		if (
+			!this.root.isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set subscription info',
+			);
+		}
+	}
+
 	get subscriptionId(): string {
 		return this.props.subscriptionId;
 	}
@@ -34,17 +45,6 @@ export class PersonalUserAccountProfileBillingSubscription
 	}
 	get startDate(): Date {
 		return this.props.startDate;
-	}
-
-	private validateVisa(): void {
-		if (
-			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'Unauthorized to set subscription info',
-			);
-		}
 	}
 
 	set subscriptionId(value: string) {
