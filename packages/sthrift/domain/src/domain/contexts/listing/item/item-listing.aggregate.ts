@@ -355,6 +355,7 @@ public requestDelete(): void {
 		this.props.images = value;
 	}
 
+    
 	get isActive(): boolean {
 		return (
 			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Active
