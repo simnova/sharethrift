@@ -17,9 +17,10 @@ const defaultMocks = [
 		request: { query: ViewListingCurrentUserDocument },
 		result: {
 			data: {
-				currentPersonalUserAndCreateIfNotExists: {
+				currentUser: {
 					__typename: 'PersonalUser',
 					id: STORYBOOK_RESERVATION_USER_ID,
+					userType: 'personal-user',
 				},
 			},
 		},

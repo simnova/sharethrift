@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { TermsPage } from './terms-page.tsx';
+import TermsPage from './terms-page.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
