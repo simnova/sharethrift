@@ -1167,4 +1167,131 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			);
 		},
 	);
+
+	Scenario(
+		'Setting reservation period end equal to start should fail',
+		({ Given, When, Then }) => {
+			let localError: unknown;
+			Given('a new ReservationRequest aggregate being created with start date set', () => {
+				// Set up props with a valid start date
+			});
+			When(
+				'I try to set reservationPeriodEnd to the same date as reservationPeriodStart',
+				() => {
+					const sameDate = new Date(Date.now() + 86_400_000 * 5);
+					const propsWithStart = {
+						...baseProps,
+						reservationPeriodStart: sameDate,
+					};
+					try {
+						ReservationRequest.getNewInstance(
+							propsWithStart,
+							toStateEnum('REQUESTED'),
+							listing,
+							reserver,
+							sameDate,
+							sameDate, // End date equals start date
+							passport,
+						);
+					} catch (e) {
+						localError = e;
+					}
+				},
+			);
+			Then(
+				'an error should be thrown indicating "Reservation start date must be before end date"',
+				() => {
+					expect(String((localError as Error).message)).toMatch(
+						/Reservation start date must be before end date/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Setting reservation period start equal to end should fail',
+		({ Given, When, Then }) => {
+			let localError: unknown;
+			Given('a new ReservationRequest aggregate being created with end date set', () => {
+				// Set up props with a valid end date
+			});
+			When(
+				'I try to set reservationPeriodStart to the same date as reservationPeriodEnd',
+				() => {
+					const sameDate = new Date(Date.now() + 86_400_000 * 5);
+					const propsWithEnd = {
+						...baseProps,
+						reservationPeriodEnd: sameDate,
+					};
+					try {
+						ReservationRequest.getNewInstance(
+							propsWithEnd,
+							toStateEnum('REQUESTED'),
+							listing,
+							reserver,
+							sameDate, // Start date equals end date
+							sameDate,
+							passport,
+						);
+					} catch (e) {
+						localError = e;
+					}
+				},
+			);
+			Then(
+				'an error should be thrown indicating "Reservation start date must be before end date"',
+				() => {
+					expect(String((localError as Error).message)).toMatch(
+						/Reservation start date must be before end date/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Successfully setting reserver during creation',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+			Given('a new ReservationRequest aggregate being created', () => {});
+			When('I create a reservation request with a valid reserver', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			Then('the reserver should be set correctly', () => {
+				expect(aggregate.reserver.id).toBe('reserver-1');
+			});
+		},
+	);
+
+	Scenario(
+		'Successfully setting listing during creation',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+			Given('a new ReservationRequest aggregate being created', () => {});
+			When('I create a reservation request with a valid active listing', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			Then('the listing should be set correctly', () => {
+				expect(aggregate.listing.id).toBe('listing-1');
+				expect(aggregate.listing.state).toBe('Active');
+			});
+		},
+	);
 });

@@ -167,6 +167,16 @@ Feature: <AggregateRoot> ReservationRequest
     When I try to set reservationPeriodEnd to a date before or equal to the start date
     Then an error should be thrown indicating "Reservation period end date must be after the start date"
 
+  Scenario: Setting reservation period end equal to start should fail
+    Given a new ReservationRequest aggregate being created with start date set
+    When I try to set reservationPeriodEnd to the same date as reservationPeriodStart
+    Then an error should be thrown indicating "Reservation start date must be before end date"
+
+  Scenario: Setting reservation period start equal to end should fail
+    Given a new ReservationRequest aggregate being created with end date set
+    When I try to set reservationPeriodStart to the same date as reservationPeriodEnd
+    Then an error should be thrown indicating "Reservation start date must be before end date"
+
   Scenario: Setting reservation period start after creation should fail
     Given an existing ReservationRequest aggregate
     When I try to update the reservation period start date
@@ -181,3 +191,13 @@ Feature: <AggregateRoot> ReservationRequest
     Given an existing ReservationRequest aggregate
     When I try to set a new reserver
     Then a PermissionError should be thrown with message "Reserver can only be set when creating a new reservation request"
+
+  Scenario: Successfully setting reserver during creation
+    Given a new ReservationRequest aggregate being created
+    When I create a reservation request with a valid reserver
+    Then the reserver should be set correctly
+
+  Scenario: Successfully setting listing during creation
+    Given a new ReservationRequest aggregate being created
+    When I create a reservation request with a valid active listing
+    Then the listing should be set correctly
