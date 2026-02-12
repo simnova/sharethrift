@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { expect, within, waitFor } from "storybook/test";
+import { expect, within, waitFor } from 'storybook/test';
 import { SettingsViewContainer } from "./components/layouts/app/pages/account/pages/settings/components/settings-view.container.tsx";
 import {
 	HomeAccountSettingsViewContainerCurrentUserDocument,

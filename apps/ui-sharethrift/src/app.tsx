@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { AppRoutes } from './components/layouts/app/index.tsx';
-import { SignupRoutes } from './components/layouts/signup/index.tsx';
+import type React from 'react';
+import SignupRoutes from './components/layouts/signup/index.tsx';
 import { LoginSelection } from './components/shared/login-selection.tsx';
 import { AuthRedirectAdmin } from './components/shared/auth-redirect-admin.tsx';
 import { AuthRedirectUser } from './components/shared/auth-redirect-user.tsx';
