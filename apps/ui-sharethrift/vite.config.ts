@@ -30,33 +30,9 @@ const localServerConfig = {
   open: hasCerts ? 'https://sharethrift.localhost:3000' : 'http://localhost:3000',
 };
 
-export default defineConfig(({ mode }) => {
-  const isDev = mode === 'development';
-
+export default defineConfig(() => {
   return {
-    plugins: [
-        react(),     
-    ],
-    build: {
-      target: 'es2020',
-      minify: 'esbuild',
-      cssCodeSplit: true,
-      chunkSizeWarningLimit: 1000,
-      rollupOptions: {
-        output: {
-          // Single vendor chunk (recommended baseline)
-          manualChunks(id) {
-            if (id.includes('node_modules')) {
-              return 'vendor';
-            }
-          },
-        },
-      },
-    },
-    esbuild: {
-      legalComments: 'none',
-      treeShaking: true,
-    },
+    plugins: [react()],
     server: isDev ? localServerConfig : baseServerConfig,
   };
 });
