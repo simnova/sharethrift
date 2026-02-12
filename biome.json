@@ -104,7 +104,8 @@
 			"!**/package.json",
 			"!**/coverage/**",
 			"!**/generated.ts",
-			"!**/generated.tsx"
+			"!**/generated.tsx",
+            "!**/target/**"
 		]
 	},
 	"javascript": { "formatter": { "quoteStyle": "single" }, "globals": [] },
