@@ -18,6 +18,7 @@ const mockUser = {
 	userType: 'personal-user',
 	account: {
 		__typename: 'PersonalUserAccount',
+		username: 'johndoe',
 		profile: {
 			__typename: 'PersonalUserAccountProfile',
 			firstName: 'John',
@@ -48,7 +49,8 @@ const mockActiveReservations = [
 		reserver: {
 			__typename: 'PersonalUser',
 			id: 'user-1',
-			userType: 'personal-user',
+			userType: 'personal',
+			username: 'johndoe',
 			profile: { firstName: 'John', lastName: 'Doe' },
 			account: {
 				__typename: 'PersonalUserAccount',

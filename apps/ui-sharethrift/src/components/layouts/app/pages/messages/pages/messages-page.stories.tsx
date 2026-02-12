@@ -22,7 +22,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  parameters: {
+	parameters: {
 		apolloClient: {
 			mocks: [
 				{
@@ -34,7 +34,7 @@ export const Default: Story = {
 					result: {
 						data: {
 							currentUser: {
-                __typename: 'PersonalUser',
+								__typename: 'PersonalUser',
 								id: '507f1f77bcf86cd799439011',
 								userIsAdmin: false,
 							},
@@ -226,5 +226,4 @@ export const Default: Story = {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByRole('main')).toBeInTheDocument();
 	},
-	
 };

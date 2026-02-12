@@ -3,10 +3,10 @@ import { expect, userEvent, within } from 'storybook/test';
 import {
 	ConversationBoxContainerConversationDocument,
 	ConversationBoxContainerSendMessageDocument,
-} from '../../../../../../generated.tsx';
-import { withMockApolloClient, withMockRouter, withMockUserId } from '../../../../../../test-utils/storybook-decorators.tsx';
-import { ConversationBoxContainer } from '../components/conversation-box.container.tsx';
-import type { Conversation } from '../../../../../../generated.tsx';
+} from './generated.tsx';
+import { withMockApolloClient, withMockRouter, withMockUserId } from './test-utils/storybook-decorators.tsx';
+import { ConversationBoxContainer } from './components/layouts/app/pages/messages/components/conversation-box.container.tsx';
+import type { Conversation } from './generated.tsx';
 
 
 const createConversationMock = (

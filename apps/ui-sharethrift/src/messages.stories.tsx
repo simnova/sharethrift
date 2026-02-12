@@ -5,13 +5,13 @@ import {
 	ConversationBoxContainerSendMessageDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	HomeConversationListContainerCurrentUserDocument,
-} from '../../../../../../generated.tsx';
+} from './generated.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
 	withMockUserId,
-} from '../../../../../../test-utils/storybook-decorators.tsx';
-import { Messages } from '../components/messages.tsx';
+} from './test-utils/storybook-decorators.tsx';
+import { Messages } from './components/layouts/app/pages/messages/components/messages.tsx';
 
 // #region Mock Data
 const firstMockConversation = {

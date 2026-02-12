@@ -2,8 +2,10 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import { expect, within } from 'storybook/test';
 import { AppRoutes } from '../../../../..';
-import { withMockApolloClient,
-withMockRouter } from '../../../../../../../../test-utils/storybook-decorators.tsx';
+import {
+	withMockApolloClient,
+	withMockRouter,
+} from '../../../../../../../../test-utils/storybook-decorators.tsx';
 import { HomeAccountSettingsViewContainerCurrentUserDocument } from '../../../../../../../../generated.tsx';
 import { userIsAdminMockRequest } from '../../../../../../../../test-utils/storybook-helpers.ts';
 

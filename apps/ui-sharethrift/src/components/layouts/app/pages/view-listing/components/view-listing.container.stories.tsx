@@ -37,7 +37,7 @@ const mockListing = {
 const mockCurrentUser = {
 	__typename: 'PersonalUser',
 	id: 'user-2',
-  userType: 'personal-user',
+	userType: 'personal-user',
 };
 
 const meta: Meta<typeof ViewListingContainer> = {
@@ -149,6 +149,16 @@ export const Loading: Story = {
 						variables: { id: '1' },
 					},
 					delay: Infinity,
+				},
+				{
+					request: {
+						query: ViewListingCurrentUserDocument,
+					},
+					result: {
+						data: {
+							currentUser: mockCurrentUser,
+						},
+					},
 				},
 			],
 		},

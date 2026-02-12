@@ -320,6 +320,7 @@ stages:
       env:
         SNYK_TOKEN: $(SNYK_TOKEN)
           
+          
     # Cache Java JRE
     - task: Cache@2
       displayName: 'Java: Restore JRE Cache'
@@ -425,7 +426,7 @@ stages:
         SONAR_SCANNER_SKIP_JRE_PROVISIONING: true
         SONAR_TOKEN: $(SONAR_TOKEN)
 
-    # SonarCloud: Break the build if it doesn't pass the Quality Gate
+        # SonarCloud: Break the build if it doesn't pass the Quality Gate
     - task: sonarcloud-buildbreaker@2
       displayName: 'SonarCloud: Break the build if it does not pass the Quality'
       condition: and(succeeded(), eq(${{parameters.disableSonarCloudTasks}}, False))
