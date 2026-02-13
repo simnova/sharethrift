@@ -22,7 +22,7 @@ import { CreateListingAbility } from '../screenplay/abilities/index.ts';
 
 const outputDir =
 	process.env.SERENITY_OUTPUT_DIR ||
-	path.join(process.cwd(), 'target/site/serenity');
+	path.join(process.cwd(), '../../../apps/docs/static/serenity-reports');
 
 // Mock dependencies for testing
 // TODO: Replace with actual domain dependencies when integrating with real tests

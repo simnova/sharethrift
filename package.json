@@ -35,7 +35,7 @@
         "test:coverage:merge": "pnpm run test:coverage && pnpm run merge-lcov-reports",
         "merge-lcov-reports": "node build-pipeline/scripts/merge-coverage.js",
         "test:integration": "turbo run test:integration",
-        "test:serenity": "turbo run test:serenity",
+                "test:serenity": "turbo run test:serenity",
         "test:serenity:report": "turbo run test:serenity:report",
         "test:unit": "turbo run test:unit",
         "test:watch": "turbo run test:watch --concurrency 15",

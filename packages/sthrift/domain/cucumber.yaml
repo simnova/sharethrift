@@ -15,8 +15,8 @@ default:
   format:
     - '@serenity-js/cucumber'
     - '@cucumber/pretty-formatter'
-    - json:target/site/serenity/cucumber-report.json
-    - html:target/site/serenity/cucumber-report.html
+    - json:../../../apps/docs/static/serenity-reports/cucumber-report.json
+    - html:../../../apps/docs/static/serenity-reports/cucumber-report.html
 
   # Serenity.js formatter options (required for proper report generation)
   formatOptions:
