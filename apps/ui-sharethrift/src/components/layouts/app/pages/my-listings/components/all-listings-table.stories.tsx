@@ -38,7 +38,7 @@ const ALL_STATUS_LISTINGS = [
 ];
 
 const meta: Meta<typeof AllListingsTable> = {
-	title: 'My Listings/All Listings Table',
+	title: 'Components/My Listings/All Listings Table',
 	component: AllListingsTable,
 	args: {
 		data: MOCK_LISTINGS,
@@ -62,7 +62,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// Use getAllByText as Dashboard renders both table and card views
 		await expect(canvas.getAllByText('Cordless Drill').length).toBeGreaterThan(0);
@@ -76,7 +76,7 @@ export const AllStatusTypes: Story = {
 		data: ALL_STATUS_LISTINGS,
 		total: ALL_STATUS_LISTINGS.length,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// Use getAllByText as Dashboard renders both table and card views
 		await expect(canvas.getAllByText('Active Listing').length).toBeGreaterThan(0);
@@ -96,7 +96,7 @@ export const ClickPauseButton: Story = {
 		total: 1,
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const pauseButton = await canvas.findByRole('button', { name: 'Pause' });
 		await userEvent.click(pauseButton);
@@ -111,7 +111,7 @@ export const ClickEditButton: Story = {
 		total: 1,
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const editButton = await canvas.findByRole('button', { name: 'Edit' });
 		await userEvent.click(editButton);
@@ -126,7 +126,7 @@ export const ClickReinstateButton: Story = {
 		total: 1,
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const reinstateButton = await canvas.findByRole('button', { name: 'Reinstate' });
 		await userEvent.click(reinstateButton);
@@ -141,7 +141,7 @@ export const ClickPublishButton: Story = {
 		total: 1,
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const publishButton = await canvas.findByRole('button', { name: 'Publish' });
 		await userEvent.click(publishButton);
@@ -156,7 +156,7 @@ export const ClickCancelWithConfirmation: Story = {
 		total: 1,
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const cancelButton = await canvas.findByRole('button', { name: 'Cancel' });
 		await userEvent.click(cancelButton);
@@ -178,7 +178,7 @@ export const ClickDeleteWithConfirmation: Story = {
 		total: 1,
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const deleteButton = await canvas.findByRole('button', { name: 'Delete' });
 		await userEvent.click(deleteButton);
@@ -200,7 +200,7 @@ export const ClickAppealWithConfirmation: Story = {
 		total: 1,
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const appealButton = await canvas.findByRole('button', { name: 'Appeal' });
 		await userEvent.click(appealButton);
@@ -222,7 +222,7 @@ export const ReservedListing: Story = {
 		total: 1,
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const pauseButton = await canvas.findByRole('button', { name: 'Pause' });
 		await userEvent.click(pauseButton);
@@ -237,7 +237,7 @@ export const ExpiredListing: Story = {
 		total: 1,
 		onAction: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play:  async ({ canvasElement, args }) => {
 		const canvas = within(canvasElement);
 		const reinstateButton = await canvas.findByRole('button', { name: 'Reinstate' });
 		await userEvent.click(reinstateButton);
@@ -260,7 +260,7 @@ export const ListingWithoutDates: Story = {
 		}],
 		total: 1,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// Use getAllByText as Dashboard renders both table and card views
 		await expect(canvas.getAllByText('No Dates Item').length).toBeGreaterThan(0);
@@ -276,7 +276,7 @@ export const WithSortingApplied: Story = {
 		data: MOCK_LISTINGS,
 		sorter: { field: 'createdAt', order: 'ascend' },
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -288,7 +288,7 @@ export const Loading: Story = {
 		total: 0,
 		loading: true,
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -299,7 +299,7 @@ export const WithStatusFilters: Story = {
 		data: MOCK_LISTINGS,
 		statusFilters: ['Active', 'Paused'],
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };
@@ -310,7 +310,7 @@ export const WithSearchText: Story = {
 		data: MOCK_LISTINGS,
 		searchText: 'Drill',
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };

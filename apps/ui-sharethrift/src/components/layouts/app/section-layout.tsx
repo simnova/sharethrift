@@ -22,7 +22,6 @@ export const SectionLayout: React.FC = () => {
 	const auth = useAuth();
     const apolloClient = useApolloClient();
 	const { isAdmin } = useUserIsAdmin();
-
 	// Map nav keys to routes as defined in index.tsx
 	const routeMap = {
 		home: '',

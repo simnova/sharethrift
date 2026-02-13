@@ -12,7 +12,7 @@ const MOCK_REQUEST = {
 };
 
 const meta: Meta<typeof RequestsCard> = {
-	title: 'My Listings/Requests Card',
+	title: 'Components/My Listings/Requests Card',
 	component: RequestsCard,
 	args: {
 		listing: MOCK_REQUEST,

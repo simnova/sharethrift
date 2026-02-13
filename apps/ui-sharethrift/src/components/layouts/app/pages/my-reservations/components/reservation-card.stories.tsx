@@ -9,7 +9,7 @@ import {
 	withReservationMocks,
 } from '../../../../../../test/utils/storybook-providers.tsx';
 const meta: Meta<typeof ReservationCard> = {
-	title: 'Molecules/ReservationCard',
+	title: 'Components/Molecules/ReservationCard',
 	component: ReservationCard,
 	parameters: { layout: 'padded' },
 	tags: ['autodocs'],

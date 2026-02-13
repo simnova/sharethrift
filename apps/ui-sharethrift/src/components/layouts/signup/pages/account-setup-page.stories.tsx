@@ -1,18 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import AccountSetupPage from './account-setup-page.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../test-utils/storybook-decorators.tsx';
 import  { AccountSetUpContainerCurrentPersonalUserAndCreateIfNotExistsDocument, type PersonalUser } from '../../../../generated.tsx';
+import { SignupRoutes } from '../index.tsx';
 
-const meta: Meta<typeof AccountSetupPage> = {
-	title: 'Pages/Signup/AccountSetup',
-	component: AccountSetupPage,
+const meta: Meta<typeof SignupRoutes> = {
+	title: 'Pages/Signup/Account Setup',
+	component: SignupRoutes,
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [withMockApolloClient, withMockRouter('/signup/account-setup')],
+	decorators: [withMockApolloClient, withMockRouter('/account-setup')],
 };
 
 export default meta;

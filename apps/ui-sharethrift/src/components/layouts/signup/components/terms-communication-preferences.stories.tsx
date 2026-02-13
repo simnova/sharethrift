@@ -3,7 +3,7 @@ import { TermsCommunicationPreferences } from './terms-communication-preferences
 import { Form } from 'antd';
 
 const meta: Meta<typeof TermsCommunicationPreferences> = {
-	title: 'Signup/TermsCommunicationPreferences',
+	title: 'Components/Signup/TermsCommunicationPreferences',
 	component: TermsCommunicationPreferences,
 	parameters: {
 		layout: 'centered',

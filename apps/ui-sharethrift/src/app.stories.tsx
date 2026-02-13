@@ -1,9 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { AuthProvider } from 'react-oidc-context';
-import { MockedProvider } from '@apollo/client/testing/react';
 import { App } from './app.tsx';
+import { withAuthDecorator } from './test-utils/storybook-decorators.tsx';
 
 const mockEnv = {
 	VITE_FUNCTION_ENDPOINT: 'https://mock-functions.example.com',
@@ -49,6 +48,7 @@ const meta: Meta<typeof App> = {
 		hasCompletedOnboarding: false,
 		isAuthenticated: false,
 	},
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	parameters: {
 		layout: 'fullscreen',
 		docs: {
@@ -58,21 +58,7 @@ const meta: Meta<typeof App> = {
 			},
 		},
 	},
-	decorators: [
-		(Story) => (
-			<MockedProvider mocks={[]}>
-				<AuthProvider
-					authority={mockEnv.VITE_B2C_AUTHORITY}
-					client_id={mockEnv.VITE_B2C_CLIENTID}
-					redirect_uri={globalThis.location.origin}
-					post_logout_redirect_uri={globalThis.location.origin}
-					userStore={mockStorage}
-				>
-					<Story />
-				</AuthProvider>
-			</MockedProvider>
-		),
-	],
+	decorators: [withAuthDecorator],
 } satisfies Meta<typeof App>;
 
 export default meta;

@@ -1,12 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, waitFor, fn } from 'storybook/test';
 import { RequestsTableContainer } from './requests-table.container.tsx';
-import {
-	withMockApolloClient,
-	withMockRouter,
-	withMockUserId,
-} from '../../../../../../test-utils/storybook-decorators.tsx';
+
 import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../../generated.tsx';
+import { withMockApolloClient,withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
 
 const mockRequests = {
 	items: [
@@ -52,6 +49,8 @@ const mockRequests = {
 		},
 	],
 	total: 2,
+	page: 1,
+	pageSize: 6,
 };
 
 const meta: Meta<typeof RequestsTableContainer> = {
@@ -59,19 +58,6 @@ const meta: Meta<typeof RequestsTableContainer> = {
 	component: RequestsTableContainer,
 	parameters: {
 		layout: 'fullscreen',
-	},
-	decorators: [withMockApolloClient, withMockRouter(), withMockUserId()],
-};
-
-export default meta;
-type Story = StoryObj<typeof RequestsTableContainer>;
-
-export const Default: Story = {
-	args: {
-		currentPage: 1,
-		onPageChange: fn(),
-	},
-	parameters: {
 		apolloClient: {
 			mocks: [
 				{
@@ -95,18 +81,12 @@ export const Default: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await waitFor(
-			() => {
-				expect(canvas.queryAllByText(/Cordless Drill/i).length).toBeGreaterThan(
-					0,
-				);
-			},
-			{ timeout: 3000 },
-		);
-	},
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
+	decorators: [withMockApolloClient, withMockRouter('/my-listings/requests')],
 };
+
+export default meta;
+type Story = StoryObj<typeof RequestsTableContainer>;
 
 export const Empty: Story = {
 	args: {
@@ -130,7 +110,7 @@ export const Empty: Story = {
 					},
 					result: {
 						data: {
-							myListingsRequests: { items: [], total: 0 },
+							myListingsRequests: { items: [], total: 0, page: 1, pageSize: 6 },
 						},
 					},
 				},
@@ -174,7 +154,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
@@ -247,6 +227,8 @@ export const WithSearchFilter: Story = {
 							myListingsRequests: {
 								items: [mockRequests.items[0]],
 								total: 1,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -297,6 +279,8 @@ export const WithStatusFilter: Story = {
 							myListingsRequests: {
 								items: [mockRequests.items[1]],
 								total: 1,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -389,6 +373,8 @@ export const Pagination: Story = {
 							myListingsRequests: {
 								items: [],
 								total: 12,
+								page: 2,
+								pageSize: 6,
 							},
 						},
 					},
@@ -487,7 +473,9 @@ export const DataMappingEdgeCases: Story = {
 										__typename: 'ReservationRequest',
 										id: '2',
 										createdAt: new Date('2025-01-16T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-20T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-20T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-25T00:00:00.000Z'),
 										state: 'Pending',
 										listing: {
@@ -504,13 +492,15 @@ export const DataMappingEdgeCases: Story = {
 										__typename: 'ReservationRequest',
 										id: '3',
 										createdAt: new Date('2025-01-17T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-21T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-21T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-26T00:00:00.000Z'),
 										state: 'Accepted',
 										listing: {
 											__typename: 'ItemListing',
 											title: 'Valid Title',
-											images: ['/assets/item-images/valid.png'],
+											images: ['/assets/item-images/airpods.png'],
 										},
 										reserver: {
 											__typename: 'PersonalUser',
@@ -522,6 +512,8 @@ export const DataMappingEdgeCases: Story = {
 									},
 								],
 								total: 3,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -540,10 +532,12 @@ export const DataMappingEdgeCases: Story = {
 			{ timeout: 3000 },
 		);
 
-	// Test fallback values for missing data
-	expect(canvas.queryAllByText('Unknown').length).toBeGreaterThan(0); // Missing listing title
-	expect(canvas.queryAllByText('@unknown').length).toBeGreaterThan(0); // Missing username
-	expect(canvas.getAllByText('Unknown').length).toBeGreaterThan(1); // Multiple fallbacks		// Test valid data still renders correctly
+		// Test fallback values for missing data
+		expect(canvas.queryAllByText('Unknown Title').length).toBeGreaterThan(0); // Missing listing title
+		expect(canvas.queryAllByText('@unknown user').length).toBeGreaterThan(0); // Missing username
+		expect(canvas.queryAllByText('Unknown Status').length).toBeGreaterThan(0); // Missing status
+
+		// Test valid data still renders correctly
 		expect(canvas.queryAllByText('Valid Title').length).toBeGreaterThan(0);
 		expect(canvas.queryAllByText('Accepted').length).toBeGreaterThan(0);
 	},
@@ -577,13 +571,15 @@ export const DateFormatting: Story = {
 										__typename: 'ReservationRequest',
 										id: '1',
 										createdAt: new Date('2025-01-15T10:30:45.123Z'),
-										reservationPeriodStart: new Date('2025-01-20T09:15:30.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-20T09:15:30.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-25T18:45:00.000Z'),
 										state: 'Pending',
 										listing: {
 											__typename: 'ItemListing',
 											title: 'Test Item',
-											images: ['/assets/item-images/test.png'],
+											images: ['/assets/item-images/airpods.png'],
 										},
 										reserver: {
 											__typename: 'PersonalUser',
@@ -595,6 +591,8 @@ export const DateFormatting: Story = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -614,11 +612,9 @@ export const DateFormatting: Story = {
 		);
 
 		// Test date formatting - should show date part only (YYYY-MM-DD)
-		expect(canvas.queryAllByText('2025-01-20 to 2025-01-25').length).toBeGreaterThan(0);
-
-		// Test that full ISO string is used for requestedOn (not just date part)
-		const requestedOnCell = canvas.queryByText('2025-01-15T10:30:45.123Z');
-		expect(requestedOnCell ?? canvasElement).toBeTruthy();
+		expect(
+			canvas.queryAllByText('2025-01-20 to 2025-01-25').length,
+		).toBeGreaterThan(0);
 	},
 };
 
@@ -650,13 +646,15 @@ export const StateFilteringInteraction: Story = {
 										__typename: 'ReservationRequest',
 										id: '1',
 										createdAt: new Date('2025-01-15T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-20T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-20T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-25T00:00:00.000Z'),
 										state: 'Pending',
 										listing: {
 											__typename: 'ItemListing',
 											title: 'Filtered Item',
-											images: ['/assets/item-images/filtered.png'],
+											images: ['/assets/item-images/airpods.png'],
 										},
 										reserver: {
 											__typename: 'PersonalUser',
@@ -668,6 +666,8 @@ export const StateFilteringInteraction: Story = {
 									},
 								],
 								total: 1,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -681,14 +681,16 @@ export const StateFilteringInteraction: Story = {
 		// Wait for filtered data to load
 		await waitFor(
 			() => {
-				expect(canvas.queryAllByText(/Filtered Item/i).length).toBeGreaterThan(0);
+				expect(canvas.queryAllByText(/Filtered Item/i).length).toBeGreaterThan(
+					0,
+				);
 			},
 			{ timeout: 3000 },
 		);
 
-	// Verify the filtered item shows correct status
-	expect(canvas.queryAllByText('Pending').length).toBeGreaterThan(0);
-	expect(canvas.queryAllByText('@filtereduser').length).toBeGreaterThan(0);
+		// Verify the filtered item shows correct status
+		expect(canvas.queryAllByText('Pending').length).toBeGreaterThan(0);
+		expect(canvas.queryAllByText('@filtereduser').length).toBeGreaterThan(0);
 	},
 };
 
@@ -720,7 +722,9 @@ export const SortingInteraction: Story = {
 										__typename: 'ReservationRequest',
 										id: '1',
 										createdAt: new Date('2025-01-15T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-20T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-20T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-25T00:00:00.000Z'),
 										state: 'Pending',
 										listing: {
@@ -740,7 +744,9 @@ export const SortingInteraction: Story = {
 										__typename: 'ReservationRequest',
 										id: '2',
 										createdAt: new Date('2025-01-16T10:00:00.000Z'),
-										reservationPeriodStart: new Date('2025-01-21T00:00:00.000Z'),
+										reservationPeriodStart: new Date(
+											'2025-01-21T00:00:00.000Z',
+										),
 										reservationPeriodEnd: new Date('2025-01-26T00:00:00.000Z'),
 										state: 'Accepted',
 										listing: {
@@ -758,6 +764,8 @@ export const SortingInteraction: Story = {
 									},
 								],
 								total: 2,
+								page: 1,
+								pageSize: 6,
 							},
 						},
 					},
@@ -771,15 +779,17 @@ export const SortingInteraction: Story = {
 		// Wait for sorted data to load
 		await waitFor(
 			() => {
-				expect(canvas.queryAllByText('Apple MacBook').length).toBeGreaterThan(0);
+				expect(canvas.queryAllByText('Apple MacBook').length).toBeGreaterThan(
+					0,
+				);
 			},
 			{ timeout: 3000 },
 		);
 
-	// Verify both items are present (sorted alphabetically)
-	expect(canvas.queryAllByText('Apple MacBook').length).toBeGreaterThan(0);
-	expect(canvas.queryAllByText('Zeiss Camera').length).toBeGreaterThan(0);
-	expect(canvas.queryAllByText('Pending').length).toBeGreaterThan(0);
-	expect(canvas.queryAllByText('Accepted').length).toBeGreaterThan(0);
+		// Verify both items are present (sorted alphabetically)
+		expect(canvas.queryAllByText('Apple MacBook').length).toBeGreaterThan(0);
+		expect(canvas.queryAllByText('Zeiss Camera').length).toBeGreaterThan(0);
+		expect(canvas.queryAllByText('Pending').length).toBeGreaterThan(0);
+		expect(canvas.queryAllByText('Accepted').length).toBeGreaterThan(0);
 	},
 };

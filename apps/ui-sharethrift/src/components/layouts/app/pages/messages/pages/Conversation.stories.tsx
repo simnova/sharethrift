@@ -13,6 +13,7 @@ const meta: Meta<typeof Conversation> = {
 			},
 		},
 	},
+  tags: ['!dev'], // temporarily hidden until the component is ready - https://storybook.js.org/docs/writing-stories/tags
 } satisfies Meta<typeof Conversation>;
 
 export default meta;
@@ -20,7 +21,7 @@ type Story = StoryObj<typeof Conversation>;
 
 export const Default: Story = {
 	name: 'Default',
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 		const content = canvasElement.textContent;
 		expect(content).toContain('Conversation Page');

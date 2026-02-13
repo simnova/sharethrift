@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import TermsPage from './terms-page.tsx';
 import {
 	withMockApolloClient,
 	withMockRouter,
@@ -8,14 +7,15 @@ import {
 	TermsContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
 	type PersonalUser,
 } from '../../../../generated.tsx';
+import { SignupRoutes } from '../index.tsx';
 
-const meta: Meta<typeof TermsPage> = {
+const meta: Meta<typeof SignupRoutes> = {
 	title: 'Pages/Signup/Terms',
-	component: TermsPage,
+	component: SignupRoutes,
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [withMockApolloClient, withMockRouter('/signup/terms')],
+	decorators: [withMockApolloClient, withMockRouter('/terms')],
 };
 
 export default meta;

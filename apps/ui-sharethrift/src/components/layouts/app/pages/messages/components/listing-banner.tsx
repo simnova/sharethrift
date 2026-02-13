@@ -16,7 +16,6 @@ export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
 
 	const firstName = props.owner?.account?.profile?.firstName || 'Unknown';  return (
     <Card
-      bodyStyle={{ padding: 0 }}
       style={{
         background: "var(--color-background-2)",
         border: "none",
@@ -25,6 +24,7 @@ export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
         marginBottom: 0,
         boxShadow: "none",
       }}
+      styles={{ body: { padding: 0 }}}
     >
       <Row
         align="middle"

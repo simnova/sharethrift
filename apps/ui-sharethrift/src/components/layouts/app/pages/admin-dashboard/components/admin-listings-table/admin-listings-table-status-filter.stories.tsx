@@ -3,7 +3,7 @@ import { expect, within, fn, userEvent } from 'storybook/test';
 import { StatusFilter } from './admin-listings-table.status-filter.tsx';
 
 const meta: Meta<typeof StatusFilter> = {
-	title: 'Admin/ListingsTable/StatusFilter',
+	title: 'Components/AdminListingsTable/StatusFilter',
 	component: StatusFilter,
 	parameters: {
 		layout: 'centered',

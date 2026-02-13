@@ -2,16 +2,16 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect, userEvent, within } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { useCreateListingNavigation } from './use-create-listing-navigation.ts';
-import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
 import { AuthContext } from 'react-oidc-context';
-import { createMockAuth, createMockUser } from '../../../test/utils/mock-auth.ts';
+import { MockAuthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
+import { createMockAuth,createMockUser } from '../../../test/utils/mock-auth.ts';
 
 const NavigationTestComponent = () => {
 	const handleCreateListing = useCreateListingNavigation();
 	
 	return (
 		<div>
-			<button onClick={handleCreateListing} data-testid="create-listing-btn">
+			<button type="button" onClick={handleCreateListing} data-testid="create-listing-btn">
 				Create Listing
 			</button>
 		</div>
@@ -23,6 +23,7 @@ const meta: Meta = {
 	parameters: {
 		layout: 'centered',
 	},
+  tags: ["!dev"], // not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 
 export default meta;
@@ -36,7 +37,7 @@ export const HookTest: Story = {
 			</MemoryRouter>
 		</MockAuthWrapper>
 	),
-	play: async () => {
+	play: () => {
 		expect(typeof useCreateListingNavigation).toBe('function');
 	},
 };
@@ -56,7 +57,7 @@ export const AuthenticatedNavigation: Story = {
 			</AuthContext.Provider>
 		);
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		const button = canvas.getByTestId('create-listing-btn');
@@ -81,7 +82,7 @@ export const UnauthenticatedNavigation: Story = {
 			</AuthContext.Provider>
 		);
 	},
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		
 		const button = canvas.getByTestId('create-listing-btn');

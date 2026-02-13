@@ -47,11 +47,12 @@ const StatusTagClassTest = (): React.ReactElement => {
 };
 
 const meta: Meta<typeof StatusTagClassTest> = {
-	title: 'Layouts/Home/MyListings/Utilities/StatusTagClass',
+	title: 'Components/Layouts/Home/MyListings/Utilities/StatusTagClass',
 	component: StatusTagClassTest,
 	parameters: {
 		layout: 'centered',
 	},
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 
 export default meta;

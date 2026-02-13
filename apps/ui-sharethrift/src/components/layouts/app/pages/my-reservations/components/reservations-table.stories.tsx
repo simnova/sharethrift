@@ -12,7 +12,7 @@ import {
 import { expect, within } from 'storybook/test';
 
 const meta: Meta<typeof ReservationsTable> = {
-	title: 'Organisms/ReservationsTable',
+	title: 'Components/Organisms/ReservationsTable',
 	component: ReservationsTable,
 	parameters: { layout: 'padded' },
 	tags: ['autodocs'],
@@ -30,7 +30,7 @@ type Story = StoryObj<typeof ReservationsTable>;
 
 export const AllReservations: Story = {
 	args: { reservations: storyReservationsAll },
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByRole('table')).toBeInTheDocument();
 	},

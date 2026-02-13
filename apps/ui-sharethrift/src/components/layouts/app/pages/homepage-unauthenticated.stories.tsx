@@ -1,15 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react";
+import { ListingsPageContainerGetListingsDocument } from "../../../../generated.tsx";
+import { withMockApolloClient, withMockRouter } from "../../../../test-utils/storybook-decorators.tsx";
 import { expect, within } from 'storybook/test';
-import { AppRoutes } from "./index.tsx";
-import { withMockApolloClient,withMockRouter } from "../../../test-utils/storybook-decorators.tsx";
-import { ListingsPageContainerGetListingsDocument } from "../../../generated.tsx";
+import { userIsAdminMockRequest } from "../../../../test-utils/storybook-helpers.ts";
+import { AppRoutes } from "../index.tsx";
 
 const meta: Meta<typeof AppRoutes> = {
-	title: "Pages/Home - Authenticated",
+	title: "Pages/Home - Unauthenticated",
 	component: AppRoutes,
 	decorators: [
 		withMockApolloClient,
-		withMockRouter("/", true),
+		withMockRouter("/", false),
 	],
 };
 
@@ -17,15 +18,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 
-export const DefaultView: Story = {};
-DefaultView.play = async ({ canvasElement }) => {
+export const Default: Story = {};
+Default.play = async ({ canvasElement }) => {
 	const canvas = within(canvasElement);
 	await expect(canvas.getByRole('main')).toBeInTheDocument();
 };
 
-DefaultView.parameters = {
+Default.parameters = {
   apolloClient: {
     mocks: [
+      userIsAdminMockRequest('personal-user-123', false),
       {
         request: {
           query: ListingsPageContainerGetListingsDocument,
@@ -128,71 +130,6 @@ DefaultView.parameters = {
                 },
               },
             ],
-          },
-        },
-      },
-      {
-        request: {
-          query: {
-            kind: "Document",
-            definitions: [
-              {
-                kind: "OperationDefinition",
-                operation: "query",
-                name: { kind: "Name", value: "useUserIsAdmin" },
-                selectionSet: {
-                  kind: "SelectionSet",
-                  selections: [
-                    {
-                      kind: "Field",
-                      name: { kind: "Name", value: "currentUser" },
-                      selectionSet: {
-                        kind: "SelectionSet",
-                        selections: [
-                          {
-                            kind: "InlineFragment",
-                            typeCondition: {
-                              kind: "NamedType",
-                              name: { kind: "Name", value: "PersonalUser" },
-                            },
-                            selectionSet: {
-                              kind: "SelectionSet",
-                              selections: [
-                                { kind: "Field", name: { kind: "Name", value: "id" } },
-                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
-                              ],
-                            },
-                          },
-                          {
-                            kind: "InlineFragment",
-                            typeCondition: {
-                              kind: "NamedType",
-                              name: { kind: "Name", value: "AdminUser" },
-                            },
-                            selectionSet: {
-                              kind: "SelectionSet",
-                              selections: [
-                                { kind: "Field", name: { kind: "Name", value: "id" } },
-                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
-                              ],
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        },
-        result: {
-          data: {
-            currentUser: {
-              __typename: "PersonalUser",
-              id: "507f1f77bcf86cd799439099",
-              userIsAdmin: false,
-            },
           },
         },
       },

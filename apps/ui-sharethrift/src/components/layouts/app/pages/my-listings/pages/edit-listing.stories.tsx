@@ -3,7 +3,7 @@ import { expect } from 'storybook/test';
 import { EditListing } from './edit-listing.tsx';
 
 const meta: Meta<typeof EditListing> = {
-	title: 'Pages/MyListings/EditListing',
+	title: 'Pages/My Listings/Edit Listing',
 	component: EditListing,
 	parameters: {
 		layout: 'fullscreen',
@@ -16,11 +16,12 @@ const meta: Meta<typeof EditListing> = {
 } satisfies Meta<typeof EditListing>;
 
 export default meta;
-type Story = StoryObj<typeof EditListing>;
+type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
 	name: 'Default',
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  tags: ['!dev'], // temporarily not rendered in sidebar, will be updated when this component is ready - https://storybook.js.org/docs/writing-stories/tags 
+	play:  ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		expect(canvasElement).toBeTruthy();
 		const content = canvasElement.textContent;
 		expect(content).toContain('Edit Listing Page');

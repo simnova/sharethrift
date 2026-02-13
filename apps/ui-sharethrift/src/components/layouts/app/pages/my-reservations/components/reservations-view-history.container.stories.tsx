@@ -85,6 +85,8 @@ const mockPastReservations = [
 
 const meta: Meta = {
 	title: 'Containers/ReservationsViewHistoryContainer',
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	component: ReservationsViewHistoryContainer,
 	parameters: {
 		layout: 'fullscreen',
@@ -102,7 +104,8 @@ const meta: Meta = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
 					result: {
@@ -114,7 +117,10 @@ const meta: Meta = {
 			],
 		},
 	},
-	decorators: [withMockApolloClient, withMockRouter('/my-reservations/history')],
+	decorators: [
+		withMockApolloClient,
+		withMockRouter('/my-reservations/history'),
+	],
 };
 
 export default meta;
@@ -142,7 +148,8 @@ export const Empty: Story = {
 				},
 				{
 					request: {
-						query: HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
+						query:
+							HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 						variables: { userId: 'user-1' },
 					},
 					result: {

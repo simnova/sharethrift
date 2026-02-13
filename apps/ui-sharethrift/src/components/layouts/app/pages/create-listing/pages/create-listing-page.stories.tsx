@@ -1,15 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import { CreateListing } from './create-listing-page.tsx';
+import { AppRoutes } from '../../..';
+import { HomeCreateListingContainerCreateItemListingDocument } from '../../../../../../generated';
 import {
 	withMockApolloClient,
 	withMockRouter,
-} from '../../../../../../test-utils/storybook-decorators.tsx';
-import { HomeCreateListingContainerCreateItemListingDocument } from '../../../../../../generated.tsx';
+} from '../../../../../../test-utils/storybook-decorators';
+import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers';
 
-const meta: Meta<typeof CreateListing> = {
-	title: 'Pages/CreateListingPage',
-	component: CreateListing,
+const meta: Meta<typeof AppRoutes> = {
+	title: 'Pages/Create Listing',
+	component: AppRoutes,
 	parameters: {
 		layout: 'fullscreen',
 		apolloClient: {
@@ -39,20 +40,13 @@ const meta: Meta<typeof CreateListing> = {
 };
 
 export default meta;
-type Story = StoryObj<typeof CreateListing>;
+type Story = StoryObj<typeof meta>;
 
-export const Authenticated: Story = {
-	args: {
-		isAuthenticated: true,
-	},
-	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
-	},
-};
-
-export const Unauthenticated: Story = {
-	args: {
-		isAuthenticated: false,
+export const Default: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [userIsAdminMockRequest('user-1', true)],
+		},
 	},
 	play: async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();

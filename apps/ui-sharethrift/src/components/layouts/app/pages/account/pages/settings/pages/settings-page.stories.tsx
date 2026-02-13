@@ -1,141 +1,82 @@
-import type { Meta, StoryFn } from "@storybook/react";
-import { AppRoutes } from "../../../../../index.tsx";
-import { HomeAccountSettingsViewContainerCurrentUserDocument } from "../../../../../../../../generated.tsx";
+import type { Meta, StoryObj } from '@storybook/react';
+
+import { expect, within } from 'storybook/test';
+import { AppRoutes } from '../../../../..';
 import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../../../../../test-utils/storybook-decorators.tsx';
-import { expect } from 'storybook/test';
+import { HomeAccountSettingsViewContainerCurrentUserDocument } from '../../../../../../../../generated.tsx';
+import { userIsAdminMockRequest } from '../../../../../../../../test-utils/storybook-helpers.ts';
 
 const meta: Meta<typeof AppRoutes> = {
-	title: "Pages/Account/Settings",
+	title: 'Pages/Account/Settings',
 	component: AppRoutes,
-	decorators: [
-		withMockApolloClient,
-		withMockRouter("/account/settings"),
-	],
+	decorators: [withMockApolloClient, withMockRouter('/account/settings')],
 };
 
 export default meta;
 
-const Template: StoryFn<typeof AppRoutes> = () => <AppRoutes />;
+type Story = StoryObj<typeof meta>;
+export const DefaultView: Story = {
+	parameters: {
+		apolloClient: {
+			mocks: [
+				{
+					request: {
+						query: HomeAccountSettingsViewContainerCurrentUserDocument,
+					},
+					delay: 100,
+					result: {
+						data: {
+							currentUser: {
+								__typename: 'PersonalUser',
+								id: '507f1f77bcf86cd799439099',
+								userType: 'personal-user',
+								createdAt: '2024-08-01T00:00:00Z',
+								updatedAt: '2025-08-08T12:00:00Z',
+								account: {
+									__typename: 'PersonalUserAccount',
+									accountType: 'personal',
+									email: 'patrick.g@example.com',
+									username: 'patrick_g',
+									profile: {
+										__typename: 'PersonalUserAccountProfile',
 
-export const DefaultView: StoryFn<typeof AppRoutes> = Template.bind({});
-
-DefaultView.play = async ({ canvasElement }) => {
-	// Component renders with lazy-loaded content
-	expect(canvasElement).toBeTruthy();
-};
-
-DefaultView.parameters = {
-  apolloClient: {
-    mocks: [
-      {
-        request: {
-          query: HomeAccountSettingsViewContainerCurrentUserDocument,
-        },
-        result: {
-          data: {
-            currentPersonalUserAndCreateIfNotExists: {
-              __typename: "PersonalUser",
-              id: "507f1f77bcf86cd799439099",
-              userType: "personal-user",
-              createdAt: "2024-08-01T00:00:00Z",
-              updatedAt: "2025-08-08T12:00:00Z",
-              account: {
-                __typename: "PersonalUserAccount",
-                accountType: "personal",
-                email: "patrick.g@example.com",
-                username: "patrick_g",
-                profile: {
-                  __typename: "PersonalUserAccountProfile",
-                  firstName: "Patrick",
-                  lastName: "Garcia",
-                  location: {
-                    __typename: "PersonalUserAccountProfileLocation",
-                    address1: "123 Main Street",
-                    address2: "Apt 4B",
-                    city: "Philadelphia",
-                    state: "PA",
-                    country: "United States",
-                    zipCode: "19101",
-                  },
-                  billing: {
-                    __typename: "PersonalUserAccountProfileBilling",
-                    subscriptionId: "sub_123456789",
-                    cybersourceCustomerId: "cust_abc123",
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      {
-        request: {
-          query: {
-            kind: "Document",
-            definitions: [
-              {
-                kind: "OperationDefinition",
-                operation: "query",
-                name: { kind: "Name", value: "useUserIsAdmin" },
-                selectionSet: {
-                  kind: "SelectionSet",
-                  selections: [
-                    {
-                      kind: "Field",
-                      name: { kind: "Name", value: "currentUser" },
-                      selectionSet: {
-                        kind: "SelectionSet",
-                        selections: [
-                          {
-                            kind: "InlineFragment",
-                            typeCondition: {
-                              kind: "NamedType",
-                              name: { kind: "Name", value: "PersonalUser" },
-                            },
-                            selectionSet: {
-                              kind: "SelectionSet",
-                              selections: [
-                                { kind: "Field", name: { kind: "Name", value: "id" } },
-                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
-                              ],
-                            },
-                          },
-                          {
-                            kind: "InlineFragment",
-                            typeCondition: {
-                              kind: "NamedType",
-                              name: { kind: "Name", value: "AdminUser" },
-                            },
-                            selectionSet: {
-                              kind: "SelectionSet",
-                              selections: [
-                                { kind: "Field", name: { kind: "Name", value: "id" } },
-                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
-                              ],
-                            },
-                          },
-                        ],
-                      },
-                    },
-                  ],
-                },
-              },
-            ],
-          },
-        },
-        result: {
-          data: {
-            currentUser: {
-              __typename: "PersonalUser",
-              id: "507f1f77bcf86cd799439099",
-              userIsAdmin: false,
-            },
-          },
-        },
-      },
-    ],
-  },
+										firstName: 'Patrick',
+										lastName: 'Garcia',
+										aboutMe:
+											'Enthusiastic thrift shopper and vintage lover. Always on the hunt for unique finds and sustainable fashion.',
+										location: {
+											__typename: 'PersonalUserAccountProfileLocation',
+											address1: '123 Main Street',
+											address2: 'Apt 4B',
+											city: 'Philadelphia',
+											state: 'PA',
+											country: 'United States',
+											zipCode: '19101',
+										},
+										billing: {
+											__typename: 'PersonalUserAccountProfileBilling',
+											subscription: {
+												__typename:
+													'PersonalUserAccountProfileBillingSubscription',
+												subscriptionId: 'sub_123456789',
+											},
+											cybersourceCustomerId: 'cust_abc123',
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				userIsAdminMockRequest('507f1f77bcf86cd799439099'),
+			],
+		},
+	},
+	play: async ({ canvasElement }) => {
+		const canvas = within(canvasElement);
+		await expect(canvas.getByRole('main')).toBeInTheDocument();
+	},
 };
