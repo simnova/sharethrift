@@ -3,6 +3,7 @@ import type { ComponentProps } from 'react';
 import type { PersonalUser } from './generated.tsx';
 import { ListingBanner } from './components/layouts/app/pages/messages/components/listing-banner.tsx';
 
+
 // Mock PersonalUser object for Storybook
 const mockUser: PersonalUser = {
 	id: '507f1f77bcf86cd799439011',
