@@ -12,6 +12,12 @@ Feature: <AggregateRoot> ReservationRequest
     And the reservation request's listing should reference "listing1"
     And the reservation request's reserver should reference "reserverUser"	
         
+  Scenario: Creating a new reservation request instance with pending state
+    When I create a new ReservationRequest aggregate using getNewInstance with state "PENDING", listing "listing1", reserver "reserverUser", reservationPeriodStart "tomorrow", and reservationPeriodEnd "next month"
+    Then the reservation request's state should be "PENDING"
+    And the reservation request's listing should reference "listing1"
+    And the reservation request's reserver should reference "reserverUser"	
+        
   Scenario: Setting reservation period start in the past	
     Given a new ReservationRequest aggregate being created	
     When I try to set the reservationPeriodStart to a past date	
@@ -167,6 +173,16 @@ Feature: <AggregateRoot> ReservationRequest
     When I try to set reservationPeriodEnd to a date before or equal to the start date
     Then an error should be thrown indicating "Reservation period end date must be after the start date"
 
+  Scenario: Setting reservation period end equal to start should fail
+    Given a new ReservationRequest aggregate being created with start date set
+    When I try to set reservationPeriodEnd to the same date as reservationPeriodStart
+    Then an error should be thrown indicating "Reservation start date must be before end date"
+
+  Scenario: Setting reservation period start equal to end should fail
+    Given a new ReservationRequest aggregate being created with end date set
+    When I try to set reservationPeriodStart to the same date as reservationPeriodEnd
+    Then an error should be thrown indicating "Reservation start date must be before end date"
+
   Scenario: Setting reservation period start after creation should fail
     Given an existing ReservationRequest aggregate
     When I try to update the reservation period start date
@@ -181,3 +197,23 @@ Feature: <AggregateRoot> ReservationRequest
     Given an existing ReservationRequest aggregate
     When I try to set a new reserver
     Then a PermissionError should be thrown with message "Reserver can only be set when creating a new reservation request"
+
+  Scenario: Successfully setting reserver during creation
+    Given a new ReservationRequest aggregate being created
+    When I create a reservation request with a valid reserver
+    Then the reserver should be set correctly
+
+  Scenario: Successfully setting listing during creation
+    Given a new ReservationRequest aggregate being created
+    When I create a reservation request with a valid active listing
+    Then the listing should be set correctly
+
+  Scenario: Setting state to PENDING after creation should fail
+    Given an existing ReservationRequest aggregate
+    When I try to set state to "PENDING"
+    Then a PermissionError should be thrown
+
+  Scenario: Setting state to REQUESTED after creation should fail
+    Given an existing ReservationRequest aggregate
+    When I try to set state to "REQUESTED"
+    Then a PermissionError should be thrown

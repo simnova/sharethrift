@@ -265,6 +265,19 @@ stages:
         ${{ each pair in parameters.buildEnvSettings }}:
           ${{ pair.key }}: ${{ pair.value }}
 
+    # Generate Serenity BDD HTML reports from test results
+    - task: Bash@3
+      displayName: 'Generate Serenity BDD reports'
+      condition: eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true')
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          echo "Generating Serenity BDD HTML reports..."
+          pnpm run test:serenity:report
+        workingDirectory: '$(Build.SourcesDirectory)'
+
+
     # Audit unused dependencies with knip (after packages are built)
     - task: Bash@3
       displayName: 'Audit unused dependencies with knip'
@@ -433,6 +446,38 @@ stages:
       inputs:
         SonarCloud: ${{parameters.SonarCloud}}
         organization: ${{parameters.SonarCloud_organization}}
+
+    # Copy Serenity reports to Docusaurus static folder for deployment
+    - task: Bash@3
+      displayName: 'Artifact: Prepare Serenity Reports'
+      condition: and(succeeded(), eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true'), ne(variables['Build.Reason'], 'PullRequest'))
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          echo "Copying Serenity reports to Docusaurus static folder..."
+          
+          SERENITY_SOURCE="packages/sthrift/domain/target/site/serenity"
+          DOCS_STATIC_TARGET="apps/docs/static/serenity-reports"
+          
+          # Check if Serenity reports exist
+          if [ ! -d "$SERENITY_SOURCE" ]; then
+            echo "Warning: Serenity reports not found at $SERENITY_SOURCE"
+            echo "Skipping report copy step"
+            exit 0
+          fi
+          
+          # Create target directory and copy reports
+          mkdir -p "$DOCS_STATIC_TARGET"
+          cp -r "$SERENITY_SOURCE"/* "$DOCS_STATIC_TARGET/"
+          
+          echo "✓ Serenity reports copied successfully"
+          echo "  Source: $SERENITY_SOURCE"
+          echo "  Target: $DOCS_STATIC_TARGET"
+          echo ""
+          echo "Copied files:"
+          ls -lah "$DOCS_STATIC_TARGET"
+        workingDirectory: '$(Build.SourcesDirectory)'
 
     # Deploy API package with production dependencies
     - task: Bash@3

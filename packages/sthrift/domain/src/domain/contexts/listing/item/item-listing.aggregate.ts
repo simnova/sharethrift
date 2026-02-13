@@ -33,36 +33,32 @@ export class ItemListing<props extends ItemListingProps>
 		newProps: props,
 		passport: Passport,
 		sharer: UserEntityReference,
-		fields: {
-			title: string;
-			description: string;
-			category: string;
-			location: string;
-			sharingPeriodStart: Date;
-			sharingPeriodEnd: Date;
-			images?: string[];
-			isDraft?: boolean;
-            expiresAt?: Date;
-		},
+		title: string,
+		description: string,
+		category: string,
+		location: string,
+		sharingPeriodStart: Date,
+		sharingPeriodEnd: Date,
+		images?: string[],
+		isDraft?: boolean,
+		expiresAt?: Date,
 	): ItemListing<props> {
 		const newInstance = new ItemListing(newProps, passport);
 		newInstance.markAsNew();
 		newInstance.sharer = sharer;
-		newInstance.title = new ValueObjects.Title(fields.title).valueOf();
-		newInstance.description = new ValueObjects.Description(
-			fields.description,
-		).valueOf();
-		newInstance.category = new ValueObjects.Category(fields.category).valueOf();
-		newInstance.location = new ValueObjects.Location(fields.location).valueOf();
-		newInstance.sharingPeriodStart = fields.sharingPeriodStart;
-		newInstance.sharingPeriodEnd = fields.sharingPeriodEnd;
-		if (fields.images) {
-			newInstance.images = fields.images;
+		newInstance.props.title = new ValueObjects.Title(title).valueOf();
+		newInstance.props.description = new ValueObjects.Description(description).valueOf();
+		newInstance.props.category = new ValueObjects.Category(category).valueOf();
+		newInstance.props.location = new ValueObjects.Location(location).valueOf();
+		newInstance.sharingPeriodStart = sharingPeriodStart;
+		newInstance.sharingPeriodEnd = sharingPeriodEnd;
+		if (images !== undefined) {
+			newInstance.images = images;
 		}
-		newInstance.state = fields.isDraft
-			? ValueObjects.ListingState.Draft.valueOf()
-			: ValueObjects.ListingState.Active.valueOf();
-
+		newInstance.state = isDraft ? 'Draft' : 'Active';
+		if (expiresAt !== undefined) {
+			newInstance.expiresAt = expiresAt;
+		}
 		newInstance.isNew = false;
 		return newInstance;
 	}
@@ -113,6 +109,19 @@ export class ItemListing<props extends ItemListingProps>
 		}
 
 		this.props.state = new ValueObjects.ListingState('Cancelled').valueOf();
+	}
+
+	public reinstate(): void {
+		if (
+			!this.visa.determineIf((permissions) => permissions.canPublishItemListing)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'You do not have permission to reinstate this listing',
+			);
+		}
+
+		this.props.state = new ValueObjects.ListingState('Active').valueOf();
+		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	/**
@@ -218,11 +227,10 @@ public requestDelete(): void {
 			);
 		}
 		this.props.title = new ValueObjects.Title(value).valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get description(): string {
-		return this.props.description.valueOf();
+		return this.props.description;
 	}
 	set description(value: string) {
 		if (
@@ -234,7 +242,6 @@ public requestDelete(): void {
 			);
 		}
 		this.props.description = new ValueObjects.Description(value).valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get category(): string {
@@ -250,7 +257,6 @@ public requestDelete(): void {
 			);
 		}
 		this.props.category = new ValueObjects.Category(value).valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get location(): string {
@@ -266,7 +272,6 @@ public requestDelete(): void {
 			);
 		}
 		this.props.location = new ValueObjects.Location(value).valueOf();
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodStart(): Date {
@@ -282,7 +287,6 @@ public requestDelete(): void {
 			);
 		}
 		this.props.sharingPeriodStart = value;
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get sharingPeriodEnd(): Date {
@@ -298,15 +302,22 @@ public requestDelete(): void {
 			);
 		}
 		this.props.sharingPeriodEnd = value;
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
 	get state(): string {
 		return this.props.state;
 	}
 
+	// Note: State is read-only after creation; the state setter only works during creation.
+	// Use domain methods (publish(), pause(), cancel(), reinstate()) to change state so that
+	// permission checks and state transition validations are always enforced.
 	set state(value: string) {
-		this.props.state = value;
+		if (!this.isNew) {
+			throw new DomainSeedwork.PermissionError(
+				'Cannot set state directly. Use domain methods (publish(), pause(), cancel(), reinstate()) to change state.',
+			);
+		}
+		this.props.state = new ValueObjects.ListingState(value).valueOf();
 	}
 
 	get updatedAt(): Date {
@@ -342,9 +353,9 @@ public requestDelete(): void {
 			);
 		}
 		this.props.images = value;
-		// Note: updatedAt is automatically handled by Mongoose timestamps
 	}
 
+    
 	get isActive(): boolean {
 		return (
 			this.props.state.valueOf() === ValueObjects.ListingStateEnum.Active

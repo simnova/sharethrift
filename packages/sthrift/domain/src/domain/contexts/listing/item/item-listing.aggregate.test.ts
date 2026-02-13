@@ -6,6 +6,8 @@ import { expect, vi } from 'vitest';
 import type { Passport } from '../../passport.ts';
 import { PersonalUser } from '../../user/personal-user/personal-user.aggregate.ts';
 import type { PersonalUserProps } from '../../user/personal-user/personal-user.entity.ts';
+import { AdminUser } from '../../user/admin-user/admin-user.aggregate.ts';
+import type { AdminUserProps } from '../../user/admin-user/admin-user.entity.ts';
 import type { ItemListingProps } from './item-listing.entity.ts';
 import { ItemListing } from './item-listing.aggregate.ts';
 
@@ -42,6 +44,9 @@ function makePassport(
 		},
 		user: {
 			forPersonalUser: vi.fn(() => ({
+				determineIf: () => true,
+			})),
+			forAdminUser: vi.fn(() => ({
 				determineIf: () => true,
 			})),
 		},
@@ -150,7 +155,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let newListing: ItemListing<ItemListingProps>;
 
 	BeforeEachScenario(() => {
-		passport = makePassport(true, true, true);
+		passport = makePassport(true, true, true, true);
 		baseProps = makeBaseProps();
 		listing = new ItemListing(baseProps, passport);
 		newListing = undefined as unknown as ItemListing<ItemListingProps>;
@@ -158,7 +163,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Background(({ Given, And }) => {
 		Given('a valid Passport with listing permissions', () => {
-			passport = makePassport(true, true, true);
+			passport = makePassport(true, true, true, true);
 		});
 		And('a valid PersonalUserEntityReference for ""user1""', () => {
 			// Already handled in makeBaseProps
@@ -180,15 +185,13 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					makeBaseProps(),
 					passport,
 					baseProps.sharer,
-					{
-						title: 'New Listing',
-						description: 'Test Description',
-						category: 'Electronics',
-						location: 'Delhi',
-						sharingPeriodStart: new Date('2025-10-06T00:00:00Z'),
-						sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
-						images: [],
-					},
+					'New Listing',
+					'Test Description',
+					'Electronics',
+					'Delhi',
+					new Date('2025-10-06T00:00:00Z'),
+					new Date('2025-11-06T00:00:00Z'),
+					[],
 				);
 			},
 		);
@@ -218,16 +221,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 						makeBaseProps(),
 						passport,
 						baseProps.sharer,
-						{
-							title: '',
-							description: '',
-							category: '',
-							location: '',
-							sharingPeriodStart: new Date('2025-10-06T00:00:00Z'),
-							sharingPeriodEnd: new Date('2025-11-06T00:00:00Z'),
-							images: [],
-							isDraft: true,
-						},
+						'',
+						'',
+						'',
+						'',
+						new Date('2025-10-06T00:00:00Z'),
+						new Date('2025-11-06T00:00:00Z'),
+						[],
+						true,
 					);
 				},
 			);
@@ -884,6 +885,129 @@ Scenario(
 		},
 	);
 
+	Scenario(
+		'Publishing a listing with permission',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with permission to publish item listing', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Draft' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I call publish()', () => {
+				listing.publish();
+			});
+			Then("the listing's state should be \"Active\"", () => {
+				expect(listing.state).toBe('Active');
+			});
+		},
+	);
+
+	Scenario(
+		'Pausing a listing with permission',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with permission to unpublish item listing', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I call pause()', () => {
+				listing.pause();
+			});
+			Then("the listing's state should be \"Paused\"", () => {
+				expect(listing.state).toBe('Paused');
+			});
+		},
+	);
+
+	Scenario(
+		'Cancelling a listing with permission',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with permission to delete item listing', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I call cancel()', () => {
+				listing.cancel();
+			});
+			Then("the listing's state should be \"Cancelled\"", () => {
+				expect(listing.state).toBe('Cancelled');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting images property with permission',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate with update permission', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active', images: [] });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I set the images to a new array', () => {
+				listing.images = ['image1.jpg', 'image2.jpg'];
+			});
+			Then('the images should be updated', () => {
+				expect(listing.images).toEqual(['image1.jpg', 'image2.jpg']);
+			});
+		},
+	);
+
+	Scenario(
+		'Setting images property without permission',
+		({ Given, When, Then }) => {
+			Given('an ItemListing aggregate without update permission', () => {
+				passport = makePassport(false, false, false, false);
+				baseProps = makeBaseProps({ state: 'Active', images: [] });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I attempt to set the images', () => {
+				// Handled in Then
+			});
+			Then('it should throw a PermissionError', () => {
+				expect(() => {
+					listing.images = ['image1.jpg'];
+				}).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
+
+	Scenario(
+		'Setting sharingPeriodStart with permission',
+		({ Given, When, Then }) => {
+			const newDate = new Date('2026-01-01T00:00:00Z');
+			Given('an ItemListing aggregate with update permission', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I set the sharingPeriodStart', () => {
+				listing.sharingPeriodStart = newDate;
+			});
+			Then('the sharingPeriodStart should be updated', () => {
+				expect(listing.sharingPeriodStart).toEqual(newDate);
+			});
+		},
+	);
+
+	Scenario(
+		'Setting sharingPeriodEnd with permission',
+		({ Given, When, Then }) => {
+			const newDate = new Date('2026-12-31T00:00:00Z');
+			Given('an ItemListing aggregate with update permission', () => {
+				passport = makePassport(true, true, true, true);
+				baseProps = makeBaseProps({ state: 'Active' });
+				listing = new ItemListing(baseProps, passport);
+			});
+			When('I set the sharingPeriodEnd', () => {
+				listing.sharingPeriodEnd = newDate;
+			});
+			Then('the sharingPeriodEnd should be updated', () => {
+				expect(listing.sharingPeriodEnd).toEqual(newDate);
+			});
+		},
+	);
+
 	Scenario('Getting expiresAt from item listing', ({ Given, When, Then }) => {
 		Given('an ItemListing aggregate with expiresAt set', () => {
 			const expirationDate = new Date('2025-12-31T23:59:59Z');
@@ -953,6 +1077,126 @@ Scenario(
 		});
 		Then('the expiresAt should be cleared', () => {
 			expect(listing.expiresAt).toBeUndefined();
+		});
+	});
+
+	Scenario('Getting sharer as AdminUser', ({ Given, When, Then }) => {
+		let adminSharer: AdminUser<AdminUserProps>;
+		Given('an ItemListing aggregate with an admin user sharer', () => {
+			passport = makePassport(true, true, true, true);
+			const adminUserProps: AdminUserProps = {
+				userType: 'admin-user',
+				id: 'admin-1',
+				isBlocked: false,
+				schemaVersion: '1.0.0',
+				profile: {
+					firstName: 'Admin',
+					lastName: 'User',
+				},
+			};
+			const listingProps = makeBaseProps({
+				sharer: adminUserProps as unknown as PersonalUserProps,
+			});
+			listing = new ItemListing(listingProps, passport);
+		});
+		When('I access the sharer property', () => {
+			adminSharer = listing.sharer as AdminUser<AdminUserProps>;
+		});
+		Then('the sharer should be an AdminUser instance', () => {
+			expect(adminSharer).toBeInstanceOf(AdminUser);
+			expect(adminSharer.userType).toBe('admin-user');
+		});
+	});
+
+	Scenario('Accessing simple getters', ({ Given, When, Then }) => {
+		let values: {
+			createdAt: Date;
+			schemaVersion: string;
+			sharingHistory: string[];
+			reports: number;
+			images: string[];
+			displayLocation: string;
+		};
+		Given('an ItemListing aggregate with permission to update item listing', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('I access createdAt, schemaVersion, sharingHistory, reports, images, and displayLocation', () => {
+			values = {
+				createdAt: listing.createdAt,
+				schemaVersion: listing.schemaVersion,
+				sharingHistory: listing.sharingHistory,
+				reports: listing.reports,
+				images: listing.images,
+				displayLocation: listing.displayLocation,
+			};
+		});
+		Then('all values should be returned correctly', () => {
+			expect(values.createdAt).toBeInstanceOf(Date);
+			expect(values.schemaVersion).toBe('1.0.0');
+			expect(Array.isArray(values.sharingHistory)).toBe(true);
+			expect(typeof values.reports).toBe('number');
+			expect(Array.isArray(values.images)).toBe(true);
+			expect(values.displayLocation).toBe('Delhi');
+		});
+	});
+
+	Scenario('Checking if listing is active', ({ Given, When, Then }) => {
+		let isActive: boolean;
+		Given('an ItemListing aggregate with state "Active"', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ state: 'Active' }), passport);
+		});
+		When('I check if the listing is active', () => {
+			isActive = listing.isActive;
+		});
+		Then('it should return true', () => {
+			expect(isActive).toBe(true);
+		});
+	});
+
+	Scenario('Reinstating a listing with permission', ({ Given, When, Then }) => {
+		Given('an ItemListing aggregate with permission to publish and state "Paused"', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps({ state: 'Paused' }), passport);
+		});
+		When('I reinstate the listing', () => {
+			listing.reinstate();
+		});
+		Then('the listing state should be "Active"', () => {
+			expect(listing.state).toBe('Active');
+		});
+	});
+
+	Scenario('Reinstating a listing without permission', ({ Given, When, Then }) => {
+		let reinstateWithoutPermission: () => void;
+		Given('an ItemListing aggregate without permission to publish', () => {
+			passport = makePassport(true, false, false, false);
+			listing = new ItemListing(makeBaseProps({ state: 'Paused' }), passport);
+		});
+		When('I try to reinstate the listing', () => {
+			reinstateWithoutPermission = () => {
+				listing.reinstate();
+			};
+		});
+		Then('a PermissionError should be thrown', () => {
+			expect(reinstateWithoutPermission).toThrow(DomainSeedwork.PermissionError);
+			expect(reinstateWithoutPermission).toThrow('You do not have permission to reinstate this listing');
+		});
+	});
+
+	Scenario('Converting to entity reference', ({ Given, When, Then }) => {
+		let entityRef: ItemListingEntityReference;
+		Given('an ItemListing aggregate with permission to update item listing', () => {
+			passport = makePassport(true, true, true, true);
+			listing = new ItemListing(makeBaseProps(), passport);
+		});
+		When('I convert it to an entity reference', () => {
+			entityRef = listing.getEntityReference();
+		});
+		Then('it should return the props as ItemListingEntityReference', () => {
+			expect(entityRef).toBeDefined();
+			expect(entityRef.id).toBe(listing.id);
 		});
 	});
 });

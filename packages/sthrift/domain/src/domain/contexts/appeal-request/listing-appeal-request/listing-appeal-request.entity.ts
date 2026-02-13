@@ -2,8 +2,7 @@ import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 
-export interface ListingAppealRequestProps
-	extends DomainSeedwork.DomainEntityProps {
+export interface ListingAppealRequestProps extends DomainSeedwork.DomainEntityProps {
 	user: Readonly<PersonalUserEntityReference>;
 	loadUser: () => Promise<Readonly<PersonalUserEntityReference>>;
 	listing: Readonly<ItemListingEntityReference>;

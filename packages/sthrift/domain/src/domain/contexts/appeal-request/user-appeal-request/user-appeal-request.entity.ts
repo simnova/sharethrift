@@ -1,8 +1,7 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { PersonalUserEntityReference } from '../../user/personal-user/personal-user.entity.ts';
 
-export interface UserAppealRequestProps
-	extends DomainSeedwork.DomainEntityProps {
+export interface UserAppealRequestProps extends DomainSeedwork.DomainEntityProps {
 	user: Readonly<PersonalUserEntityReference>;
 	loadUser: () => Promise<Readonly<PersonalUserEntityReference>>;
 	reason: string;

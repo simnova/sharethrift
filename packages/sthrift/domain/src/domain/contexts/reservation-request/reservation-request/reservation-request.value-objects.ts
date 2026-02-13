@@ -4,6 +4,7 @@ export class ReservationPeriodStart extends VOString() {}
 export class ReservationPeriodEnd extends VOString() {}
 
 export const ReservationRequestStates = {
+	PENDING: 'Pending',
 	REQUESTED: 'Requested',
 	ACCEPTED: 'Accepted',
 	REJECTED: 'Rejected',

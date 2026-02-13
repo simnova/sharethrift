@@ -1,6 +1,7 @@
 export interface ReservationRequestDomainPermissions {
-	canCloseRequest: boolean;
-	canCancelRequest: boolean;
+	canEditReservationRequest: boolean;
 	canAcceptRequest: boolean;
 	canRejectRequest: boolean;
+	canCancelRequest: boolean;
+	canCloseRequest: boolean;
 }

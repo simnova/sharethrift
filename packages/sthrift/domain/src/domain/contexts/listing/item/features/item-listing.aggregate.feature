@@ -173,6 +173,26 @@ Feature: <AggregateRoot>ItemListing
     When I set the listingType to "premium-listing"
     Then the listingType should be updated to "premium-listing"
 
+  Scenario: Setting images property with permission
+    Given an ItemListing aggregate with update permission
+    When I set the images to a new array
+    Then the images should be updated
+
+  Scenario: Setting images property without permission
+    Given an ItemListing aggregate without update permission
+    When I attempt to set the images
+    Then it should throw a PermissionError
+
+  Scenario: Setting sharingPeriodStart with permission
+    Given an ItemListing aggregate with update permission
+    When I set the sharingPeriodStart
+    Then the sharingPeriodStart should be updated
+
+  Scenario: Setting sharingPeriodEnd with permission
+    Given an ItemListing aggregate with update permission
+    When I set the sharingPeriodEnd
+    Then the sharingPeriodEnd should be updated
+
   Scenario: Getting expiresAt from item listing
     Given an ItemListing aggregate with expiresAt set
     When I access the expiresAt property
@@ -197,3 +217,33 @@ Feature: <AggregateRoot>ItemListing
     Given an ItemListing aggregate with permission to update item listing and expiresAt set
     When I set the expiresAt to undefined
     Then the expiresAt should be cleared
+
+  Scenario: Getting sharer as AdminUser
+    Given an ItemListing aggregate with an admin user sharer
+    When I access the sharer property
+    Then the sharer should be an AdminUser instance
+
+  Scenario: Accessing simple getters
+    Given an ItemListing aggregate with permission to update item listing
+    When I access createdAt, schemaVersion, sharingHistory, reports, images, and displayLocation
+    Then all values should be returned correctly
+
+  Scenario: Checking if listing is active
+    Given an ItemListing aggregate with state "Active"
+    When I check if the listing is active
+    Then it should return true
+
+  Scenario: Reinstating a listing with permission
+    Given an ItemListing aggregate with permission to publish and state "Paused"
+    When I reinstate the listing
+    Then the listing state should be "Active"
+
+  Scenario: Reinstating a listing without permission
+    Given an ItemListing aggregate without permission to publish
+    When I try to reinstate the listing
+    Then a PermissionError should be thrown
+
+  Scenario: Converting to entity reference
+    Given an ItemListing aggregate with permission to update item listing
+    When I convert it to an entity reference
+    Then it should return the props as ItemListingEntityReference

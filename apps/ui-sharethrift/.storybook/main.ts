@@ -1,13 +1,14 @@
 import type { StorybookConfig } from '@storybook/react-vite';
 
-import { dirname } from 'path';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 function getAbsolutePath(value: string): string {
 	// Prevent path traversal attacks
 	if (value.includes('..') || value.startsWith('/')) {
 		throw new Error(`Invalid package name: ${value}`);
 	}
-	return dirname(require.resolve(value));
+	return dirname(fileURLToPath(import.meta.resolve(value)));
 }
 const config: StorybookConfig = {
 	stories: [

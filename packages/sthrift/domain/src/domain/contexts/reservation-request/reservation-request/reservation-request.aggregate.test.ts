@@ -18,6 +18,7 @@ const feature = await loadFeature(
 
 function makePassport(
 	perms: Partial<{
+		canEditReservationRequest: boolean;
 		canAcceptRequest: boolean;
 		canRejectRequest: boolean;
 		canCancelRequest: boolean;
@@ -25,6 +26,7 @@ function makePassport(
 	}> = {},
 ): Passport {
 	const defaults = {
+		canEditReservationRequest: true,
 		canAcceptRequest: true,
 		canRejectRequest: true,
 		canCancelRequest: true,
@@ -109,6 +111,7 @@ function makeBaseProps(
 
 function toStateEnum(value: string): string {
 	const mapping: Record<string, string> = {
+		PENDING: ReservationRequestStates.PENDING,
 		REQUESTED: ReservationRequestStates.REQUESTED,
 		ACCEPTED: ReservationRequestStates.ACCEPTED,
 		REJECTED: ReservationRequestStates.REJECTED,
@@ -176,6 +179,41 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			);
 			Then('the reservation request\'s state should be "REQUESTED"', () => {
 				expect(aggregate.state).toBe(ReservationRequestStates.REQUESTED);
+			});
+			And(
+				'the reservation request\'s listing should reference "listing1"',
+				() => {
+					expect(aggregate.listing.id).toBe('listing-1');
+				},
+			);
+			And(
+				'the reservation request\'s reserver should reference "reserverUser"',
+				() => {
+					expect(aggregate.reserver.id).toBe('reserver-1');
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Creating a new reservation request instance with pending state',
+		({ When, Then, And }) => {
+			When(
+				'I create a new ReservationRequest aggregate using getNewInstance with state "PENDING", listing "listing1", reserver "reserverUser", reservationPeriodStart "tomorrow", and reservationPeriodEnd "next month"',
+				() => {
+					aggregate = ReservationRequest.getNewInstance(
+						baseProps,
+						toStateEnum('PENDING'),
+						listing,
+						reserver,
+						baseProps.reservationPeriodStart,
+						baseProps.reservationPeriodEnd,
+						passport,
+					);
+				},
+			);
+			Then('the reservation request\'s state should be "PENDING"', () => {
+				expect(aggregate.state).toBe(ReservationRequestStates.PENDING);
 			});
 			And(
 				'the reservation request\'s listing should reference "listing1"',
@@ -1163,6 +1201,185 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					);
 				},
 			);
+		},
+	);
+
+	Scenario(
+		'Setting reservation period end equal to start should fail',
+		({ Given, When, Then }) => {
+			let localError: unknown;
+			Given('a new ReservationRequest aggregate being created with start date set', () => {
+				// Set up props with a valid start date
+			});
+			When(
+				'I try to set reservationPeriodEnd to the same date as reservationPeriodStart',
+				() => {
+					const sameDate = new Date(Date.now() + 86_400_000 * 5);
+					const propsWithStart = {
+						...baseProps,
+						reservationPeriodStart: sameDate,
+					};
+					try {
+						ReservationRequest.getNewInstance(
+							propsWithStart,
+							toStateEnum('REQUESTED'),
+							listing,
+							reserver,
+							sameDate,
+							sameDate, // End date equals start date
+							passport,
+						);
+					} catch (e) {
+						localError = e;
+					}
+				},
+			);
+			Then(
+				'an error should be thrown indicating "Reservation start date must be before end date"',
+				() => {
+					expect(String((localError as Error).message)).toMatch(
+						/Reservation start date must be before end date/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Setting reservation period start equal to end should fail',
+		({ Given, When, Then }) => {
+			let localError: unknown;
+			Given('a new ReservationRequest aggregate being created with end date set', () => {
+				// Set up props with a valid end date
+			});
+			When(
+				'I try to set reservationPeriodStart to the same date as reservationPeriodEnd',
+				() => {
+					const sameDate = new Date(Date.now() + 86_400_000 * 5);
+					const propsWithEnd = {
+						...baseProps,
+						reservationPeriodEnd: sameDate,
+					};
+					try {
+						ReservationRequest.getNewInstance(
+							propsWithEnd,
+							toStateEnum('REQUESTED'),
+							listing,
+							reserver,
+							sameDate, // Start date equals end date
+							sameDate,
+							passport,
+						);
+					} catch (e) {
+						localError = e;
+					}
+				},
+			);
+			Then(
+				'an error should be thrown indicating "Reservation start date must be before end date"',
+				() => {
+					expect(String((localError as Error).message)).toMatch(
+						/Reservation start date must be before end date/,
+					);
+				},
+			);
+		},
+	);
+
+	Scenario(
+		'Successfully setting reserver during creation',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+			Given('a new ReservationRequest aggregate being created', () => {});
+			When('I create a reservation request with a valid reserver', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			Then('the reserver should be set correctly', () => {
+				expect(aggregate.reserver.id).toBe('reserver-1');
+			});
+		},
+	);
+
+	Scenario(
+		'Successfully setting listing during creation',
+		({ Given, When, Then }) => {
+			// biome-ignore lint/suspicious/noEmptyBlockStatements: Background already sets up the context
+			Given('a new ReservationRequest aggregate being created', () => {});
+			When('I create a reservation request with a valid active listing', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			Then('the listing should be set correctly', () => {
+				expect(aggregate.listing.id).toBe('listing-1');
+				expect(aggregate.listing.state).toBe('Active');
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to PENDING after creation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('an existing ReservationRequest aggregate', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			When('I try to set state to "PENDING"', () => {
+				act = () => {
+					aggregate.state = toStateEnum('PENDING');
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(act).toThrow(DomainSeedwork.PermissionError);
+			});
+		},
+	);
+
+	Scenario(
+		'Setting state to REQUESTED after creation should fail',
+		({ Given, When, Then }) => {
+			let act: () => void;
+			Given('an existing ReservationRequest aggregate', () => {
+				aggregate = ReservationRequest.getNewInstance(
+					baseProps,
+					toStateEnum('REQUESTED'),
+					listing,
+					reserver,
+					baseProps.reservationPeriodStart,
+					baseProps.reservationPeriodEnd,
+					passport,
+				);
+			});
+			When('I try to set state to "REQUESTED"', () => {
+				act = () => {
+					aggregate.state = toStateEnum('REQUESTED');
+				};
+			});
+			Then('a PermissionError should be thrown', () => {
+				expect(act).toThrow(DomainSeedwork.PermissionError);
+			});
 		},
 	);
 });

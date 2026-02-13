@@ -24,17 +24,16 @@ export class AdminUserReservationRequestVisa<
 		const rolePermissions = this.admin.role?.permissions;
 
 		const updatedPermissions: ReservationRequestDomainPermissions = {
-			// Admins can close any request if they have moderation permissions
-			canCloseRequest:
+			// Admins can edit reservation requests if they have moderation permissions
+			canEditReservationRequest:
 				rolePermissions?.listingPermissions?.canModerateListings ?? false,
-			// Admins can cancel any request if they have moderation permissions
-			canCancelRequest:
-				rolePermissions?.listingPermissions?.canModerateListings ?? false,
-			// Admins can accept any request if they have moderation permissions
 			canAcceptRequest:
 				rolePermissions?.listingPermissions?.canModerateListings ?? false,
-			// Admins can reject any request if they have moderation permissions
 			canRejectRequest:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
+			canCancelRequest:
+				rolePermissions?.listingPermissions?.canModerateListings ?? false,
+			canCloseRequest:
 				rolePermissions?.listingPermissions?.canModerateListings ?? false,
 		};
 

@@ -2,6 +2,7 @@ import { VOString } from '@lucaspaganini/value-objects';
 
 /**
  * Enumeration of possible listing states
+ * Note: Reserved is not a state - it's calculated dynamically based on active reservations
  */
 export const ListingStateEnum = {
 	Active: 'Active',
