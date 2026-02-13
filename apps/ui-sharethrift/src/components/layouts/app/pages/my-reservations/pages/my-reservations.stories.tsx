@@ -12,8 +12,8 @@ import {
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 	ViewListingCurrentUserDocument,
 } from '../../../../../../generated.tsx';
-import { App } from '../../../../../../App.tsx';
 import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers.ts';
+import { App } from '../../../../../../app.tsx';
 
 const meta: Meta<typeof App> = {
 	title: 'Pages/My Reservations',
