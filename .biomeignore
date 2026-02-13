@@ -1,6 +1,0 @@
-# Ignore generated Serenity reports
-**/target/**
-**/dist/**
-**/build/**
-**/.turbo/**
-**/node_modules/**
