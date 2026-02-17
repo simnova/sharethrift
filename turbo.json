@@ -68,7 +68,6 @@
 		},
 		"//#gen": {
 			"cache": true,
-			"dependsOn": ["@sthrift/graphql#build"],
 			"inputs": ["codegen.yml", "**/*.graphql"],
 			"outputs": [
 				"**/generated.ts",
