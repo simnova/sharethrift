@@ -33,6 +33,10 @@ const localServerConfig = {
 export default defineConfig(() => {
   return {
     plugins: [react()],
+    resolve: {
+      // Deduplicate React to prevent module resolution issues
+      dedupe: ['react', 'react-dom'],
+    },
     server: isDev ? localServerConfig : baseServerConfig,
   };
 });

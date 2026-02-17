@@ -1,4 +1,5 @@
 import type { StorybookConfig } from '@storybook/react-vite';
+import type { InlineConfig } from 'vite';
 
 import { dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -32,6 +33,26 @@ const config: StorybookConfig = {
 	typescript: {
 		check: true,
 		reactDocgen: 'react-docgen-typescript',
+	},
+	// Vite configuration to fix dynamic import issues in CI
+	viteFinal: async (config: InlineConfig) => {
+		// Deduplicate React to prevent multiple instances causing module resolution issues
+		config.resolve = config.resolve || {};
+		config.resolve.dedupe = ['react', 'react-dom'];
+		
+		// Optimize dependency pre-bundling for Storybook tests
+		config.optimizeDeps = {
+			...config.optimizeDeps,
+			include: [
+				...(config.optimizeDeps?.include || []),
+				'react',
+				'react-dom',
+				'react-dom/client',
+				'react/jsx-runtime',
+			],
+		};
+		
+		return config;
 	},
 };
 export default config;
