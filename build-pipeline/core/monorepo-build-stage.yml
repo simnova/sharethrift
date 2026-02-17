@@ -246,26 +246,12 @@ stages:
             export TURBO_SCM_BASE="origin/$(System.PullRequest.TargetBranch)"
             echo "Running Node unit tests with coverage..."
             pnpm run test:coverage:node --affected
-            
-            # Clean Vite/Storybook caches before UI tests to prevent stale module issues
-            echo "Cleaning Vite/Storybook caches to prevent module loading issues..."
-            find . -type d -name ".vite-storybook" -exec rm -rf {} + 2>/dev/null || true
-            find . -type d -name ".temp-vite-cache" -exec rm -rf {} + 2>/dev/null || true
-            find . -path "*/node_modules/.cache/storybook" -type d -exec rm -rf {} + 2>/dev/null || true
-            
             echo "Running Storybook/Playwright tests with coverage..."
             pnpm run test:coverage:ui --affected
             pnpm run merge-lcov-reports
           else
             echo "Testing all packages (main branch build)..."
             export TURBO_SCM_BASE="HEAD~1"
-            
-            # Clean Vite/Storybook caches before UI tests
-            echo "Cleaning Vite/Storybook caches to prevent module loading issues..."
-            find . -type d -name ".vite-storybook" -exec rm -rf {} + 2>/dev/null || true
-            find . -type d -name ".temp-vite-cache" -exec rm -rf {} + 2>/dev/null || true
-            find . -path "*/node_modules/.cache/storybook" -type d -exec rm -rf {} + 2>/dev/null || true
-            
             pnpm run test:coverage:merge
           fi
           
