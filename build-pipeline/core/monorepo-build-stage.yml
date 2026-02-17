@@ -57,7 +57,7 @@ stages:
     - task: NodeTool@0
       displayName: 'Install: Node.js - LTS'
       inputs:
-        versionSpec: '20.18.1' # Using Node 20 LTS instead of 22 for better Storybook+Vite stability
+        versionSpec: '22.20.0'
 
     # Cache Azure Functions Core Tools
     - task: Cache@2
@@ -138,7 +138,7 @@ stages:
     - task: Cache@2
       displayName: 'Playwright: Restore browsers cache'
       inputs:
-        key: playwright | "$(Agent.OS)" | ubuntu-latest | node-20 | "$(PLAYWRIGHT_VERSION)"
+        key: playwright | "$(Agent.OS)" | ubuntu-latest | node-22 | "$(PLAYWRIGHT_VERSION)"
         path: '$(PLAYWRIGHT_BROWSERS_PATH)'
         cacheHitVar: PW_CACHE_HIT
 
