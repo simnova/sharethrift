@@ -13,6 +13,7 @@ const mockEnv = {
 	NODE_ENV: 'development',
 };
 
+
 const mockStorage = {
 	getItem: (key: string) => {
 		if (key.includes('oidc.user')) {

@@ -759,7 +759,7 @@ export const SkipReservationQueryNoReserverId: Story = {
 		isAuthenticated: true,
 	},
 	parameters: {
-		appolloClient: {
+		apolloClient: {
 			mocks: [
 				{
 					request: {

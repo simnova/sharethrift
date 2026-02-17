@@ -89,6 +89,7 @@ export class ListingAppealRequest<props extends ListingAppealRequestProps>
 	get state(): string {
 		return this.props.state;
 	}
+
 	set state(value: string) {
 		if (
 			!this.visa.determineIf(

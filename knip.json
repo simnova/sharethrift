@@ -46,7 +46,7 @@
 		},
 		"packages/sthrift/*": {
 			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"]
+			"project": ["src/**/*.{ts,tsx}"]
 		},
 		"packages/sthrift/ui-components": {
 			"entry": ["src/index.ts"],
@@ -95,8 +95,11 @@
 		"@graphql-tools/json-file-loader",
 		"@graphql-tools/load",
 		"rollup",
-		"tsx",
-		"vite"
+		"vite",
+		"@ant-design/icons",
+		"@apollo/client",
+		"graphql",
+		"rxjs"
 	],
-	"ignoreBinaries": ["func"]
+	"ignoreBinaries": ["func", "open", "concurrently"]
 }
