@@ -1,0 +1,9 @@
+{
+	"extends": "@cellix/typescript-config/base.json",
+	"compilerOptions": {
+		"outDir": "./dist",
+		"rootDir": "./src"
+	},
+	"include": ["src/**/*", "features/**/*"],
+	"exclude": ["node_modules", "dist", "reports", "target"]
+}

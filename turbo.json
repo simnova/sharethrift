@@ -37,13 +37,28 @@
 		},
 		"test:serenity": {
 			"dependsOn": ["^build"],
-			"inputs": ["src/**", "tests/**", "cucumber.yaml"],
-			"outputs": ["../../../apps/docs/static/serenity-reports/**"]
+			"inputs": ["src/**", "features/**", "cucumber.js"],
+			"outputs": ["reports/**", "target/**"]
 		},
 		"test:serenity:report": {
 			"dependsOn": ["test:serenity"],
-			"inputs": ["../../../apps/docs/static/serenity-reports/cucumber-report.json"],
-			"outputs": ["../../../apps/docs/static/serenity-reports/**"]
+			"inputs": ["reports/cucumber-report*.json"],
+			"outputs": ["target/**"]
+		},
+		"test:domain": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "features/**", "cucumber.js"],
+			"outputs": ["reports/cucumber-report-domain.json"]
+		},
+		"test:graphql": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "features/**", "cucumber.js"],
+			"outputs": ["reports/cucumber-report-graphql.json"]
+		},
+		"test:dom": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "features/**", "cucumber.js"],
+			"outputs": ["reports/cucumber-report-dom.json"]
 		},
 		"storybook": {
 			"dependsOn": ["^build", "//#gen"],

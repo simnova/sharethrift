@@ -394,6 +394,64 @@ importers:
         specifier: 'catalog:'
         version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(@vitest/browser-playwright@4.0.17)(jiti@2.6.1)(jsdom@26.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
+  packages/acceptance-tests:
+    dependencies:
+      '@cucumber/cucumber':
+        specifier: ^11.2.0
+        version: 11.3.0
+      '@serenity-js/assertions':
+        specifier: ^3.36.1
+        version: 3.37.1
+      '@serenity-js/console-reporter':
+        specifier: ^3.36.1
+        version: 3.37.1
+      '@serenity-js/core':
+        specifier: ^3.36.1
+        version: 3.37.1
+      '@serenity-js/cucumber':
+        specifier: ^3.36.1
+        version: 3.37.1(@cucumber/cucumber@11.3.0)
+      '@serenity-js/playwright':
+        specifier: ^3.36.1
+        version: 3.41.0(playwright-core@1.57.0)
+      '@serenity-js/rest':
+        specifier: ^3.36.1
+        version: 3.37.1
+      '@serenity-js/serenity-bdd':
+        specifier: ^3.36.1
+        version: 3.37.1
+      '@serenity-js/web':
+        specifier: ^3.36.1
+        version: 3.41.0
+    devDependencies:
+      '@apollo/client':
+        specifier: ^3.12.4
+        version: 3.14.0(@types/react@19.2.9)(graphql-ws@6.0.6(graphql@16.12.0)(ws@8.19.0))(graphql@16.12.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../cellix/typescript-config
+      '@playwright/test':
+        specifier: ^1.55.1
+        version: 1.57.0
+      '@sthrift/domain':
+        specifier: workspace:*
+        version: link:../sthrift/domain
+      '@sthrift/graphql':
+        specifier: workspace:*
+        version: link:../sthrift/graphql
+      '@types/node':
+        specifier: ^24.10.7
+        version: 24.10.9
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.2
+      tsx:
+        specifier: ^4.20.3
+        version: 4.21.0
+      typescript:
+        specifier: 'catalog:'
+        version: 5.9.3
+
   packages/arch-unit-tests:
     devDependencies:
       '@cellix/typescript-config':
@@ -1535,6 +1593,24 @@ packages:
     resolution: {integrity: sha512-F17/vCp7QVwom9eG7ToauIKdAxpSoadsJnqIfyryLFSkLSOEqu+eC5Z3N8OXcUVStuOMcNHlyraRsA6rRICu4g==}
     peerDependencies:
       graphql: 14.x || 15.x || 16.x
+
+  '@apollo/client@3.14.0':
+    resolution: {integrity: sha512-0YQKKRIxiMlIou+SekQqdCo0ZTHxOcES+K8vKB53cIDpwABNR0P0yRzPgsbgcj3zRJniD93S/ontsnZsCLZrxQ==}
+    peerDependencies:
+      graphql: ^15.0.0 || ^16.0.0
+      graphql-ws: ^5.5.5 || ^6.0.3
+      react: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc
+      subscriptions-transport-ws: ^0.9.0 || ^0.11.0
+    peerDependenciesMeta:
+      graphql-ws:
+        optional: true
+      react:
+        optional: true
+      react-dom:
+        optional: true
+      subscriptions-transport-ws:
+        optional: true
 
   '@apollo/client@4.1.1':
     resolution: {integrity: sha512-EizMzR+qfn3kRZ7dy9LxEI2omkyaylWNbBy3Sce8QBmeQP+sOlmYqx2uu5aDFk+uGdrf/QtzHLOI6hUPGfm34A==}
@@ -2721,10 +2797,23 @@ packages:
   '@cucumber/cucumber-expressions@18.1.0':
     resolution: {integrity: sha512-9yc+wForrn15FaqLWNjYb19iQ/gPXhcq1kc4X1Ex1lR7NcJpa5pGnCow3bc1HERVM5IoYH+gwwrcJogSMsf+Vw==}
 
+  '@cucumber/cucumber@11.3.0':
+    resolution: {integrity: sha512-1YGsoAzRfDyVOnRMTSZP/EcFsOBElOKa2r+5nin0DJAeK+Mp0mzjcmSllMgApGtck7Ji87wwy3kFONfHUHMn4g==}
+    engines: {node: 18 || 20 || 22 || >=23}
+    hasBin: true
+
   '@cucumber/cucumber@12.6.0':
     resolution: {integrity: sha512-z6XKBIcUnJebnR3W8+K7Q2jJKB+pKpoD1l3CygEa9ufq/aeGuS5LAlllNxrod8loepLJhNmp8J8aengGbkL4cg==}
     engines: {node: 20 || 22 || >=24}
     hasBin: true
+
+  '@cucumber/gherkin-streams@5.0.1':
+    resolution: {integrity: sha512-/7VkIE/ASxIP/jd4Crlp4JHXqdNFxPGQokqWqsaCCiqBiu5qHoKMxcWNlp9njVL/n9yN4S08OmY3ZR8uC5x74Q==}
+    hasBin: true
+    peerDependencies:
+      '@cucumber/gherkin': '>=22.0.0'
+      '@cucumber/message-streams': '>=4.0.0'
+      '@cucumber/messages': '>=17.1.1'
 
   '@cucumber/gherkin-streams@6.0.0':
     resolution: {integrity: sha512-HLSHMmdDH0vCr7vsVEURcDA4WwnRLdjkhqr6a4HQ3i4RFK1wiDGPjBGVdGJLyuXuRdJpJbFc6QxHvT8pU4t6jw==}
@@ -2738,14 +2827,26 @@ packages:
     resolution: {integrity: sha512-BcujlDT343GXXNrMPl3ws6Il3zs8dQw3Yp/d3HnOJF8i2snGGgiapoTbko7MdvAt7ivDL7SDo+e1d5Cnpl3llA==}
     hasBin: true
 
+  '@cucumber/gherkin-utils@9.2.0':
+    resolution: {integrity: sha512-3nmRbG1bUAZP3fAaUBNmqWO0z0OSkykZZotfLjyhc8KWwDSOrOmMJlBTd474lpA8EWh4JFLAX3iXgynBqBvKzw==}
+    hasBin: true
+
   '@cucumber/gherkin@30.0.4':
     resolution: {integrity: sha512-pb7lmAJqweZRADTTsgnC3F5zbTh3nwOB1M83Q9ZPbUKMb3P76PzK6cTcPTJBHWy3l7isbigIv+BkDjaca6C8/g==}
+
+  '@cucumber/gherkin@31.0.0':
+    resolution: {integrity: sha512-wlZfdPif7JpBWJdqvHk1Mkr21L5vl4EfxVUOS4JinWGf3FLRV6IKUekBv5bb5VX79fkDcfDvESzcQ8WQc07Wgw==}
 
   '@cucumber/gherkin@34.0.0':
     resolution: {integrity: sha512-659CCFsrsyvuBi/Eix1fnhSheMnojSfnBcqJ3IMPNawx7JlrNJDcXYSSdxcUw3n/nG05P+ptCjmiZY3i14p+tA==}
 
   '@cucumber/gherkin@37.0.1':
     resolution: {integrity: sha512-VmX+PKa9vqKZiycZoQKYlCsA0N7gAfiOfrcHSjK+suEVUwvKEH2sjO47NznrFFLmVWYTRmw3DLHQnpBAznkYEA==}
+
+  '@cucumber/html-formatter@21.10.1':
+    resolution: {integrity: sha512-isaaNMNnBYThsvaHy7i+9kkk9V3+rhgdkt0pd6TCY6zY1CSRZQ7tG6ST9pYyRaECyfbCeF7UGH0KpNEnh6UNvQ==}
+    peerDependencies:
+      '@cucumber/messages': '>=18'
 
   '@cucumber/html-formatter@21.9.0':
     resolution: {integrity: sha512-Jj4pIdJHzFFy4mSoOfM1NqR3RgOQMycUvV52PjVnpj0OBZC6Y2M7K5sx2KiDyxSBTW4N9ametgVNG/GGnkOSRA==}
@@ -3577,6 +3678,10 @@ packages:
     resolution: {integrity: sha512-WMz71T1JS624nWj2n2fnYAuPovhv7EUhk69R6i9dsVyzxt5eM3bjwvgk9L+APE1TRscGysAVMANkB0jh0LQZrQ==}
     engines: {node: 20 || >=22}
 
+  '@isaacs/cliui@8.0.2':
+    resolution: {integrity: sha512-O8jcjabXaleOG9DQ0+ARXWZBTfnP4WNAqzuiJK7ll44AmxGKv/J2M4TPjxjY3znBCfvBXFzucm1twdyFybFqEA==}
+    engines: {node: '>=12'}
+
   '@jest/schemas@29.6.3':
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
@@ -4252,6 +4357,10 @@ packages:
     resolution: {integrity: sha512-C2Xj8FZ0uHWeCXXqX5B4/gVFQmtSkiuOolzAgutjTfseNOHT3pUjljDZsTSxXFGgio54bCzVFqmEOUrIVk8RDA==}
     engines: {node: '>=20.0.0'}
 
+  '@pkgjs/parseargs@0.11.0':
+    resolution: {integrity: sha512-+1VkjdD0QBLPodGrJUeqarH8VAIvQODIbwh9XpP5Syisf7YoQgsJKPNFoqqLQlu+VQ/tVSshMR6loPMn8U+dPg==}
+    engines: {node: '>=14'}
+
   '@playwright/test@1.57.0':
     resolution: {integrity: sha512-6TyEnHgd6SArQO8UO2OMTxshln3QMWBtPGrOCgs3wVEmQmwyuNtB10IZMfmYDE0riwNR1cu4q+pPcxMVtaG3TA==}
     engines: {node: '>=18'}
@@ -4543,12 +4652,20 @@ packages:
     resolution: {integrity: sha512-AfNrbOafOeAWFcdA5H85HCvYiCGuyaTC+lG+SNawRTl+0p6CIYFx3yS8ITZpw7jYkITLEEplKA8Wwo76psAG1A==}
     engines: {node: ^20 || ^22 || ^24}
 
+  '@serenity-js/assertions@3.41.0':
+    resolution: {integrity: sha512-fALr244VFarVjbZUU75yyjLBkzHN8n5tGWRWnqfpXQNxFce6znBWkeC+D4BR8N7Kn16C5a+RtcPiJTY/vt3I8g==}
+    engines: {node: ^20 || ^22 || ^24}
+
   '@serenity-js/console-reporter@3.37.1':
     resolution: {integrity: sha512-yq0RmldxF3Zj15BaDCG7cr8VKfIAZf3nKJ4LXSN11kJXe8M6b6Rcc54LgC/oNd3iZ0EkWEPvLkNxJUHTGbe16Q==}
     engines: {node: ^20 || ^22 || ^24}
 
   '@serenity-js/core@3.37.1':
     resolution: {integrity: sha512-gyc1HlSkN3mIe9S0fOYn2PdPzP5Q5+L7ujzVCHK8wQfEw7W86DFsgWz6MVnOMee5jWRTo+cQTfz/JMcK4ryszg==}
+    engines: {node: ^20 || ^22 || ^24}
+
+  '@serenity-js/core@3.41.0':
+    resolution: {integrity: sha512-O4Xs+h5bZdc8oBz36V9GlGsbSOVsxJTg5rpaEc7fyuFgvcrNmHf2DZN/LlzKXaGIa9rXqCyxDkfb9WmKb1siCg==}
     engines: {node: ^20 || ^22 || ^24}
 
   '@serenity-js/cucumber@3.37.1':
@@ -4563,6 +4680,12 @@ packages:
       cucumber:
         optional: true
 
+  '@serenity-js/playwright@3.41.0':
+    resolution: {integrity: sha512-Z+jfUvjwy86mmhsgCpuSZsX2Szabm4axj44Jq/c3BVOP4XIe06ZoB5c2O0TLgX/prP7/pzqdB/SdeUvBTyRLqg==}
+    engines: {node: ^20 || ^22 || ^24}
+    peerDependencies:
+      playwright-core: ~1.58.2
+
   '@serenity-js/rest@3.37.1':
     resolution: {integrity: sha512-xiZt5j8QVYSuH+moXUbUEpXGUfpgBhBr8NnEU32ijwFK+nXjDoIAA3uPN6CTZcK4/1qz7Hw/iqp/o+4cynxMYQ==}
     engines: {node: ^20 || ^22 || ^24}
@@ -4571,6 +4694,10 @@ packages:
     resolution: {integrity: sha512-7uNWnKf4bDT4ic+eWtwInS4hQeQNVd2W0hiBmyyqeFPjVUT/28+K0aYL8Gm8oDWWvWD2b7TvP71xFFBfca2gVA==}
     engines: {node: ^20 || ^22 || ^24}
     hasBin: true
+
+  '@serenity-js/web@3.41.0':
+    resolution: {integrity: sha512-nafxSaDDvx3tqkcNcFltCCC25b6fPczXk6p9PuHkH6tA67Y0TzDkD0vHd8wi0eXC8JM3aD5p0TC4xJT04CEe+w==}
+    engines: {node: ^20 || ^22 || ^24}
 
   '@sideway/address@4.1.5':
     resolution: {integrity: sha512-IqO/DUQHUkPeixNQ8n0JA6102hT9CmaljNTPmQ1u8MEhBo/R4Q8eKLN/vGZxuebwOroDB4cbpjheD4+/sKFK4Q==}
@@ -6053,6 +6180,10 @@ packages:
     resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
     engines: {node: '>= 12'}
 
+  commander@9.1.0:
+    resolution: {integrity: sha512-i0/MaqBtdbnJ4XQs4Pmyb+oFQl+q0lsAmokVUH92SlSw4fkeAcG3bVon+Qt7hmtF+u3Het6o4VgrcY3qAoEB6w==}
+    engines: {node: ^12.20.0 || >=14}
+
   common-path-prefix@3.0.0:
     resolution: {integrity: sha512-QE33hToZseCH3jS0qN96O/bSh3kaw/h+Tq7ngyY9eWDUnTlTNUyqfqvCXioLe5Na5jFsL78ra/wuBU4iuEgd4w==}
 
@@ -6496,6 +6627,10 @@ packages:
 
   diff@6.0.0:
     resolution: {integrity: sha512-NbGtgPSw7il+jeajji1H6iKjCk3r/ANQKw3FFUhGV50+MH5MKIMeUmi53piTr7jlkWcq9eS858qbkRzkehwe+w==}
+    engines: {node: '>=0.3.1'}
+
+  diff@8.0.3:
+    resolution: {integrity: sha512-qejHi7bcSD4hQAZE0tNAawRK1ZtafHDmMTMkrrIGgSLl7hTnQHmKCeB45xAcbfTqK2zowkM3j3bHt/4b/ARbYQ==}
     engines: {node: '>=0.3.1'}
 
   dir-glob@3.0.1:
@@ -7017,6 +7152,10 @@ packages:
     resolution: {integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==}
     engines: {node: '>= 0.4'}
 
+  foreground-child@3.3.1:
+    resolution: {integrity: sha512-gIXjKqtFuWEgzFRJA9WCQeSJLZDjgJUOMCMzxtvFq/37KojM1BFGufqsCy0r4qSQmYLsZYMeyRqzIWOMup03sw==}
+    engines: {node: '>=14'}
+
   form-data-encoder@2.1.4:
     resolution: {integrity: sha512-yDYSgNMraqvnxiEXO4hi88+YZxaHC6QKzb5N84iRCTDeRO7ZALpir/lVmf/uXUhnwUr2O4HU8s/n6x+yNjQkHw==}
     engines: {node: '>= 14.17'}
@@ -7163,6 +7302,11 @@ packages:
   glob2base@0.0.12:
     resolution: {integrity: sha512-ZyqlgowMbfj2NPjxaZZ/EtsXlOch28FRXgMd64vqZWk1bT9+wvSRLYD1om9M7QfQru51zJPAT17qXm4/zd+9QA==}
     engines: {node: '>= 0.10'}
+
+  glob@10.5.0:
+    resolution: {integrity: sha512-DfXN8DfhJ7NH3Oe7cFmu3NCu1wKbkReJ8TorzSAFbSKrlNaQSKfIzqYqVY8zlbs2NLBbWpRiU52GX2PbaBVNkg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+    hasBin: true
 
   glob@13.0.0:
     resolution: {integrity: sha512-tvZgpqk6fz4BaNZ66ZsRaZnbHvP/jG3uKJvAZOwEVUL4RTA5nJeeLYfyN9/VA8NX/V3IBG+hkeuGpKjvELkVhA==}
@@ -7374,6 +7518,10 @@ packages:
 
   hoist-non-react-statics@3.3.2:
     resolution: {integrity: sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==}
+
+  hosted-git-info@7.0.2:
+    resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
+    engines: {node: ^16.14.0 || >=18.0.0}
 
   hosted-git-info@9.0.2:
     resolution: {integrity: sha512-M422h7o/BR3rmCQ8UHi7cyyMqKltdP9Uo+J2fXK+RSAY+wTcKOIRyhTuKv4qn+DJf3g+PL890AzId5KZpX+CBg==}
@@ -7896,6 +8044,9 @@ packages:
 
   iterall@1.3.0:
     resolution: {integrity: sha512-QZ9qOMdF+QLHxy1QIpUHUU1D5pS2CG2P69LF6L6CPjPYA/XMOmKV3PZpawHoAjHNyB0swdVTRxdYT4tbBbxqwg==}
+
+  jackspeak@3.4.3:
+    resolution: {integrity: sha512-OGlZQpz2yfahA/Rd1Y8Cd9SIEsqvXkLVoSw/cgwhnhFMDbsQFeZYoJJ7bIZBS9BcamUW96asq/npPWugM+RQBw==}
 
   jest-util@29.7.0:
     resolution: {integrity: sha512-z6EbKajIpqGKU56y5KBUgy1dt1ihhQJgWzUlZHArA/+X2ad7Cb5iF+AK1EWVL/Bo7Rz9uurpqw6SiBCefUbCGA==}
@@ -8586,6 +8737,11 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
+  mkdirp@2.1.6:
+    resolution: {integrity: sha512-+hEnITedc8LAtIP9u3HJDFIdcLV2vXP33sqLLIzkv1Db1zO/1OxbvYf0Y1OC/S/Qo5dxHXepofhmxL02PsKe+A==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   mkdirp@3.0.1:
     resolution: {integrity: sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==}
     engines: {node: '>=10'}
@@ -8796,6 +8952,10 @@ packages:
   node-stream@1.7.0:
     resolution: {integrity: sha512-AB1qHzJWjAuxpDvTr/n1wvKVOg8c9BjAHV21QXq+q9yEUNr7wSqfHmAhAzvpQWSbf8mQQle3fjsnu3R14jrElA==}
     engines: {node: '>=0.12'}
+
+  normalize-package-data@6.0.2:
+    resolution: {integrity: sha512-V6gygoYb/5EmNI+MEGrWkC+e6+Rr7mTmfHrxDbLzxQogBkgzo76rkok0Am6thgSF7Mv2nLOajAJj5vDJZEFn7g==}
+    engines: {node: ^16.14.0 || >=18.0.0}
 
   normalize-package-data@8.0.0:
     resolution: {integrity: sha512-RWk+PI433eESQ7ounYxIp67CYuVsS1uYSonX3kA6ps/3LWfjVQa/ptEg6Y3T6uAMq1mWpX9PQ+qx+QaHpsc7gQ==}
@@ -9059,6 +9219,10 @@ packages:
   path-root@0.1.1:
     resolution: {integrity: sha512-QLcPegTHF11axjfojBIoDygmS2E3Lf+8+jI6wOVmNVenrKSo3mFdSGiIgdSHenczw3wPtlVMQaFVwGmM7BJdtg==}
     engines: {node: '>=0.10.0'}
+
+  path-scurry@1.11.1:
+    resolution: {integrity: sha512-Xa4Nw17FS9ApQFJ9umLiJS4orGjm7ZzwUrwamcGQuHSzDyth9boKDaycYdDcZDuqYATXw4HFXgaqWTctW/v1HA==}
+    engines: {node: '>=16 || 14 >=14.18'}
 
   path-scurry@2.0.1:
     resolution: {integrity: sha512-oWyT4gICAu+kaA7QWk/jvCHWarMKNs6pXOGWKDTr7cw4IGcUbW+PeTfbaQiLGheFRpjo6O9J0PmyMfQPjH71oA==}
@@ -9989,6 +10153,10 @@ packages:
     resolution: {integrity: sha512-Ku/hhYbVjOQnXDZFv2+RibmLFGwFdeeKHFcOTlrt7xplBnya5OGn/hIRDsqDiSUcfORsDC7MPxwork8jBwsIWA==}
     engines: {node: '>=0.10.0'}
 
+  read-package-up@11.0.0:
+    resolution: {integrity: sha512-MbgfoNPANMdb4oRBNg5eqLbB2t2r+o5Ua1pNt8BqGp4I0FJZhuVSOj3PaBPni4azWuSzEdNn2evevzVmEk1ohQ==}
+    engines: {node: '>=18'}
+
   read-package-up@12.0.0:
     resolution: {integrity: sha512-Q5hMVBYur/eQNWDdbF4/Wqqr9Bjvtrw2kjGxxBbKLbx8bVCL8gcArjTy8zDUuLGQicftpMuU0riQNcAsbtOVsw==}
     engines: {node: '>=20'}
@@ -9996,6 +10164,10 @@ packages:
   read-pkg@10.1.0:
     resolution: {integrity: sha512-I8g2lArQiP78ll51UeMZojewtYgIRCKCWqZEgOO8c/uefTI+XDXvCSXu3+YNUaTNvZzobrL5+SqHjBrByRRTdg==}
     engines: {node: '>=20'}
+
+  read-pkg@9.0.1:
+    resolution: {integrity: sha512-9viLL4/n1BJUCT1NXVTdS1jtm80yDEgR5T4yCelII49Mbj0v1rZdKqj7zCiYdbB0CuCgdrvHcNogAKTFPBocFA==}
+    engines: {node: '>=18'}
 
   read-vinyl-file-stream@2.0.3:
     resolution: {integrity: sha512-ZbtobBf+n/va3eRcIkMDYsp7DCnnjh46YFOOdj42aCiWFirp9T/+YGMCTfVpEFIuiH3c5Kp13jpn3i5DoygxLw==}
@@ -10080,6 +10252,17 @@ packages:
   regjsparser@0.13.0:
     resolution: {integrity: sha512-NZQZdC5wOE/H3UT28fVGL+ikOZcEzfMGk/c3iN9UGxzWHMa1op7274oyiUVrAG4B2EuFhus8SvkaYnhvW92p9Q==}
     hasBin: true
+
+  rehackt@0.1.0:
+    resolution: {integrity: sha512-7kRDOuLHB87D/JESKxQoRwv4DzbIdwkAGQ7p6QKGdVlY1IZheUnVhlk/4UZlNUVxdAXpyxikE3URsG067ybVzw==}
+    peerDependencies:
+      '@types/react': '*'
+      react: '*'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      react:
+        optional: true
 
   rehype-raw@7.0.0:
     resolution: {integrity: sha512-/aE8hCfKlQeA8LmyeyQvQF3eBiLRGNlfBJEvWH7ivp9sBqs7TNqBL5X3v157rM4IFETqDnIOO+z5M/biZbo9Ww==}
@@ -10340,8 +10523,18 @@ packages:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}
     hasBin: true
 
+  semver@7.7.1:
+    resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   semver@7.7.3:
     resolution: {integrity: sha512-SdsKMrI9TdgjdweUSR9MweHA4EJ8YxHn8DFaDisvhVlUOe4BF1tLD7GAj0lIqWVl+dPb/rExr0Btby5loQm20Q==}
+    engines: {node: '>=10'}
+    hasBin: true
+
+  semver@7.7.4:
+    resolution: {integrity: sha512-vFKC2IEtQnVhpT78h1Yp8wzwrf8CM+MzKMHGJZfBtzhZNycRFnXsHk6E5TxIkkMsgNS7mdX3AGB7x2QM2di4lA==}
     engines: {node: '>=10'}
     hasBin: true
 
@@ -10485,6 +10678,10 @@ packages:
 
   signal-exit@3.0.7:
     resolution: {integrity: sha512-wnD2ZE+l+SPC/uoS0vXeE9L1+0wuaMqKlfz9AMUo38JsyLSBWSFcHR1Rri62LZc12vLr1gb3jl7iwQhgwpAbGQ==}
+
+  signal-exit@4.1.0:
+    resolution: {integrity: sha512-bzyZ1e88w9O1iNJbKnOlvYTrWPDl46O1bG0D3XInv+9tkPrxrN8jUUTiFlDkkmKWgn1M6CfIA13SuGqOa9Korw==}
+    engines: {node: '>=14'}
 
   signedsource@1.0.0:
     resolution: {integrity: sha512-6+eerH9fEnNmi/hyM1DXcRK3pWdoMQtlkQ+ns0ntzunjKqp5i3sKCc80ym8Fib3iaYhdJUOPdhlJWj1tvge2Ww==}
@@ -10812,6 +11009,10 @@ packages:
   swap-case@2.0.2:
     resolution: {integrity: sha512-kc6S2YS/2yXbtkSMunBtKdah4VFETZ8Oh6ONSmSd9bRxhqTrtARUCBUiWXH3xVPpvR7tz2CSnkuXVE42EcGnMw==}
 
+  symbol-observable@4.0.0:
+    resolution: {integrity: sha512-b19dMThMV4HVFynSAM1++gBHAbk2Tc/osgLIBZMKsyqh34jb2e8Os7T6ZW/Bt3pJFdBTd2JwAnAAEQV7rSNvcQ==}
+    engines: {node: '>=0.10'}
+
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
 
@@ -11026,6 +11227,10 @@ packages:
   ts-dedent@2.2.0:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
     engines: {node: '>=6.10'}
+
+  ts-invariant@0.10.3:
+    resolution: {integrity: sha512-uivwYcQaxAucv1CzRp2n/QdYPo4ILf9VXgH19zEIjFx2EJufV16P0JtJVpYHy89DItG6Kwj2oIUjrcK5au+4tQ==}
+    engines: {node: '>=8'}
 
   ts-log@2.2.7:
     resolution: {integrity: sha512-320x5Ggei84AxzlXp91QkIGSw5wgaLT6GeAH0KsqDmRZdVWW2OiSeVvElVoatk3f7nicwXlElXsoFkARiGE2yg==}
@@ -11250,6 +11455,10 @@ packages:
     resolution: {integrity: sha512-hpbDzxUY9BFwX+UeBnxv3Sh1q7HFxj48DTmXchNgRa46lO8uj3/1iEn3MiNUYTg1g9ctIqXCCERn8gYZhHC5lQ==}
     engines: {node: '>=4'}
 
+  unicorn-magic@0.1.0:
+    resolution: {integrity: sha512-lRfVq8fE8gz6QMBuDM6a+LO3IAzTi05H6gCVaUpir2E1Rwpo4ZUog45KpNXKC/Mn3Yb9UDuHumeFTo9iV/D9FQ==}
+    engines: {node: '>=18'}
+
   unicorn-magic@0.3.0:
     resolution: {integrity: sha512-+QBBXBCvifc56fsbuxZQ6Sic3wqqc3WWaqxs58gvJrcOuN83HGTCwz3oS5phzU9LthRNE9VrJCFCLUgHeeFnfA==}
     engines: {node: '>=18'}
@@ -11401,6 +11610,10 @@ packages:
   validate-npm-package-name@6.0.2:
     resolution: {integrity: sha512-IUoow1YUtvoBBC06dXs8bR8B9vuA3aJfmQNKMoaPG/OFsPmoQvw8xh+6Ye25Gx9DQhoEom3Pcu9MKHerm/NpUQ==}
     engines: {node: ^18.17.0 || >=20.5.0}
+
+  validate-npm-package-name@7.0.2:
+    resolution: {integrity: sha512-hVDIBwsRruT73PbK7uP5ebUt+ezEtCmzZz3F59BSr2F6OVFnJ/6h8liuvdLrQ88Xmnk6/+xGGuq+pG9WwTuy3A==}
+    engines: {node: ^20.17.0 || >=22.9.0}
 
   validator@13.15.26:
     resolution: {integrity: sha512-spH26xU080ydGggxRyR1Yhcbgx+j3y5jbNXk/8L+iRvdIEQ4uTRH2Sgf2dokud6Q4oAtsbNvJ1Ft+9xmm6IZcA==}
@@ -11812,8 +12025,17 @@ packages:
     resolution: {integrity: sha512-4LCcse/U2MHZ63HAJVE+v71o7yOdIe4cZ70Wpf8D/IyjDKYQLV5GD46B+hSTjJsvV5PztjvHoU580EftxjDZFQ==}
     engines: {node: '>=12.20'}
 
+  yup@1.6.1:
+    resolution: {integrity: sha512-JED8pB50qbA4FOkDol0bYF/p60qSEDQqBD0/qeIrUCG1KbPBIQ776fCUNb9ldbPcSTxA69g/47XTo4TqWiuXOA==}
+
   yup@1.7.1:
     resolution: {integrity: sha512-GKHFX2nXul2/4Dtfxhozv701jLQHdf6J34YDh2cEkpqoo8le5Mg6/LrdseVLrFarmFygZTlfIhHx/QKfb/QWXw==}
+
+  zen-observable-ts@1.2.5:
+    resolution: {integrity: sha512-QZWQekv6iB72Naeake9hS1KxHlotfRpe+WGNbNx5/ta+R3DNjVO2bswf63gXlWDcs+EMd7XY8HfVQyP1X6T4Zg==}
+
+  zen-observable@0.8.15:
+    resolution: {integrity: sha512-PQ2PC7R9rslx84ndNBZB/Dkv8V8fZEpk83RLgXtYd0fwUgEjseMn1Dgajh2x6S8QbZAFa9p2qVCEuYZNgve0dQ==}
 
   zod@4.3.5:
     resolution: {integrity: sha512-k7Nwx6vuWx1IJ9Bjuf4Zt1PEllcwe7cls3VNzm4CQ1/hgtFUK2bRNG3rvnpPUhFjmqJKAKtjV576KnUkHocg/g==}
@@ -11992,6 +12214,29 @@ snapshots:
   '@apollo/cache-control-types@1.0.3(graphql@16.12.0)':
     dependencies:
       graphql: 16.12.0
+
+  '@apollo/client@3.14.0(@types/react@19.2.9)(graphql-ws@6.0.6(graphql@16.12.0)(ws@8.19.0))(graphql@16.12.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@graphql-typed-document-node/core': 3.2.0(graphql@16.12.0)
+      '@wry/caches': 1.0.1
+      '@wry/equality': 0.5.7
+      '@wry/trie': 0.5.0
+      graphql: 16.12.0
+      graphql-tag: 2.12.6(graphql@16.12.0)
+      hoist-non-react-statics: 3.3.2
+      optimism: 0.18.1
+      prop-types: 15.8.1
+      rehackt: 0.1.0(@types/react@19.2.9)(react@19.2.3)
+      symbol-observable: 4.0.0
+      ts-invariant: 0.10.3
+      tslib: 2.8.1
+      zen-observable-ts: 1.2.5
+    optionalDependencies:
+      graphql-ws: 6.0.6(graphql@16.12.0)(ws@8.19.0)
+      react: 19.2.3
+      react-dom: 19.2.3(react@19.2.3)
+    transitivePeerDependencies:
+      - '@types/react'
 
   '@apollo/client@4.1.1(graphql-ws@6.0.6(graphql@16.12.0)(ws@8.19.0))(graphql@16.12.0)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(rxjs@7.8.2)':
     dependencies:
@@ -13519,6 +13764,48 @@ snapshots:
     dependencies:
       regexp-match-indices: 1.0.2
 
+  '@cucumber/cucumber@11.3.0':
+    dependencies:
+      '@cucumber/ci-environment': 10.0.1
+      '@cucumber/cucumber-expressions': 18.0.1
+      '@cucumber/gherkin': 30.0.4
+      '@cucumber/gherkin-streams': 5.0.1(@cucumber/gherkin@30.0.4)(@cucumber/message-streams@4.0.1(@cucumber/messages@27.2.0))(@cucumber/messages@27.2.0)
+      '@cucumber/gherkin-utils': 9.2.0
+      '@cucumber/html-formatter': 21.10.1(@cucumber/messages@27.2.0)
+      '@cucumber/junit-xml-formatter': 0.7.1(@cucumber/messages@27.2.0)
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@27.2.0)
+      '@cucumber/messages': 27.2.0
+      '@cucumber/tag-expressions': 6.1.2
+      assertion-error-formatter: 3.0.0
+      capital-case: 1.0.4
+      chalk: 4.1.2
+      cli-table3: 0.6.5
+      commander: 10.0.1
+      debug: 4.4.3(supports-color@8.1.1)
+      error-stack-parser: 2.1.4
+      figures: 3.2.0
+      glob: 10.5.0
+      has-ansi: 4.0.1
+      indent-string: 4.0.0
+      is-installed-globally: 0.4.0
+      is-stream: 2.0.1
+      knuth-shuffle-seeded: 1.0.6
+      lodash.merge: 4.6.2
+      lodash.mergewith: 4.6.2
+      luxon: 3.6.1
+      mime: 3.0.0
+      mkdirp: 2.1.6
+      mz: 2.7.0
+      progress: 2.0.3
+      read-package-up: 11.0.0
+      semver: 7.7.1
+      string-argv: 0.3.1
+      supports-color: 8.1.1
+      type-fest: 4.41.0
+      util-arity: 1.1.0
+      yaml: 2.8.2
+      yup: 1.6.1
+
   '@cucumber/cucumber@12.6.0':
     dependencies:
       '@cucumber/ci-environment': 12.0.0
@@ -13562,6 +13849,14 @@ snapshots:
       yaml: 2.8.2
       yup: 1.7.1
 
+  '@cucumber/gherkin-streams@5.0.1(@cucumber/gherkin@30.0.4)(@cucumber/message-streams@4.0.1(@cucumber/messages@27.2.0))(@cucumber/messages@27.2.0)':
+    dependencies:
+      '@cucumber/gherkin': 30.0.4
+      '@cucumber/message-streams': 4.0.1(@cucumber/messages@27.2.0)
+      '@cucumber/messages': 27.2.0
+      commander: 9.1.0
+      source-map-support: 0.5.21
+
   '@cucumber/gherkin-streams@6.0.0(@cucumber/gherkin@37.0.1)(@cucumber/message-streams@4.0.1(@cucumber/messages@31.2.0))(@cucumber/messages@31.2.0)':
     dependencies:
       '@cucumber/gherkin': 37.0.1
@@ -13578,7 +13873,19 @@ snapshots:
       commander: 14.0.0
       source-map-support: 0.5.21
 
+  '@cucumber/gherkin-utils@9.2.0':
+    dependencies:
+      '@cucumber/gherkin': 31.0.0
+      '@cucumber/messages': 27.2.0
+      '@teppeis/multimaps': 3.0.0
+      commander: 13.1.0
+      source-map-support: 0.5.21
+
   '@cucumber/gherkin@30.0.4':
+    dependencies:
+      '@cucumber/messages': 26.0.1
+
+  '@cucumber/gherkin@31.0.0':
     dependencies:
       '@cucumber/messages': 26.0.1
 
@@ -13589,6 +13896,10 @@ snapshots:
   '@cucumber/gherkin@37.0.1':
     dependencies:
       '@cucumber/messages': 31.2.0
+
+  '@cucumber/html-formatter@21.10.1(@cucumber/messages@27.2.0)':
+    dependencies:
+      '@cucumber/messages': 27.2.0
 
   '@cucumber/html-formatter@21.9.0(@cucumber/messages@27.2.0)':
     dependencies:
@@ -13603,7 +13914,7 @@ snapshots:
       '@cucumber/messages': 27.2.0
       '@cucumber/query': 13.6.0(@cucumber/messages@27.2.0)
       '@teppeis/multimaps': 3.0.0
-      luxon: 3.6.1
+      luxon: 3.7.2
       xmlbuilder: 15.1.1
 
   '@cucumber/junit-xml-formatter@0.9.0(@cucumber/messages@31.2.0)':
@@ -13613,6 +13924,10 @@ snapshots:
       '@teppeis/multimaps': 3.0.0
       luxon: 3.7.2
       xmlbuilder: 15.1.1
+
+  '@cucumber/message-streams@4.0.1(@cucumber/messages@27.2.0)':
+    dependencies:
+      '@cucumber/messages': 27.2.0
 
   '@cucumber/message-streams@4.0.1(@cucumber/messages@31.2.0)':
     dependencies:
@@ -14810,7 +15125,7 @@ snapshots:
       '@graphql-tools/utils': 8.9.0(graphql@16.12.0)
       dataloader: 2.1.0
       graphql: 16.12.0
-      tslib: 2.4.1
+      tslib: 2.8.1
       value-or-promise: 1.0.11
 
   '@graphql-tools/batch-execute@9.0.19(graphql@16.12.0)':
@@ -15025,7 +15340,7 @@ snapshots:
   '@graphql-tools/optimize@2.0.0(graphql@16.12.0)':
     dependencies:
       graphql: 16.12.0
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   '@graphql-tools/prisma-loader@8.0.17(@types/node@24.10.9)(graphql@16.12.0)':
     dependencies:
@@ -15061,7 +15376,7 @@ snapshots:
       '@ardatan/relay-compiler': 12.0.3(graphql@16.12.0)
       '@graphql-tools/utils': 11.0.0(graphql@16.12.0)
       graphql: 16.12.0
-      tslib: 2.6.3
+      tslib: 2.8.1
     transitivePeerDependencies:
       - encoding
 
@@ -15182,6 +15497,15 @@ snapshots:
   '@isaacs/brace-expansion@5.0.1':
     dependencies:
       '@isaacs/balanced-match': 4.0.1
+
+  '@isaacs/cliui@8.0.2':
+    dependencies:
+      string-width: 5.1.2
+      string-width-cjs: string-width@4.2.3
+      strip-ansi: 7.1.2
+      strip-ansi-cjs: strip-ansi@6.0.1
+      wrap-ansi: 8.1.0
+      wrap-ansi-cjs: wrap-ansi@7.0.0
 
   '@jest/schemas@29.6.3':
     dependencies:
@@ -15978,6 +16302,9 @@ snapshots:
       tslib: 2.8.1
       tsyringe: 4.10.0
 
+  '@pkgjs/parseargs@0.11.0':
+    optional: true
+
   '@playwright/test@1.57.0':
     dependencies:
       playwright: 1.57.0
@@ -16235,6 +16562,11 @@ snapshots:
       '@serenity-js/core': 3.37.1
       tiny-types: 1.24.3
 
+  '@serenity-js/assertions@3.41.0':
+    dependencies:
+      '@serenity-js/core': 3.41.0
+      tiny-types: 1.24.3
+
   '@serenity-js/console-reporter@3.37.1':
     dependencies:
       '@serenity-js/core': 3.37.1
@@ -16255,6 +16587,30 @@ snapshots:
       upath: 2.0.1
       validate-npm-package-name: 6.0.2
 
+  '@serenity-js/core@3.41.0':
+    dependencies:
+      '@paralleldrive/cuid2': 2.3.1
+      chalk: 4.1.2
+      diff: 8.0.3
+      error-stack-parser: 2.1.4
+      fast-glob: 3.3.3
+      filenamify: 4.3.0
+      graceful-fs: 4.2.11
+      semver: 7.7.4
+      tiny-types: 1.24.3
+      upath: 2.0.1
+      validate-npm-package-name: 7.0.2
+
+  '@serenity-js/cucumber@3.37.1(@cucumber/cucumber@11.3.0)':
+    dependencies:
+      '@cucumber/messages': 26.0.1
+      '@serenity-js/core': 3.37.1
+      cli-table3: 0.6.5
+      gherkin: 5.1.0
+      tiny-types: 1.24.3
+    optionalDependencies:
+      '@cucumber/cucumber': 11.3.0
+
   '@serenity-js/cucumber@3.37.1(@cucumber/cucumber@12.6.0)':
     dependencies:
       '@cucumber/messages': 26.0.1
@@ -16264,6 +16620,13 @@ snapshots:
       tiny-types: 1.24.3
     optionalDependencies:
       '@cucumber/cucumber': 12.6.0
+
+  '@serenity-js/playwright@3.41.0(playwright-core@1.57.0)':
+    dependencies:
+      '@serenity-js/core': 3.41.0
+      '@serenity-js/web': 3.41.0
+      playwright-core: 1.57.0
+      tiny-types: 1.24.3
 
   '@serenity-js/rest@3.37.1':
     dependencies:
@@ -16294,6 +16657,12 @@ snapshots:
     transitivePeerDependencies:
       - debug
       - supports-color
+
+  '@serenity-js/web@3.41.0':
+    dependencies:
+      '@serenity-js/assertions': 3.41.0
+      '@serenity-js/core': 3.41.0
+      tiny-types: 1.24.3
 
   '@sideway/address@4.1.5':
     dependencies:
@@ -16610,7 +16979,7 @@ snapshots:
   '@ts-morph/common@0.27.0':
     dependencies:
       fast-glob: 3.3.3
-      minimatch: 10.1.1
+      minimatch: 10.1.2
       path-browserify: 1.0.1
 
   '@tsconfig/node10@1.0.12': {}
@@ -17840,7 +18209,7 @@ snapshots:
   camel-case@4.1.2:
     dependencies:
       pascal-case: 3.1.2
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   camelcase@5.0.0: {}
 
@@ -17929,7 +18298,7 @@ snapshots:
       path-case: 3.0.4
       sentence-case: 3.0.4
       snake-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   char-regex@1.0.2: {}
 
@@ -18108,6 +18477,8 @@ snapshots:
 
   commander@8.3.0: {}
 
+  commander@9.1.0: {}
+
   common-path-prefix@3.0.0: {}
 
   common-tags@1.8.2: {}
@@ -18156,7 +18527,7 @@ snapshots:
   constant-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
       upper-case: 2.0.2
 
   content-disposition@0.5.2: {}
@@ -18573,6 +18944,8 @@ snapshots:
 
   diff@6.0.0: {}
 
+  diff@8.0.3: {}
+
   dir-glob@3.0.1:
     dependencies:
       path-type: 4.0.0
@@ -18630,7 +19003,7 @@ snapshots:
   dot-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   dot-prop@6.0.1:
     dependencies:
@@ -19250,6 +19623,11 @@ snapshots:
     dependencies:
       is-callable: 1.2.7
 
+  foreground-child@3.3.1:
+    dependencies:
+      cross-spawn: 7.0.6
+      signal-exit: 4.1.0
+
   form-data-encoder@2.1.4: {}
 
   form-data@2.5.5:
@@ -19394,9 +19772,18 @@ snapshots:
     dependencies:
       find-index: 0.1.1
 
+  glob@10.5.0:
+    dependencies:
+      foreground-child: 3.3.1
+      jackspeak: 3.4.3
+      minimatch: 9.0.5
+      minipass: 7.1.2
+      package-json-from-dist: 1.0.1
+      path-scurry: 1.11.1
+
   glob@13.0.0:
     dependencies:
-      minimatch: 10.1.1
+      minimatch: 10.1.2
       minipass: 7.1.2
       path-scurry: 2.0.1
 
@@ -19690,7 +20077,7 @@ snapshots:
   header-case@2.0.4:
     dependencies:
       capital-case: 1.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   history@4.10.1:
     dependencies:
@@ -19704,6 +20091,10 @@ snapshots:
   hoist-non-react-statics@3.3.2:
     dependencies:
       react-is: 16.13.1
+
+  hosted-git-info@7.0.2:
+    dependencies:
+      lru-cache: 10.4.3
 
   hosted-git-info@9.0.2:
     dependencies:
@@ -20062,7 +20453,7 @@ snapshots:
 
   is-lower-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   is-map@2.0.3: {}
 
@@ -20145,7 +20536,7 @@ snapshots:
 
   is-upper-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   is-weakmap@2.0.2: {}
 
@@ -20200,6 +20591,12 @@ snapshots:
       istanbul-lib-report: 3.0.1
 
   iterall@1.3.0: {}
+
+  jackspeak@3.4.3:
+    dependencies:
+      '@isaacs/cliui': 8.0.2
+    optionalDependencies:
+      '@pkgjs/parseargs': 0.11.0
 
   jest-util@29.7.0:
     dependencies:
@@ -20514,11 +20911,11 @@ snapshots:
 
   lower-case-first@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   lower-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   lowercase-keys@3.0.0: {}
 
@@ -21167,6 +21564,8 @@ snapshots:
 
   mkdirp@1.0.4: {}
 
+  mkdirp@2.1.6: {}
+
   mkdirp@3.0.1: {}
 
   module-details-from-path@1.0.4: {}
@@ -21391,6 +21790,12 @@ snapshots:
       stream-combiner2: 1.1.1
       through2: 2.0.5
 
+  normalize-package-data@6.0.2:
+    dependencies:
+      hosted-git-info: 7.0.2
+      semver: 7.7.3
+      validate-npm-package-license: 3.0.4
+
   normalize-package-data@8.0.0:
     dependencies:
       hosted-git-info: 9.0.2
@@ -21611,7 +22016,7 @@ snapshots:
   param-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   parent-module@1.0.1:
     dependencies:
@@ -21664,14 +22069,14 @@ snapshots:
   pascal-case@3.1.2:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   path-browserify@1.0.1: {}
 
   path-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   path-exists@4.0.0: {}
 
@@ -21690,6 +22095,11 @@ snapshots:
   path-root@0.1.1:
     dependencies:
       path-root-regex: 0.1.2
+
+  path-scurry@1.11.1:
+    dependencies:
+      lru-cache: 10.4.3
+      minipass: 7.1.2
 
   path-scurry@2.0.1:
     dependencies:
@@ -22769,6 +23179,12 @@ snapshots:
 
   react@19.2.3: {}
 
+  read-package-up@11.0.0:
+    dependencies:
+      find-up-simple: 1.0.1
+      read-pkg: 9.0.1
+      type-fest: 4.41.0
+
   read-package-up@12.0.0:
     dependencies:
       find-up-simple: 1.0.1
@@ -22782,6 +23198,14 @@ snapshots:
       parse-json: 8.3.0
       type-fest: 5.4.4
       unicorn-magic: 0.4.0
+
+  read-pkg@9.0.1:
+    dependencies:
+      '@types/normalize-package-data': 2.4.4
+      normalize-package-data: 6.0.2
+      parse-json: 8.3.0
+      type-fest: 4.41.0
+      unicorn-magic: 0.1.0
 
   read-vinyl-file-stream@2.0.3:
     dependencies:
@@ -22914,6 +23338,11 @@ snapshots:
   regjsparser@0.13.0:
     dependencies:
       jsesc: 3.1.0
+
+  rehackt@0.1.0(@types/react@19.2.9)(react@19.2.3):
+    optionalDependencies:
+      '@types/react': 19.2.9
+      react: 19.2.3
 
   rehype-raw@7.0.0:
     dependencies:
@@ -23085,7 +23514,7 @@ snapshots:
 
   rimraf@6.1.2:
     dependencies:
-      glob: 13.0.0
+      glob: 13.0.2
       package-json-from-dist: 1.0.1
 
   roarr@2.15.4:
@@ -23235,7 +23664,11 @@ snapshots:
 
   semver@6.3.1: {}
 
+  semver@7.7.1: {}
+
   semver@7.7.3: {}
+
+  semver@7.7.4: {}
 
   send@0.19.2:
     dependencies:
@@ -23258,7 +23691,7 @@ snapshots:
   sentence-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
       upper-case-first: 2.0.2
 
   seq-queue@0.0.5: {}
@@ -23414,6 +23847,8 @@ snapshots:
 
   signal-exit@3.0.7: {}
 
+  signal-exit@4.1.0: {}
+
   signedsource@1.0.0: {}
 
   sirv@2.0.4:
@@ -23466,7 +23901,7 @@ snapshots:
   snake-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   snyk@1.1302.0:
     dependencies:
@@ -23543,7 +23978,7 @@ snapshots:
 
   sponge-case@1.0.1:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   sprintf-js@1.0.3: {}
 
@@ -23779,7 +24214,9 @@ snapshots:
 
   swap-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
+
+  symbol-observable@4.0.0: {}
 
   symbol-tree@3.2.4: {}
 
@@ -23912,7 +24349,7 @@ snapshots:
 
   title-case@3.0.3:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   tldts-core@6.1.86: {}
 
@@ -23985,6 +24422,10 @@ snapshots:
       typescript: 5.8.3
 
   ts-dedent@2.2.0: {}
+
+  ts-invariant@0.10.3:
+    dependencies:
+      tslib: 2.8.1
 
   ts-log@2.2.7: {}
 
@@ -24224,6 +24665,8 @@ snapshots:
 
   unicode-property-aliases-ecmascript@2.2.0: {}
 
+  unicorn-magic@0.1.0: {}
+
   unicorn-magic@0.3.0: {}
 
   unicorn-magic@0.4.0: {}
@@ -24313,11 +24756,11 @@ snapshots:
 
   upper-case-first@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   upper-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   uri-js@4.4.1:
     dependencies:
@@ -24375,6 +24818,8 @@ snapshots:
       spdx-expression-parse: 3.0.1
 
   validate-npm-package-name@6.0.2: {}
+
+  validate-npm-package-name@7.0.2: {}
 
   validator@13.15.26: {}
 
@@ -24873,12 +25318,25 @@ snapshots:
 
   yocto-queue@1.2.2: {}
 
+  yup@1.6.1:
+    dependencies:
+      property-expr: 2.0.6
+      tiny-case: 1.0.3
+      toposort: 2.0.2
+      type-fest: 2.19.0
+
   yup@1.7.1:
     dependencies:
       property-expr: 2.0.6
       tiny-case: 1.0.3
       toposort: 2.0.2
       type-fest: 2.19.0
+
+  zen-observable-ts@1.2.5:
+    dependencies:
+      zen-observable: 0.8.15
+
+  zen-observable@0.8.15: {}
 
   zod@4.3.5: {}
 
