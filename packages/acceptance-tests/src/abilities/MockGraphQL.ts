@@ -65,14 +65,35 @@ export class MockGraphQL extends Ability {
 	private generateMockResponse(operationName: string, variables: Record<string, any>): any {
 		switch (operationName) {
 			case 'createItemListing': {
+				// Validate input (simulating backend validation)
+				const input = variables.input || {};
+				if (!input.title) {
+					throw new Error('Validation error: title is required');
+				}
+				if (input.title.length < 5) {
+					throw new Error('Validation error: Title must be at least 5 characters');
+				}
+				if (input.title.length > 100) {
+					throw new Error('Validation error: Title must be at least 100 characters');
+				}
+				if (!input.description) {
+					throw new Error('Validation error: description is required');
+				}
+				if (!input.category) {
+					throw new Error('Validation error: category is required');
+				}
+				if (!input.location) {
+					throw new Error('Validation error: location is required');
+				}
+
 				const listingId = `listing-${this.nextListingId++}`;
 				return {
 					createItemListing: {
 						id: listingId,
-						title: variables.input?.title || 'Untitled',
-						description: variables.input?.description || '',
-						category: variables.input?.category || 'General',
-						location: variables.input?.location || 'Unknown',
+						title: input.title,
+						description: input.description,
+						category: input.category,
+						location: input.location,
 						state: 'draft',
 					},
 				};

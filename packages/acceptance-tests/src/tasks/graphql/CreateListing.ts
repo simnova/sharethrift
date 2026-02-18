@@ -48,9 +48,6 @@ export class CreateListing extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		// Validate required fields
-		this.validateDetails();
-
 		// Make GraphQL call via mocked ExecuteMutation
 		const response = await actor.answer(
 			ExecuteMutation.called('createItemListing').with(
@@ -80,27 +77,6 @@ export class CreateListing extends Task {
 			notes<ListingNotes>().set('lastListingTitle', listing.title),
 			notes<ListingNotes>().set('lastListingStatus', listing.state),
 		);
-	}
-
-	private validateDetails(): void {
-		if (!this.details.title) {
-			throw new Error('Validation error: title is required');
-		}
-		if (this.details.title.length < 5) {
-			throw new Error('Validation error: Title must be at least 5 characters');
-		}
-		if (this.details.title.length > 100) {
-			throw new Error('Validation error: Title must be at most 100 characters');
-		}
-		if (!this.details.description) {
-			throw new Error('Validation error: description is required');
-		}
-		if (!this.details.category) {
-			throw new Error('Validation error: category is required');
-		}
-		if (!this.details.location) {
-			throw new Error('Validation error: location is required');
-		}
 	}
 
 	private calculateStartDate(): string {
