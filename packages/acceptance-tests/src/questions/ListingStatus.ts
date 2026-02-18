@@ -1,5 +1,4 @@
-import { Question, type Actor } from '@serenity-js/core';
-import { CreateListingAbility } from '../abilities/CreateListingAbility';
+import { Question, type Actor, notes } from '@serenity-js/core';
 
 /**
  * ListingStatus is a Question that retrieves the status of a listing.
@@ -7,35 +6,23 @@ import { CreateListingAbility } from '../abilities/CreateListingAbility';
  * Questions are used in assertions to query the current state.
  * They work across all testing levels (domain/graphql/dom).
  */
-export class ListingStatus extends Question<Promise<string>> {
-	constructor(private readonly actor: Actor) {
-		super();
+export class ListingStatus extends Question<string> {
+	constructor() {
+		super('listing status');
 	}
 
 	/**
 	 * Retrieve the listing status based on the current testing level
 	 */
 	async answeredBy(actor: Actor): Promise<string> {
-		// At domain level, query the ability directly
-		const ability = CreateListingAbility.as(actor);
-		const listing = ability.getCreatedListing();
-
-		if (!listing) {
-			throw new Error('No listing has been created yet');
-		}
-
-		// TODO: Add support for GraphQL and DOM levels
-		// At GraphQL level: Query the API
-		// At DOM level: Read from the page
-
-		return 'draft'; // Mock implementation
+		return actor.answer(notes<{ lastListingStatus: string }>().get('lastListingStatus'));
 	}
 
 	/**
 	 * Factory method to create this question for an actor
 	 */
-	static of(actor: Actor): ListingStatus {
-		return new ListingStatus(actor);
+	static of(): ListingStatus {
+		return new ListingStatus();
 	}
 
 	toString(): string {

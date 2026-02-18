@@ -4,15 +4,28 @@ Cucumber Screenplay pattern acceptance tests for the ShareThrift domain, impleme
 
 ## Architecture
 
-This package implements the **Screenplay Pattern** with **three testing levels**:
+This package implements the **Cucumber Screenplay Pattern** with **three assembly configurations**:
 
-- **Domain**: Fast, direct domain model tests (no I/O)
-- **GraphQL**: API contract tests via GraphQL layer
-- **DOM**: End-to-end browser automation tests
+- **Domain**: Domain layer only (fastest - ~100ms per scenario)
+- **GraphQL**: GraphQL + Domain layers (medium - ~500ms per scenario)
+- **DOM**: DOM + GraphQL + Domain layers (slowest - ~3s per scenario, full stack)
 
-### Key Concept
+### Key Concept: Cumulative Assemblies
 
-**One Gherkin scenario, three implementations**. The same `.feature` files execute at different layers by swapping task implementations via world parameters.
+**Each assembly includes the layers below it**. The same `.feature` files execute through different system assemblies:
+
+```
+Domain Assembly:     [Domain]
+GraphQL Assembly:    [GraphQL] → [Domain]
+DOM Assembly:        [DOM] → [GraphQL] → [Domain]
+```
+
+This allows you to:
+- Get fast feedback during development (Domain assembly)
+- Test API contracts without UI (GraphQL assembly)  
+- Verify full user experience (DOM assembly)
+- Build features incrementally, adding layers as you go
+- Use faster layers for test setup even in slower assemblies
 
 ## Project Structure
 

@@ -59,4 +59,11 @@ export class CreateListingAbility extends Ability {
 	static using(uow: MockUow, user: MockUser, passport: MockPassport): CreateListingAbility {
 		return new CreateListingAbility(uow, user, passport);
 	}
+
+	/**
+	 * Get this ability from an actor.
+	 */
+	static as(actor: import('@serenity-js/core').Actor): CreateListingAbility {
+		return actor.abilityTo(CreateListingAbility);
+	}
 }

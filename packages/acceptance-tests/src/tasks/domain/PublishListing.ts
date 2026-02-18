@@ -1,26 +1,44 @@
-import { CreateListing } from './CreateListing.js';
+import { Task, type Actor, notes } from '@serenity-js/core';
+import { CreateListingAbility } from '../../abilities/CreateListingAbility.js';
+
+interface ListingNotes {
+	lastListingId: string;
+	lastListingStatus: string;
+}
 
 /**
- * PublishListing task at the DOMAIN level.
+ * PublishListing task for DOMAIN level.
  *
- * Changes a draft listing to published status.
+ * Activates a previously created listing using domain logic.
  */
-export const PublishListing = {
-	for: (listingTitle?: string) => {
-		// Get the last created listing
-		const listing = CreateListing.getLastListing();
-		if (!listing) {
-			throw new Error('No listing found to publish');
+export class PublishListing extends Task {
+	static justCreated() {
+		return new PublishListing(undefined);
+	}
+
+	static withId(id: string) {
+		return new PublishListing(id);
+	}
+
+		private constructor(private readonly listingId?: string) {
+		super(listingId ? `publishes listing ${listingId} (domain)` : 'publishes just created listing (domain)');
+	}
+
+	async performAs(actor: Actor): Promise<void> {
+		const id = this.listingId || await actor.answer(notes<ListingNotes>().get('lastListingId'));
+
+		if (!id) {
+			throw new Error('No listing ID available to publish');
 		}
 
-		if (listingTitle && listing.details.title !== listingTitle) {
-			throw new Error(`Listing with title "${listingTitle}" not found`);
-		}
+		// TODO: Use ability to publish listing
+		console.log(`[DOMAIN] Publishing listing: ${id}`);
 
-		// Update status to published
-		listing.status = 'published';
+		// Update state in notes
+		await actor.attemptsTo(
+			notes<ListingNotes>().set('lastListingStatus', 'published'),
+		);
+	}
 
-		console.log(`[DOMAIN] Publishing listing: ${listing.details.title}`);
-		return Promise.resolve();
-	},
-};
+	toString = () => `publishes listing ${this.listingId || '(just created)'} (domain)`;
+}

@@ -1,6 +1,6 @@
 import { Ability, type Actor } from '@serenity-js/core';
-import pkg from '@apollo/client';
-const { ApolloClient, InMemoryCache } = pkg;
+import apolloClient from '@apollo/client';
+const { ApolloClient, InMemoryCache, HttpLink } = apolloClient;
 import type { NormalizedCacheObject } from '@apollo/client';
 
 /**
@@ -15,7 +15,7 @@ export class CallAnApi extends Ability {
 		super();
 
 		this.client = new ApolloClient({
-			uri: this.apiUrl,
+			link: new HttpLink({ uri: this.apiUrl }),
 			cache: new InMemoryCache(),
 		});
 	}

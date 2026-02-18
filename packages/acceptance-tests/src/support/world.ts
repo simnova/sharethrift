@@ -1,11 +1,24 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
-import { actorCalled, Actor, Cast } from '@serenity-js/core';
-import { BrowseTheWeb } from '../abilities/BrowseTheWeb.js';
+import {
+	actorCalled,
+	configure,
+	Cast,
+	type Actor,
+	TakeNotes,
+	Notepad,
+} from '@serenity-js/core';
+import { BrowseTheWebWithPlaywright, PlaywrightOptions } from '@serenity-js/playwright';
+import { Browser, chromium } from '@playwright/test';
 import { CallAnApi } from '../abilities/CallAnApi.js';
 import { CreateListingAbility } from '../abilities/CreateListingAbility.js';
 
 /**
  * World parameters passed via --world-parameters CLI flag
+ *
+ * Assembly configurations (cumulative):
+ * - 'domain': Domain layer only (fastest)
+ * - 'graphql': GraphQL + Domain layers (medium speed)
+ * - 'dom': DOM + GraphQL + Domain layers (full stack)
  */
 export interface WorldParameters {
 	tasks: 'domain' | 'graphql' | 'dom';
@@ -26,8 +39,9 @@ class ShareThriftCast implements Cast {
 	prepare(actor: Actor): Actor {
 		switch (this.tasksLevel) {
 			case 'domain':
-				// Domain level: Direct domain access abilities
+				// Domain assembly: Domain layer only (fastest)
 				return actor.whoCan(
+					TakeNotes.using(Notepad.empty()),
 					CreateListingAbility.using(
 						{} as any, // Mock UOW - TODO: Replace with real MongoDB Memory Server
 						{} as any, // Mock User
@@ -36,12 +50,22 @@ class ShareThriftCast implements Cast {
 				);
 
 			case 'graphql':
-				// GraphQL level: API client abilities
-				return actor.whoCan(CallAnApi.at(this.apiUrl));
-
-			case 'dom':
-				// DOM level: Browser automation abilities
-				return actor.whoCan(BrowseTheWeb.using('chromium'), CallAnApi.at(this.apiUrl));
+		case 'graphql':
+			// GraphQL assembly: GraphQL + Domain layers (medium speed)
+			// Uses real GraphQL API (Azure Functions) with MongoDB Memory Server
+			return actor.whoCan(
+				TakeNotes.using(Notepad.empty()),
+				CallAnApi.at(this.apiUrl),
+			);				// DOM assembly: DOM + GraphQL + Domain layers (full stack)
+				// Tasks can use UI, or fall back to GraphQL/Domain for test setup
+				return actor.whoCan(
+					TakeNotes.using(Notepad.empty()),
+					BrowseTheWebWithPlaywright.using(async () => {
+						const { chromium } = await import('playwright');
+						return chromium.launch({ headless: true });
+					}),
+					CallAnApi.at(this.apiUrl),
+				);
 
 			default:
 				throw new Error(`Unknown tasks level: ${this.tasksLevel}`);
@@ -57,7 +81,6 @@ export class ShareThriftWorld extends World<WorldParameters> {
 	private readonly tasksLevel: 'domain' | 'graphql' | 'dom';
 	private readonly apiUrl: string;
 	private readonly baseUrl: string;
-	private readonly cast: ShareThriftCast;
 
 	constructor(options: IWorldOptions<WorldParameters>) {
 		super(options);
@@ -67,19 +90,17 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		this.apiUrl = options.parameters?.apiUrl || 'http://localhost:7071/api/graphql';
 		this.baseUrl = options.parameters?.baseUrl || 'http://localhost:5173';
 
-		// Create cast for this testing level
-		this.cast = new ShareThriftCast(this.tasksLevel, this.apiUrl, this.baseUrl);
+		// Configure Serenity/JS with our custom cast
+		configure({
+			actors: new ShareThriftCast(this.tasksLevel, this.apiUrl, this.baseUrl),
+			crew: [
+				// Add reporters/crew members here if needed
+			],
+		});
 	}
 
 	/**
-	 * Get an actor by name (used in step definitions via {actor} parameter)
-	 */
-	actor(name: string): Actor {
-		return this.cast.prepare(actorCalled(name));
-	}
-
-	/**
-	 * Get the current testing level
+	 * Get the current assembly configuration
 	 */
 	get level(): 'domain' | 'graphql' | 'dom' {
 		return this.tasksLevel;

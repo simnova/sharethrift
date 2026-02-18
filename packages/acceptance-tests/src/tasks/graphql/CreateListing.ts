@@ -1,3 +1,14 @@
+import { Task, type Actor, notes } from '@serenity-js/core';
+import { ExecuteMutation } from '../../interactions/graphql/ExecuteMutation.js';
+import apolloClient from '@apollo/client';
+const { gql } = apolloClient;
+
+interface ListingNotes {
+	lastListingId: string;
+	lastListingTitle: string;
+	lastListingStatus: string;
+}
+
 export interface ListingDetails {
 	title: string;
 	description: string;
@@ -9,36 +20,92 @@ export interface ListingDetails {
 	tags?: string;
 }
 
+const CREATE_ITEM_LISTING_MUTATION = gql`
+	mutation CreateItemListing($input: CreateItemListingInput!) {
+		createItemListing(input: $input) {
+			id
+			title
+			description
+			category
+			location
+			state
+		}
+	}
+`;
+
 /**
- * CreateListing task at the GRAPHQL level.
+ * CreateListing task for GRAPHQL level.
  *
- * Invokes the GraphQL API to create a listing.
- * Medium speed, tests API contracts.
+ * Uses the ExecuteMutation interaction to create a listing via the GraphQL API.
+ * Medium speed - involves HTTP but no browser overhead.
  */
-export const CreateListing = {
-	with: (details: ListingDetails) => {
-		// Validate required fields (same as domain)
-		if (!details.title) {
+export class CreateListing extends Task {
+	static with(details: ListingDetails) {
+		return new CreateListing(details);
+	}
+
+	private constructor(private readonly details: ListingDetails) {
+		super(`creates listing "${details.title}" (GraphQL)`);
+	}
+
+	async performAs(actor: Actor): Promise<void> {
+		// Validate required fields
+		this.validateDetails();
+
+		// Execute GraphQL mutation using interaction
+		console.log(`[GRAPHQL] Creating listing: ${this.details.title}`);
+		const result: any = await actor.attemptsTo(
+			ExecuteMutation.called('createItemListing').with(CREATE_ITEM_LISTING_MUTATION, {
+				input: {
+					title: this.details.title,
+					description: this.details.description,
+					category: this.details.category,
+					location: this.details.location,
+					sharingPeriodStart: this.calculateStartDate(),
+					sharingPeriodEnd: this.calculateEndDate(),
+					isDraft: true,
+				},
+			}),
+		);
+
+		// Store the listing ID and state for later tasks
+		await actor.attemptsTo(
+			notes<ListingNotes>().set('lastListingId', result.createItemListing.id),
+			notes<ListingNotes>().set('lastListingTitle', result.createItemListing.title),
+			notes<ListingNotes>().set('lastListingStatus', result.createItemListing.state),
+		);
+	}
+
+	private validateDetails(): void {
+		if (!this.details.title) {
 			throw new Error('Validation error: title is required');
 		}
-		if (details.title.length < 5) {
+		if (this.details.title.length < 5) {
 			throw new Error('Validation error: Title must be at least 5 characters');
 		}
-		if (details.title.length > 100) {
+		if (this.details.title.length > 100) {
 			throw new Error('Validation error: Title must be at most 100 characters');
 		}
-		if (!details.description) {
+		if (!this.details.description) {
 			throw new Error('Validation error: description is required');
 		}
-		if (!details.category) {
+		if (!this.details.category) {
 			throw new Error('Validation error: category is required');
 		}
-		if (!details.location) {
+		if (!this.details.location) {
 			throw new Error('Validation error: location is required');
 		}
+	}
 
-		// TODO: Implement actual GraphQL mutation
-		console.log(`[GRAPHQL] Creating listing: ${details.title}`);
-		return Promise.resolve();
-	},
-};
+	private calculateStartDate(): string {
+		const tomorrow = new Date(Date.now() + 86400000);
+		return tomorrow.toISOString().split('T')[0];
+	}
+
+	private calculateEndDate(): string {
+		const endDate = new Date(Date.now() + 86400000 * 30);
+		return endDate.toISOString().split('T')[0];
+	}
+
+	toString = () => `creates listing "${this.details.title}" (GraphQL)`;
+}
