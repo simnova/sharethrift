@@ -1,7 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { Navigate, Click } from '@serenity-js/web';
-import { PageElement, By } from '@serenity-js/web';
-import { Wait } from '@serenity-js/core';
+import { MyListingsPage } from '../../ui/MyListingsPage.js';
 
 interface ListingNotes {
 	lastListingId?: string;
@@ -12,48 +11,40 @@ interface ListingNotes {
 /**
  * PublishListing task for DOM level.
  *
- * Uses browser automation to click the Publish button on a listing.
+ * Following Aslak Hellesøy's Screenplay Pattern:
+ * - HIGH-LEVEL task describing user intent
+ * - Uses Page Objects for element location
+ * - Simple and focused on the business goal
  */
 export class PublishListing extends Task {
-	static justCreated() {
+	static justCreated(): PublishListing {
 		return new PublishListing(undefined);
 	}
 
-	static withId(id: string) {
+	static withId(id: string): PublishListing {
 		return new PublishListing(id);
 	}
 
-		private constructor(private readonly listingId?: string) {
-		super(listingId ? `publishes listing ${listingId} (DOM)` : 'publishes just created listing (DOM)');
+	private constructor(private readonly listingId?: string) {
+		super(`#actor publishes ${listingId ? `listing ${listingId}` : 'the just-created listing'} via UI`);
 	}
 
 	async performAs(actor: Actor): Promise<void> {
+		// Get listing details from notes
 		const id = this.listingId || await actor.answer(notes<ListingNotes>().get('lastListingId'));
 		const title = await actor.answer(notes<ListingNotes>().get('lastListingTitle'));
 
 		if (!id && !title) {
-			throw new Error('No listing ID or title available');
+			throw new Error('Cannot publish listing: No listing ID or title available');
 		}
 
-		console.log(`[DOM] Publishing listing: ${title || id}`);
+		// Navigate to my listings page
+		await actor.attemptsTo(Navigate.to(MyListingsPage.url));
 
-		await actor.attemptsTo(
-			Navigate.to('http://localhost:3000/my-listings'),
+		// Click activate button for the listing (using title as identifier)
+		await actor.attemptsTo(Click.on(MyListingsPage.activateButtonFor(title)));
 
-			// Find and click the Activate button for this listing
-			Click.on(
-				PageElement.located(
-					By.xpath(`//tr[contains(., \"${title}\")]//button[contains(text(), \"Activate\")]`),
-				).describedAs(`activate button for ${title}`),
-			),
-
-			// Wait for success confirmation
-			Wait.forNextNavigationRequest(),
-
-			// Update state in notes
-			notes<ListingNotes>().set('lastListingStatus', 'published'),
-		);
+		// Update status in notes
+		await actor.attemptsTo(notes<ListingNotes>().set('lastListingStatus', 'published'));
 	}
-
-	toString = () => `publishes listing ${this.listingId || '(just created)'} (DOM)`;
 }

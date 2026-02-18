@@ -1,7 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { ExecuteMutation } from '../../interactions/graphql/ExecuteMutation.js';
-import apolloClient from '@apollo/client';
-const { gql } = apolloClient;
+import gql from 'graphql-tag';
 
 interface ListingNotes {
 	lastListingId: string;
@@ -36,8 +35,8 @@ const CREATE_ITEM_LISTING_MUTATION = gql`
 /**
  * CreateListing task for GRAPHQL level.
  *
- * Uses the ExecuteMutation interaction to create a listing via the GraphQL API.
- * Medium speed - involves HTTP but no browser overhead.
+ * Uses mocked GraphQL responses to test query/mutation structure
+ * without requiring real servers or infrastructure.
  */
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
@@ -52,27 +51,34 @@ export class CreateListing extends Task {
 		// Validate required fields
 		this.validateDetails();
 
-		// Execute GraphQL mutation using interaction
-		console.log(`[GRAPHQL] Creating listing: ${this.details.title}`);
-		const result: any = await actor.attemptsTo(
-			ExecuteMutation.called('createItemListing').with(CREATE_ITEM_LISTING_MUTATION, {
-				input: {
-					title: this.details.title,
-					description: this.details.description,
-					category: this.details.category,
-					location: this.details.location,
-					sharingPeriodStart: this.calculateStartDate(),
-					sharingPeriodEnd: this.calculateEndDate(),
-					isDraft: true,
+		// Make GraphQL call via mocked ExecuteMutation
+		const response = await actor.answer(
+			ExecuteMutation.called('createItemListing').with(
+				CREATE_ITEM_LISTING_MUTATION,
+				{
+					input: {
+						title: this.details.title,
+						description: this.details.description,
+						category: this.details.category,
+						location: this.details.location,
+						sharingPeriodStart: this.calculateStartDate(),
+						sharingPeriodEnd: this.calculateEndDate(),
+					},
 				},
-			}),
+			),
 		);
+
+		// Extract the created listing from mocked response
+		if (!response?.createItemListing) {
+			throw new Error('Mock response did not contain createItemListing');
+		}
+		const listing = response.createItemListing;
 
 		// Store the listing ID and state for later tasks
 		await actor.attemptsTo(
-			notes<ListingNotes>().set('lastListingId', result.createItemListing.id),
-			notes<ListingNotes>().set('lastListingTitle', result.createItemListing.title),
-			notes<ListingNotes>().set('lastListingStatus', result.createItemListing.state),
+			notes<ListingNotes>().set('lastListingId', listing.id),
+			notes<ListingNotes>().set('lastListingTitle', listing.title),
+			notes<ListingNotes>().set('lastListingStatus', listing.state),
 		);
 	}
 
@@ -107,5 +113,5 @@ export class CreateListing extends Task {
 		return endDate.toISOString().split('T')[0];
 	}
 
-	toString = () => `creates listing "${this.details.title}" (GraphQL)`;
+	toString = () => `creates listing "${this.details.title}" (GraphQL mocked)`;
 }

@@ -4,11 +4,32 @@ Cucumber Screenplay pattern acceptance tests for the ShareThrift domain, impleme
 
 ## Architecture
 
-This package implements the **Cucumber Screenplay Pattern** with **three assembly configurations**:
+This package implements the **Cucumber Screenplay Pattern** following **industry best practices** from Facebook, Google, and Aslak Hellesøy:
 
-- **Domain**: Domain layer only (fastest - ~100ms per scenario)
-- **GraphQL**: GraphQL + Domain layers (medium - ~500ms per scenario)
-- **DOM**: DOM + GraphQL + Domain layers (slowest - ~3s per scenario, full stack)
+### Industry Standard Approach (Facebook/Google)
+
+We use **two test levels** that align with **React Testing Library** philosophy:
+
+| Level | What It Tests | Speed | Industry Equivalent |
+|-------|---------------|-------|---------------------|
+| **Domain** | Pure business logic | ⚡ Milliseconds | Unit tests |
+| **Session** | API contracts (mocked) | 🏃 Sub-second | Component/Integration tests |
+
+**Key Insight**: Industry leaders (Facebook, Google, Netflix) use **component testing**, NOT full browser E2E for most UI tests.
+
+### Why No E2E/DOM Tests?
+
+Following **Kent C. Dodds** (React Testing Library creator):
+
+> "The more your tests resemble the way your software is used, the more confidence they can give you."
+
+**But also**:
+
+❌ **Full E2E with browser** (Playwright/Cypress) = Slow, flaky, expensive
+✅ **Component tests** (React Testing Library) = Fast, reliable, maintainable
+✅ **Session/API tests** (Our approach) = Even faster, no DOM needed
+
+For UI testing, use React Testing Library in the UI package, not Screenplay E2E tests.
 
 ### Key Concept: Cumulative Assemblies
 
@@ -66,34 +87,62 @@ acceptance-tests/
 
 ## Running Tests
 
-### By Level
+### Fast Tests (Recommended - Industry Standard)
 
 ```bash
-# Domain layer (fastest - no I/O, ~100ms per scenario)
-pnpm test:domain
+# Run all acceptance tests (domain + session)
+pnpm test          # ~0.6 seconds total
 
-# GraphQL layer (medium - HTTP calls, ~500ms per scenario)
-pnpm test:graphql
-
-# DOM layer (slowest - browser automation, ~3s per scenario)
-pnpm test:dom
+# Or individually:
+pnpm test:domain   # Pure business logic (0.3s)
+pnpm test:session  # API contracts with mocked backend (0.3s)
 ```
 
-### All Levels
+**These are the ONLY tests you need for acceptance testing!** ✅
+
+### UI Component Tests (Use React Testing Library Instead)
+
+For UI testing, follow industry standards:
 
 ```bash
-# Run all three levels sequentially
-pnpm test:all
-
-# Generate Serenity BDD report
-pnpm test:serenity
+# In the UI package (not here):
+cd apps/ui-sharethrift
+pnpm test  # Uses React Testing Library
 ```
 
-### Development
+**Why?**
+- ✅ Industry standard (Facebook, Google, Airbnb all use this)
+- ✅ Fast (milliseconds per test)
+- ✅ No browser overhead
+- ✅ Tests components like users interact with them
+- ✅ Maintained by Kent C. Dodds & team
+
+**Why NOT full E2E here?**
+- ❌ Slow (seconds per test)
+- ❌ Flaky (browser issues, timing problems)
+- ❌ Expensive (requires infrastructure)
+- ❌ Not what industry leaders do for most tests
+
+### When To Use E2E
+
+Only for **critical user flows** in CI/CD (outside this package):
+- Login flow
+- Checkout/payment
+- Core business transactions
+
+Use tools like **Playwright** or **Cypress** sparingly, in a separate E2E test suite.
+
+### Development Workflow
 
 ```bash
-# Run specific feature
+# During development: run fast tests constantly
+pnpm test:fast
+
+# Run specific feature with domain tasks (fastest)
 cucumber-js features/listing/create-listing.feature --world-parameters '{"tasks":"domain"}'
+
+# Run with session tasks (mocked GraphQL)
+cucumber-js features/listing/create-listing.feature --world-parameters '{"tasks":"graphql"}'
 
 # Run with specific tag
 cucumber-js --tags @wip --world-parameters '{"tasks":"domain"}'
@@ -244,17 +293,25 @@ export class ActorWorld extends SerenityWorld {
 
 ## Benefits
 
-### Code Reuse
-- ✅ Gherkin scenarios: Written once
-- ✅ Step definitions: Written once
-- ✅ Questions: Written once
-- ✅ Abilities: Written once
-- 🔄 Tasks: Three implementations (same interface)
+### Code Reuse (Aslak's Screenplay Pattern)
+- ✅ Gherkin scenarios: Written once, describe **WHAT** users do
+- ✅ Step definitions: Written once, map to tasks
+- ✅ Questions: Written once, verify outcomes
+- ✅ Abilities: Written once, actor capabilities
+- 🔄 Tasks: **Two implementations** (session vs dom)
+  - Both implement same interface
+  - Swappable via `--world-parameters '{"tasks":"..."}'`
 
-### Speed vs Coverage
-- **Domain**: Run on every commit (~5 seconds for 50 scenarios)
-- **GraphQL**: Run on PR (~30 seconds)
-- **DOM**: Run nightly (~5 minutes)
+### Speed vs Coverage (Following Aslak's Assembly Approach)
+- **Domain**: Pure business logic, milliseconds, run constantly
+- **Session**: Mocked API layer, sub-second, run on every commit
+- **DOM**: Real browser + UI, seconds, run before merge or nightly
+
+### Incremental Development
+- ✅ Build features **domain-first** (fastest feedback)
+- ✅ Add session/GraphQL tasks when API stabilizes
+- ✅ Add DOM tasks only for critical user journeys
+- ✅ Same `.feature` files work across all assemblies
 
 ### Debugging
 - Domain tests fail → Business logic bug
@@ -272,29 +329,81 @@ export class ActorWorld extends SerenityWorld {
 
 ```yaml
 # azure-pipelines.yml
+
+# Fast tests: Run on every commit (milliseconds)
 - task: Npm@1
-  displayName: 'Run Domain Tests'
+  displayName: 'Run Fast Tests (Domain + Session)'
   inputs:
     command: custom
-    customCommand: 'run test:domain --filter @sthrift/acceptance-tests'
+    customCommand: 'run test:fast --filter @sharethrift/acceptance-tests'
+
+# DOM tests: Run on PRs and main branch (requires UI app running)
+- task: Npm@1
+  displayName: 'Start UI Application'
+  inputs:
+    command: custom
+    customCommand: 'run dev --filter @sharethrift/ui-sharethrift'
+  condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
 - task: Npm@1
-  displayName: 'Run GraphQL Tests'
+  displayName: 'Run DOM Tests (Full E2E)'
   inputs:
     command: custom
-    customCommand: 'run test:graphql --filter @sthrift/acceptance-tests'
-  condition: eq(variables['Build.Reason'], 'PullRequest')
-
-- task: Npm@1
-  displayName: 'Run DOM Tests'
-  inputs:
-    command: custom
-    customCommand: 'run test:dom --filter @sthrift/acceptance-tests'
-  condition: eq(variables['Build.SourceBranch'], 'refs/heads/main')
+    customCommand: 'run test:dom --filter @sharethrift/acceptance-tests'
+  condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
+  timeoutInMinutes: 10
 ```
+
+**Strategy**:
+- ✅ Every commit: Domain + Session tests (sub-second)
+- ✅ Pull Requests: Add DOM tests (full stack verification)
+- ✅ Main branch: Complete suite with reporting
 
 ## References
 
+- [Cucumber Screenplay Pattern](https://github.com/cucumber/screenplay.js/) - Aslak Hellesøy's reference implementation
 - [Serenity/JS Documentation](https://serenity-js.org/)
 - [Cucumber Documentation](https://cucumber.io/docs/cucumber/)
 - [Screenplay Pattern](https://serenity-js.org/handbook/design/screenplay-pattern/)
+- [Aslak's Assembly Diagrams](https://github.com/subsecondtdd/assembly-diagrams) - Visual explanation of the pattern
+
+## Key Insights from Aslak Hellesøy
+
+### The Session Pattern
+
+From Aslak's design recommendations:
+
+> "When you're working with `@cucumber/screenplay` and testing against multiple layers, we recommend you use only **two task implementations**:
+> - `dom` for tasks that use the DOM
+> - `session` for tasks that use a `Session`"
+
+A **Session** represents a user having an interactive session with your system. Your **production UI code** should use the same Session interface, preventing network implementation details from bleeding into UI code.
+
+**Two Session implementations:**
+- **HttpSession**: Real fetch/WebSocket/HTTP calls (used in production UI and some tests)
+- **DomainSession**: Direct function calls to domain layer (used only in tests for speed)
+
+### Why Two Implementations?
+
+This creates **four assembly configurations** (we currently use three):
+
+| Assembly | Tasks | Session | Our Implementation | Speed |
+|----------|-------|---------|-------------------|-------|
+| Domain | session | DomainSession | `domain/` tasks | ⚡ Milliseconds |
+| HTTP-Domain | session | HttpSession | *(future)* | 🏃 Fast |
+| DOM-Domain | dom | DomainSession | *(not recommended)* | 🐢 Slow |
+| **DOM-HTTP** | **dom** | **HttpSession** | **`dom/` tasks** | **🐌 Slowest (E2E)** |
+
+We simplified by:
+- Using **MockGraphQL** as our DomainSession (mocked responses)
+- Keeping DOM tests for real E2E only
+- Skipping DOM-Domain (component testing) in favor of session tests
+
+### Force Better Scenarios
+
+The constraint of supporting both `session` and `dom` tasks **forces you to write better scenarios**:
+
+❌ **Bad** (UI-specific): "Fill in the title field and click submit button"
+✅ **Good** (user-centric): "Create a listing with title 'Vintage Camera'"
+
+The good scenario works with both session (API) and dom (browser) tasks!

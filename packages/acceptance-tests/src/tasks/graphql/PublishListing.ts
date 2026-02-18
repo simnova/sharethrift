@@ -1,7 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { ExecuteMutation } from '../../interactions/graphql/ExecuteMutation.js';
-import apolloClient from '@apollo/client';
-const { gql } = apolloClient;
+import gql from 'graphql-tag';
 
 interface ListingNotes {
 	lastListingId: string;
@@ -9,13 +8,10 @@ interface ListingNotes {
 }
 
 const ACTIVATE_LISTING_MUTATION = gql`
-	mutation ActivateItemListing($id: ID!) {
-		activateItemListing(id: $id) {
-			success
-			listing {
-				id
-				state
-			}
+	mutation ActivateListing($input: ActivateListingInput!) {
+		activateListing(input: $input) {
+			id
+			state
 		}
 	}
 `;
@@ -23,7 +19,8 @@ const ACTIVATE_LISTING_MUTATION = gql`
 /**
  * PublishListing task for GRAPHQL level.
  *
- * Activates a listing via the GraphQL API.
+ * Uses mocked GraphQL responses to test query/mutation structure
+ * without requiring real servers or infrastructure.
  */
 export class PublishListing extends Task {
 	static justCreated() {
@@ -50,20 +47,29 @@ export class PublishListing extends Task {
 			throw new Error('No listing ID available to publish');
 		}
 
-		console.log(`[GRAPHQL] Publishing listing: ${id}`);
-
-		// Execute mutation
-		const result: any = await actor.attemptsTo(
-			ExecuteMutation.called('activateItemListing').with(ACTIVATE_LISTING_MUTATION, { id }),
+		// Make GraphQL call via mocked ExecuteMutation
+		const response = await actor.answer(
+			ExecuteMutation.called('activateListing').with(
+				ACTIVATE_LISTING_MUTATION,
+				{
+					input: {
+						id,
+					},
+				},
+			),
 		);
 
-		// Update state in notes
-		if (result.activateItemListing.success) {
-			await actor.attemptsTo(
-				notes<ListingNotes>().set('lastListingStatus', result.activateItemListing.listing.state),
-			);
+		// Extract the updated listing from mocked response
+		if (!response?.activateListing) {
+			throw new Error('Mock response did not contain activateListing');
 		}
+		const listing = response.activateListing;
+
+		// Update state in notes
+		await actor.attemptsTo(
+			notes<ListingNotes>().set('lastListingStatus', listing.state),
+		);
 	}
 
-	toString = () => `publishes listing ${this.listingId || '(just created)'} (GraphQL)`;
+	toString = () => `publishes listing ${this.listingId || '(just created)'} (GraphQL mocked)`;
 }

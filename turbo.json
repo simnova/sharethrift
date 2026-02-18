@@ -55,6 +55,23 @@
 			"inputs": ["src/**", "features/**", "cucumber.js"],
 			"outputs": ["reports/cucumber-report-graphql.json"]
 		},
+		"test:graphql:with-servers": {
+			"cache": false,
+			"persistent": true
+		},
+		"server:oauth": {
+			"cache": false,
+			"persistent": true
+		},
+		"server:mongodb": {
+			"cache": false,
+			"persistent": true
+		},
+		"server:api": {
+			"cache": false,
+			"persistent": true,
+			"env": ["DB_CONNECTION_STRING"]
+		},
 		"test:dom": {
 			"dependsOn": ["^build"],
 			"inputs": ["src/**", "features/**", "cucumber.js"],

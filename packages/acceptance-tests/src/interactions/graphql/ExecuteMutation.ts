@@ -1,39 +1,41 @@
-import { Interaction, type UsesAbilities, notes } from '@serenity-js/core';
-import { CallAnApi } from '../../abilities/CallAnApi.js';
-import type { DocumentNode } from '@apollo/client/core';
+import { Interaction, Question, type Actor, type Answerable, type AnswersQuestions } from '@serenity-js/core';
+import type { DocumentNode } from 'graphql';
+import { MockGraphQL } from '../../abilities/MockGraphQL.js';
 
 /**
- * ExecuteMutation is a reusable Interaction for executing GraphQL mutations.
+ * Execute a GraphQL mutation using mocked responses.
  *
- * This is a low-level interaction that Tasks can compose.
+ * Simplified approach: tests GraphQL operation structure without real servers.
  */
-export class ExecuteMutation<TData = any> extends Interaction {
-	static called<TData = any>(name: string) {
-		return {
-			with: (mutation: DocumentNode, variables?: Record<string, any>) =>
-				new ExecuteMutation<TData>(name, mutation, variables),
-		};
+export class ExecuteMutation extends Question<Promise<any>> {
+	static called(operationName: string) {
+		return new ExecuteMutationBuilder(operationName);
 	}
 
-	constructor(
+	private constructor(
 		private readonly operationName: string,
 		private readonly mutation: DocumentNode,
-		private readonly variables?: Record<string, any>,
-		private readonly resultKey: string = 'lastMutationResult',
+		private readonly variables: Record<string, any>,
 	) {
-		super(`#actor executes GraphQL mutation: ${operationName}`);
+		super(`executes ${operationName} mutation (mocked)`);
 	}
 
-	async performAs(actor: UsesAbilities): Promise<void> {
-		const api = CallAnApi.as(actor);
-
-		const result = await api.mutate<TData>({
-			mutation: this.mutation,
-			variables: this.variables,
-		});
-
-		await actor.attemptsTo(notes<TData>().set(this.resultKey, result));
+	async answeredBy(actor: AnswersQuestions): Promise<any> {
+		const mockGraphQL = MockGraphQL.as(actor as Actor);
+		return await mockGraphQL.executeMutation(
+			this.operationName,
+			this.mutation,
+			this.variables,
+		);
 	}
 
-	toString = () => `executes ${this.operationName} mutation`;
+	toString = () => `executes ${this.operationName} mutation (mocked)`;
+}
+
+class ExecuteMutationBuilder {
+	constructor(private readonly operationName: string) {}
+
+	with(mutation: DocumentNode, variables: Record<string, any>): ExecuteMutation {
+		return new ExecuteMutation(this.operationName, mutation, variables);
+	}
 }

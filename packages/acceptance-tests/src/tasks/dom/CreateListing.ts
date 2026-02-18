@@ -1,7 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
-import { Navigate, Click, Enter } from '@serenity-js/web';
-import { PageElement, By, isVisible } from '@serenity-js/web';
-import { Wait } from '@serenity-js/core';
+import { Navigate } from '@serenity-js/web';
+import { CreateListingPage } from '../../ui/CreateListingPage.js';
+import { FillListingForm, SubmitListingAsDraft } from '../../interactions/dom/FillListingForm.js';
 
 interface ListingNotes {
 	lastListingId?: string;
@@ -23,107 +23,48 @@ export interface ListingDetails {
 /**
  * CreateListing task at the DOM level.
  *
- * Interacts with the UI through browser automation.
- * Slowest execution, tests the complete user journey.
+ * Following Aslak Hellesøy's Screenplay Pattern:
+ * - Tasks = WHAT the user does (business intent)
+ * - Interactions = HOW to do it (UI mechanics)
+ * - Page Objects = WHERE to find elements
+ * 
+ * This is a HIGH-LEVEL task that composes interactions.
+ * It focuses on the user's goal, not UI implementation details.
+ * 
+ * Requirements:
+ * - UI application must be running (e.g., https://localhost:3000)
+ * - Backend can be real or mocked (transparent to this task)
  */
 export class CreateListing extends Task {
-	static with(details: ListingDetails) {
+	static with(details: ListingDetails): CreateListing {
 		return new CreateListing(details);
 	}
 
 	private constructor(private readonly details: ListingDetails) {
-		super(`creates listing "${details.title}" (DOM)`);
+		super(`#actor creates listing "${details.title}" via UI`);
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		// Validate required fields
-		this.validateDetails();
+		// Navigate to create listing page
+		await actor.attemptsTo(Navigate.to(CreateListingPage.url));
 
-		console.log(`[DOM] Creating listing: ${this.details.title}`);
-
-		// Navigate and fill form using Serenity/JS Playwright interactions
+		// Fill the form (using reusable interaction)
 		await actor.attemptsTo(
-			Navigate.to('http://localhost:3000/create-listing'),
-
-			Enter.theValue(this.details.title).into(
-				PageElement.located(By.css('input[name=\"title\"]')).describedAs('title input'),
-			),
-
-			Enter.theValue(this.details.description).into(
-				PageElement.located(By.css('textarea[name=\"description\"]')).describedAs(
-					'description textarea',
-				),
-			),
-
-			Enter.theValue(this.details.category).into(
-				PageElement.located(By.css('select[name=\"category\"]')).describedAs('category select'),
-			),
-
-			Enter.theValue(this.details.location).into(
-				PageElement.located(By.css('input[name=\"location\"]')).describedAs('location input'),
-			),
-
-			// Set sharing period dates
-			Enter.theValue(this.calculateStartDate()).into(
-				PageElement.located(By.css('input[name=\"sharingPeriodStart\"]')).describedAs('start date'),
-			),
-
-			Enter.theValue(this.calculateEndDate()).into(
-				PageElement.located(By.css('input[name=\"sharingPeriodEnd\"]')).describedAs('end date'),
-			),
-
-			// Click Save as Draft button
-			Click.on(
-				PageElement.located(By.css('button[data-testid=\"save-draft\"]')).describedAs(
-					'save as draft button',
-				),
-			),
-
-			// Wait for success message
-			Wait.until(
-				PageElement.located(By.css('.toast-success')).describedAs('success message'),
-				isVisible(),
-			),
+			FillListingForm.with({
+				title: this.details.title,
+				description: this.details.description,
+				category: this.details.category,
+				location: this.details.location,
+			}),
 		);
 
-		// Store listing info in notes
-		// TODO: Extract listing ID from URL or page
+		// Submit as draft
+		await actor.attemptsTo(SubmitListingAsDraft.andWaitForConfirmation());
+
+		// Store result in notes for assertions
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingTitle', this.details.title),
 			notes<ListingNotes>().set('lastListingStatus', 'draft'),
 		);
 	}
-
-	private validateDetails(): void {
-		if (!this.details.title) {
-			throw new Error('Validation error: title is required');
-		}
-		if (this.details.title.length < 5) {
-			throw new Error('Validation error: Title must be at least 5 characters');
-		}
-		if (this.details.title.length > 100) {
-			throw new Error('Validation error: Title must be at most 100 characters');
-		}
-		if (!this.details.description) {
-			throw new Error('Validation error: description is required');
-		}
-		if (!this.details.category) {
-			throw new Error('Validation error: category is required');
-		}
-		if (!this.details.location) {
-			throw new Error('Validation error: location is required');
-		}
-	}
-
-	private calculateStartDate(): string {
-		const tomorrow = new Date(Date.now() + 86400000);
-		return tomorrow.toISOString().split('T')[0];
-	}
-
-	private calculateEndDate(): string {
-		const endDate = new Date(Date.now() + 86400000 * 30);
-		return endDate.toISOString().split('T')[0];
-	}
-
-	toString = () => `creates listing \"${this.details.title}\" (DOM)`;
 }

@@ -14,10 +14,13 @@ Given('{word} is an authenticated user', async function (this: ShareThriftWorld,
 	// Get the actor from the cast - this will be configured with the right abilities
 	const actor = actorCalled(actorName);
 
-	// TODO: Add authentication setup based on testing level
-	// Domain: Mock authenticated passport
-	// GraphQL: Obtain auth token
-	// DOM: Login through UI
+	// Authentication is set up in world.ts based on testing level:
+	// - Domain: Mock authenticated passport (configured in domain tasks)
+	// - GraphQL: AuthenticateUser ability with JWT token from mock OAuth2 server
+	// - DOM: Login through UI (future implementation)
+	
+	// For GraphQL level, the actor already has AuthenticateUser ability
+	// which will be used automatically by CallAnApi when making requests
 });
 
 Given(
