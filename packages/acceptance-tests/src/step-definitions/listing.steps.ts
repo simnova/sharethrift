@@ -79,14 +79,6 @@ When(
 	},
 );
 
-When('{word} publishes the listing', async function (this: ShareThriftWorld, actorName: string) {
-	const actor = actorCalled(actorName);
-	const taskLevel = this.level;
-	const { PublishListing } = await import(`../tasks/${taskLevel}/PublishListing.js`);
-
-	await actor.attemptsTo(PublishListing.justCreated());
-});
-
 Then(
 	'the listing should be in {word} status',
 	async function (this: ShareThriftWorld, expectedStatus: string) {

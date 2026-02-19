@@ -6,8 +6,9 @@
 	"type": "module",
 	"scripts": {
 		"test:domain": "cucumber-js --world-parameters '{\"tasks\":\"domain\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/support/**/*.ts' --format json:./reports/cucumber-report-domain.json",
-		"test:graphql": "cucumber-js --world-parameters '{\"tasks\":\"graphql\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/support/**/*.ts' --format json:./reports/cucumber-report-graphql.json",
-        "test:fast": "pnpm run test:domain && pnpm run test:graphql",
+		"test:session": "cucumber-js --world-parameters '{\"tasks\":\"session\",\"session\":\"domain\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/support/**/*.ts' --format json:./reports/cucumber-report-session.json",
+		"test:session:http": "cucumber-js --world-parameters '{\"tasks\":\"session\",\"session\":\"http\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/support/**/*.ts' --format json:./reports/cucumber-report-session-http.json",
+		"test:fast": "pnpm run test:domain && pnpm run test:session",
 		"test:serenity": "pnpm run test:all && pnpm run test:serenity:report",
 		"test:serenity:report": "serenity-bdd run --features ./reports",
 		"clean": "rimraf dist reports target"
@@ -25,11 +26,14 @@
 		"graphql-tag": "^2.12.6"
 	},
 	"devDependencies": {
+		"@apollo/server": "^5.4.0",
 		"@cellix/typescript-config": "workspace:*",
 		"@playwright/test": "^1.58.2",
 		"@sthrift/domain": "workspace:*",
 		"@sthrift/graphql": "workspace:*",
 		"@types/node": "^24.6.1",
+		"graphql-depth-limit": "^1.1.0",
+		"graphql-middleware": "^6.1.35",
 		"rimraf": "^6.0.1",
 		"tsx": "^4.20.3",
 		"typescript": "^5.4.5"

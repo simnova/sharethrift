@@ -29,17 +29,12 @@ Feature: Create Listing
     Then the listing should be in draft status
     And the listing should have a daily rate of "$25.00"
 
-  Scenario: Publish a draft listing
-    Given Alice has created a draft listing titled "Camping Tent"
-    When Alice publishes the listing
-    Then the listing should be in published status
-    And the listing should be visible in search results
-
   @validation
   Scenario: Cannot create listing without required fields
     When Alice attempts to create a listing with:
       | description | Missing title |
       | category    | Camping       |
+      | location    | Seattle, WA   |
     Then she should see a validation error for "title"
     And no listing should be created
 

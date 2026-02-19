@@ -427,6 +427,9 @@ importers:
         specifier: ^2.12.6
         version: 2.12.6(graphql@16.12.0)
     devDependencies:
+      '@apollo/server':
+        specifier: ^5.4.0
+        version: 5.4.0(graphql@16.12.0)
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../cellix/typescript-config
@@ -442,6 +445,12 @@ importers:
       '@types/node':
         specifier: ^24.10.7
         version: 24.10.9
+      graphql-depth-limit:
+        specifier: ^1.1.0
+        version: 1.1.0(graphql@16.12.0)
+      graphql-middleware:
+        specifier: ^6.1.35
+        version: 6.1.35(graphql@16.12.0)
       rimraf:
         specifier: ^6.0.1
         version: 6.1.2
@@ -449,7 +458,7 @@ importers:
         specifier: ^4.20.3
         version: 4.21.0
       typescript:
-        specifier: 'catalog:'
+        specifier: ^5.4.5
         version: 5.9.3
 
   packages/arch-unit-tests:
