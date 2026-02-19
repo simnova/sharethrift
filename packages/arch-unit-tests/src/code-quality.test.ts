@@ -6,13 +6,13 @@ import { join } from 'node:path';
 const tsconfigPath = join(__dirname, '..', 'tsconfig.json');
 
 describe('Code Quality', () => {
-	describe('Domain (ocom/domain)', () => {
+	describe('Domain (sthrift/domain)', () => {
 		it.skip('should have reasonable cohesion (LCOM96b)', async () => {
 			// Some small DTO/record-like classes (e.g. violation-ticket v1 models) are
 			// intentionally simple and report high LCOM; relax threshold here to avoid
 			// noisy failures. If you want stricter checks, consider whitelisting folders.
 			const rule = metrics(tsconfigPath)
-				.inPath('../ocom/domain/src/**')
+				.inPath('../sthrift/domain/src/**')
     				.lcom()
     				.lcom96b()
     				.shouldBeBelowOrEqual(1.0);
@@ -22,7 +22,7 @@ describe('Code Quality', () => {
 
 		it.skip('should avoid excessive methods per class', async () => {
 			const rule = metrics(tsconfigPath)
-				.inPath('../ocom/domain/src/**')
+				.inPath('../sthrift/domain/src/**')
 				.count()
 				.methodCount()
 				.shouldBeBelow(30);
@@ -37,8 +37,8 @@ describe('Code Quality', () => {
 			// monorepo layouts.
 			const rule = metrics(tsconfigPath)
 				.inPath('../cellix/ui-core/src/**')
-				.inPath('../ocom/ui-components/src/**')
-				.inPath('../../apps/ui-community/src/**')
+				.inPath('../sthrift/ui-components/src/**')
+				.inPath('../../apps/ui-sharethrift/src/**')
 				.lcom()
 				.lcom96b()
 				.shouldBeBelow(0.85);
@@ -50,8 +50,8 @@ describe('Code Quality', () => {
 		it.skip('should limit imports and surface area in UI code', async () => {
 			const rule = metrics(tsconfigPath)
 				.inPath('../cellix/ui-core/src/**')
-				.inPath('../ocom/ui-components/src/**')
-				.inPath('../../apps/ui-community/src/**')
+				.inPath('../sthrift/ui-components/src/**')
+				.inPath('../../apps/ui-sharethrift/src/**')
 				.count()
 				.imports()
 				.shouldBeBelowOrEqual(20);
@@ -63,7 +63,7 @@ describe('Code Quality', () => {
 	describe('Service / Infrastructure', () => {
 		it.skip('should have reasonable cohesion (LCOM96b)', async () => {
 			const rule = metrics(tsconfigPath)
-				.inPath('../ocom/service-*/src/**')
+				.inPath('../sthrift/service-*/src/**')
 				.lcom()
 				.lcom96b()
 				.shouldBeBelow(0.95);
@@ -73,7 +73,7 @@ describe('Code Quality', () => {
 
 		it.skip('should limit imports per file for services', async () => {
 			const rule = metrics(tsconfigPath)
-				.inPath('../ocom/service-*/src/**')
+				.inPath('../sthrift/service-*/src/**')
 				.count()
 				.imports()
 				.shouldBeBelowOrEqual(25);

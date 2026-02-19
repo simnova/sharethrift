@@ -1,6 +1,6 @@
 import type React from 'react';
 import { MockedProvider } from '@apollo/client/testing/react';
-import { reservationStoryMocks } from '../../components/layouts/home/my-reservations/utils/reservation-story-mocks.ts';
+import { reservationStoryMocks } from '../../components/layouts/app/pages/my-reservations/utils/reservation-story-mocks.ts';
 
 /**
  * Default action handlers for reservation stories

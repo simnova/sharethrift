@@ -1,6 +1,6 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Passport } from '../../passport.ts';
-import type { ReservationRequest } from './reservation-request.ts';
+import type { ReservationRequest } from './reservation-request.aggregate.ts';
 import type { ReservationRequestRepository } from './reservation-request.repository.ts';
 import type { ReservationRequestProps } from './reservation-request.entity.ts';
 

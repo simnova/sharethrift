@@ -1,4 +1,4 @@
-export { PersonalUser } from './personal-user.ts';
+export { PersonalUser } from './personal-user.aggregate.ts';
 export type {
 	PersonalUserProps,
 	PersonalUserEntityReference,

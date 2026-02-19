@@ -150,7 +150,6 @@ async function checkAppChanges(appConfig, affectedPackages) {
 		return true;
 	}
 }
-
 // Main function to detect affected packages and map to deployment groups
 async function detectChanges() {
 	const forceDeployVars = parseForceDeployFile();
@@ -257,7 +256,7 @@ async function detectChanges() {
 	try {
 		await detectChanges();
 	} catch (error) {
-		console.error('Error in detect-changes.cjs:', error.message);
+		console.error('Error in detect-changes.js:', error.message);
 		process.exit(1);
 	}
 })();

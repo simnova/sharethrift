@@ -1,15 +1,19 @@
-import { fileURLToPath } from 'node:url';
-import { setupEnvironment } from './setup-environment.js';
 import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
-import express from 'express';
-import https from 'node:https';
 import fs from 'node:fs';
+import https from 'node:https';
 import path from 'node:path';
-import { exportJWK, generateKeyPair, SignJWT, type JWK } from 'jose';
-import { exportPKCS8 } from 'jose';
+import { fileURLToPath } from 'node:url';
+import express from 'express';
+import {
+	exportJWK,
+	exportPKCS8,
+	generateKeyPair,
+	type JWK,
+	SignJWT,
+} from 'jose';
+import { setupEnvironment } from './setup-environment.js';
 
 setupEnvironment();
-
 
 const app = express();
 app.disable('x-powered-by');
@@ -41,9 +45,10 @@ const redirectUriToAudience = new Map([
 	['https://sharethrift.localhost:3000/auth-redirect-user', 'user-portal'],
 	['https://sharethrift.localhost:3000/auth-redirect-admin', 'admin-portal'],
 ]);
-// Deprecated: kept for backwards compatibility
+// Deprecated: kept for backwards compatibility. Uses process.env's index signature
+// (string | undefined) and falls back to a default redirect URI when not set.
 const allowedRedirectUri =
-	// biome-ignore lint:useLiteralKeys
+// biome-ignore lint: TypeScript requires bracket notation for index signatures
 	process.env['ALLOWED_REDIRECT_URI'] ||
 	'http://localhost:3000/auth-redirect-user';
 // Type for user profile used in token claims
@@ -137,8 +142,14 @@ async function buildTokenResponse(
 // Main async startup
 async function main() {
 	// Always resolve .certs from monorepo root (works regardless of script location or cwd)
-	const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
-	const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
+	const projectRoot = path.resolve(
+		path.dirname(fileURLToPath(import.meta.url)),
+		'../../../../',
+	);
+	const certKeyPath = path.join(
+		projectRoot,
+		'.certs/sharethrift.localhost-key.pem',
+	);
 	const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
 	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
 
@@ -186,7 +197,10 @@ async function main() {
 		const { tid, code } = req.body;
 
 		if (typeof code !== 'string') {
-			res.status(400).json({ error: 'invalid_request', error_description: 'code must be a string' });
+			res.status(400).json({
+				error: 'invalid_request',
+				error_description: 'code must be a string',
+			});
 			return;
 		}
 
@@ -209,19 +223,19 @@ async function main() {
 				console.error('Failed to decode redirect_uri from code:', e);
 			}
 		}
-        
+
+		const { Admin_Email, Email, Admin_Given_Name, Given_Name, Admin_Family_Name, Family_Name } = process.env;
 
 		// Use different credentials based on portal type
 		const email = isAdminPortal
-			? process.env['Admin_Email'] || process.env['Email'] || ''
-			: process.env['Email'] || '';
+			? Admin_Email || Email || ''
+			: Email || '';
 		const given_name = isAdminPortal
-			? process.env['Admin_Given_Name'] || process.env['Given_Name'] || ''
-			: process.env['Given_Name'] || '';
+			? Admin_Given_Name || Given_Name || ''
+			: Given_Name || '';
 		const family_name = isAdminPortal
-			? process.env['Admin_Family_Name'] || process.env['Family_Name'] || ''
-			: process.env['Family_Name'] || '';
-
+			? Admin_Family_Name || Family_Name || ''
+			: Family_Name || '';
 		const profile: TokenProfile = {
 			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),
@@ -267,10 +281,11 @@ async function main() {
 		const requestedRedirectUri = redirect_uri as string;
 
 		const normalizedRequested = normalizeUrl(requestedRedirectUri);
-		
-		const isAllowed = Array.from(allowedRedirectUris).some(
-			allowedUri => normalizeUrl(allowedUri) === normalizedRequested
-		) || normalizeUrl(allowedRedirectUri) === normalizedRequested;
+
+		const isAllowed =
+			Array.from(allowedRedirectUris).some(
+				(allowedUri) => normalizeUrl(allowedUri) === normalizedRequested,
+			) || normalizeUrl(allowedRedirectUri) === normalizedRequested;
 
 		if (!isAllowed) {
 			res.status(400).send('Invalid redirect_uri');
@@ -279,14 +294,14 @@ async function main() {
 
 		// Generate authorization code
 		const code = `mock-auth-code-${Buffer.from(requestedRedirectUri).toString('base64')}`;
-		
+
 		try {
 			const redirectUrl = new URL(requestedRedirectUri);
 			redirectUrl.searchParams.set('code', code);
 			if (state) {
 				redirectUrl.searchParams.set('state', state as string);
 			}
-			
+
 			// Send 302 redirect with Location header explicitly set to allowlisted URL
 			const finalUrl = redirectUrl.toString();
 			res.setHeader('Location', finalUrl);
@@ -304,25 +319,21 @@ async function main() {
 			cert: fs.readFileSync(certPath),
 		};
 
-		https.createServer(httpsOptions, app).listen(port, 'mock-auth.sharethrift.localhost', () => {
-			// eslint-disable-next-line no-console
-			console.log(
-				`Mock OAuth2 server running on ${BASE_URL}`,
-			);
-			console.log(
-				`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`,
-			);
-		});
+		https
+			.createServer(httpsOptions, app)
+			.listen(port, 'mock-auth.sharethrift.localhost', () => {
+				// eslint-disable-next-line no-console
+				console.log(`Mock OAuth2 server running on ${BASE_URL}`);
+				console.log(
+					`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`,
+				);
+			});
 	} else {
 		// Fallback to HTTP when certs don't exist (CI/CD)
 		app.listen(port, () => {
 			// eslint-disable-next-line no-console
-			console.log(
-				`Mock OAuth2 server running on ${BASE_URL} (no certs found)`,
-			);
-			console.log(
-				`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`,
-			);
+			console.log(`Mock OAuth2 server running on ${BASE_URL} (no certs found)`);
+			console.log(`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`);
 		});
 	}
 }

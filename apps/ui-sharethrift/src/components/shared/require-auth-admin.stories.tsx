@@ -8,7 +8,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from 'react-oidc-context';
 import { RequireAuthAdmin } from './require-auth-admin.tsx';
 import { UseUserIsAdminDocument } from '../../generated.tsx';
-import { createMockAuth } from '../../test/utils/mockAuth.ts';
+import { createMockAuth } from '../../test/utils/mock-auth.ts';
 import { vi } from 'vitest';
 
 const meta: Meta<typeof RequireAuthAdmin> = {

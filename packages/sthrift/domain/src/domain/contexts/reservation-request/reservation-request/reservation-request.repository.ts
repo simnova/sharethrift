@@ -1,5 +1,5 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { ReservationRequest } from './reservation-request.ts';
+import type { ReservationRequest } from './reservation-request.aggregate.ts';
 import type { ItemListingEntityReference } from '../../listing/item/item-listing.entity.ts';
 import type { UserEntityReference } from '../../user/index.ts';
 import type { ReservationRequestProps } from './reservation-request.entity.ts';

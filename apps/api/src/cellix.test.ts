@@ -7,6 +7,7 @@ import api, { type Tracer } from '@opentelemetry/api';
 import { expect, type MockedFunction, vi } from 'vitest';
 import { Cellix } from './cellix.ts';
 
+
 // Mock Azure Functions
 const test = { for: describeFeature };
 

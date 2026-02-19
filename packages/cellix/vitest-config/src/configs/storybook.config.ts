@@ -28,6 +28,10 @@ export function createStorybookVitestConfig(
 		resolve: {
 			conditions: ['vitest', 'development', 'import', 'default'],
 		},
+		// Pre-bundle dependencies to avoid dynamic import issues in tests
+		optimizeDeps: {
+			include: ['react', 'react-dom', 'react-router-dom'],
+		},
 		// Explicitly tell Vite's file watcher to ignore dist and coverage directories
 		// This prevents Vite from opening files in these directories during scan/watch
 		server: {

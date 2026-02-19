@@ -17,6 +17,7 @@ export interface ItemListingProps extends DomainSeedwork.DomainEntityProps {
 	sharingHistory?: string[]; // Array of reservation/sharing IDs
 	reports?: number;
 	images?: string[]; // Array of image URLs
+	// Note: Reserved status is calculated dynamically from ReservationRequest aggregates, not stored as state
 	listingType: string;
     expiresAt?: Date | undefined; // TTL field for automatic expiration
 }
