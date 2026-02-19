@@ -28,7 +28,7 @@ Feature: Reservation value objects
     Then the value should be "Accepted"
 
   Scenario: Creating a ReservationRequestStateValue with an invalid state
-    When I try to create a ReservationRequestStateValue with "Pending"
+    When I try to create a ReservationRequestStateValue with "InvalidState"
     Then an error should be thrown indicating the state is invalid
 
   Scenario: Creating a ReservationRequestStateValue with null

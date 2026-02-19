@@ -48,6 +48,15 @@ ignore:
         reason: 'Transitive dependency in express, @docusaurus/core, @apollo/server, apollo-link-rest; not exploitable in current usage.'
         expires: '2026-01-19T00:00:00.000Z'
         created: '2026-01-05T09:39:00.000Z'
+  'SNYK-JS-AJV-15274295':
+    - '* > ajv@8.17.1':
+        reason: 'Transitive dependency in Docusaurus; ReDoS vulnerability not exploitable in static site generation context'
+        expires: '2026-08-13T00:00:00.000Z'
+        created: '2026-02-13T00:00:00.000Z'
+    - '* > ajv@6.12.6':
+        reason: 'Transitive dependency in Docusaurus; ReDoS vulnerability not exploitable in static site generation context'
+        expires: '2026-08-13T00:00:00.000Z'
+        created: '2026-02-13T00:00:00.000Z'
 
 # Snyk Code exclusions for local development tooling
 exclude:
