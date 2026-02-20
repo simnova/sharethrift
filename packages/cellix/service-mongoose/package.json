@@ -1,5 +1,5 @@
 {
-	"name": "@sthrift/service-mongoose",
+	"name": "@cellix/service-mongoose",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",

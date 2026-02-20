@@ -22,7 +22,7 @@
 	"dependencies": {
 		"@sthrift/persistence": "workspace:*",
 		"@cellix/payment-service": "workspace:*",
-		"@sthrift/service-token-validation": "workspace:*",
+		"@cellix/service-token-validation": "workspace:*",
 		"@cellix/messaging-service": "workspace:*"
 	},
 	"devDependencies": {

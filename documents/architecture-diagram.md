@@ -11,8 +11,8 @@ graph TD
   %% Infrastructure Services (split for clarity, spaced for linearity)
 
   subgraph Payment Infra
-    sthrft-service-cybersource["@sthrift/payment-service-cybersource"]
-    sthrft-service-mock-cybersource["@sthrift/payment-service-mock"]
+    cellix-service-cybersource["@cellix/payment-service-cybersource"]
+    cellix-service-mock-cybersource["@cellix/payment-service-mock"]
   end
 
   %% vertical space
@@ -25,7 +25,7 @@ graph TD
   %% vertical space
 
   subgraph Mailing Infra
-    sthrft-service-sendgrid["@sthrift/mail-service-sendgrid"]
+    cellix-service-sendgrid["@cellix/service-sendgrid"]
     sthrft-mock-service-sendgrid["@sthrift/mail-service-mock"]
   end
 
@@ -42,7 +42,7 @@ graph TD
 
   %% Blob Infra above Persistence
   subgraph Blob Infra
-    sthrft-service-blob["@sthrift/service-blob-storage"]
+    cellix-service-blob["@cellix/service-blob-storage"]
   end
 
   %% extra vertical space
@@ -59,9 +59,9 @@ graph TD
   %% API Services (below app)
   subgraph Api Services
     sthrft-graphql["@sthrift/graphql"]
-    sthrft-service-otel["@sthrift/service-otel"]
+    cellix-service-otel["@cellix/service-otel"]
     sthrft-rest["@sthrift/rest"]
-    sthrft-service-mongoose["@sthrift/service-mongoose"]
+    cellix-service-mongoose["@cellix/service-mongoose"]
   end
 
   %% API Entrypoint (bottom)

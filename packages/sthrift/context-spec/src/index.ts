@@ -1,5 +1,5 @@
 import type { DataSourcesFactory } from '@sthrift/persistence';
-import type { TokenValidation } from '@sthrift/service-token-validation';
+import type { TokenValidation } from '@cellix/service-token-validation';
 import type { PaymentService } from '@cellix/payment-service';
 import type { MessagingService } from '@cellix/messaging-service';
 

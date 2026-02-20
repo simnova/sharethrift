@@ -1,8 +1,7 @@
 {
-	"name": "@sthrift/payment-service-mock",
+	"name": "@cellix/service-blob-storage",
 	"version": "1.0.0",
-	"main": "dist/src/index.js",
-	"types": "dist/src/index.d.ts",
+	"private": true,
 	"type": "module",
 	"files": [
 		"dist"
@@ -14,15 +13,21 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json"
+		"prebuild": "biome lint",
+		"build": "tsc --build",
+		"watch": "tsc --watch",
+		"lint": "biome lint",
+		"clean": "rimraf dist"
 	},
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
-		"@cellix/payment-service": "workspace:*",
-		"axios": "^1.13.5"
+		"@sthrift/domain": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
+		"rimraf": "^6.0.1",
 		"typescript": "^5.8.3"
-	}
+	},
+	"license": "MIT"
 }

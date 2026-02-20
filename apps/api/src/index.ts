@@ -9,12 +9,12 @@ import {
 } from '@sthrift/application-services';
 import { RegisterEventHandlers } from '@sthrift/event-handler';
 
-import { ServiceMongoose } from '@sthrift/service-mongoose';
+import { ServiceMongoose } from '@cellix/service-mongoose';
 import * as MongooseConfig from './service-config/mongoose/index.ts';
 
-import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
+import { ServiceBlobStorage } from '@cellix/service-blob-storage';
 
-import { ServiceTokenValidation } from '@sthrift/service-token-validation';
+import { ServiceTokenValidation } from '@cellix/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
 import type { MessagingService } from '@cellix/messaging-service';
@@ -25,8 +25,8 @@ import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 
 import type {PaymentService} from '@cellix/payment-service';
-import { PaymentServiceMock } from '@sthrift/payment-service-mock';
-import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
+import { PaymentServiceMock } from '@cellix/payment-service-mock';
+import { PaymentServiceCybersource } from '@cellix/payment-service-cybersource';
 
 
 const { NODE_ENV } = process.env;

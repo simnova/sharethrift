@@ -1,5 +1,5 @@
 {
-	"name": "@sthrift/service-blob-storage",
+	"name": "@cellix/service-token-validation",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
@@ -16,18 +16,19 @@
 		"prebuild": "biome lint",
 		"build": "tsc --build",
 		"watch": "tsc --watch",
+		"test:watch": "vitest",
 		"lint": "biome lint",
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@cellix/api-services-spec": "workspace:*",
-		"@sthrift/domain": "workspace:*"
+		"jose": "^5.9.6",
+		"@cellix/api-services-spec": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
-		"rimraf": "^6.0.1",
-		"typescript": "^5.8.3"
+		"typescript": "^5.8.3",
+		"rimraf": "^6.0.1"
 	},
 	"license": "MIT"
 }

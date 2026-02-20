@@ -7,7 +7,7 @@
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"],
 	"references": [
-		{ "path": "../../cellix/api-services-spec" },
-		{ "path": "../domain" }
+		{ "path": "../api-services-spec" },
+		{ "path": "../../sthrift/domain" }
 	]
 }

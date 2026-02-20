@@ -82,7 +82,7 @@ Monorepo uses npm workspaces with these core packages:
 - `@sthrift/api` - Main Azure Functions application
 - `@sthrift/domain` - Domain models and business logic
 - `@sthrift/graphql` - GraphQL implementation
-- `@sthrift/service-mongoose` - MongoDB data layer
+- `@cellix/service-mongoose` - MongoDB data layer
 - `@cellix/*` - Shared seedwork libraries
 
 ### External Integrations

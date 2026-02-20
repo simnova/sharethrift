@@ -68,7 +68,7 @@ Cellix.initializeServices<ApiContextSpec>((serviceRegistry) => {
 ## Key Dependencies
 - `@azure/functions` - Azure Functions v4 runtime
 - `@azure/identity` - Azure authentication
-- OpenTelemetry integration via `@sthrift/service-otel`
+- OpenTelemetry integration via `@cellix/service-otel`
 - Service interfaces from `@cellix/api-services-spec`
 
 ## Development Notes
