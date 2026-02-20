@@ -235,8 +235,10 @@ stages:
           fi
 
           # Audit pnpm packages for vulnerabilities
-          echo "Running pnpm audit for vulnerabilities..."
-          pnpm audit --audit-level=high --prod
+          # echo "Running pnpm audit for vulnerabilities..."
+          # pnpm run audit
+          echo "Skipping pnpm audit vulnerabities until registry issues are resolved"
+          # https://github.com/pnpm/pnpm/issues/10649
 
           # Use Turbo's built-in --affected flag for accurate change detection
           # Split coverage collection: Node tests first, then Storybook tests separately
