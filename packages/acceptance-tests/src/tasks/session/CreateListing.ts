@@ -26,12 +26,12 @@ export interface ListingDetails {
  *
  * This task uses the Session abstraction, which can be either:
  * - DomainSession (direct domain calls, no network) - fast tests
- * - HttpSession (real GraphQL HTTP calls) - full integration tests
+ * - GraphQLSession (real GraphQL HTTP calls) - full integration tests
  *
  * The Session implementation is configured via world parameters.
  * This allows the same task to run with different assemblies:
  * - session tasks + DomainSession = fastest tests (domain layer coverage)
- * - session tasks + HttpSession = slower tests (http + domain layer coverage)
+ * - session tasks + GraphQLSession = slower tests (graphql + domain layer coverage)
  *
  * @see https://github.com/cucumber/screenplay.js
  */
@@ -45,7 +45,7 @@ export class CreateListing extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		// Get the Session ability (could be DomainSession or HttpSession)
+		// Get the Session ability (could be DomainSession or GraphQLSession)
 		const session = getSession(actor);
 
 		// Create the listing via Session interface

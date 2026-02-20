@@ -7,7 +7,7 @@
 	"scripts": {
 		"test:domain": "cucumber-js --world-parameters '{\"tasks\":\"domain\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/support/**/*.ts' --format json:./reports/cucumber-report-domain.json",
 		"test:session": "cucumber-js --world-parameters '{\"tasks\":\"session\",\"session\":\"domain\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/support/**/*.ts' --format json:./reports/cucumber-report-session.json",
-		"test:session:http": "cucumber-js --world-parameters '{\"tasks\":\"session\",\"session\":\"http\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/support/**/*.ts' --format json:./reports/cucumber-report-session-http.json",
+		"test:session:graphql": "cucumber-js --world-parameters '{\"tasks\":\"session\",\"session\":\"graphql\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/support/**/*.ts' --format json:./reports/cucumber-report-session-graphql.json",
 		"test:fast": "pnpm run test:domain && pnpm run test:session",
 		"test:serenity": "pnpm run test:all && pnpm run test:serenity:report",
 		"test:serenity:report": "serenity-bdd run --features ./reports",

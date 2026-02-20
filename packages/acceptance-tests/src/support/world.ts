@@ -11,7 +11,7 @@ import { BrowseTheWebWithPlaywright, PlaywrightOptions } from '@serenity-js/play
 import { Browser, chromium } from '@playwright/test';
 import { CreateListingAbility } from '../abilities/CreateListingAbility.js';
 import { DomainSession } from '../abilities/DomainSession.js';
-import { HttpSession } from '../abilities/HttpSession.js';
+import { GraphQLSession } from '../abilities/GraphQLSession.js';
 import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
 
@@ -63,7 +63,7 @@ TakeNotes.using(Notepad.empty()),
 
 			case 'session': {
 				const session = this.sessionType === 'http'
-					? HttpSession.at(this.apiUrl)
+					? GraphQLSession.at(this.apiUrl)
 					: DomainSession.withDirectDomainAccess();
 
 				return actor.whoCan(
@@ -80,7 +80,7 @@ TakeNotes.using(Notepad.empty()),
 				}
 
 				const session = this.sessionType === 'http'
-					? HttpSession.at(this.apiUrl)
+					? GraphQLSession.at(this.apiUrl)
 					: DomainSession.withDirectDomainAccess();
 
 				return actor.whoCan(

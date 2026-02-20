@@ -15,13 +15,13 @@ const MAX_QUERY_DEPTH = 10;
  * Test server using REAL GraphQL schema and resolvers from @sthrift/graphql.
  * 
  * This is your actual Apollo Server running in-process for tests.
- * HttpSession tests will make real HTTP calls to this server, testing:
+ * GraphQLSession tests will make real GraphQL calls to this server, testing:
  * - Real GraphQL resolvers
  * - Domain layer business logic
  * - Full integration (minus database - uses in-memory/mock services)
  * 
  * Following Screenplay.js pattern:
- * "HttpSession makes real HTTP calls to test the full stack"
+ * "GraphQLSession makes real GraphQL calls to test the full stack"
  */
 export class TestServer {
 	private server: ApolloServer<GraphContext> | null = null;

@@ -45,20 +45,6 @@
 			"inputs": ["reports/cucumber-report*.json"],
 			"outputs": ["target/**"]
 		},
-		"test:domain": {
-			"dependsOn": ["^build"],
-			"inputs": ["src/**", "features/**", "cucumber.js"],
-			"outputs": ["reports/cucumber-report-domain.json"]
-		},
-		"test:graphql": {
-			"dependsOn": ["^build"],
-			"inputs": ["src/**", "features/**", "cucumber.js"],
-			"outputs": ["reports/cucumber-report-graphql.json"]
-		},
-		"test:graphql:with-servers": {
-			"cache": false,
-			"persistent": true
-		},
 		"server:oauth": {
 			"cache": false,
 			"persistent": true
@@ -71,11 +57,6 @@
 			"cache": false,
 			"persistent": true,
 			"env": ["DB_CONNECTION_STRING"]
-		},
-		"test:dom": {
-			"dependsOn": ["^build"],
-			"inputs": ["src/**", "features/**", "cucumber.js"],
-			"outputs": ["reports/cucumber-report-dom.json"]
 		},
 		"storybook": {
 			"dependsOn": ["^build", "//#gen"],
