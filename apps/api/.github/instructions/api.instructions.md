@@ -2,10 +2,10 @@
 applyTo: "apps/api/**/*.ts"
 ---
 
-# @sthrift/api Package Instructions
+# @app/api Package Instructions
 
 ## Purpose
-The `@sthrift/api` package is the main Azure Functions application entry point that orchestrates the entire CellixJS serverless API. It acts as the composition root, configuring dependency injection, service initialization, and Azure Functions handler registration.
+The `@app/api` package is the main Azure Functions application entry point that orchestrates the entire CellixJS serverless API. It acts as the composition root, configuring dependency injection, service initialization, and Azure Functions handler registration.
 
 ## Core Architecture
 
