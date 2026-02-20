@@ -123,16 +123,14 @@ Then(
 Then(
 	'{word} should see a validation error for {string}',
 	async function (this: ShareThriftWorld, actorName: string, fieldName: string) {
-		const error = (this as any).lastError;
-		if (!error) {
-			throw new Error('Expected a validation error but none was thrown');
-		}
+		const actor = actorCalled(actorName);
 
-		const errorMessage = error.message || String(error);
-		if (!errorMessage.toLowerCase().includes(fieldName.toLowerCase())) {
-			throw new Error(
-				`Expected error message to mention "${fieldName}", but got: ${errorMessage}`,
-			);
+		// Try to get error from FormValidationError question
+		const { FormValidationError } = await import('../questions/FormValidationError.js');
+		const error = await actor.answer(FormValidationError.forField(fieldName));
+
+		if (!error) {
+			throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
 		}
 	},
 );
@@ -140,14 +138,14 @@ Then(
 Then(
 	'{word} should see a validation error {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedMessage: string) {
-		const error = (this as any).lastError;
-		if (!error) {
-			throw new Error('Expected a validation error but none was thrown');
-		}
+		const actor = actorCalled(actorName);
 
-		const errorMessage = error.message || String(error);
-		if (!errorMessage.includes(expectedMessage)) {
-			throw new Error(`Expected error message "${expectedMessage}", but got: ${errorMessage}`);
+		// Try to get error from FormValidationError question
+		const { FormValidationError } = await import('../questions/FormValidationError.js');
+		const error = await actor.answer(FormValidationError.displayed());
+
+		if (!error || !error.includes(expectedMessage)) {
+			throw new Error(`Expected error message "${expectedMessage}", but got: "${error || 'none'}"`);
 		}
 	},
 );
