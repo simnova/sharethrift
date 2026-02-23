@@ -1,8 +1,6 @@
 import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
 import fs from 'node:fs';
 import https from 'node:https';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import express from 'express';
 import {
 	exportJWK,
@@ -17,7 +15,24 @@ setupEnvironment();
 
 const app = express();
 app.disable('x-powered-by');
-const port = 4000;
+
+export type OAuth2Config = {
+    port: number;
+    baseUrl: string;
+    host: string;
+    allowedRedirectUris: Set<string>;
+    allowedRedirectUri: string;
+    redirectUriToAudience: Map<string, string>;
+    certKeyPath?: string;
+    hasCerts?: boolean;
+    certPath?: string;
+    env?: NodeJS.ProcessEnv;
+    getUserProfile: (isAdminPortal: boolean) => {
+        email: string;
+        given_name: string;
+        family_name: string;
+    };
+};
 
 function normalizeUrl(urlString: string): string {
 	try {
@@ -31,26 +46,6 @@ function normalizeUrl(urlString: string): string {
 		return urlString;
 	}
 }
-
-const allowedRedirectUris = new Set([
-	'http://localhost:3000/auth-redirect-user',
-	'http://localhost:3000/auth-redirect-admin',
-	'https://sharethrift.localhost:3000/auth-redirect-user',
-	'https://sharethrift.localhost:3000/auth-redirect-admin',
-]);
-// Map redirect URIs to their corresponding audience identifiers
-const redirectUriToAudience = new Map([
-	['http://localhost:3000/auth-redirect-user', 'user-portal'],
-	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
-	['https://sharethrift.localhost:3000/auth-redirect-user', 'user-portal'],
-	['https://sharethrift.localhost:3000/auth-redirect-admin', 'admin-portal'],
-]);
-// Deprecated: kept for backwards compatibility. Uses process.env's index signature
-// (string | undefined) and falls back to a default redirect URI when not set.
-const allowedRedirectUri =
-// biome-ignore lint: TypeScript requires bracket notation for index signatures
-	process.env['ALLOWED_REDIRECT_URI'] ||
-	'http://localhost:3000/auth-redirect-user';
 // Type for user profile used in token claims
 interface TokenProfile {
 	aud: string;
@@ -140,23 +135,7 @@ async function buildTokenResponse(
 }
 
 // Main async startup
-async function main() {
-	// Always resolve .certs from monorepo root (works regardless of script location or cwd)
-	const projectRoot = path.resolve(
-		path.dirname(fileURLToPath(import.meta.url)),
-		'../../../../',
-	);
-	const certKeyPath = path.join(
-		projectRoot,
-		'.certs/sharethrift.localhost-key.pem',
-	);
-	const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
-	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
-
-	// Set BASE_URL based on whether we have certificates
-	const BASE_URL = hasCerts
-		? `https://mock-auth.sharethrift.localhost:${port}`
-		: `http://localhost:${port}`;
+async function main(config: OAuth2Config) {
 
 	// Generate signing keypair with jose
 	const { publicKey, privateKey } = await generateKeyPair('RS256');
@@ -214,9 +193,9 @@ async function main() {
 				const decodedRedirectUri = Buffer.from(base64Part, 'base64').toString(
 					'utf-8',
 				);
-				if (allowedRedirectUris.has(decodedRedirectUri)) {
+				if (config.allowedRedirectUris.has(decodedRedirectUri)) {
 					// Map redirect URI to proper audience identifier
-					aud = redirectUriToAudience.get(decodedRedirectUri) || 'user-portal';
+					aud = config.redirectUriToAudience.get(decodedRedirectUri) || 'user-portal';
 					isAdminPortal = aud === 'admin-portal';
 				}
 			} catch (e) {
@@ -224,22 +203,12 @@ async function main() {
 			}
 		}
 
-		const { Admin_Email, Email, Admin_Given_Name, Given_Name, Admin_Family_Name, Family_Name } = process.env;
-
-		// Use different credentials based on portal type
-		const email = isAdminPortal
-			? Admin_Email || Email || ''
-			: Email || '';
-		const given_name = isAdminPortal
-			? Admin_Given_Name || Given_Name || ''
-			: Given_Name || '';
-		const family_name = isAdminPortal
-			? Admin_Family_Name || Family_Name || ''
-			: Family_Name || '';
+		const userProfile = config.getUserProfile(isAdminPortal);
+		const { email, given_name, family_name } = userProfile;
 		const profile: TokenProfile = {
 			aud: aud, // Now using proper audience identifier
 			sub: crypto.randomUUID(),
-			iss: BASE_URL,
+			iss: config.baseUrl,
 			email,
 			given_name,
 			family_name,
@@ -249,18 +218,18 @@ async function main() {
 			profile,
 			keyObject,
 			publicJwk,
-			BASE_URL,
+			config.baseUrl,
 		);
 		res.json(tokenResponse);
 	});
 
 	app.get('/.well-known/openid-configuration', (_req, res) => {
 		res.json({
-			issuer: BASE_URL,
-			authorization_endpoint: `${BASE_URL}/authorize`,
-			token_endpoint: `${BASE_URL}/token`,
-			userinfo_endpoint: `${BASE_URL}/userinfo`,
-			jwks_uri: `${BASE_URL}/.well-known/jwks.json`,
+			issuer: config.baseUrl,
+			authorization_endpoint: `${config.baseUrl}/authorize`,
+			token_endpoint: `${config.baseUrl}/token`,
+			userinfo_endpoint: `${config.baseUrl}/userinfo`,
+			jwks_uri: `${config.baseUrl}/.well-known/jwks.json`,
 			response_types_supported: ['code', 'token'],
 			subject_types_supported: ['public'],
 			id_token_signing_alg_values_supported: ['RS256'],
@@ -283,9 +252,9 @@ async function main() {
 		const normalizedRequested = normalizeUrl(requestedRedirectUri);
 
 		const isAllowed =
-			Array.from(allowedRedirectUris).some(
+			Array.from(config.allowedRedirectUris).some(
 				(allowedUri) => normalizeUrl(allowedUri) === normalizedRequested,
-			) || normalizeUrl(allowedRedirectUri) === normalizedRequested;
+			) || normalizeUrl(config.allowedRedirectUri) === normalizedRequested;
 
 		if (!isAllowed) {
 			res.status(400).send('Invalid redirect_uri');
@@ -313,29 +282,36 @@ async function main() {
 	});
 
 	// Load SSL certificates for HTTPS
-	if (hasCerts) {
+	if (config?.hasCerts) {
 		const httpsOptions = {
-			key: fs.readFileSync(certKeyPath),
-			cert: fs.readFileSync(certPath),
+			key: fs.readFileSync(config?.certKeyPath || ''),
+			cert: fs.readFileSync(config?.certPath || ''),
 		};
 
 		https
 			.createServer(httpsOptions, app)
-			.listen(port, 'mock-auth.sharethrift.localhost', () => {
+			.listen(config.port, config.host, () => {
 				// eslint-disable-next-line no-console
-				console.log(`Mock OAuth2 server running on ${BASE_URL}`);
+				console.log(`Mock OAuth2 server running on ${config.baseUrl}`);
 				console.log(
-					`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`,
+					`JWKS endpoint running on ${config.baseUrl}/.well-known/jwks.json`,
 				);
 			});
 	} else {
 		// Fallback to HTTP when certs don't exist (CI/CD)
-		app.listen(port, () => {
+		app.listen(config.port, config.host, () => {
 			// eslint-disable-next-line no-console
-			console.log(`Mock OAuth2 server running on ${BASE_URL} (no certs found)`);
-			console.log(`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`);
+			console.log(`Mock OAuth2 server running on ${config.baseUrl} (no certs found)`);
+			console.log(`JWKS endpoint running on ${config.baseUrl}/.well-known/jwks.json`);
 		});
 	}
 }
 
-main();
+export async function startMockOAuth2Server(config: OAuth2Config) {
+    try {
+        await main(config);
+    } catch (err) {
+        console.error('Failed to start mock OAuth2 server:', err);
+        process.exit(1);
+    }
+}

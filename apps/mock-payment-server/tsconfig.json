@@ -1,0 +1,11 @@
+{
+	"extends": "@cellix/typescript-config/node.json",
+	"compilerOptions": {
+		"rootDir": ".",
+		"outDir": "dist"
+	},
+	"include": ["src/**/*.ts"],
+	"references": [
+		{ "path": "../../packages/cellix/mock-payment-server-seedwork" }
+	]
+}
