@@ -1,4 +1,4 @@
-# @sthrift/messaging-service-twilio
+# @cellix/messaging-service-twilio
 
 Production implementation of the messaging service interface using Twilio Conversations API.
 
@@ -31,7 +31,7 @@ NODE_ENV=development
 
 ## Related Packages
 
-- `@sthrift/messaging-service-mock` - Mock implementation for local development
+- `@cellix/messaging-service-mock` - Mock implementation for local development
 - `@apps/mock-messaging-server` - HTTP mock server
 - `@cellix/messaging` - Messaging service interface definition
 

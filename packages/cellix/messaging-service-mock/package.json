@@ -1,5 +1,5 @@
 {
-	"name": "@sthrift/messaging-service-mock",
+	"name": "@cellix/messaging-service-mock",
 	"version": "1.0.0",
 	"type": "module",
 	"files": [

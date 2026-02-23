@@ -1,5 +1,5 @@
 {
-	"name": "@sthrift/messaging-service-twilio",
+	"name": "@cellix/messaging-service-twilio",
 	"version": "1.0.0",
 	"type": "module",
 	"files": [

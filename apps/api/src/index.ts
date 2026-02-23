@@ -18,8 +18,8 @@ import { ServiceTokenValidation } from '@cellix/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
 import type { MessagingService } from '@cellix/messaging-service';
-import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
-import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
+import { ServiceMessagingTwilio } from '@cellix/messaging-service-twilio';
+import { ServiceMessagingMock } from '@cellix/messaging-service-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';

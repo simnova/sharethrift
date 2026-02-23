@@ -1,4 +1,4 @@
-# @sthrift/messaging-service-mock
+# @cellix/messaging-service-mock
 
 Mock implementation of the messaging service interface for local development and testing.
 
@@ -25,5 +25,5 @@ The application automatically uses this mock service instead of the production s
 ## Related Packages
 
 - `@apps/mock-messaging-server` - The HTTP server this client connects to
-- `@sthrift/messaging-service-twilio` - Production Twilio implementation
+- `@cellix/messaging-service-twilio` - Production Twilio implementation
 - `@cellix/messaging` - Messaging service interface definition

@@ -22,6 +22,6 @@ Automatically seeds on startup when enabled:
 
 ## Related Packages
 
-- `@sthrift/messaging-service-mock` - HTTP client for this server
-- `@sthrift/messaging-service-twilio` - Production implementation
+- `@cellix/messaging-service-mock` - HTTP client for this server
+- `@cellix/messaging-service-twilio` - Production implementation
 - `@cellix/messaging` - Service interface definition

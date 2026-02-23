@@ -141,6 +141,12 @@ importers:
       '@cellix/messaging-service':
         specifier: workspace:*
         version: link:../../packages/cellix/messaging-service
+      '@cellix/messaging-service-mock':
+        specifier: workspace:*
+        version: link:../../packages/cellix/messaging-service-mock
+      '@cellix/messaging-service-twilio':
+        specifier: workspace:*
+        version: link:../../packages/cellix/messaging-service-twilio
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../packages/cellix/mongoose-seedwork
@@ -180,12 +186,6 @@ importers:
       '@sthrift/graphql':
         specifier: workspace:*
         version: link:../../packages/sthrift/graphql
-      '@sthrift/messaging-service-mock':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/messaging-service-mock
-      '@sthrift/messaging-service-twilio':
-        specifier: workspace:*
-        version: link:../../packages/sthrift/messaging-service-twilio
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../../packages/sthrift/persistence
@@ -624,6 +624,62 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
+
+  packages/cellix/messaging-service-mock:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+      '@cellix/messaging-service':
+        specifier: workspace:*
+        version: link:../messaging-service
+      axios:
+        specifier: '>=1.13.5'
+        version: 1.13.5
+    devDependencies:
+      '@apps/mock-messaging-server':
+        specifier: workspace:*
+        version: link:../../../apps/mock-messaging-server
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
+      '@types/node':
+        specifier: ^24.10.7
+        version: 24.10.9
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/messaging-service-twilio:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+      '@cellix/messaging-service':
+        specifier: workspace:*
+        version: link:../messaging-service
+      twilio:
+        specifier: ^5.11.0
+        version: 5.11.2
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
+      '@types/node':
+        specifier: ^24.10.7
+        version: 24.10.9
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(@vitest/browser-playwright@4.0.17)(jiti@2.6.1)(jsdom@26.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/cellix/mock-messaging-server-seedwork:
     dependencies:
@@ -1269,62 +1325,6 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
-
-  packages/sthrift/messaging-service-mock:
-    dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../../cellix/api-services-spec
-      '@cellix/messaging-service':
-        specifier: workspace:*
-        version: link:../../cellix/messaging-service
-      axios:
-        specifier: '>=1.13.5'
-        version: 1.13.5
-    devDependencies:
-      '@app/mock-messaging-server':
-        specifier: workspace:*
-        version: link:../../../apps/mock-messaging-server
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../../cellix/typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../../cellix/vitest-config
-      '@types/node':
-        specifier: ^24.10.7
-        version: 24.10.9
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/sthrift/messaging-service-twilio:
-    dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../../cellix/api-services-spec
-      '@cellix/messaging-service':
-        specifier: workspace:*
-        version: link:../../cellix/messaging-service
-      twilio:
-        specifier: ^5.11.0
-        version: 5.11.2
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../../cellix/typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../../cellix/vitest-config
-      '@types/node':
-        specifier: ^24.10.7
-        version: 24.10.9
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      vitest:
-        specifier: 'catalog:'
-        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(@vitest/browser-playwright@4.0.17)(jiti@2.6.1)(jsdom@26.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/sthrift/persistence:
     dependencies:

@@ -18,8 +18,8 @@ graph TD
   %% vertical space
 
   subgraph Messaging Infra
-    sthrft-service-twilio["@sthrift/messaging-service-twilio"]
-    sthrft-mock-service-twilio["@sthrift/messaging-service-mock"]
+    sthrft-service-twilio["@cellix/messaging-service-twilio"]
+    sthrft-mock-service-twilio["@cellix/messaging-service-mock"]
   end
 
   %% vertical space
