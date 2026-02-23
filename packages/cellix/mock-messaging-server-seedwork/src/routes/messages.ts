@@ -1,6 +1,6 @@
 import type { Request, Response, Router } from 'express';
-import { store } from '../store.ts';
-import type { MessagesListResponse } from '../types.ts';
+import { store } from '../store.js';
+import type { MessagesListResponse } from '../types.js';
 
 export function setupMessageRoutes(router: Router): void {
 	router.post(
@@ -8,52 +8,51 @@ export function setupMessageRoutes(router: Router): void {
 		(req: Request, res: Response) => {
 		try {
 			const { conversationId } = req.params as { conversationId: string };
-			const { Body, Author, ParticipantId } = req.body;				if (!Body) {
-					return res.status(400).json({
-						status: 400,
-						message: 'Body is required',
-						code: 20001,
-					});
-				}
-
-				const conversation = store.getConversation(conversationId);
-				if (!conversation) {
-					return res.status(404).json({
-						status: 404,
-						message: 'The requested resource was not found',
-						code: 20404,
-					});
-				}
-
-				const message = store.createMessage(
-					conversationId,
-					Body,
-					Author,
-					ParticipantId,
-				);
-
-				return res.status(201).json(message);
-			} catch (error) {
-				console.error('Error creating message:', error);
-				return res.status(500).json({
-					status: 500,
-					message: 'Internal server error',
+			const { Body, Author, ParticipantId } = req.body;
+			if (!Body) {
+				return res.status(400).json({
+					status: 400,
+					message: 'Body is required',
+					code: 20001,
 				});
 			}
+
+			const conversation = store.getConversation(conversationId);
+			if (!conversation) {
+				return res.status(404).json({
+					status: 404,
+					message: 'The requested resource was not found',
+					code: 20404,
+				});
+			}
+
+			const message = store.createMessage(
+				conversationId,
+				Body,
+				Author,
+				ParticipantId,
+			);
+
+			return res.status(201).json(message);
+		} catch (error) {
+			console.error('Error creating message:', error);
+			return res.status(500).json({
+				status: 500,
+				message: 'Internal server error',
+			});
+		}
 		},
 	);
-	
+
 	router.get(
 		'/v1/Conversations/:conversationId/Messages',
 		(req: Request, res: Response) => {
 			try {
 				const { conversationId } = req.params as { conversationId: string };
-				// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-				const page = Number.parseInt((req.query['Page'] as string) ?? '0', 10) || 0;
-				// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-				const pageSize = Number.parseInt((req.query['PageSize'] as string) ?? '50', 10) || 50;
-
-				const conversation = store.getConversation(conversationId);
+			// biome-ignore lint: req.query uses index signature
+			const page = Number.parseInt((req.query['Page'] as string) ?? '0', 10) || 0;
+			// biome-ignore lint: req.query uses index signature
+			const pageSize = Number.parseInt((req.query['PageSize'] as string) ?? '50', 10) || 50;				const conversation = store.getConversation(conversationId);
 				if (!conversation) {
 					return res.status(404).json({
 						status: 404,

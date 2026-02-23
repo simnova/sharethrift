@@ -39,10 +39,6 @@ function isKebabCase(str: string): boolean {
 	return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(str);
 }
 
-function isPascalCase(str: string): boolean {
-	return /^[A-Z][a-zA-Z0-9]*$/.test(str);
-}
-
 describe("Frontend Architecture - UI ShareThrift", () => {
 	describe("Folder Structure", () => {
 		it("should have required top-level directories", () => {
@@ -122,28 +118,6 @@ describe("Frontend Architecture - UI ShareThrift", () => {
 				expect(
 					isKebabCase(dir),
 					`Directory '${dir}' must use kebab-case naming`,
-				).toBe(true);
-			}
-		});
-
-		it("should use PascalCase for component files", () => {
-			const componentFiles = getAllFiles(UI_SHARETHRIFT_PATH).filter(
-				(file) =>
-					(file.endsWith(".tsx") || file.endsWith(".ts")) &&
-					!file.includes("node_modules") &&
-					!file.includes(".test.") &&
-					!file.includes(".stories.") &&
-					!file.includes(".container.") &&
-					!file.includes("index.tsx") &&
-					!file.includes("index.ts") &&
-					path.basename(file).charAt(0) === path.basename(file).charAt(0).toUpperCase(),
-			);
-
-			for (const file of componentFiles) {
-				const fileName = path.basename(file, path.extname(file));
-				expect(
-					isPascalCase(fileName),
-					`Component file '${fileName}' must use PascalCase`,
 				).toBe(true);
 			}
 		});

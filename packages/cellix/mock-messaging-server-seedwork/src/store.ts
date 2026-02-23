@@ -3,7 +3,7 @@ import type {
 	Conversation,
 	Message,
 	Participant,
-} from './types.ts';
+} from './types.js';
 
 class MockMessagingStore {
 	private readonly conversations: Map<string, Conversation> = new Map();

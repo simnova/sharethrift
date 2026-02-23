@@ -1,137 +1,47 @@
-import { fileURLToPath } from 'node:url';
-import express from 'express';
-import https from 'node:https';
-import http from 'node:http';
-import fs from 'node:fs';
+import dotenv from 'dotenv';
 import path from 'node:path';
-import type { Request, Response, Application } from 'express';
-import type { Server } from 'node:http';
-import { config } from 'dotenv';
-import { setupConversationRoutes } from './routes/conversations.ts';
-import { setupMessageRoutes } from './routes/messages.ts';
-import { setupParticipantRoutes } from './routes/participants.ts';
-import { setupMockUtilRoutes } from './routes/mock-utils.ts';
-import { seedMockData } from './seed/seed-data.ts';
+import { fileURLToPath } from 'node:url';
+import {
+	startMockMessagingServer,
+	type MockMessagingServerConfig,
+} from '@cellix/mock-messaging-server-seedwork';
+import { seedMockData } from './seed/seed-data.js';
 
+// Setup environment variables
+const setupEnvironment = () => {
+	console.log('Setting up environment variables');
+	dotenv.config();
+	dotenv.config({ path: `.env.local`, override: true });
+	console.log('Environment variables set up');
+};
 
+setupEnvironment();
 
-config();
+// Detect certificate availability to determine protocol
+const projectRoot = path.resolve(
+	path.dirname(fileURLToPath(import.meta.url)),
+	'../../../../',
+);
+const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
+const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
 
+// biome-ignore lint: using bracket notation for environment variable access
+const port = Number(process.env['PORT'] ?? 10000);
 
+const fs = await import('node:fs');
+const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
 
-export function createApp(): Application {
-	const app = express();
+const config: MockMessagingServerConfig = {
+	port,
+	useHttps: hasCerts,
+	seedData: true,
+	host: hasCerts ? 'mock-messaging.sharethrift.localhost' : 'localhost',
+	certKeyPath,
+	certPath,
+	seedMockData,
+};
 
-	app.disable('x-powered-by');
-
-	app.use(express.json());
-	app.use(express.urlencoded({ extended: true }));
-
-	app.use((req: Request, _res: Response, next) => {
-		console.log(`${req.method} ${req.path}`);
-		next();
-	});
-
-	app.get('/', (_req: Request, res: Response) => {
-		res.json({
-			service: 'Mock Twilio Server',
-			status: 'running',
-			version: '1.0.0',
-			endpoints: {
-				conversations: '/v1/Conversations',
-				messages: '/v1/Conversations/:conversationSid/Messages',
-				participants: '/v1/Conversations/:conversationSid/Participants',
-				mockUtils: '/mock/*',
-			},
-		});
-	});
-
-	const router = express.Router();
-	setupConversationRoutes(router);
-	setupMessageRoutes(router);
-	setupParticipantRoutes(router);
-	setupMockUtilRoutes(router);
-
-	app.use(router);
-
-	app.use((_req: Request, res: Response) => {
-		res.status(404).json({
-			status: 404,
-			message: 'The requested resource was not found',
-			code: 20404,
-			more_info: 'https://www.twilio.com/docs/errors/20404',
-		});
-	});
-
-	app.use((err: Error, _req: Request, res: Response) => {
-		console.error('Unhandled error:', err);
-		res.status(500).json({
-			status: 500,
-			message: 'Internal server error',
-			error: err.message,
-		});
-	});
-
-	return app;
-}
-
-export function startServer(port = 10000, seedData = false, useHttps = true): Promise<Server> {
-	return new Promise((resolve) => {
-		const app = createApp();
-			// Always resolve .certs from monorepo root (works regardless of script location or cwd)
-			const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../');
-			const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
-			const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
-			const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
-		if (hasCerts && useHttps) {
-			const httpsOptions = {
-				key: fs.readFileSync(certKeyPath),
-				cert: fs.readFileSync(certPath),
-			};
-			const server = https.createServer(httpsOptions, app).listen(port, 'mock-messaging.sharethrift.localhost', () => {
-				console.log(` Mock Messaging Server listening on https://mock-messaging.sharethrift.localhost:${port}`);
-				if (seedData) {
-					seedMockData();
-				} else {
-					console.log('Starting with empty data store (set seedData=true to seed)');
-				}
-				resolve(server);
-			});
-		} else {
-			// Fallback to HTTP when certs don't exist or useHttps=false (tests/CI/CD)
-			const server = http.createServer(app).listen(port, () => {
-				const reason = !hasCerts ? '(no certs found)' : '(HTTP mode)';
-				console.log(` Mock Messaging Server listening on http://localhost:${port} ${reason}`);
-				if (seedData) {
-					seedMockData();
-				} else {
-					console.log('Starting with empty data store (set seedData=true to seed)');
-				}
-				resolve(server);
-			});
-		}
-	});
-}
-
-export function stopServer(server: Server): Promise<void> {
-	return new Promise((resolve, reject) => {
-		server.close((err) => {
-			if (err) {
-				reject(err);
-			} else {
-				console.log('Mock Messaging Server stopped');
-				resolve();
-			}
-		});
-	});
-}
-
-// Start server when run directly (not imported)
-if (import.meta.url === `file://${process.argv[1]}`) {
-	// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-	const port = Number(process.env['PORT'] ?? 10000);
-	// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-	const shouldSeed = process.env['SEED_DATA'] === 'true';
-	
-	startServer(port, shouldSeed);
-}
+startMockMessagingServer(config).catch((err: unknown) => {
+	console.error('Failed to start mock messaging server:', err);
+	process.exit(1);
+});

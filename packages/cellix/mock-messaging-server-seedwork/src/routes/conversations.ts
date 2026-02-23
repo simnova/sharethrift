@@ -1,6 +1,6 @@
 import type { Request, Response, Router } from 'express';
-import { store } from '../store.ts';
-import type { ConversationsListResponse } from '../types.ts';
+import { store } from '../store.js';
+import type { ConversationsListResponse } from '../types.js';
 
 export function setupConversationRoutes(router: Router): void {
 	router.post('/v1/Conversations', (req: Request, res: Response) => {
@@ -54,9 +54,9 @@ export function setupConversationRoutes(router: Router): void {
 
 	router.get('/v1/Conversations', (req: Request, res: Response) => {
 		try {
-			// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
+			// biome-ignore lint: req.query uses index signature
 			const page = Number.parseInt((req.query['Page'] as string) ?? '0', 10) || 0;
-			// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
+			// biome-ignore lint: req.query uses index signature
 			const pageSize = Number.parseInt((req.query['PageSize'] as string) ?? '50', 10) || 50;
 
 			const conversations = store.listConversations(page, pageSize);

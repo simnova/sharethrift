@@ -1,4 +1,4 @@
-import { store } from '../store.ts';
+import { store } from '@cellix/mock-messaging-server-seedwork/store';
 
 export function seedMockData(): void {
 	console.log('Seeding mock messaging data...');

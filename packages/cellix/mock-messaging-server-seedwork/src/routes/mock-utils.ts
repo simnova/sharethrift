@@ -1,5 +1,5 @@
 import type { Request, Response, Router } from 'express';
-import { store } from '../store.ts';
+import { store } from '../store.js';
 
 export function setupMockUtilRoutes(router: Router): void {
 	router.post('/mock/reset', (_req: Request, res: Response) => {

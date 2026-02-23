@@ -272,6 +272,9 @@ importers:
 
   apps/mock-messaging-server:
     dependencies:
+      '@cellix/mock-messaging-server-seedwork':
+        specifier: workspace:*
+        version: link:../../packages/cellix/mock-messaging-server-seedwork
       dotenv:
         specifier: ^16.6.1
         version: 16.6.1
@@ -615,6 +618,34 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.2
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/mock-messaging-server-seedwork:
+    dependencies:
+      dotenv:
+        specifier: ^16.6.1
+        version: 16.6.1
+      express:
+        specifier: ^4.22.0
+        version: 4.22.1
+      mongodb:
+        specifier: 'catalog:'
+        version: 6.18.0
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.25
+      '@types/node':
+        specifier: ^24.10.7
+        version: 24.10.9
       rimraf:
         specifier: ^6.0.1
         version: 6.1.2

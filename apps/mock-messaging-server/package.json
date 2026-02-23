@@ -17,6 +17,7 @@
 		"test:watch": "vitest"
 	},
 	"dependencies": {
+		"@cellix/mock-messaging-server-seedwork": "workspace:*",
 		"dotenv": "^16.6.1",
 		"express": "^4.22.0",
 		"mongodb": "catalog:"

@@ -1,6 +1,6 @@
 import type { Request, Response, Router } from 'express';
-import { store } from '../store.ts';
-import type { ParticipantsListResponse } from '../types.ts';
+import { store } from '../store.js';
+import type { ParticipantsListResponse } from '../types.js';
 
 export function setupParticipantRoutes(router: Router): void {
 	router.post(
@@ -77,12 +77,10 @@ export function setupParticipantRoutes(router: Router): void {
 		(req: Request, res: Response) => {
 			try {
 				const { conversationSid } = req.params as { conversationSid: string };
-				// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-				const page = Number.parseInt((req.query['Page'] as string) ?? '0', 10) || 0;
-				// biome-ignore lint/complexity/useLiteralKeys: Required by TypeScript noPropertyAccessFromIndexSignature
-				const pageSize = Number.parseInt((req.query['PageSize'] as string) ?? '50', 10) || 0;
-
-				const conversation = store.getConversation(conversationSid);
+			// biome-ignore lint: req.query uses index signature
+			const page = Number.parseInt((req.query['Page'] as string) ?? '0', 10) || 0;
+			// biome-ignore lint: req.query uses index signature
+			const pageSize = Number.parseInt((req.query['PageSize'] as string) ?? '50', 10) || 0;				const conversation = store.getConversation(conversationSid);
 				if (!conversation) {
 					return res.status(404).json({
 						status: 404,
