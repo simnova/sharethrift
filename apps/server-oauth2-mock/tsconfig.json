@@ -6,6 +6,6 @@
 	},
 	"include": ["src/**/*.ts"],
 	"references": [
-		{ "path": "../../packages/cellix/mock-oauth2-server-seedwork" }
+		{ "path": "../../packages/cellix/server-oauth2-seedwork" }
 	]
 }

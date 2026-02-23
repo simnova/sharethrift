@@ -138,36 +138,36 @@ importers:
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../packages/cellix/api-services-spec
-      '@cellix/messaging-service':
-        specifier: workspace:*
-        version: link:../../packages/cellix/messaging-service
-      '@cellix/messaging-service-mock':
-        specifier: workspace:*
-        version: link:../../packages/cellix/messaging-service-mock
-      '@cellix/messaging-service-twilio':
-        specifier: workspace:*
-        version: link:../../packages/cellix/messaging-service-twilio
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../packages/cellix/mongoose-seedwork
-      '@cellix/payment-service':
-        specifier: workspace:*
-        version: link:../../packages/cellix/payment-service
-      '@cellix/payment-service-cybersource':
-        specifier: workspace:*
-        version: link:../../packages/cellix/payment-service-cybersource
-      '@cellix/payment-service-mock':
-        specifier: workspace:*
-        version: link:../../packages/cellix/payment-service-mock
-      '@cellix/service-blob-storage':
+      '@cellix/service-blob':
         specifier: workspace:*
         version: link:../../packages/cellix/service-blob-storage
+      '@cellix/service-messaging-base':
+        specifier: workspace:*
+        version: link:../../packages/cellix/service-messaging-base
+      '@cellix/service-messaging-mock':
+        specifier: workspace:*
+        version: link:../../packages/cellix/service-messaging-mock
+      '@cellix/service-messaging-twilio':
+        specifier: workspace:*
+        version: link:../../packages/cellix/service-messaging-twilio
       '@cellix/service-mongoose':
         specifier: workspace:*
         version: link:../../packages/cellix/service-mongoose
       '@cellix/service-otel':
         specifier: workspace:*
         version: link:../../packages/cellix/service-otel
+      '@cellix/service-payment-base':
+        specifier: workspace:*
+        version: link:../../packages/cellix/service-payment-base
+      '@cellix/service-payment-cybersource':
+        specifier: workspace:*
+        version: link:../../packages/cellix/service-payment-cybersource
+      '@cellix/service-payment-mock':
+        specifier: workspace:*
+        version: link:../../packages/cellix/service-payment-mock
       '@cellix/service-token-validation':
         specifier: workspace:*
         version: link:../../packages/cellix/service-token-validation
@@ -270,11 +270,11 @@ importers:
         specifier: 'catalog:'
         version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(@vitest/browser-playwright@4.0.17)(jiti@2.6.1)(jsdom@26.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
-  apps/mock-messaging-server:
+  apps/server-messaging-mock:
     dependencies:
-      '@cellix/mock-messaging-server-seedwork':
+      '@cellix/server-messaging-seedwork':
         specifier: workspace:*
-        version: link:../../packages/cellix/mock-messaging-server-seedwork
+        version: link:../../packages/cellix/server-messaging-seedwork
       dotenv:
         specifier: ^16.6.1
         version: 16.6.1
@@ -316,11 +316,11 @@ importers:
         specifier: 'catalog:'
         version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(@vitest/browser-playwright@4.0.17)(jiti@2.6.1)(jsdom@26.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
-  apps/mock-mongodb-memory-server:
+  apps/server-mongodb-memory-mock:
     dependencies:
-      '@cellix/mock-mongodb-memory-server-seedwork':
+      '@cellix/server-mongodb-memory-seedwork':
         specifier: workspace:*
-        version: link:../../packages/cellix/mock-mongodb-memory-server-seedwork
+        version: link:../../packages/cellix/server-mongodb-memory-seedwork
       '@sthrift/data-sources-mongoose-models':
         specifier: workspace:*
         version: link:../../packages/sthrift/data-sources-mongoose-models
@@ -350,11 +350,11 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  apps/mock-oauth2-server:
+  apps/server-oauth2-mock:
     dependencies:
-      '@cellix/mock-oauth2-server-seedwork':
+      '@cellix/server-oauth2-seedwork':
         specifier: workspace:*
-        version: link:../../packages/cellix/mock-oauth2-server-seedwork
+        version: link:../../packages/cellix/server-oauth2-seedwork
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
@@ -381,11 +381,11 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  apps/mock-payment-server:
+  apps/server-payment-mock:
     dependencies:
-      '@cellix/mock-payment-server-seedwork':
+      '@cellix/server-payment-seedwork':
         specifier: workspace:*
-        version: link:../../packages/cellix/mock-payment-server-seedwork
+        version: link:../../packages/cellix/server-payment-seedwork
       dotenv:
         specifier: ^16.4.5
         version: 16.6.1
@@ -609,182 +609,6 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/cellix/messaging-service:
-    dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../api-services-spec
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.1.2
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/cellix/messaging-service-mock:
-    dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../api-services-spec
-      '@cellix/messaging-service':
-        specifier: workspace:*
-        version: link:../messaging-service
-      axios:
-        specifier: '>=1.13.5'
-        version: 1.13.5
-    devDependencies:
-      '@apps/mock-messaging-server':
-        specifier: workspace:*
-        version: link:../../../apps/mock-messaging-server
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../vitest-config
-      '@types/node':
-        specifier: ^24.10.7
-        version: 24.10.9
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/cellix/messaging-service-twilio:
-    dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../api-services-spec
-      '@cellix/messaging-service':
-        specifier: workspace:*
-        version: link:../messaging-service
-      twilio:
-        specifier: ^5.11.0
-        version: 5.11.2
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../vitest-config
-      '@types/node':
-        specifier: ^24.10.7
-        version: 24.10.9
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-      vitest:
-        specifier: 'catalog:'
-        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(@vitest/browser-playwright@4.0.17)(jiti@2.6.1)(jsdom@26.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
-
-  packages/cellix/mock-messaging-server-seedwork:
-    dependencies:
-      dotenv:
-        specifier: ^16.6.1
-        version: 16.6.1
-      express:
-        specifier: ^4.22.0
-        version: 4.22.1
-      mongodb:
-        specifier: 'catalog:'
-        version: 6.18.0
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@types/express':
-        specifier: ^4.17.21
-        version: 4.17.25
-      '@types/node':
-        specifier: ^24.10.7
-        version: 24.10.9
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.1.2
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/cellix/mock-mongodb-memory-server-seedwork:
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@types/semver':
-        specifier: ^7.7.0
-        version: 7.7.1
-      mongodb-memory-server:
-        specifier: ^10.1.4
-        version: 10.1.4
-      mongoose:
-        specifier: 'catalog:'
-        version: 8.17.0
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.1.2
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/cellix/mock-oauth2-server-seedwork:
-    dependencies:
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.6.1
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@types/express':
-        specifier: ^4.17.23
-        version: 4.17.25
-      express:
-        specifier: ^4.22.1
-        version: 4.22.1
-      jose:
-        specifier: ^5.9.6
-        version: 5.10.0
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.1.2
-      typescript:
-        specifier: ^5.8.3
-        version: 5.8.3
-
-  packages/cellix/mock-payment-server-seedwork:
-    devDependencies:
-      '@cellix/payment-service':
-        specifier: workspace:*
-        version: link:../payment-service
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@types/express':
-        specifier: ^4.17.21
-        version: 4.17.25
-      '@types/jsonwebtoken':
-        specifier: ^9.0.10
-        version: 9.0.10
-      express:
-        specifier: ^4.22.0
-        version: 4.22.1
-      jose:
-        specifier: ^5.10.0
-        version: 5.10.0
-      jsonwebtoken:
-        specifier: ^9.0.3
-        version: 9.0.3
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.1.2
-      typescript:
-        specifier: ^5.0.0
-        version: 5.8.3
-
   packages/cellix/mongoose-seedwork:
     dependencies:
       '@cellix/domain-seedwork':
@@ -813,61 +637,108 @@ importers:
         specifier: ^6.0.1
         version: 6.1.2
 
-  packages/cellix/payment-service:
+  packages/cellix/server-messaging-seedwork:
     dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../api-services-spec
+      dotenv:
+        specifier: ^16.6.1
+        version: 16.6.1
+      express:
+        specifier: ^4.22.0
+        version: 4.22.1
+      mongodb:
+        specifier: 'catalog:'
+        version: 6.18.0
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-
-  packages/cellix/payment-service-cybersource:
-    dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../api-services-spec
-      '@cellix/payment-service':
-        specifier: workspace:*
-        version: link:../payment-service
-      axios:
-        specifier: '>=1.13.5'
-        version: 1.13.5
-      cybersource-rest-client:
-        specifier: ^0.0.73
-        version: 0.0.73(undici@5.29.0)
-    devDependencies:
-      '@cellix/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../vitest-config
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.25
       '@types/node':
         specifier: ^24.10.7
         version: 24.10.9
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.2
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/cellix/payment-service-mock:
-    dependencies:
-      '@cellix/api-services-spec':
-        specifier: workspace:*
-        version: link:../api-services-spec
-      '@cellix/payment-service':
-        specifier: workspace:*
-        version: link:../payment-service
-      axios:
-        specifier: '>=1.13.5'
-        version: 1.13.5
+  packages/cellix/server-mongodb-memory-seedwork:
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@types/semver':
+        specifier: ^7.7.0
+        version: 7.7.1
+      mongodb-memory-server:
+        specifier: ^10.1.4
+        version: 10.1.4
+      mongoose:
+        specifier: 'catalog:'
+        version: 8.17.0
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.2
       typescript:
         specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/server-oauth2-seedwork:
+    dependencies:
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.6.1
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/express':
+        specifier: ^4.17.23
+        version: 4.17.25
+      express:
+        specifier: ^4.22.1
+        version: 4.22.1
+      jose:
+        specifier: ^5.9.6
+        version: 5.10.0
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.2
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/server-payment-seedwork:
+    devDependencies:
+      '@cellix/service-payment-base':
+        specifier: workspace:*
+        version: link:../service-payment-base
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@types/express':
+        specifier: ^4.17.21
+        version: 4.17.25
+      '@types/jsonwebtoken':
+        specifier: ^9.0.10
+        version: 9.0.10
+      express:
+        specifier: ^4.22.0
+        version: 4.22.1
+      jose:
+        specifier: ^5.10.0
+        version: 5.10.0
+      jsonwebtoken:
+        specifier: ^9.0.3
+        version: 9.0.3
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.2
+      typescript:
+        specifier: ^5.0.0
         version: 5.8.3
 
   packages/cellix/service-blob-storage:
@@ -891,6 +762,78 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
+
+  packages/cellix/service-messaging-base:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.1.2
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/service-messaging-mock:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+      '@cellix/service-messaging-base':
+        specifier: workspace:*
+        version: link:../service-messaging-base
+      axios:
+        specifier: '>=1.13.5'
+        version: 1.13.5
+    devDependencies:
+      '@apps/server-messaging-mock':
+        specifier: workspace:*
+        version: link:../../../apps/server-messaging-mock
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
+      '@types/node':
+        specifier: ^24.10.7
+        version: 24.10.9
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/service-messaging-twilio:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+      '@cellix/service-messaging-base':
+        specifier: workspace:*
+        version: link:../service-messaging-base
+      twilio:
+        specifier: ^5.11.0
+        version: 5.11.2
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
+      '@types/node':
+        specifier: ^24.10.7
+        version: 24.10.9
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(@vitest/browser-playwright@4.0.17)(jiti@2.6.1)(jsdom@26.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/cellix/service-mongoose:
     dependencies:
@@ -968,6 +911,63 @@ importers:
       rimraf:
         specifier: ^6.0.1
         version: 6.1.2
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/service-payment-base:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+
+  packages/cellix/service-payment-cybersource:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+      '@cellix/service-payment-base':
+        specifier: workspace:*
+        version: link:../service-payment-base
+      axios:
+        specifier: '>=1.13.5'
+        version: 1.13.5
+      cybersource-rest-client:
+        specifier: ^0.0.73
+        version: 0.0.73(undici@5.29.0)
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../vitest-config
+      '@types/node':
+        specifier: ^24.10.7
+        version: 24.10.9
+      typescript:
+        specifier: ^5.8.3
+        version: 5.8.3
+
+  packages/cellix/service-payment-mock:
+    dependencies:
+      '@cellix/api-services-spec':
+        specifier: workspace:*
+        version: link:../api-services-spec
+      '@cellix/service-payment-base':
+        specifier: workspace:*
+        version: link:../service-payment-base
+      axios:
+        specifier: '>=1.13.5'
+        version: 1.13.5
+    devDependencies:
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
@@ -1121,9 +1121,9 @@ importers:
 
   packages/sthrift/application-services:
     dependencies:
-      '@cellix/payment-service':
+      '@cellix/service-payment-base':
         specifier: workspace:*
-        version: link:../../cellix/payment-service
+        version: link:../../cellix/service-payment-base
       '@sthrift/context-spec':
         specifier: workspace:*
         version: link:../context-spec
@@ -1149,12 +1149,12 @@ importers:
 
   packages/sthrift/context-spec:
     dependencies:
-      '@cellix/messaging-service':
+      '@cellix/service-messaging-base':
         specifier: workspace:*
-        version: link:../../cellix/messaging-service
-      '@cellix/payment-service':
+        version: link:../../cellix/service-messaging-base
+      '@cellix/service-payment-base':
         specifier: workspace:*
-        version: link:../../cellix/payment-service
+        version: link:../../cellix/service-payment-base
       '@cellix/service-token-validation':
         specifier: workspace:*
         version: link:../../cellix/service-token-validation
@@ -1334,15 +1334,15 @@ importers:
       '@cellix/event-bus-seedwork-node':
         specifier: workspace:*
         version: link:../../cellix/event-bus-seedwork-node
-      '@cellix/messaging-service':
-        specifier: workspace:*
-        version: link:../../cellix/messaging-service
       '@cellix/mongoose-seedwork':
         specifier: workspace:*
         version: link:../../cellix/mongoose-seedwork
-      '@cellix/payment-service':
+      '@cellix/service-messaging-base':
         specifier: workspace:*
-        version: link:../../cellix/payment-service
+        version: link:../../cellix/service-messaging-base
+      '@cellix/service-payment-base':
+        specifier: workspace:*
+        version: link:../../cellix/service-payment-base
       '@cellix/test-utils':
         specifier: workspace:*
         version: link:../../cellix/test-utils

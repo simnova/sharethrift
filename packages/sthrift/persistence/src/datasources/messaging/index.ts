@@ -1,4 +1,4 @@
-import type { MessagingService } from '@cellix/messaging-service';
+import type { MessagingService } from '@cellix/service-messaging-base';
 import { MessagingConversationContext } from './conversation/index.ts';
 import type * as Conversation from './conversation/conversation/index.ts';
 

@@ -1,4 +1,4 @@
-# @cellix/mock-messaging-server-seedwork
+# @cellix/server-messaging-seedwork
 
 Seedwork library for the mock messaging server used in Sharethrift monorepo.
 
@@ -11,7 +11,7 @@ Provides an in-memory store and seeding utilities for mocking Twilio Conversatio
 Import the store and seed utilities:
 
 ```ts
-import { store, seedMockData } from '@cellix/mock-messaging-server-seedwork';
+import { store, seedMockData } from '@cellix/server-messaging-seedwork';
 
 seedMockData();
 // Use store API for test setup/teardown

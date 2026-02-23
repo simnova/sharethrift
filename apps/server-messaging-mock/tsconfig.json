@@ -6,7 +6,6 @@
 	},
 	"include": ["src/**/*.ts"],
 	"references": [
-		{ "path": "../../packages/sthrift/data-sources-mongoose-models" },
-		{ "path": "../../packages/cellix/mock-mongodb-memory-server-seedwork" }
-	]
+        { "path": "../../packages/cellix/server-messaging-seedwork"}
+    ]
 }

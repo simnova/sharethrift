@@ -1,5 +1,5 @@
 {
-    	"name": "@cellix/service-sendgrid",
+    	"name": "@cellix/service-mail-sendgrid",
     "version": "0.1.0",
     "description": "SendGrid email service for ShareThrift portals.",
     "type": "module",

@@ -26,10 +26,10 @@ import type {
 	SuspendSubscriptionResponse,
 	PlansListResponse,
 	TransactionSearchResponse,
-} from '@cellix/payment-service';
+} from '@cellix/service-payment-base';
 
-export class PaymentServiceCybersource
-	implements ServiceBase<PaymentServiceCybersource>, PaymentService
+export class ServicePaymentCybersource
+	implements ServiceBase<ServicePaymentCybersource>, PaymentService
 {
 	// private client: cybersource.ApiClient | undefined;
 	// private configObject: cybersource.Configuration;
@@ -83,22 +83,22 @@ export class PaymentServiceCybersource
 			!this.targetOrigin
 		) {
 			console.warn(
-				'PaymentServiceCybersource: All configuration keys must be provided. Service will not function until credentials are provided.',
+								'ServicePaymentCybersource: All configuration keys must be provided. Service will not function until credentials are provided.',,
 			);
 		}
 	}
 
 	public startUp(): Promise<
-		Exclude<PaymentServiceCybersource, ServiceBase<PaymentServiceCybersource>>
+		Exclude<ServicePaymentCybersource, ServiceBase<ServicePaymentCybersource>>
 	> {
 		if (this.client) {
-			throw new Error('PaymentServiceCybersource is already started');
+			throw new Error('ServicePaymentCybersource is already started');
 		}
 		this.client = new cybersource.ApiClient();
 		return Promise.resolve(
 			this as Exclude<
-				PaymentServiceCybersource,
-				ServiceBase<PaymentServiceCybersource>
+				ServicePaymentCybersource,
+				ServiceBase<ServicePaymentCybersource>
 			>,
 		);
 	}
@@ -111,7 +111,7 @@ export class PaymentServiceCybersource
 	public get service(): any {
 		if (!this.client) {
 			throw new Error(
-				'PaymentServiceCybersource is not started - cannot access service',
+				'ServicePaymentCybersource is not started - cannot access service',
 			);
 		}
 		return this.client;

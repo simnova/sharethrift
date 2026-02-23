@@ -19,13 +19,13 @@
 	},
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
-		"@cellix/messaging-service": "workspace:*",
+		"@cellix/service-messaging-base": "workspace:*",
 		"axios": "^1.13.5"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
-		"@apps/mock-messaging-server": "workspace:*",
+		"@apps/server-messaging-mock": "workspace:*",
 		"@types/node": "^22.0.0",
 		"typescript": "^5.8.3"
 	},

@@ -26,7 +26,7 @@
 		"@sthrift/context-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
-		"@cellix/payment-service": "workspace:*"
+		"@cellix/service-payment-base": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

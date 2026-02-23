@@ -1,5 +1,5 @@
 {
-	"name": "@cellix/service-blob-storage",
+	"name": "@cellix/service-blob",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",

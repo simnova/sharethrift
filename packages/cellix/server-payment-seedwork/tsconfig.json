@@ -6,6 +6,6 @@
 	},
 	"include": ["src/**/*.ts"],
 	"references": [
-		{ "path": "../payment-service" }
+		{ "path": "../service-payment-base" }
 	]
 }

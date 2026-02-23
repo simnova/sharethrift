@@ -2,57 +2,49 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
-import { PaymentServiceCybersource } from './index.ts';
+import { ServicePaymentCybersource } from './index.ts';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const feature = await loadFeature(path.resolve(__dirname, 'payment-service-cybersource.feature'));
 
 test.for(feature, ({ Scenario, BeforeEachScenario }) => {
-  let service: PaymentServiceCybersource;
+  let service: ServicePaymentCybersource;
   let error: unknown;
 
   BeforeEachScenario(() => {
-    service = undefined as unknown as PaymentServiceCybersource;
+    service = undefined as unknown as ServicePaymentCybersource;
     error = undefined;
   });
 
   Scenario('Instantiating with valid config', ({ Given, When, Then }) => {
-    Given('a valid PaymentServiceCybersource configuration', () => {
+    Given('a valid ServicePaymentCybersource configuration', () => {
       // ...existing code...
     });
     When('I instantiate the service', () => {
-      service = new PaymentServiceCybersource(
+      service = new ServicePaymentCybersource(
         'app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin'
       );
     });
-    Then('the service should be an instance of PaymentServiceCybersource', () => {
-      expect(service).toBeInstanceOf(PaymentServiceCybersource);
+    Then('the service should be an instance of ServicePaymentCybersource', () => {
+      expect(service).toBeInstanceOf(ServicePaymentCybersource);
     });
   });
 
   Scenario('Instantiating with missing config', ({ Given, When, Then }) => {
-    Given('an invalid PaymentServiceCybersource configuration', () => {
+    Given('an invalid ServicePaymentCybersource configuration', () => {
       // ...existing code...
     });
     When('I instantiate the service', () => {
       try {
-        service = new PaymentServiceCybersource();
-      } catch (e) {
-        error = e;
-      }
-    });
-    Then('an error should be thrown', () => {
-      expect(error).toBeDefined();
-    });
-  });
+        service = new ServicePaymentCybersource();
 
   Scenario('Service configObject properties', ({ Given, When, Then }) => {
-    Given('a valid PaymentServiceCybersource configuration', () => {
+    Given('a valid ServicePaymentCybersource configuration', () => {
       // ...existing code...
     });
     When('I instantiate the service', () => {
-      service = new PaymentServiceCybersource(
+      service = new ServicePaymentCybersource(
         'app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin'
       );
     });

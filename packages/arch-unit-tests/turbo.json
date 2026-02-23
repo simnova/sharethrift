@@ -12,7 +12,7 @@
         "@sthrift/rest#build",
         "@cellix/service-mongoose#build",
         "@cellix/service-otel#build",
-        "@cellix/service-blob-storage#build",
+        "@cellix/service-blob#build",
         "@cellix/service-token-validation#build",
         "@sthrift/ui-components#build",
         "@apps/api#build",
