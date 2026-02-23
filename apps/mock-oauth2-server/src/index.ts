@@ -83,7 +83,9 @@ const config: OAuth2Config = {
 			: process.env['FAMILY_NAME'] || '';
 		return { email, given_name, family_name };
 	},
-};startMockOAuth2Server(config).catch((err: unknown) => {
+};
+
+startMockOAuth2Server(config).catch((err: unknown) => {
 	console.error('Failed to start mock OAuth2 server:', err);
 	process.exit(1);
 });
