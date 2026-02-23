@@ -2,10 +2,10 @@
 applyTo: "apps/api/**/*.ts"
 ---
 
-# @app/api Package Instructions
+# @apps/api Package Instructions
 
 ## Purpose
-The `@app/api` package is the main Azure Functions application entry point that orchestrates the entire CellixJS serverless API. It acts as the composition root, configuring dependency injection, service initialization, and Azure Functions handler registration.
+The `@apps/api` package is the main Azure Functions application entry point that orchestrates the entire CellixJS serverless API. It acts as the composition root, configuring dependency injection, service initialization, and Azure Functions handler registration.
 
 ## Core Architecture
 

@@ -4,7 +4,7 @@ Mock implementation of the messaging service interface for local development and
 
 ## Purpose
 
-HTTP client that communicates with `@app/mock-messaging-server`, eliminating the need for real messaging provider credentials during development.
+HTTP client that communicates with `@apps/mock-messaging-server`, eliminating the need for real messaging provider credentials during development.
 
 ### Integration with Application
 
@@ -24,6 +24,6 @@ The application automatically uses this mock service instead of the production s
 
 ## Related Packages
 
-- `@app/mock-messaging-server` - The HTTP server this client connects to
+- `@apps/mock-messaging-server` - The HTTP server this client connects to
 - `@sthrift/messaging-service-twilio` - Production Twilio implementation
 - `@cellix/messaging` - Messaging service interface definition

@@ -15,8 +15,8 @@
         "@cellix/service-blob-storage#build",
         "@cellix/service-token-validation#build",
         "@sthrift/ui-components#build",
-        "@app/api#build",
-        "@app/ui-sharethrift#build"
+        "@apps/api#build",
+        "@apps/ui-sharethrift#build"
       ]
     }
   }

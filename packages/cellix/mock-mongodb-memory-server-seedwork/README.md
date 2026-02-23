@@ -1,4 +1,4 @@
-# @app/mock-mongodb-memory-server
+# @apps/mock-mongodb-memory-server
 
 MongoDB Memory Server service for CellixJS monorepo.
 

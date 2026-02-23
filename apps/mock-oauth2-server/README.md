@@ -1,4 +1,4 @@
-# @app/mock-oauth2-server
+# @apps/mock-oauth2-server
 
 Local OAuth2/OIDC mock server for dev/testing.
 

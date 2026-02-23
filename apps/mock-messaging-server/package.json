@@ -1,5 +1,5 @@
 {
-	"name": "@app/mock-messaging-server",
+	"name": "@apps/mock-messaging-server",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",

@@ -65,7 +65,7 @@ graph TD
   end
 
   %% API Entrypoint (bottom)
-  sthrft-api["@app/api"]
+  sthrft-api["@apps/api"]
 
   %% Connections
   cellix-domain-seedwork --> cellix-event-bus-seedwork-node
@@ -115,5 +115,5 @@ graph TD
   sthrft-rest --> sthrft-api
 
   %% API entrypoint
-  sthrft-api["@app/api"]
+  sthrft-api["@apps/api"]
 ```

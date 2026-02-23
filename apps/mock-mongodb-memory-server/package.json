@@ -1,5 +1,5 @@
 {
-	"name": "@app/mock-mongodb-memory-server",
+	"name": "@apps/mock-mongodb-memory-server",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",

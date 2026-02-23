@@ -32,7 +32,7 @@ NODE_ENV=development
 ## Related Packages
 
 - `@sthrift/messaging-service-mock` - Mock implementation for local development
-- `@app/mock-messaging-server` - HTTP mock server
+- `@apps/mock-messaging-server` - HTTP mock server
 - `@cellix/messaging` - Messaging service interface definition
 
 ## References
