@@ -24,8 +24,6 @@
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
-		"@cellix/vitest-config": "workspace:*",
-		"@apps/server-messaging-mock": "workspace:*",
 		"@types/node": "^22.0.0",
 		"typescript": "^5.8.3"
 	},
