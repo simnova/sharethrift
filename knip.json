@@ -64,7 +64,7 @@
 		"packages/cellix/mock-oauth2-server",
 		"packages/cellix/vitest-config",
 		"packages/sthrift/payment-service-cybersource",
-		"packages/sthrift/mock-messaging-server"
+		"apps/mock-messaging-server"
 	],
 	"ignore": [
 		"build-pipeline/scripts/**",

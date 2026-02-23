@@ -68,6 +68,6 @@ ignore:
 exclude:
   code:
     - local-https-proxy.js  # HTTPS->HTTP proxy for local Azure Functions (intentional HTTP usage)
-    - packages/sthrift/mock-messaging-server/src/index.ts  # HTTP fallback for CI/CD (no certs in pipeline)
-    - packages/cellix/mock-oauth2-server/src/index.ts  # HTTP fallback for CI/CD
-    - packages/cellix/mock-payment-server/src/index.ts  # HTTP fallback for CI/CD
+    - apps/mock-messaging-server/src/index.ts  # HTTP fallback for CI/CD (no certs in pipeline)
+    - packages/apps/mock-oauth2-server/src/index.ts  # HTTP fallback for CI/CD
+    - packages/apps/mock-payment-server/src/index.ts  # HTTP fallback for CI/CD

@@ -79,7 +79,7 @@ export function startServer(port = 10000, seedData = false, useHttps = true): Pr
 	return new Promise((resolve) => {
 		const app = createApp();
 			// Always resolve .certs from monorepo root (works regardless of script location or cwd)
-			const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
+			const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../');
 			const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
 			const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
 			const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);

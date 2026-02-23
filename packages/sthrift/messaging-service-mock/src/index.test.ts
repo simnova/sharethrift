@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import type { Server } from 'node:http';
 import { ServiceMessagingMock } from './index.ts';
-import { startServer, stopServer } from '@sthrift/mock-messaging-server';
+import { startServer, stopServer } from '@app/mock-messaging-server';
 
 describe('ServiceMessagingMock Integration Tests', () => {
 	let service: ServiceMessagingMock;

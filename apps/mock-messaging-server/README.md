@@ -1,4 +1,4 @@
-# @sthrift/mock-messaging-server
+# @app/mock-messaging-server
 
 Mock HTTP server for local messaging provider emulation during development and testing.
 
