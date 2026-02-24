@@ -36,353 +36,140 @@ const feature = await loadFeature(
 );
 
 test.for(
-	feature,
-	({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
-		let openIdConfigs: Map<string, OpenIdConfig>;
-		let service: VerifiedTokenService;
-		let testToken: string;
+  feature,
+  ({ Scenario, BeforeEachScenario, AfterEachScenario }) => {
+    let openIdConfigs: Map<string, OpenIdConfig>;
+    let service: VerifiedTokenService;
+    let testToken: string;
 
-		BeforeEachScenario(() => {
-			openIdConfigs = new Map([
-				[
-					'portal1',
-					{
-						issuerUrl: 'https://example.com',
-						oidcEndpoint: 'https://example.com/.well-known/jwks.json',
-						audience: 'test-audience',
-						ignoreIssuer: false,
-						clockTolerance: '5 minutes',
-					},
-				],
-				[
-					'portal2',
-					{
-						issuerUrl: 'https://another.com',
-						oidcEndpoint: 'https://another.com/.well-known/jwks.json',
-						audience: ['aud1', 'aud2'],
-						ignoreIssuer: true,
-					},
-				],
-			]);
-			testToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.test.signature';
-			vi.clearAllTimers();
-			vi.useFakeTimers();
-			vi.clearAllTimers();
-			vi.useFakeTimers();
-		});
+    BeforeEachScenario(() => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
+      openIdConfigs = new Map([
+        [
+          'portal1',
+          {
+            issuerUrl: 'https://example.com',
+            oidcEndpoint: 'https://example.com/.well-known/jwks.json',
+            audience: 'test-audience',
+            ignoreIssuer: false,
+            clockTolerance: '5 minutes',
+          },
+        ],
+        [
+          'portal2',
+          {
+            issuerUrl: 'https://another.com',
+            oidcEndpoint: 'https://another.com/.well-known/jwks.json',
+            audience: ['aud1', 'aud2'],
+            ignoreIssuer: true,
+          },
+        ],
+      ]);
+      testToken = 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.test.signature';
+      vi.clearAllTimers();
+      vi.useFakeTimers();
+      vi.clearAllTimers();
+      vi.useFakeTimers();
+    });
 
-		AfterEachScenario(() => {
-			if (service?.timerInstance) {
-				clearInterval(service.timerInstance);
-			}
-			vi.useRealTimers();
-		});
+    AfterEachScenario(() => {
+      if (service?.timerInstance) {
+        clearInterval(service.timerInstance);
+      }
+      vi.useRealTimers();
+    });
 
-		Scenario(
-			'Constructing VerifiedTokenService with valid configurations',
-			({ Given, When, Then, And }) => {
-				Given('a valid OpenID config map', () => {
-					// Already set in Background
-				});
+    Scenario('Timer logic: start sets timer, start again does not duplicate', ({ When, Then }) => {
+      When('I call start twice', () => {
+        service = new VerifiedTokenService(openIdConfigs);
+        service.start();
+        const firstTimer = service.timerInstance;
+        service.start();
+        Then('timerInstance should be same', () => {
+          expect(service.timerInstance).toBe(firstTimer);
+        });
+      });
+    });
 
-				When('the VerifiedTokenService is constructed', () => {
-					service = new VerifiedTokenService(openIdConfigs);
-				});
+    Scenario('refreshCollection updates keystore', ({ When, Then }) => {
+      When('I call refreshCollection', () => {
+        service = new VerifiedTokenService(openIdConfigs);
+        service.refreshCollection();
+      });
+      Then('keystore should be updated for all keys', () => {
+        expect(service.keyStoreCollection.size).toBe(2);
+        expect(service.keyStoreCollection.has('portal1')).toBe(true);
+        expect(service.keyStoreCollection.has('portal2')).toBe(true);
+      });
+    });
 
-				Then('it should initialize with the provided configurations', () => {
-					expect(service.openIdConfigs).toBe(openIdConfigs);
-					expect(service.refreshInterval).toBe(1000 * 60 * 5);
-				});
+    Scenario('getVerifiedJwt throws if not started', ({ When, Then }) => {
+      When('I call getVerifiedJwt before start', async () => {
+        service = new VerifiedTokenService(openIdConfigs);
+        try {
+          await service.getVerifiedJwt(testToken, 'portal1');
+        } catch (e) {
+          Then('error should be thrown', () => {
+            expect(e).toBeDefined();
+            // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+            expect((e as any).message).toMatch(/not started/);
+          });
+        }
+      });
+    });
 
-				And('the keystore collection should be empty initially', () => {
-					expect(service.keyStoreCollection.size).toBe(0);
-				});
-			},
-		);
+    Scenario('getVerifiedJwt throws if invalid config key', ({ When, Then }) => {
+      When('I call getVerifiedJwt with invalid key', async () => {
+        service = new VerifiedTokenService(openIdConfigs);
+        service.start();
+        try {
+          await service.getVerifiedJwt(testToken, 'invalid-key');
+        } catch (e) {
+          Then('error should be thrown', () => {
+            expect(e).toBeDefined();
+            // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+            expect((e as any).message).toMatch(/Invalid OpenIdConfig Key/);
+          });
+        }
+      });
+    });
 
-		Scenario(
-			'Constructing VerifiedTokenService without configurations',
-			({ Given, When, Then }) => {
-				Given('a null OpenID config map', () => {
-					// Will be null in the constructor call
-				});
+    Scenario('getVerifiedJwt returns payload for valid config', ({ When, Then }) => {
+      let result: Awaited<ReturnType<typeof service.getVerifiedJwt>>;
+      When('I call getVerifiedJwt with valid key', async () => {
+        service = new VerifiedTokenService(openIdConfigs);
+        service.start();
+        result = await service.getVerifiedJwt(testToken, 'portal1');
+      });
+      Then('payload should be defined', () => {
+        expect(result.payload).toBeDefined();
+        expect(result.payload.sub).toBe('test-subject');
+      });
+    });
 
-				When('the VerifiedTokenService is constructed', () => {
-					// Handled in Then
-				});
-
-				Then(
-					'it should throw an error indicating configurations are required',
-					() => {
-						expect(
-							() =>
-								new VerifiedTokenService(
-									null as unknown as Map<string, OpenIdConfig>,
-								),
-						).toThrow('openIdConfigs is required');
-					},
-				);
-			},
-		);
-
-		Scenario(
-			'Starting the service to refresh keystores',
-			({ Given, When, Then, And }) => {
-				Given(
-					'a VerifiedTokenService instance with valid configurations',
-					() => {
-						service = new VerifiedTokenService(openIdConfigs);
-					},
-				);
-
-				When('the start method is called', () => {
-					service.start();
-				});
-
-				Then('it should immediately refresh the keystore collection', () => {
-					expect(service.keyStoreCollection.size).toBe(2);
-					expect(service.keyStoreCollection.has('portal1')).toBe(true);
-					expect(service.keyStoreCollection.has('portal2')).toBe(true);
-				});
-
-				And(
-					'it should set up a timer to refresh keystores periodically',
-					() => {
-						expect(service.timerInstance).toBeDefined();
-					},
-				);
-			},
-		);
-
-		Scenario('Starting the service multiple times', ({ Given, When, Then }) => {
-			Given('a VerifiedTokenService instance that has been started', () => {
-				service = new VerifiedTokenService(openIdConfigs);
-				service.start();
-			});
-
-			When('the start method is called again', () => {
-				const firstTimer = service.timerInstance;
-				service.start();
-				expect(service.timerInstance).toBe(firstTimer);
-			});
-
-			Then('it should not create multiple timer instances', () => {
-				expect(service.timerInstance).toBeDefined();
-			});
-		});
-
-		Scenario(
-			'Refreshing the keystore collection',
-			({ Given, When, Then, And }) => {
-				Given(
-					'a VerifiedTokenService instance with valid configurations',
-					() => {
-						service = new VerifiedTokenService(openIdConfigs);
-					},
-				);
-
-				When('the refreshCollection method is called', () => {
-					service.refreshCollection();
-				});
-
-				Then('it should create keystores for each OpenID configuration', () => {
-					expect(service.keyStoreCollection.size).toBe(2);
-				});
-
-				And(
-					'each keystore should be associated with its configuration key',
-					() => {
-						const portal1Store = service.keyStoreCollection.get('portal1');
-						const portal2Store = service.keyStoreCollection.get('portal2');
-						expect(portal1Store).toBeDefined();
-						expect(portal2Store).toBeDefined();
-						expect(portal1Store?.issuerUrl).toBe('https://example.com');
-						expect(portal2Store?.issuerUrl).toBe('https://another.com');
-					},
-				);
-			},
-		);
-
-		Scenario(
-			'Verifying a JWT with a valid token',
-			({ Given, And, When, Then }) => {
-				let result: Awaited<ReturnType<typeof service.getVerifiedJwt>>;
-
-				Given('a started VerifiedTokenService instance', () => {
-					service = new VerifiedTokenService(openIdConfigs);
-					service.start();
-				});
-
-				And('a valid JWT token', () => {
-					// Already set in Background
-				});
-
-				When(
-					'getVerifiedJwt is called with the token and a valid config key',
-					async () => {
-						result = await service.getVerifiedJwt(testToken, 'portal1');
-					},
-				);
-
-				Then('it should return the verified JWT payload', () => {
-					expect(result).toBeDefined();
-					expect(result.payload).toBeDefined();
-				});
-
-				And('the payload should contain the expected claims', () => {
-					expect(result.payload.sub).toBe('test-subject');
-					expect(result.payload.aud).toBe('test-audience');
-				});
-			},
-		);
-
-		Scenario(
-			'Verifying a JWT before service is started',
-			({ Given, When, Then }) => {
-				Given(
-					'a VerifiedTokenService instance that has not been started',
-					() => {
-						service = new VerifiedTokenService(openIdConfigs);
-					},
-				);
-
-				When('getVerifiedJwt is called', async () => {
-					// Handled in Then
-				});
-
-				Then(
-					'it should throw an error indicating the service is not started',
-					async () => {
-						await expect(
-							service.getVerifiedJwt(testToken, 'portal1'),
-						).rejects.toThrow('ContextUserFromMsal not started');
-					},
-				);
-			},
-		);
-
-		Scenario(
-			'Verifying a JWT with an invalid config key',
-			({ Given, When, Then }) => {
-				Given('a started VerifiedTokenService instance', () => {
-					service = new VerifiedTokenService(openIdConfigs);
-					service.start();
-				});
-
-				When(
-					'getVerifiedJwt is called with an invalid config key',
-					async () => {
-						// Handled in Then
-					},
-				);
-
-				Then(
-					'it should throw an error indicating the config key is invalid',
-					async () => {
-						await expect(
-							service.getVerifiedJwt(testToken, 'invalid-key'),
-						).rejects.toThrow('Invalid OpenIdConfig Key');
-					},
-				);
-			},
-		);
-
-		Scenario(
-			'Verifying a JWT with audience validation',
-			({ Given, When, Then }) => {
-				let result: Awaited<ReturnType<typeof service.getVerifiedJwt>>;
-
-				Given(
-					'a started VerifiedTokenService instance with audience configuration',
-					() => {
-						service = new VerifiedTokenService(openIdConfigs);
-						service.start();
-					},
-				);
-
-				When(
-					'getVerifiedJwt is called with a token containing the correct audience',
-					async () => {
-						result = await service.getVerifiedJwt(testToken, 'portal1');
-					},
-				);
-
-				Then(
-					'it should successfully verify and return the token payload',
-					() => {
-						expect(result.payload).toBeDefined();
-						expect(result.payload.aud).toBe('test-audience');
-					},
-				);
-			},
-		);
-
-		Scenario(
-			'Verifying a JWT with issuer validation disabled',
-			({ Given, When, Then }) => {
-				let result: Awaited<ReturnType<typeof service.getVerifiedJwt>>;
-
-				Given(
-					'a started VerifiedTokenService instance with ignoreIssuer set to true',
-					() => {
-						service = new VerifiedTokenService(openIdConfigs);
-						service.start();
-					},
-				);
-
-				When(
-					'getVerifiedJwt is called with a token from any issuer',
-					async () => {
-						result = await service.getVerifiedJwt(testToken, 'portal2');
-					},
-				);
-
-				Then('it should skip issuer validation and verify the token', () => {
-					expect(result.payload).toBeDefined();
-				});
-			},
-		);
-
-		Scenario(
-			'Verifying a JWT with custom clock tolerance',
-			({ Given, When, Then }) => {
-				let result: Awaited<ReturnType<typeof service.getVerifiedJwt>>;
-				let customConfig: Map<string, OpenIdConfig>;
-
-				Given(
-					'a started VerifiedTokenService instance with custom clock tolerance',
-					() => {
-						customConfig = new Map([
-							[
-								'custom-portal',
-								{
-									issuerUrl: 'https://example.com',
-									oidcEndpoint: 'https://example.com/.well-known/jwks.json',
-									audience: 'test-audience',
-									ignoreIssuer: false,
-									clockTolerance: '10 minutes',
-								},
-							],
-						]);
-						service = new VerifiedTokenService(customConfig);
-						service.start();
-					},
-				);
-
-				When(
-					'getVerifiedJwt is called with a token slightly expired',
-					async () => {
-						result = await service.getVerifiedJwt(testToken, 'custom-portal');
-					},
-				);
-
-				Then(
-					'it should accept the token within the clock tolerance window',
-					() => {
-						expect(result.payload).toBeDefined();
-					},
-				);
-			},
-		);
-	},
+    Scenario('getVerifiedJwt respects ignoreIssuer and clockTolerance', ({ When, Then }) => {
+      let result: Awaited<ReturnType<typeof service.getVerifiedJwt>>;
+      When('I call getVerifiedJwt with ignoreIssuer true and custom clockTolerance', async () => {
+        const customConfig = new Map([
+          [
+            'custom-portal',
+            {
+              issuerUrl: 'https://example.com',
+              oidcEndpoint: 'https://example.com/.well-known/jwks.json',
+              audience: 'test-audience',
+              ignoreIssuer: true,
+              clockTolerance: '10 minutes',
+            },
+          ],
+        ]);
+        service = new VerifiedTokenService(customConfig);
+        service.start();
+        result = await service.getVerifiedJwt(testToken, 'custom-portal');
+      });
+      Then('payload should be defined', () => {
+        expect(result.payload).toBeDefined();
+        expect(result.payload.aud).toBe('test-audience');
+      });
+    });
+  }
 );

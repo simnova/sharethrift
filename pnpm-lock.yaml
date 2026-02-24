@@ -791,9 +791,6 @@ importers:
         specifier: '>=1.13.5'
         version: 1.13.5
     devDependencies:
-      '@apps/server-messaging-mock':
-        specifier: workspace:*
-        version: link:../../../apps/server-messaging-mock
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
@@ -806,6 +803,9 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.8.3
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.17(@opentelemetry/api@1.9.0)(@types/node@24.10.9)(@vitest/browser-playwright@4.0.17)(jiti@2.6.1)(jsdom@26.1.0)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2)
 
   packages/cellix/service-messaging-twilio:
     dependencies:
@@ -943,9 +943,6 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
-      '@cellix/vitest-config':
-        specifier: workspace:*
-        version: link:../vitest-config
       '@types/node':
         specifier: ^24.10.7
         version: 24.10.9

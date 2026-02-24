@@ -24,7 +24,7 @@ const projectRoot = path.resolve(
 const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
 const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
 
-// biome-ignore lint:useLiteralKeys
+// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 const port = Number(process.env['PORT'] ?? 4000);
 
 const fs = await import('node:fs');
@@ -46,7 +46,7 @@ const allowedRedirectUris = new Set([
 	'https://sharethrift.localhost:3000/auth-redirect-admin',
 ]);
 
-// biome-ignore lint:useLiteralKeys
+// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 const allowedRedirectUri =
 	process.env['ALLOWED_REDIRECT_URI'] ||
 	'http://localhost:3000/auth-redirect-user';
@@ -69,15 +69,15 @@ const config: OAuth2Config = {
 	certKeyPath: certKeyPath,
 	certPath: certPath,
 	getUserProfile: (isAdminPortal) => {
-		// biome-ignore lint:useLiteralKeys
+		// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 		const email = isAdminPortal
 			? process.env['ADMIN_EMAIL'] || process.env['EMAIL'] || ''
 			: process.env['EMAIL'] || '';
-		// biome-ignore lint:useLiteralKeys
+		// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 		const given_name = isAdminPortal
 			? process.env['ADMIN_GIVEN_NAME'] || process.env['GIVEN_NAME'] || ''
 			: process.env['GIVEN_NAME'] || '';
-		// biome-ignore lint:useLiteralKeys
+		// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 		const family_name = isAdminPortal
 			? process.env['ADMIN_FAMILY_NAME'] || process.env['FAMILY_NAME'] || ''
 			: process.env['FAMILY_NAME'] || '';

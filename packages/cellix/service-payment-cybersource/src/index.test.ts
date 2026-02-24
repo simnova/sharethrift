@@ -22,6 +22,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       // ...existing code...
     });
     When('I instantiate the service', () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
       service = new ServicePaymentCybersource(
         'app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin'
       );
@@ -37,6 +38,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
     });
     When('I instantiate the service', () => {
       try {
+        // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
         service = new ServicePaymentCybersource();
       } catch (e) {
         error = e;
@@ -52,6 +54,7 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       // ...existing code...
     });
     When('I instantiate the service', () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
       service = new ServicePaymentCybersource(
         'app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin'
       );
@@ -67,4 +70,171 @@ test.for(feature, ({ Scenario, BeforeEachScenario }) => {
       });
     });
   });
+
+  Scenario('startUp and shutDown methods', ({ When, Then }) => {
+    When('I call startUp and shutDown', async () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      await service.startUp();
+      await service.shutDown();
+    });
+    Then('service.client should be undefined after shutDown', () => {
+      expect(service['client']).toBeUndefined();
+    });
+  });
+
+  Scenario('startUp throws if already started', ({ When, Then }) => {
+    When('I call startUp twice', async () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      await service.startUp();
+      try {
+        await service.startUp();
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown', () => {
+      expect(error).toBeDefined();
+      // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+      expect((error as any).message).toMatch(/already started/);
+    });
+  });
+
+  Scenario('service getter throws if not started', ({ When, Then }) => {
+    When('I access service before startUp', () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      try {
+        // Should throw
+        // biome-ignore lint/suspicious/noExplicitAny: test private getter
+        (service as any).service;
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown', () => {
+      expect(error).toBeDefined();
+      // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+      expect((error as any).message).toMatch(/not started/);
+    });
+  });
+
+  Scenario('createPlan throws not implemented', ({ When, Then }) => {
+    When('I call createPlan', async () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      try {
+        await service.createPlan({} as any);
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown', () => {
+      expect(error).toBeDefined();
+      // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+      expect((error as any).message).toMatch(/not implemented/);
+    });
+  });
+
+  Scenario('listOfPlans throws not implemented', ({ When, Then }) => {
+    When('I call listOfPlans', async () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      try {
+        await service.listOfPlans();
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown', () => {
+      expect(error).toBeDefined();
+      // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+      expect((error as any).message).toMatch(/not implemented/);
+    });
+  });
+
+  Scenario('getPlan throws not implemented', ({ When, Then }) => {
+    When('I call getPlan', async () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      try {
+        await service.getPlan('planId');
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown', () => {
+      expect(error).toBeDefined();
+      // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+      expect((error as any).message).toMatch(/not implemented/);
+    });
+  });
+
+  Scenario('createSubscription throws not implemented', ({ When, Then }) => {
+    When('I call createSubscription', async () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      try {
+        await service.createSubscription({} as any);
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown', () => {
+      expect(error).toBeDefined();
+      // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+      expect((error as any).message).toMatch(/not implemented/);
+    });
+  });
+
+  Scenario('updatePlanForSubscription throws not implemented', ({ When, Then }) => {
+    When('I call updatePlanForSubscription', async () => {
+      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      try {
+        await service.updatePlanForSubscription('subId', 'planId');
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown', () => {
+      expect(error).toBeDefined();
+      // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+      expect((error as any).message).toMatch(/not implemented/);
+    });
+  });
+
+  Scenario('listOfSubscriptions throws not implemented', ({ When, Then }) => {
+    When('I call listOfSubscriptions', async () => {
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      try {
+        await service.listOfSubscriptions();
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown', () => {
+      expect(error).toBeDefined();
+      // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+      expect((error as any).message).toMatch(/not implemented/);
+    });
+  });
+
+  Scenario('suspendSubscription throws not implemented', ({ When, Then }) => {
+    When('I call suspendSubscription', async () => {
+      service = new ServicePaymentCybersource('app', 'merchant', 'keyId', 'keySecret', 'env', 'true', 'origin');
+      try {
+        await service.suspendSubscription('subId');
+      } catch (e) {
+        error = e;
+      }
+    });
+    Then('an error should be thrown', () => {
+      expect(error).toBeDefined();
+      // biome-ignore lint/suspicious/noExplicitAny: error type assertion for test
+      expect((error as any).message).toMatch(/not implemented/);
+    });
+  });
+
 });

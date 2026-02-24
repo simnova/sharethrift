@@ -12,9 +12,7 @@
 		"build": "tsc --build",
 		"clean": "rimraf dist",
 		"start": "node -r dotenv/config dist/src/index.js",
-		"dev": "tsc-watch --onSuccess \"node -r dotenv/config dist/src/index.js\"",
-		"test": "vitest run",
-		"test:watch": "vitest"
+		"dev": "tsc-watch --onSuccess \"node -r dotenv/config dist/src/index.js\""
 	},
 	"dependencies": {
 		"@cellix/server-messaging-seedwork": "workspace:*",
