@@ -101,5 +101,5 @@
 		"graphql",
 		"rxjs"
 	],
-	"ignoreBinaries": ["func", "open", "concurrently", "container"]
+	"ignoreBinaries": ["func", "open", "concurrently", "container", "portless"]
 }
