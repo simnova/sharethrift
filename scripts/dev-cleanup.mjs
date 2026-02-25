@@ -3,7 +3,7 @@
  * Kills any leftover dev server processes from a previous run before starting fresh.
  * Runs portless proxy stop, then kills known mock-server and func processes by port/name.
  */
-import { execSync, spawnSync } from 'node:child_process';
+import { execSync } from 'node:child_process';
 
 function run(cmd) {
 	try {
