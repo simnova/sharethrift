@@ -14,7 +14,7 @@ describe('ServiceMessagingMock Integration Tests', () => {
 		process.env['MESSAGING_MOCK_URL'] = MOCK_SERVER_URL;
 		
 		// Force HTTP mode for tests to avoid certificate issues
-		mockServer = await startServer(MOCK_SERVER_PORT, true, false);
+mockServer = await startServer(MOCK_SERVER_PORT, true);
 		
 		await new Promise((resolve) => setTimeout(resolve, 500));
 	}, 15000);

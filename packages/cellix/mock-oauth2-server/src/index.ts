@@ -1,8 +1,4 @@
 import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
-import fs from 'node:fs';
-import https from 'node:https';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import express from 'express';
 import {
 	exportJWK,
@@ -17,7 +13,9 @@ setupEnvironment();
 
 const app = express();
 app.disable('x-powered-by');
-const port = 4000;
+const port = Number(process.env['PORT'] ?? 4000);
+// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures
+const BASE_URL = process.env['BASE_URL'] ?? 'https://mock-auth.sharethrift.localhost:1355';
 
 function normalizeUrl(urlString: string): string {
 	try {
@@ -35,15 +33,15 @@ function normalizeUrl(urlString: string): string {
 const allowedRedirectUris = new Set([
 	'http://localhost:3000/auth-redirect-user',
 	'http://localhost:3000/auth-redirect-admin',
-	'https://sharethrift.localhost:3000/auth-redirect-user',
-	'https://sharethrift.localhost:3000/auth-redirect-admin',
+	'https://sharethrift.localhost:1355/auth-redirect-user',
+	'https://sharethrift.localhost:1355/auth-redirect-admin',
 ]);
 // Map redirect URIs to their corresponding audience identifiers
 const redirectUriToAudience = new Map([
 	['http://localhost:3000/auth-redirect-user', 'user-portal'],
 	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
-	['https://sharethrift.localhost:3000/auth-redirect-user', 'user-portal'],
-	['https://sharethrift.localhost:3000/auth-redirect-admin', 'admin-portal'],
+	['https://sharethrift.localhost:1355/auth-redirect-user', 'user-portal'],
+	['https://sharethrift.localhost:1355/auth-redirect-admin', 'admin-portal'],
 ]);
 // Deprecated: kept for backwards compatibility. Uses process.env's index signature
 // (string | undefined) and falls back to a default redirect URI when not set.
@@ -141,23 +139,6 @@ async function buildTokenResponse(
 
 // Main async startup
 async function main() {
-	// Always resolve .certs from monorepo root (works regardless of script location or cwd)
-	const projectRoot = path.resolve(
-		path.dirname(fileURLToPath(import.meta.url)),
-		'../../../../',
-	);
-	const certKeyPath = path.join(
-		projectRoot,
-		'.certs/sharethrift.localhost-key.pem',
-	);
-	const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
-	const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
-
-	// Set BASE_URL based on whether we have certificates
-	const BASE_URL = hasCerts
-		? `https://mock-auth.sharethrift.localhost:${port}`
-		: `http://localhost:${port}`;
-
 	// Generate signing keypair with jose
 	const { publicKey, privateKey } = await generateKeyPair('RS256');
 	const publicJwk = await exportJWK(publicKey);
@@ -312,30 +293,12 @@ async function main() {
 		return;
 	});
 
-	// Load SSL certificates for HTTPS
-	if (hasCerts) {
-		const httpsOptions = {
-			key: fs.readFileSync(certKeyPath),
-			cert: fs.readFileSync(certPath),
-		};
-
-		https
-			.createServer(httpsOptions, app)
-			.listen(port, 'mock-auth.sharethrift.localhost', () => {
-				// eslint-disable-next-line no-console
-				console.log(`Mock OAuth2 server running on ${BASE_URL}`);
-				console.log(
-					`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`,
-				);
-			});
-	} else {
-		// Fallback to HTTP when certs don't exist (CI/CD)
-		app.listen(port, () => {
-			// eslint-disable-next-line no-console
-			console.log(`Mock OAuth2 server running on ${BASE_URL} (no certs found)`);
-			console.log(`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`);
-		});
-	}
+	// Start HTTP server (portless handles TLS/proxy at the subdomain level)
+	app.listen(port, () => {
+		// eslint-disable-next-line no-console
+		console.log(`Mock OAuth2 server running on ${BASE_URL}`);
+		console.log(`JWKS endpoint running on ${BASE_URL}/.well-known/jwks.json`);
+	});
 }
 
 main();

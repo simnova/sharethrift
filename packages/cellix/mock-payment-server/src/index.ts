@@ -1,7 +1,5 @@
 import { fileURLToPath } from 'node:url';
 import express from 'express';
-import https from 'node:https';
-import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { generateKeyPair } from 'jose';
@@ -31,21 +29,9 @@ import type {
 const app = express();
 app.disable('x-powered-by');
 const DEFAULT_PORT = Number(process.env['PORT'] ?? 3001);
-const HOST = 'mock-payment.sharethrift.localhost';
 
-// Detect certificate availability to determine protocol (HTTPS vs HTTP)
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../../..');
-const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
-const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
-const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
-
-// Derive protocol and base URLs based on cert availability
-const PROTOCOL = hasCerts ? 'https' : 'http';
-const FRONTEND_HOST = hasCerts ? 'sharethrift.localhost:3000' : 'localhost:3000';
-const PAYMENT_HOST = hasCerts ? `${HOST}:${DEFAULT_PORT}` : `localhost:${DEFAULT_PORT}`;
-
-const FRONTEND_BASE_URL = `${PROTOCOL}://${FRONTEND_HOST}`;
-const PAYMENT_BASE_URL = `${PROTOCOL}://${PAYMENT_HOST}`;
+const FRONTEND_BASE_URL = 'https://sharethrift.localhost:1355';
+const PAYMENT_BASE_URL = 'https://mock-payment.sharethrift.localhost:1355';
 
 // Enable CORS for all origins (or restrict to 'https://sharethrift.localhost:3000' if needed)
 app.use((req, res, next) => {
@@ -1355,55 +1341,27 @@ app.post(
 );
 
 const startServer = (portToTry: number, attempt = 0): void => {
-	if (hasCerts) {
-		const httpsOptions = {
-			key: fs.readFileSync(certKeyPath),
-			cert: fs.readFileSync(certPath),
-		};
-		
-		const server = https.createServer(httpsOptions, app).listen(portToTry, HOST, () => {
-			console.log(` Mock Payment Server listening on https://${HOST}:${portToTry}`);
-			console.log(`   CORS origin: ${FRONTEND_BASE_URL}`);
-			console.log(`   Microform origin: ${PAYMENT_BASE_URL}`);
-		});
+	// HTTP server — portless handles TLS/proxy at the subdomain level
+	const server = app.listen(portToTry, () => {
+		console.log(` Mock Payment Server listening on http://localhost:${portToTry}`);
+		console.log(`   CORS origin: ${FRONTEND_BASE_URL}`);
+		console.log(`   Microform origin: ${PAYMENT_BASE_URL}`);
+	});
 
-		server.on('error', (error: NodeJS.ErrnoException) => {
-			if (error.code === 'EADDRINUSE' && attempt < 5) {
-				const nextPort = portToTry + 1;
-				console.warn(
-					`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
-				);
-				server.close(() => {
-					startServer(nextPort, attempt + 1);
-				});
-				return;
-			}
+	server.on('error', (error: NodeJS.ErrnoException) => {
+		if (error.code === 'EADDRINUSE' && attempt < 5) {
+			const nextPort = portToTry + 1;
+			console.warn(
+				`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
+			);
+			server.close(() => {
+				startServer(nextPort, attempt + 1);
+			});
+			return;
+		}
 
-			console.error('Failed to start mock-payment-server', error);
-		});
-	} else {
-		// Fallback to HTTP when certs don't exist (CI/CD)
-		const server = app.listen(portToTry, () => {
-			console.log(` Mock Payment Server listening on http://localhost:${portToTry} (no certs found)`);
-			console.log(`   CORS origin: ${FRONTEND_BASE_URL}`);
-			console.log(`   Microform origin: ${PAYMENT_BASE_URL}`);
-		});
-
-		server.on('error', (error: NodeJS.ErrnoException) => {
-			if (error.code === 'EADDRINUSE' && attempt < 5) {
-				const nextPort = portToTry + 1;
-				console.warn(
-					`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
-				);
-				server.close(() => {
-					startServer(nextPort, attempt + 1);
-				});
-				return;
-			}
-
-			console.error('Failed to start mock-payment-server', error);
-		});
-	}
+		console.error('Failed to start mock-payment-server', error);
+	});
 };
 
 startServer(DEFAULT_PORT);
