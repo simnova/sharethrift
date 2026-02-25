@@ -5,7 +5,7 @@ export default defineConfig(() => {
   return {
     plugins: [react()],
     server: {
-      open: true,
+      open: 'https://sharethrift.localhost:1355',
     },
   };
 });
