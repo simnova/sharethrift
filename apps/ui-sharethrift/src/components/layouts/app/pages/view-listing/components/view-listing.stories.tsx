@@ -1,14 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ViewListing } from './view-listing.tsx';
-import {
-	type ItemListing,
-	ViewListingImageGalleryGetImagesDocument,
-	ViewListingInformationGetListingDocument,
-} from '../../../../../../generated.tsx';
-import {
-	withMockApolloClient,
-	withMockRouter,
-} from '../../../../../../test-utils/storybook-decorators.tsx';
+import { type ItemListing, ViewListingImageGalleryGetImagesDocument, ViewListingInformationGetListingDocument } from '../../../../../../generated.tsx';
+import { withMockApolloClient, withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
 const MOCK_LISTING_BASE: ItemListing = {
@@ -20,10 +13,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 	sharingPeriodStart: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
 	sharingPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10), // in 10 days
 	state: 'Active' as string,
-	images: [
-		'https://placehold.co/600x400?text=Drill+1',
-		'https://placehold.co/600x400?text=Drill+2',
-	],
+	images: ['https://placehold.co/600x400?text=Drill+1', 'https://placehold.co/600x400?text=Drill+2'],
 	createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5),
 	updatedAt: new Date(),
 	reports: 0,
@@ -46,7 +36,7 @@ const MOCK_LISTING_BASE: ItemListing = {
 		schemaVersion: '1.0',
 		userType: 'personal-user',
 	},
-    listingType: 'item-listing',
+	listingType: 'item-listing',
 };
 
 const mocks = [
@@ -55,7 +45,7 @@ const mocks = [
 			query: ViewListingImageGalleryGetImagesDocument,
 			variables: { listingId: baseListingId },
 		},
-		result: { data: { itemListing: { images: MOCK_LISTING_BASE.images } } },
+		result: { data: { itemListing: { id: baseListingId, title: MOCK_LISTING_BASE.title, images: MOCK_LISTING_BASE.images } } },
 	},
 	{
 		request: {
@@ -70,8 +60,7 @@ const mocks = [
 					description: MOCK_LISTING_BASE.description,
 					category: MOCK_LISTING_BASE.category,
 					location: MOCK_LISTING_BASE.location,
-					sharingPeriodStart:
-						MOCK_LISTING_BASE.sharingPeriodStart.toISOString(),
+					sharingPeriodStart: MOCK_LISTING_BASE.sharingPeriodStart.toISOString(),
 					sharingPeriodEnd: MOCK_LISTING_BASE.sharingPeriodEnd.toISOString(),
 					state: MOCK_LISTING_BASE.state,
 					images: MOCK_LISTING_BASE.images,
@@ -96,10 +85,7 @@ const meta: Meta<typeof ViewListing> = {
 			mocks,
 		},
 	},
-	decorators: [
-		withMockApolloClient,
-		withMockRouter('/listing/mock-listing-id-1'),
-	],
+	decorators: [withMockApolloClient, withMockRouter('/listing/mock-listing-id-1')],
 };
 export default meta;
 
@@ -114,7 +100,8 @@ export const Default: Story = {
 		isAuthenticated: false,
 		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
-	}};
+	},
+};
 
 export const AsReserver: Story = {
 	args: {
