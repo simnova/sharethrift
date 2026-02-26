@@ -57,6 +57,12 @@ ignore:
         reason: 'Transitive dependency in Docusaurus; ReDoS vulnerability not exploitable in static site generation context'
         expires: '2026-08-13T00:00:00.000Z'
         created: '2026-02-13T00:00:00.000Z'
+        
+  'SNYK-JS-MINIMATCH-15309438':
+    - '* > minimatch@3.1.2':
+        reason: 'Transitive dependency in Docusaurus; not exploitable in current usage context'
+        expires: '2026-03-13T00:00:00.000Z'
+        created: '2026-02-13T00:00:00.000Z'
 
 # Snyk Code exclusions for local development tooling
 exclude:
