@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { AppRoutes } from '../../..';
 import { withMockApolloClient,withMockRouter } from '../../../../../../test-utils/storybook-decorators';
 import { AdminListingsTableContainerAdminListingsDocument,AdminUsersTableContainerAllUsersDocument } from '../../../../../../generated.tsx';
-import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers';
+import { UserIsAdminMockRequest } from '../../../../../../test-utils/storybook-mock-helpers.ts';
 import { expect, within } from 'storybook/test';
 
 
@@ -93,7 +93,7 @@ export const Default: Story = {
 						},
 					},
 				},
-				userIsAdminMockRequest('admin-user', true),
+				UserIsAdminMockRequest('admin-user', true),
 			],
 		},
 	},

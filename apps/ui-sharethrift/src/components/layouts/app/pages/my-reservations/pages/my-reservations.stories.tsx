@@ -12,8 +12,8 @@ import {
 	HomeMyReservationsReservationsViewHistoryContainerPastReservationsDocument,
 	ViewListingCurrentUserDocument,
 } from '../../../../../../generated.tsx';
-import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers.ts';
 import { App } from '../../../../../../app.tsx';
+import { UserIsAdminMockRequest } from '../../../../../../test-utils/storybook-mock-helpers.ts';
 
 const meta: Meta<typeof App> = {
 	title: 'Pages/My Reservations',
@@ -42,7 +42,7 @@ const defaultMocks = [
 			},
 		},
 	},
-	userIsAdminMockRequest(STORYBOOK_RESERVATION_USER_ID, false),
+	UserIsAdminMockRequest(STORYBOOK_RESERVATION_USER_ID, false),
 
 	// Plus common reservation mocks
 	...reservationStoryMocks,

@@ -12,7 +12,7 @@ import {
 	ViewListingQueryActiveByListingIdDocument,
 } from '../../../../../../generated.tsx';
 import { AppRoutes } from '../../../index.tsx';
-import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers.ts';
+import { UserIsAdminMockRequest } from '../../../../../../test-utils/storybook-mock-helpers.ts';
 
 const mockListing = {
 	__typename: 'ItemListing',
@@ -97,7 +97,7 @@ const meta: Meta<typeof AppRoutes> = {
 						},
 					},
 				},
-				userIsAdminMockRequest('user-1', false),
+				UserIsAdminMockRequest('user-1', false),
 				{
 					request: {
 						query: SharerInformationContainerDocument,
@@ -149,7 +149,7 @@ export const Loading: Story = {
 	parameters: {
 		apolloClient: {
 			mocks: [
-				userIsAdminMockRequest('user-1', false),
+				UserIsAdminMockRequest('user-1', false),
 				{
 					request: {
 						query: ViewListingCurrentUserDocument,

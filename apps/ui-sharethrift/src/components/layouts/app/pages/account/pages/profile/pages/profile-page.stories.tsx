@@ -11,7 +11,7 @@ import {
 	type PersonalUser,
 } from '../../../../../../../../generated.tsx';
 import { expect, within } from 'storybook/test';
-import { userIsAdminMockRequest } from '../../../../../../../../test-utils/storybook-helpers.ts';
+import { UserIsAdminMockRequest } from '../../../../../../../../test-utils/storybook-mock-helpers.ts';
 
 const mockUserSarah: PersonalUser = {
 	__typename: 'PersonalUser',
@@ -140,7 +140,7 @@ export const DefaultView: Story = {
 						},
 					},
 				},
-				userIsAdminMockRequest(mockUserSarah.id),
+				UserIsAdminMockRequest(mockUserSarah.id),
 			],
 		},
 	},
@@ -176,7 +176,7 @@ export const NoListings: Story = {
 						},
 					},
 				},
-				userIsAdminMockRequest(mockUserAlex.id),
+				UserIsAdminMockRequest(mockUserAlex.id),
 			],
 		},
 	},

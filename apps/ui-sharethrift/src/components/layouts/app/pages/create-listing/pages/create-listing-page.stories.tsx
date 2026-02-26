@@ -6,7 +6,7 @@ import {
 	withMockApolloClient,
 	withMockRouter,
 } from '../../../../../../test-utils/storybook-decorators';
-import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers';
+import { UserIsAdminMockRequest } from '../../../../../../test-utils/storybook-mock-helpers';
 
 const meta: Meta<typeof AppRoutes> = {
 	title: 'Pages/Create Listing',
@@ -45,7 +45,7 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
 	parameters: {
 		apolloClient: {
-			mocks: [userIsAdminMockRequest('user-1', true)],
+			mocks: [UserIsAdminMockRequest('user-1', true)],
 		},
 	},
 	play: async ({ canvasElement }) => {

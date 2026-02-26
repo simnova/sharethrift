@@ -3,7 +3,7 @@ import { expect } from 'storybook/test';
 import { withMockApolloClient, withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
 import { HomeAllListingsTableContainerMyListingsAllDocument, HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../../generated.tsx';
 import { AppRoutes } from '../../../index.tsx';
-import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers.ts';
+import { UserIsAdminMockRequest } from '../../../../../../test-utils/storybook-mock-helpers.ts';
 
 const mockListings = {
 	__typename: 'MyListingsAllResult',
@@ -73,7 +73,7 @@ const meta: Meta<typeof AppRoutes> = {
 						},
 					},
 				},
-				userIsAdminMockRequest('user-1', false),
+				UserIsAdminMockRequest('user-1', false),
 			],
 		},
 	},
@@ -129,7 +129,7 @@ export const EmptyListings: Story = {
 						},
 					},
 				},
-				userIsAdminMockRequest('user-1', false),
+				UserIsAdminMockRequest('user-1', false),
 			],
 		},
 	},

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { ListingsPageContainerGetListingsDocument } from "../../../../generated.tsx";
 import { withMockApolloClient, withMockRouter } from "../../../../test-utils/storybook-decorators.tsx";
 import { expect, within } from 'storybook/test';
-import { userIsAdminMockRequest } from "../../../../test-utils/storybook-helpers.ts";
+import { UserIsAdminMockRequest } from "../../../../test-utils/storybook-mock-helpers.ts";
 import { AppRoutes } from "../index.tsx";
 
 const meta: Meta<typeof AppRoutes> = {
@@ -27,7 +27,7 @@ Default.play = async ({ canvasElement }) => {
 Default.parameters = {
   apolloClient: {
     mocks: [
-      userIsAdminMockRequest('personal-user-123', false),
+      UserIsAdminMockRequest('personal-user-123', false),
       {
         request: {
           query: ListingsPageContainerGetListingsDocument,

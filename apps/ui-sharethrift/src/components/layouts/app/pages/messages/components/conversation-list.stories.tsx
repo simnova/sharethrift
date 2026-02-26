@@ -24,7 +24,7 @@ const mockListing: ItemListing = {
 	title: 'Moby Dick',
 	listingType: 'share',
 	sharingPeriodStart: new Date().toISOString(),
-	sharingPeriodEnd: new Date(Date.now() + 86400000).toISOString(),
+	sharingPeriodEnd: new Date(Date.now() + 86400000).toISOString(), // 24 hours from now
 	createdAt: new Date().toISOString(),
 	updatedAt: new Date().toISOString(),
 };

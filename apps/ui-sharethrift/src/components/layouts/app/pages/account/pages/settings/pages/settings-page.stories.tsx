@@ -7,7 +7,7 @@ import {
 	withMockRouter,
 } from '../../../../../../../../test-utils/storybook-decorators.tsx';
 import { HomeAccountSettingsViewContainerCurrentUserDocument } from '../../../../../../../../generated.tsx';
-import { userIsAdminMockRequest } from '../../../../../../../../test-utils/storybook-helpers.ts';
+import { UserIsAdminMockRequest } from '../../../../../../../../test-utils/storybook-mock-helpers.ts';
 
 const meta: Meta<typeof AppRoutes> = {
 	title: 'Pages/Account/Settings',
@@ -71,7 +71,7 @@ export const DefaultView: Story = {
 						},
 					},
 				},
-				userIsAdminMockRequest('507f1f77bcf86cd799439099'),
+				UserIsAdminMockRequest('507f1f77bcf86cd799439099'),
 			],
 		},
 	},
