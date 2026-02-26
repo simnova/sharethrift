@@ -1,14 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import {
-	withMockApolloClient,
-	withMockRouter,
-} from '../../../../../../test-utils/storybook-decorators.tsx';
-import {
-	HomeAllListingsTableContainerMyListingsAllDocument,
-	HomeRequestsTableContainerMyListingsRequestsDocument,
-} from '../../../../../../generated.tsx';
+import { withMockApolloClient, withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
+import { HomeAllListingsTableContainerMyListingsAllDocument, HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../../generated.tsx';
 import { AppRoutes } from '../../../index.tsx';
+import { userIsAdminMockRequest } from '../../../../../../test-utils/storybook-helpers.ts';
 
 const mockListings = {
 	__typename: 'MyListingsAllResult',
@@ -78,6 +73,7 @@ const meta: Meta<typeof AppRoutes> = {
 						},
 					},
 				},
+				userIsAdminMockRequest('user-1', false),
 			],
 		},
 	},
@@ -133,6 +129,7 @@ export const EmptyListings: Story = {
 						},
 					},
 				},
+				userIsAdminMockRequest('user-1', false),
 			],
 		},
 	},
@@ -143,7 +140,7 @@ export const EmptyListings: Story = {
 
 export const FileExports: Story = {
 	name: 'File Exports',
-  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	render: () => (
 		<div data-testid="file-export-test">
 			<p>MyListingsMain component file exists and exports correctly</p>
