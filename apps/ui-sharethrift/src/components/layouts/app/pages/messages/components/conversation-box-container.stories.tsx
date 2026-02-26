@@ -1,17 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, userEvent, within } from 'storybook/test';
-import {
-	ConversationBoxContainerConversationDocument,
-	ConversationBoxContainerSendMessageDocument,
-} from './generated.tsx';
-import { withMockApolloClient, withMockRouter, withMockUserId } from './test-utils/storybook-decorators.tsx';
-import { ConversationBoxContainer } from './components/layouts/app/pages/messages/components/conversation-box.container.tsx';
-import type { Conversation } from './generated.tsx';
+import { ConversationBoxContainerConversationDocument, ConversationBoxContainerSendMessageDocument, type Conversation } from '../../../../../../generated';
+import { ConversationBoxContainer } from './conversation-box.container';
+import { withMockApolloClient,withMockRouter,withMockUserId } from '../../../../../../test-utils/storybook-decorators.tsx';
 
-
-const createConversationMock = (
-	overrides?: Partial<Conversation> & { messages?: Conversation['messages'] },
-): Conversation => {
+const createConversationMock = (overrides?: Partial<Conversation> & { messages?: Conversation['messages'] }): Conversation => {
 	const defaultConversation: Conversation = {
 		__typename: 'Conversation',
 		id: 'conv-1',
@@ -76,10 +69,7 @@ const createConversationMock = (
 	};
 };
 
-const createSendMessageMock = (
-	mode: 'success' | 'error' | 'networkError',
-	messageContent: string = 'Test message',
-) => {
+const createSendMessageMock = (mode: 'success' | 'error' | 'networkError', messageContent: string = 'Test message') => {
 	const content = messageContent;
 
 	if (mode === 'networkError') {
@@ -102,7 +92,7 @@ const createSendMessageMock = (
 						content,
 						createdAt: new Date().toISOString(),
 						authorId: 'user-1',
-				  }
+					}
 				: null,
 	};
 
@@ -198,7 +188,7 @@ const meta: Meta<typeof ConversationBoxContainer> = {
 	parameters: {
 		layout: 'fullscreen',
 	},
-  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 export default meta;
 type Story = StoryObj<typeof ConversationBoxContainer>;
@@ -212,12 +202,10 @@ export const Default: Story = {
 			mocks: defaultMocks,
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// ListingBanner shows "{firstName}'s Listing"
-		await expect(
-			await canvas.findByText(/John's Listing/i),
-		).toBeInTheDocument();
+		await expect(await canvas.findByText(/John's Listing/i)).toBeInTheDocument();
 	},
 };
 
@@ -230,7 +218,7 @@ export const SendMessageSuccess: Story = {
 			mocks: sendMessageSuccessMocks,
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'Test message');
@@ -248,7 +236,7 @@ export const SendMessageError: Story = {
 			mocks: sendMessageErrorMocks,
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'This will fail');
@@ -266,7 +254,7 @@ export const SendMessageNetworkError: Story = {
 			mocks: sendMessageNetworkErrorMocks,
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'Network will fail');
@@ -284,7 +272,7 @@ export const CacheUpdateOnSuccess: Story = {
 			mocks: cacheUpdateMocks,
 		},
 	},
-	play:  async ({ canvasElement }) => {
+	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const textArea = await canvas.findByPlaceholderText(/Type a message/i);
 		await userEvent.type(textArea, 'First message');
@@ -305,8 +293,6 @@ export const CreateConversationMock: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// ListingBanner shows "{firstName}'s Listing"
-		await expect(
-			await canvas.findByText(/John's Listing/i),
-		).toBeInTheDocument();
+		await expect(await canvas.findByText(/John's Listing/i)).toBeInTheDocument();
 	},
 };

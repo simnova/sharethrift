@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, userEvent, within } from 'storybook/test';
-import type { Conversation } from './generated.tsx';
-import { ConversationBox } from './components/layouts/app/pages/messages/components/conversation-box.tsx';
+import type { Conversation } from '../../../../../../generated';
+import { ConversationBox } from './conversation-box';
 
 const mockConversation = {
 	__typename: 'Conversation',
@@ -113,9 +113,7 @@ export const WithMultipleMessages: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		await expect(
-			canvas.getByText(/Hi, is this still available?/i),
-		).toBeInTheDocument();
+		await expect(canvas.getByText(/Hi, is this still available?/i)).toBeInTheDocument();
 		await expect(canvas.getByText(/Yes it is!/i)).toBeInTheDocument();
 	},
 };
@@ -133,9 +131,7 @@ export const EmptyConversation: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		// Placeholder text is "Type a message..."
-		await expect(
-			canvas.getByPlaceholderText(/Type a message/i),
-		).toBeInTheDocument();
+		await expect(canvas.getByPlaceholderText(/Type a message/i)).toBeInTheDocument();
 	},
 };
 
