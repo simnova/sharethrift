@@ -9,7 +9,7 @@
 		"lint": "eslint .",
 		"preview": "vite preview",
 		"tswatch": "tsc --build --watch",
-		"storybook": "storybook dev -p 6006",
+		"storybook": "portless storybook.sharethrift.localhost storybook dev",
 		"build-storybook": "storybook build",
 		"test": "vitest run",
 		"test:coverage:ui": "vitest run --coverage",

@@ -1343,9 +1343,9 @@ app.post(
 const startServer = (portToTry: number, attempt = 0): void => {
 	// HTTP server — portless handles TLS/proxy at the subdomain level
 	const server = app.listen(portToTry, () => {
-		console.log(` Mock Payment Server listening on http://localhost:${portToTry}`);
+		console.log(`   Mock Payment Server externally reachable at: ${PAYMENT_BASE_URL}`);
+		console.log(`   Internal bind (HTTP): http://localhost:${portToTry}`);
 		console.log(`   CORS origin: ${FRONTEND_BASE_URL}`);
-		console.log(`   Microform origin: ${PAYMENT_BASE_URL}`);
 	});
 
 	server.on('error', (error: NodeJS.ErrnoException) => {
