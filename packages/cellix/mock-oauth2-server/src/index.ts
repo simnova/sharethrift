@@ -1,3 +1,4 @@
+// biome-ignore-all lint/complexity/useLiteralKeys: process.env has an index signature returning string | undefined; bracket notation is required to satisfy TypeScript's strict null checking for environment variable access
 import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
 import express from 'express';
 import {
@@ -14,7 +15,6 @@ setupEnvironment();
 const app = express();
 app.disable('x-powered-by');
 const port = Number(process.env['PORT'] ?? 4000);
-// biome-ignore lint/complexity/useLiteralKeys: TypeScript requires bracket notation for index signatures
 const BASE_URL = process.env['BASE_URL'] ?? 'https://mock-auth.sharethrift.localhost:1355';
 
 function normalizeUrl(urlString: string): string {
@@ -43,10 +43,8 @@ const redirectUriToAudience = new Map([
 	['https://sharethrift.localhost:1355/auth-redirect-user', 'user-portal'],
 	['https://sharethrift.localhost:1355/auth-redirect-admin', 'admin-portal'],
 ]);
-// Deprecated: kept for backwards compatibility. Uses process.env's index signature
-// (string | undefined) and falls back to a default redirect URI when not set.
+// Deprecated: kept for backwards compatibility; falls back to a default redirect URI when not set.
 const allowedRedirectUri =
-// biome-ignore lint: TypeScript requires bracket notation for index signatures
 	process.env['ALLOWED_REDIRECT_URI'] ||
 	'http://localhost:3000/auth-redirect-user';
 // Type for user profile used in token claims
