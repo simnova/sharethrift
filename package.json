@@ -15,7 +15,7 @@
         "start": "turbo run build && concurrently pnpm:start:* --kill-others-on-fail --workspace=@sthrift/api",
         "format": "turbo run format",
         "proxy:stop": "portless proxy stop || true",
-        "proxy:start": "portless proxy start --https",
+        "proxy:start": "npm install -g portless && portless proxy start --https",
         "gen": "graphql-codegen --config codegen.yml",
         "gen:watch": "graphql-codegen --config codegen.yml --watch",
         "tsbuild": "tsc --build",
