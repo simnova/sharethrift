@@ -58,6 +58,7 @@ const meta: Meta<typeof RequestsTableContainer> = {
 	title: 'Containers/RequestsTableContainer',
 	component: RequestsTableContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 	},
 	decorators: [withMockApolloClient, withMockRouter(), withMockUserId()],

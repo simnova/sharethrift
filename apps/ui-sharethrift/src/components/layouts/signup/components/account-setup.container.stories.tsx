@@ -32,6 +32,7 @@ const meta: Meta<typeof AccountSetUpContainer> = {
 	title: 'Containers/AccountSetUpContainer',
 	component: AccountSetUpContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

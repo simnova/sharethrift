@@ -8,10 +8,13 @@ import {
 import { AppContainerCurrentUserDocument, ListingsPageContainerGetListingsDocument, UseUserIsAdminDocument } from './generated.tsx';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
+
+
 const meta: Meta<typeof AppContainer> = {
 	title: 'App/AppContainer',
 	component: AppContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 	},
 };

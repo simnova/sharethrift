@@ -101,6 +101,7 @@
 			"!**/node_modules/**",
 			"!**/dist/**",
 			"!**/*.d.ts",
+			"!**/*.min.js",
 			"!**/package.json",
 			"!**/coverage/**",
 			"!**/generated.ts",

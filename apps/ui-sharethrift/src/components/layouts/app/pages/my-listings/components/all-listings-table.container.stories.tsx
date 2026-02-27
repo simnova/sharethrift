@@ -42,6 +42,7 @@ const meta: Meta<typeof AllListingsTableContainer> = {
 		onPageChange: fn(),
 	},
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

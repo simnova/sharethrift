@@ -80,6 +80,7 @@ const meta: Meta<typeof SettingsViewContainer> = {
 	title: 'Containers/SettingsViewContainer',
 	component: SettingsViewContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

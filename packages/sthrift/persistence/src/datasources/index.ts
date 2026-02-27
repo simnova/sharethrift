@@ -1,5 +1,5 @@
 import { Domain, type DomainDataSource } from '@sthrift/domain';
-import type { MessagingService } from '@cellix/messaging-service';
+import type { MessagingService } from '@cellix/service-messaging-base';
 import type { ModelsContext } from '../models-context.ts';
 import { DomainDataSourceImplementation } from './domain/index.ts';
 import {
@@ -11,7 +11,7 @@ import {
 	MessagingDataSourceImplementation,
 } from './messaging/index.ts';
 import { type PaymentDataSource,PaymentDataSourceImplementation } from './payment/index.ts';
-import type { PaymentService } from '@cellix/payment-service';
+import type { PaymentService } from '@cellix/service-payment-base';
 
 export type DataSources = {
 	domainDataSource: DomainDataSource;

@@ -9,7 +9,6 @@ import { AuthContext } from 'react-oidc-context';
 import { RequireAuthAdmin } from './require-auth-admin.tsx';
 import { UseUserIsAdminDocument } from '../../generated.tsx';
 import { createMockAuth } from '../../test/utils/mock-auth.ts';
-import { vi } from 'vitest';
 
 const meta: Meta<typeof RequireAuthAdmin> = {
 	title: 'Shared/RequireAuthAdmin',
@@ -247,12 +246,12 @@ export const ForceLoginTriggersSigninRedirect: Story = {
 	decorators: [
 		withMockApolloClient,
 		(Story) => {
-			const signinRedirect = vi.fn();
+			// In Storybook, we cannot mock signinRedirect with vi.fn().
 			const mockAuth = createMockAuth({
 				isAuthenticated: false,
 				isLoading: false,
 				user: undefined,
-				signinRedirect,
+				// signinRedirect: () => {}, // Optionally provide a no-op if needed
 			});
 			return (
 				<AuthContext.Provider value={mockAuth}>
@@ -277,12 +276,12 @@ export const AccessTokenExpiringTriggersSilent: Story = {
 	decorators: [
 		withMockApolloClient,
 		(Story) => {
-			const addAccessTokenExpiring = vi.fn((callback) => {
-				// Immediately call the callback to simulate token expiring
+			// In Storybook, we cannot mock addAccessTokenExpiring or signinSilent with vi.fn().
+			const addAccessTokenExpiring = (callback: () => void) => {
 				setTimeout(() => callback(), 100);
-				return vi.fn(); // Return unsubscribe function
-			});
-			const signinSilent = vi.fn();
+				return () => {}; // Return a no-op unsubscribe function
+			};
+			const signinSilent = async () => Promise.resolve(null);
 			const mockAuth = createMockAuth({
 				isAuthenticated: true,
 				isLoading: false,

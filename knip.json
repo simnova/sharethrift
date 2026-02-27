@@ -47,10 +47,6 @@
 		"packages/sthrift/*": {
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.{ts,tsx}"]
-		},
-		"packages/sthrift/ui-components": {
-			"entry": ["src/index.ts"],
-			"project": ["src/**/*.{ts,tsx}"]
 		}
 	},
 	"ignoreWorkspaces": [
@@ -58,13 +54,16 @@
 		"packages/cellix/domain-seedwork",
 		"packages/cellix/event-bus-seedwork-node",
 		"packages/cellix/mongoose-seedwork",
-		"packages/cellix/mock-payment-server",
 		"packages/cellix/api-services-spec",
-		"packages/cellix/mock-mongodb-memory-server-seedwork",
-		"packages/cellix/mock-oauth2-server",
 		"packages/cellix/vitest-config",
-		"packages/sthrift/payment-service-cybersource",
-		"packages/sthrift/mock-messaging-server"
+		"packages/cellix/server-messaging-seedwork",
+		"packages/cellix/server-mongodb-memory-seedwork",
+		"packages/cellix/server-oauth2-seedwork",
+		"packages/cellix/server-payment-seedwork",
+		"apps/server-messaging-mock",
+		"apps/server-mongodb-memory-mock",
+		"apps/server-oauth2-mock",
+		"apps/server-payment-mock"
 	],
 	"ignore": [
 		"build-pipeline/scripts/**",
@@ -78,10 +77,10 @@
 		"**/tests/**",
 		"vitest.shims.d.ts",
 		"**/vitest.config.ts",
-		"**/vite.config.ts"
+		"**/vite.config.ts",
+		"packages/cellix/server-payment-seedwork/src/copy-assets.ts"
 	],
 	"ignoreDependencies": [
-		"@types/*",
 		"@cucumber/node",
 		"@cucumber/pretty-formatter",
 		"@serenity-js/assertions",
@@ -96,10 +95,7 @@
 		"@graphql-tools/load",
 		"rollup",
 		"vite",
-		"@ant-design/icons",
-		"@apollo/client",
-		"graphql",
-		"rxjs"
+		"axios"
 	],
 	"ignoreBinaries": ["func", "open", "concurrently", "container", "portless"]
 }

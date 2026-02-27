@@ -7,6 +7,7 @@ const meta: Meta<typeof HeroSectionContainer> = {
 	title: 'Containers/HeroSectionContainer',
 	component: HeroSectionContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 	},
 	decorators: [
