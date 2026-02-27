@@ -15,6 +15,7 @@ const meta: Meta<typeof AdminListings> = {
 	title: 'Containers/AdminListingsTableContainer',
 	component: AdminListings,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

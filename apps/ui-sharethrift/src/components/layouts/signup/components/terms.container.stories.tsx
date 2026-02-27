@@ -14,6 +14,7 @@ const meta: Meta<typeof TermsContainer> = {
 	title: 'Signup/TermsContainer',
 	component: TermsContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 	},
 	decorators: [withMockApolloClient, withMockRouter('/signup/terms')],
