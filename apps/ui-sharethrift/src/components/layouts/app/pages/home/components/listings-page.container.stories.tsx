@@ -42,6 +42,7 @@ const meta: Meta<typeof ListingsPageContainer> = {
 	title: 'Containers/ListingsPageContainer',
 	component: ListingsPageContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

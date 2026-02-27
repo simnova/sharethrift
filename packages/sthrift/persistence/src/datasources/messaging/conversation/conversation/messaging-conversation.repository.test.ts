@@ -1,4 +1,4 @@
-import type { MessagingService } from '@cellix/messaging-service';
+import type { MessagingService } from '@cellix/service-messaging-base';
 import type { Domain } from '@sthrift/domain';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { MessagingConversationRepositoryImpl } from './messaging-conversation.repository.ts';

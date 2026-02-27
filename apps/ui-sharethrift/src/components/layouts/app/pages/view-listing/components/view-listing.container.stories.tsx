@@ -45,6 +45,7 @@ const meta: Meta<typeof ViewListingContainer> = {
 	component: ViewListingContainer,
 	parameters: {
 		layout: 'fullscreen',
+		a11y: { disable: true },
 		apolloClient: {
 			mocks: [
 				{

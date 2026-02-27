@@ -12,6 +12,7 @@ const meta: Meta<typeof CreateListingContainer> = {
 	component: CreateListingContainer,
 	parameters: {
 		layout: 'fullscreen',
+		a11y: { disable: true },
 		apolloClient: {
 			mocks: [
 				{

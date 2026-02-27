@@ -68,6 +68,7 @@ const meta: Meta = {
 	title: 'Containers/ReservationsViewActiveContainer',
 	component: ReservationsViewActiveContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

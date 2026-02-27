@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
-import type { MessageInstance } from '@cellix/messaging-service';
+import type { MessageInstance } from '@cellix/service-messaging-base';
 import { Domain } from '@sthrift/domain';
 import { expect } from 'vitest';
 import { toDomainMessage } from './messaging-conversation.domain-adapter.ts';

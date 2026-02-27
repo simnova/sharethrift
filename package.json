@@ -13,21 +13,21 @@
         "lint": "turbo run lint",
         "setup:certs": "node scripts/setup-local-certs.js",
         "proxy:start": "node build-pipeline/scripts/local-https-proxy.js",
-        "dev": "pnpm run build && pnpm run setup:certs && turbo run //#proxy:start azurite gen:watch start --parallel",        
-        "start": "turbo run build && concurrently pnpm:start:* --kill-others-on-fail --workspace=@sthrift/api",
+        "dev": "pnpm run build && pnpm run setup:certs && turbo run //#proxy:start azurite gen:watch start --parallel",
+        "start": "turbo run build && concurrently pnpm:start:* --kill-others-on-fail --workspace=@app/api",
         "format": "turbo run format",
         "gen": "graphql-codegen --config codegen.yml",
         "gen:watch": "graphql-codegen --config codegen.yml --watch",
         "tsbuild": "tsc --build",
         "tswatch": "tsc --build --watch",
         "clean": "pnpm install && turbo run clean && rimraf dist node_modules **/coverage .turbo",
-        "start:api": "pnpm --filter=@sthrift/api run start",
-        "start:ui-sharethrift": "pnpm --filter=@sthrift/ui-sharethrift run dev",
-        "start:docs": "pnpm --filter=@sthrift/docs run start",
-        "start-emulator:mongo-memory-server": "pnpm --filter=@cellix/mock-mongodb-memory-server run start",
+        "start:api": "pnpm --filter=@app/api run start",
+        "start:ui-sharethrift": "pnpm --filter=@app/ui-sharethrift run dev",
+        "start:docs": "pnpm --filter=@app/docs run start",
+        "start-emulator:mongo-memory-server": "pnpm --filter=@app/mock-mongodb-memory-server run start",
         "start-emulator:auth-server": "pnpm --filter=@cellix/mock-oauth2-server run start",
         "start-emulator:payment-server": "pnpm --filter=@cellix/mock-payment-server run start",
-        "start-emulator:messaging-server": "pnpm --filter=@sthrift/mock-messaging-server run start",
+        "start-emulator:messaging-server": "pnpm --filter=@app/mock-messaging-server run start",
         "test:all": "turbo run test:all",
         "test:coverage": "turbo run test:coverage:ui && turbo run test:coverage:node",
         "test:coverage:node": "turbo run test:coverage:node",
@@ -35,7 +35,7 @@
         "test:coverage:merge": "pnpm run test:coverage && pnpm run merge-lcov-reports",
         "merge-lcov-reports": "node build-pipeline/scripts/merge-coverage.js",
         "test:integration": "turbo run test:integration",
-                "test:serenity": "turbo run test:serenity",
+        "test:serenity": "turbo run test:serenity",
         "test:serenity:report": "turbo run test:serenity:report",
         "test:unit": "turbo run test:unit",
         "test:watch": "turbo run test:watch --concurrency 15",
@@ -55,7 +55,7 @@
         "snyk:iac:report": "snyk iac test iac/**/*.bicep apps/**/iac/**/*.bicep --org=simnova --remote-repo-url=https://github.com/simnova/sharethrift --target-reference=main --target-name=sharethrift-iac --report",
         "edgescan:agent": "docker run --tty --rm edgescan/cicd-integration:latest --api-token $ES_API_TOKEN --asset-id $ES_ASSET_ID --start-scan --max-risk-threshold 3 --wait --color",
         "edgescan:dev": "container run --tty --rm --platform linux/amd64 edgescan/cicd-integration:latest --api-token $ES_API_TOKEN --asset-id 74469 --base-url \"https://intealth.edgescan.com\" --start-scan --max-risk-threshold 3 --wait --color"
-   },
+    },
     "pnpm": {
         "auditConfig": {
             "ignoreGhsas": [
@@ -67,6 +67,7 @@
             "@types/node": "^24.10.7",
             "axios": ">=1.13.5",
             "lodash": "^4.17.23",
+            "minimatch": ">=10.2.3",
             "qs": ">=6.14.2"
         }
     },
@@ -74,7 +75,6 @@
         "@azure/functions": "4.8.0"
     },
     "devDependencies": {
-    
         "@amiceli/vitest-cucumber": "^6.1.0",
         "@biomejs/biome": "2.0.0",
         "@graphql-codegen/cli": "^5.0.7",
@@ -98,7 +98,7 @@
         "cpx2": "^3.0.2",
         "knip": "^5.61.1",
         "rimraf": "^6.0.1",
-        "rollup": "3.29.5",
+        "rollup": "4.59.0",
         "snyk": "^1.1301.0",
         "tsx": "^4.20.3",
         "turbo": "^2.5.8",

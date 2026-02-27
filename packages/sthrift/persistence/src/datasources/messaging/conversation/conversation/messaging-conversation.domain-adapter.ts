@@ -1,4 +1,4 @@
-import type { MessageInstance } from '@cellix/messaging-service';
+import type { MessageInstance } from '@cellix/service-messaging-base';
 import { Domain } from '@sthrift/domain';
 
 export function toDomainMessage(
