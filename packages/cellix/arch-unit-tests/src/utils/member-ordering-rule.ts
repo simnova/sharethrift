@@ -64,7 +64,7 @@ function hasModifier(node: ts.Node, kind: ts.SyntaxKind): boolean {
 	return !!modifiers?.some((m) => ts.isModifier(m) && m.kind === kind);
 }
 
-// Utility: best-effort member “name” for logging
+// Utility: best-effort member "name" for logging
 function getMemberName(member: ts.ClassElement): string {
 	if (
 		ts.isMethodDeclaration(member) ||

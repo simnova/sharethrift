@@ -1,0 +1,32 @@
+{
+  "name": "@cellix/arch-unit-tests",
+  "version": "1.0.0",
+  "description": "Generic architectural fitness test functions for the CellixJS framework",
+  "private": true,
+  "type": "module",
+  "files": ["dist"],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    }
+  },
+  "scripts": {
+    "prebuild": "biome lint",
+    "build": "tsc --build",
+    "watch": "tsc --watch",
+    "test": "vitest run",
+    "test:coverage": "vitest run --silent --reporter=dot",
+    "test:watch": "vitest",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@cellix/typescript-config": "workspace:*",
+    "@cellix/vitest-config": "workspace:*",
+    "@types/node": "^24.6.1",
+    "archunit": "^2.1.63",
+    "rimraf": "^6.0.1",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

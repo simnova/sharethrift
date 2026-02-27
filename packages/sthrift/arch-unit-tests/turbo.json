@@ -3,6 +3,7 @@
   "tasks": {
     "test:coverage": {
       "dependsOn": [
+        "@cellix/arch-unit-tests#build",
         "@cellix/vitest-config#build",
         "@cellix/ui-core#build",
         "@sthrift/domain#build",
