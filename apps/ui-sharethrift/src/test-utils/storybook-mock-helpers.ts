@@ -1,4 +1,4 @@
-import { SelectAccountTypeContainerAccountPlansDocument, UseUserIsAdminDocument,type AccountPlan } from '../generated';
+import { type AccountPlan, UseUserIsAdminDocument } from '../generated';
 
 export const UserIsAdminMockRequest = (userId: string, isAdmin: boolean = false) => {
 	const typename = isAdmin ? 'AdminUser' : 'PersonalUser';
@@ -91,5 +91,3 @@ export const mockAccountPlans: AccountPlan[] = [
 		},
 	},
 ];
-
-
