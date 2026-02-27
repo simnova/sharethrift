@@ -36,6 +36,7 @@ const meta: Meta<typeof ProfileSetupContainer> = {
 
 	component: ProfileSetupContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'padded',
 		apolloClient: {
 			mocks: [

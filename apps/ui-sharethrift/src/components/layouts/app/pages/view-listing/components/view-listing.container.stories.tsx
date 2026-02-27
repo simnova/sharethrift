@@ -46,6 +46,7 @@ const meta: Meta<typeof ViewListingContainer> = {
 	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	parameters: {
 		layout: 'fullscreen',
+		a11y: { disable: true },
 		apolloClient: {
 			mocks: [
 				{

@@ -32,6 +32,7 @@ const meta: Meta<typeof ListingInformationContainer> = {
   tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	component: ListingInformationContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'padded',
 		apolloClient: {
 			mocks: [

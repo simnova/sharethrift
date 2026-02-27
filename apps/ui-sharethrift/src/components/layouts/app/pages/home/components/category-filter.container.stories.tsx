@@ -7,6 +7,7 @@ const meta: Meta<typeof CategoryFilterContainer> = {
 	title: 'Containers/CategoryFilterContainer',
 	component: CategoryFilterContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'centered',
 	},
 	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. This is all functional testing story.

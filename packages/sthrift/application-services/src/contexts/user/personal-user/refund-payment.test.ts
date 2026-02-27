@@ -4,7 +4,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import type { DataSources } from '@sthrift/persistence';
 import { expect, vi } from 'vitest';
 import { refundPayment, type RefundPaymentCommand } from './refund-payment.ts';
-import type { RefundResponse } from '@cellix/payment-service';
+import type { RefundResponse } from '@cellix/service-payment-base';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));

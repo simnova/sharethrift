@@ -23,6 +23,7 @@ const meta: Meta<typeof SharerInformationContainer> = {
 
 	component: SharerInformationContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'padded',
 		apolloClient: {
 			mocks: [

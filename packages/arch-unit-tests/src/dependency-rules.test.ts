@@ -30,7 +30,7 @@ describe('Dependency Rules', () => {
       .inFolder('../sthrift/domain')
       .shouldNot()
       .dependOnFiles()
-      .inPath('../sthrift/service-*/**');
+      .inPath('../cellix/service-*/**');
 
     await expect(rule).toPassAsync();
   });
@@ -50,7 +50,7 @@ describe('Dependency Rules', () => {
       .inFolder('../sthrift/application-services')
       .shouldNot()
       .dependOnFiles()
-      .inPath('../sthrift/service-*/**');
+      .inPath('../cellix/service-*/**');
 
     await expect(rule).toPassAsync();
   });
@@ -60,7 +60,7 @@ describe('Dependency Rules', () => {
       .inFolder('../sthrift/graphql')
       .shouldNot()
       .dependOnFiles()
-      .inPath('../sthrift/service-*/**');
+      .inPath('../cellix/service-*/**');
 
     await expect(rule).toPassAsync();
   });

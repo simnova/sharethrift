@@ -42,7 +42,7 @@ describe('GraphQL Resolver Conventions', () => {
 				.withName('*.resolvers.ts')
 				.shouldNot()
 				.dependOnFiles()
-				.inPath('../sthrift/service-*/**');
+				.inPath('../cellix/service-*/**');
 
 			await expect(rule).toPassAsync();
 		});

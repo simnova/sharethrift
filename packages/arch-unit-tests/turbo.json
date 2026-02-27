@@ -10,13 +10,13 @@
         "@sthrift/application-services#build",
         "@sthrift/graphql#build",
         "@sthrift/rest#build",
-        "@sthrift/service-mongoose#build",
-        "@sthrift/service-otel#build",
-        "@sthrift/service-blob-storage#build",
-        "@sthrift/service-token-validation#build",
+        "@cellix/service-mongoose#build",
+        "@cellix/service-otel#build",
+        "@cellix/service-blob#build",
+        "@cellix/service-token-validation#build",
         "@sthrift/ui-components#build",
-        "@sthrift/api#build",
-        "@sthrift/ui-sharethrift#build"
+        "@apps/api#build",
+        "@apps/ui-sharethrift#build"
       ]
     }
   }

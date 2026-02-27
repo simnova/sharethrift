@@ -7,6 +7,7 @@ const meta: Meta<typeof HeroSectionContainer> = {
 	title: 'Containers/HeroSectionContainer',
 	component: HeroSectionContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 	},
 	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.

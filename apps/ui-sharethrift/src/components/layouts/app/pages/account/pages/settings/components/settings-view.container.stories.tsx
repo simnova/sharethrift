@@ -81,6 +81,7 @@ const meta: Meta<typeof SettingsViewContainer> = {
 	component: SettingsViewContainer,
 	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

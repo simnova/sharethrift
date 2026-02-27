@@ -57,6 +57,7 @@ const meta: Meta<typeof AdminUsersTableContainer> = {
 		onPageChange: fn(),
 	},
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

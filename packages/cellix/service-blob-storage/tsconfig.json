@@ -1,0 +1,13 @@
+{
+	"extends": "@cellix/typescript-config/node.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "."
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist"],
+	"references": [
+		{ "path": "../api-services-spec" },
+		{ "path": "../../sthrift/domain" }
+	]
+}

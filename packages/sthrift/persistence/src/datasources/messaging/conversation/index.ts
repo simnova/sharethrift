@@ -1,4 +1,4 @@
-import type { MessagingService } from '@cellix/messaging-service';
+import type { MessagingService } from '@cellix/service-messaging-base';
 export type { MessagingConversationRepository } from './conversation/index.ts';
 import { MessagingConversationRepositoryImpl } from './conversation/index.ts';
 

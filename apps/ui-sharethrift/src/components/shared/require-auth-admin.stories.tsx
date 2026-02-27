@@ -281,10 +281,12 @@ export const ForceLoginTriggersSigninRedirect: Story = {
 	decorators: [
 		withMockApolloClient,
 		(Story) => {
+			// In Storybook, we cannot mock signinRedirect with vi.fn().
 			const mockAuth = createMockAuth({
 				isAuthenticated: false,
 				isLoading: false,
 				user: undefined,
+				// signinRedirect: () => {}, // Optionally provide a no-op if needed
 			});
 			return (
 				<AuthContext.Provider value={mockAuth}>
@@ -306,35 +308,31 @@ export const AccessTokenExpiringTriggersSilent: Story = {
 	args: {
 		children: <AdminProtectedContent />,
 	},
-  parameters: {
-		apolloClient: {
-			mocks: [UseUserIsAdminMock],
-		},
-	},
 	decorators: [
 		withMockApolloClient,
 		(Story) => {
+			// In Storybook, we cannot mock addAccessTokenExpiring or signinSilent with vi.fn().
 			const addAccessTokenExpiring = (callback: () => void) => {
-				// Immediately call the callback to simulate token expiring
 				setTimeout(() => callback(), 100);
+				return () => {}; // Return a no-op unsubscribe function
 			};
-			const user = {
-				profile: { sub: 'admin-1', iss: '', aud: '', exp: 0, iat: 0 },
-				access_token: `mock-token-${Date.now()}`,
-				token_type: 'Bearer',
-				session_state: `mock-session-${Date.now()}`,
-				state: `mock-state-${Date.now()}`,
-				expired: false,
-				expires_in: 3600,
-				scopes: [],
-				toStorageString: () => '',
-			};
+			const signinSilent = async () => null;
 			const mockAuth = createMockAuth({
 				isAuthenticated: true,
 				isLoading: false,
-				user: user,
+				user: {
+					profile: { sub: 'admin-1', iss: '', aud: '', exp: 0, iat: 0 },
+					access_token: `mock-token-${Date.now()}`,
+					token_type: 'Bearer',
+					session_state: `mock-session-${Date.now()}`,
+					state: `mock-state-${Date.now()}`,
+					expired: false,
+					expires_in: 3600,
+					scopes: [],
+					toStorageString: () => '',
+				},
 				events: { addAccessTokenExpiring } as any,
-				signinSilent: () => Promise.resolve(user),
+				signinSilent,
 			});
 			return (
 				<AuthContext.Provider value={mockAuth}>

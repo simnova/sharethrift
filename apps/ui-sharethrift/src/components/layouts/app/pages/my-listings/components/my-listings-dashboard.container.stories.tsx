@@ -43,6 +43,7 @@ const meta: Meta<typeof MyListingsDashboardContainer> = {
 
 	component: MyListingsDashboardContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

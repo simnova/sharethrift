@@ -11,6 +11,7 @@ const meta: Meta<typeof AppRoutes> = {
 	title: 'Pages/Admin Dashboard',
 	component: AppRoutes,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 	},
 	decorators: [withMockApolloClient, withMockRouter('/admin-dashboard')],

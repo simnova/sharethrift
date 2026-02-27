@@ -69,45 +69,6 @@ export class ReservationRequest<props extends ReservationRequestProps>
 		return await this.props.loadListing();
 	}
 
-	//#region Properties
-	get state(): string {
-		return this.props.state;
-	}
-	
-	set state(value: string) {
-		const stateValue = value.valueOf ? value.valueOf() : value;
-
-		// Common guard for non-initial transitions
-		if (!this.isNew) {
-			this.ensureCanEditReservationRequest();
-		}
-
-		switch (stateValue) {
-			case ReservationRequestStates.PENDING:
-				this.transitionToPending();
-				break;
-			case ReservationRequestStates.ACCEPTED:
-				this.transitionToAccepted();
-				break;
-			case ReservationRequestStates.REJECTED:
-				this.transitionToRejected();
-				break;
-			case ReservationRequestStates.CANCELLED:
-				this.transitionToCancelled();
-				break;
-			case ReservationRequestStates.CLOSED:
-				this.transitionToClosed();
-				break;
-			case ReservationRequestStates.REQUESTED:
-				this.transitionToRequested();
-				break;
-			default:
-				throw new DomainSeedwork.PermissionError(
-					`Invalid reservation request state: "${stateValue}". Valid states are: ${Object.values(ReservationRequestStates).join(', ')}`,
-				);
-		}
-	}
-
 	private ensureCanEditReservationRequest(): void {
 		if (!this.visa.determineIf(
 			(domainPermissions) => domainPermissions.canEditReservationRequest,
@@ -205,6 +166,45 @@ export class ReservationRequest<props extends ReservationRequestProps>
 
 		if (this.props.state !== ReservationRequestStates.ACCEPTED) {
 			throw new DomainSeedwork.PermissionError('Cannot close reservation in current state');
+		}
+	}
+
+
+	get state(): string {
+		return this.props.state;
+	}
+	
+	set state(value: string) {
+		const stateValue = value.valueOf ? value.valueOf() : value;
+
+		// Common guard for non-initial transitions
+		if (!this.isNew) {
+			this.ensureCanEditReservationRequest();
+		}
+
+		switch (stateValue) {
+			case ReservationRequestStates.PENDING:
+				this.transitionToPending();
+				break;
+			case ReservationRequestStates.ACCEPTED:
+				this.transitionToAccepted();
+				break;
+			case ReservationRequestStates.REJECTED:
+				this.transitionToRejected();
+				break;
+			case ReservationRequestStates.CANCELLED:
+				this.transitionToCancelled();
+				break;
+			case ReservationRequestStates.CLOSED:
+				this.transitionToClosed();
+				break;
+			case ReservationRequestStates.REQUESTED:
+				this.transitionToRequested();
+				break;
+			default:
+				throw new DomainSeedwork.PermissionError(
+					`Invalid reservation request state: "${stateValue}". Valid states are: ${Object.values(ReservationRequestStates).join(', ')}`,
+				);
 		}
 	}
 
