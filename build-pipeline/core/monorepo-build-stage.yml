@@ -248,16 +248,12 @@ stages:
             export TURBO_SCM_BASE="origin/$(System.PullRequest.TargetBranch)"
             echo "Running Node unit tests with coverage..."
             pnpm run test:coverage:node --affected
-            echo "Clearing Storybook cache before UI tests..."
-            rm -rf node_modules/.cache/storybook
             echo "Running Storybook/Playwright tests with coverage..."
             pnpm run test:coverage:ui --affected
             pnpm run merge-lcov-reports
           else
             echo "Testing all packages (main branch build)..."
             export TURBO_SCM_BASE="HEAD~1"
-            echo "Clearing Storybook cache before UI tests..."
-            rm -rf node_modules/.cache/storybook
             pnpm run test:coverage:merge
           fi
           
