@@ -10,4 +10,7 @@ if (!envPort) {
 }
 
 const port = envPort;
-spawn('func', ['start', '--typescript', '--port', port], { stdio: 'inherit' });
+const child = spawn('func', ['start', '--typescript', '--port', port], { stdio: 'inherit' });
+child.on('exit', (code, signal) => {
+	process.exitCode = signal ? 1 : (code ?? 1);
+});

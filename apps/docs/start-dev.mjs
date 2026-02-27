@@ -12,4 +12,7 @@ if (!envPort) {
 const port = envPort;
 // Use 127.0.0.1 explicitly to ensure IPv4 binding — portless proxy connects via IPv4,
 // but Node.js may resolve 'localhost' to ::1 (IPv6) on macOS, causing Bad Gateway.
-spawn('pnpm', ['exec', 'docusaurus', 'start', '--host', '127.0.0.1', '--port', port, '--no-open'], { stdio: 'inherit' });
+const child = spawn('pnpm', ['exec', 'docusaurus', 'start', '--host', '127.0.0.1', '--port', port, '--no-open'], { stdio: 'inherit' });
+child.on('exit', (code, signal) => {
+	process.exitCode = signal ? 1 : (code ?? 1);
+});

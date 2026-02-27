@@ -30,8 +30,8 @@ const app = express();
 app.disable('x-powered-by');
 const DEFAULT_PORT = Number(process.env['PORT'] ?? 3001);
 
-const FRONTEND_BASE_URL = 'https://sharethrift.localhost:1355';
-const PAYMENT_BASE_URL = 'https://mock-payment.sharethrift.localhost:1355';
+const FRONTEND_BASE_URL = process.env['FRONTEND_BASE_URL'] ?? 'https://sharethrift.localhost:1355';
+const PAYMENT_BASE_URL = process.env['PAYMENT_BASE_URL'] ?? 'https://mock-payment.sharethrift.localhost:1355';
 
 // Enable CORS for all origins (or restrict to sharethrift.localhost if needed)
 app.use((req, res, next) => {
