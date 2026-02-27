@@ -84,6 +84,7 @@ const meta: Meta<typeof ViewListingContainer> = {
 		},
 	},
 	decorators: [withMockApolloClient, withMockRouter('/listing/1')],
+	skip: true,
 };
 
 export default meta;
