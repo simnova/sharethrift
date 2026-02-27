@@ -71,7 +71,7 @@ export function createApp(): Application {
 	return app;
 }
 
-export function startServer(port = 10000, seedData = false): Promise<Server> {
+export function startServer(port = Number(process.env['PORT'] ?? 10000), seedData = false): Promise<Server> {
 	return new Promise((resolve) => {
 		const app = createApp();
 		// HTTP server — portless handles TLS/proxy at the subdomain level
