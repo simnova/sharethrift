@@ -37,7 +37,7 @@ The original solution used `mkcert` to generate a wildcard certificate stored in
 - Single port (`1355`) for all services: `.env` and `local.settings.json` are simpler
 - Subdomain names in URLs (`data-access`, `mock-auth`, etc.) make it immediately obvious which service is being called
 - `local-https-proxy.js` is deleted, now one less script to maintain
-- Removes the need for compatibility issues with Azure Function's --cert flag
+- Removes compatibility issues with Azure Functions' `--cert` flag
 
 **Negative**
 
@@ -55,7 +55,7 @@ The original solution used `mkcert` to generate a wildcard certificate stored in
 
 **Negative**
 
-- Developers neeed to run `mkcert -install` and `mkcert` on each machine
+- Developers need to run `mkcert -install` and `mkcert` on each machine
 - Certificate files require explicit exclusion from version control
 - `local-https-proxy.js` must be kept in sync with Azure Functions behaviour
 - CI required `fs.existsSync()` guards to skip HTTPS when certs are absent
@@ -72,5 +72,4 @@ Chosen option: **portless**
 - [portless on npm](https://www.npmjs.com/package/portless)
 - [portless docs](https://port1355.dev/)
 - [mkcert repo](https://github.com/FiloSottile/mkcert)
-- `scripts/dev-cleanup.mjs` — stops the proxy and kills known dev processes before each `pnpm run dev`
 - `apps/api/start-dev.mjs`, `apps/docs/start-dev.mjs` — wrapper scripts that pass `PORT` to tools that require an explicit `--port` flag

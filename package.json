@@ -11,7 +11,7 @@
         "build": "turbo run build",
         "test": "turbo run test",
         "lint": "turbo run lint",
-        "dev": "pnpm run build && node scripts/dev-cleanup.mjs && portless proxy start --https && turbo run azurite gen:watch start --parallel",
+        "dev": "pnpm run build && portless proxy stop ; portless proxy start --https && turbo run azurite gen:watch start --parallel",
         "start": "turbo run build && concurrently pnpm:start:* --kill-others-on-fail --workspace=@sthrift/api",
         "format": "turbo run format",
         "gen": "graphql-codegen --config codegen.yml",
