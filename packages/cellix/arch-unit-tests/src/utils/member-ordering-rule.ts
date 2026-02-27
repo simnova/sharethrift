@@ -12,9 +12,8 @@ interface MemberOrderGroup {
  *  1. instance fields
  *  2. constructor
  *  3. static methods
- *  4. instance methods
- *  5. static accessors
- *  6. instance accessors
+ *  4. static accessors
+ *  5. instance members (methods and accessors, unordered relative to each other)
  */
 export const defaultMemberOrder: MemberOrderGroup[] = [
 	{
@@ -39,20 +38,17 @@ export const defaultMemberOrder: MemberOrderGroup[] = [
 			ts.isMethodDeclaration(m) && hasModifier(m, ts.SyntaxKind.StaticKeyword),
 	},
 	{
-		name: 'instance methods',
-		match: (m) =>
-			ts.isMethodDeclaration(m) && !hasModifier(m, ts.SyntaxKind.StaticKeyword),
-	},
-	{
 		name: 'static accessors',
 		match: (m) =>
 			(ts.isGetAccessorDeclaration(m) || ts.isSetAccessorDeclaration(m)) &&
 			hasModifier(m, ts.SyntaxKind.StaticKeyword),
 	},
 	{
-		name: 'instance accessors',
+		name: 'instance members',
 		match: (m) =>
-			(ts.isGetAccessorDeclaration(m) || ts.isSetAccessorDeclaration(m)) &&
+			(ts.isMethodDeclaration(m) ||
+				ts.isGetAccessorDeclaration(m) ||
+				ts.isSetAccessorDeclaration(m)) &&
 			!hasModifier(m, ts.SyntaxKind.StaticKeyword),
 	},
 ];
