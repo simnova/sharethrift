@@ -1,17 +1,16 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import {
-	withMockApolloClient,
-	withMockRouter,
-} from '../../../../test-utils/storybook-decorators.tsx';
-import {
-	PaymentContainerAccountPlansDocument,
-	PaymentContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
-	PaymentContainerPersonalUserCybersourcePublicKeyIdDocument,
-	type PersonalUser,
-	type AccountPlan,
+    PaymentContainerAccountPlansDocument,
+    PaymentContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
+    PaymentContainerPersonalUserCybersourcePublicKeyIdDocument,
+    type PersonalUser
 } from '../../../../generated.tsx';
-import { SignupRoutes } from '../index.tsx';
+import {
+    withMockApolloClient,
+    withMockRouter,
+} from '../../../../test-utils/storybook-decorators.tsx';
 import { mockAccountPlans } from '../../../../test-utils/storybook-mock-helpers.ts';
+import { SignupRoutes } from '../index.tsx';
 
 const meta: Meta<typeof SignupRoutes> = {
 	title: 'Pages/Signup/Payment',
