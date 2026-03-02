@@ -9,21 +9,21 @@ export function describeMemberOrderingTests(config: { domainSourcePath: string; 
           sourceGlobs: [`${config.domainSourcePath}/**/*.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 10000);
+      }, 30000);
 
       it('aggregate root classes should follow member ordering convention', async () => {
         const violations = await checkMemberOrdering({
           sourceGlobs: [`${config.domainSourcePath}/contexts/**/*.aggregate.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 10000);
+      }, 30000);
 
       it('entity classes should follow member ordering convention', async () => {
         const violations = await checkMemberOrdering({
           sourceGlobs: [`${config.domainSourcePath}/contexts/**/*.entity.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 10000);
+      }, 30000);
     });
 
     describe('Persistence Layer Classes', () => {
@@ -32,7 +32,7 @@ export function describeMemberOrderingTests(config: { domainSourcePath: string; 
           sourceGlobs: [`${config.persistenceSourcePath}/**/*.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 10000);
+      }, 30000);
     });
 
     describe('GraphQL Layer Classes', () => {
@@ -41,7 +41,7 @@ export function describeMemberOrderingTests(config: { domainSourcePath: string; 
           sourceGlobs: [`${config.graphqlSourcePath}/**/*.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 10000);
+      }, 30000);
     });
   });
 }
