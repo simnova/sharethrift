@@ -46,7 +46,7 @@ export function createStorybookVitestConfig(
 			globals: true,
 			// Retry tests on failure to handle flaky browser tests due to race conditions
 			// in @storybook/addon-vitest + Playwright browser provider
-			retry: isCI ? 3 : 1,
+			retry: isCI ? 2 : 1,
 			testTimeout: isCI ? 30000 : 10000,
 			// Serialize file execution in CI to avoid "Vitest failed to find the runner" race condition
 			// when using Storybook + Vitest browser mode with Playwright
@@ -73,6 +73,8 @@ export function createStorybookVitestConfig(
 				},
 			],
 			coverage: {
+				// Reduce coverage reporting overhead in CI to save memory
+				reporter: isCI ? ['text-summary', 'lcov'] : ['text', 'lcov'],
 				exclude: [
 					'**/*.config.ts',
 					'**/tsconfig.json',
