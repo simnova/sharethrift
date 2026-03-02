@@ -1,4 +1,6 @@
 import * as crypto from 'node:crypto';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import { generateKeyPair } from 'jose';
 import { exportPKCS8 } from 'jose';
@@ -37,10 +39,9 @@ export function startMockPaymentServer(config: PaymentConfig): Promise<void> {
 
 	app.use(express.json());
 
-	// Serve static files for iframe.min.js (optional)
-	if (config.iframeJsPath) {
-		app.use('/microform/bundle/:version', express.static(config.iframeJsPath));
-	}
+	// Serve iframe.min.js — use explicit path or fall back to the bundled copy
+	const iframeStaticDir = config.iframeJsPath ?? dirname(fileURLToPath(import.meta.url));
+	app.use('/microform/bundle/:version', express.static(iframeStaticDir));
 
 	// Enable CORS for all origins (or restrict to sharethrift.localhost if needed)
 	app.use((req: Request, res: Response, next: NextFunction) => {
@@ -59,14 +60,6 @@ export function startMockPaymentServer(config: PaymentConfig): Promise<void> {
 		}
 		next();
 	});
-
-	app.use(express.json());
-
-	// Use fileURLToPath(import.meta.url) to get current file path in ES modules
-	// Serve static files for iframe.min.js (optional)
-	if (config.iframeJsPath) {
-		app.use('/microform/bundle/:version', express.static(config.iframeJsPath));
-	}
 
 	// Simulate /flex/v2/capture-contexts endpoint
 	app.get('/pts/v2/public-key', async (_req: Request, res: Response) => {
