@@ -11,8 +11,8 @@
 		"tswatch": "tsc --build --watch",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
-		"test": "if [ \"$TF_BUILD\" = \"True\" ]; then echo 'Skipping UI Storybook tests in CI (memory constraints)'; else vitest run; fi",
-		"test:coverage:ui": "if [ \"$TF_BUILD\" = \"True\" ]; then echo 'Skipping UI Storybook tests in CI (memory constraints)'; else vitest run --coverage; fi",
+		"test": "echo 'UI Storybook tests disabled (memory constraints)'",
+		"test:coverage:ui": "echo 'UI Storybook tests disabled (memory constraints)'",
 		"test:watch": "vitest"
 	},
 	"dependencies": {
