@@ -1342,33 +1342,25 @@ export function startMockPaymentServer(config: PaymentConfig): Promise<void> {
 		},
 	);
 
-	// Start the server
 	return new Promise((resolve, reject) => {
-		const startServer = (portToTry: number, attempt = 0): void => {
-			// HTTP server — portless handles TLS/proxy at the subdomain level
-			const server = app.listen(portToTry, () => {
-				console.log(`   Mock Payment Server externally reachable at: ${config.paymentBaseUrl}`);
-				console.log(`   Internal bind (HTTP): http://localhost:${portToTry}`);
-				console.log(`   CORS origin: ${config.frontendBaseUrl}`);
-				resolve();
-			});
+		const server = app.listen(config.port, () => {
+			console.log(`   Mock Payment Server externally reachable at: ${config.paymentBaseUrl}`);
+			console.log(`   Internal bind (HTTP): http://localhost:${config.port}`);
+			console.log(`   CORS origin: ${config.frontendBaseUrl}`);
+			resolve();
+		});
 
-			server.on('error', (error: NodeJS.ErrnoException) => {
-				if (error.code === 'EADDRINUSE' && attempt < 5) {
-					const nextPort = portToTry + 1;
-					console.warn(
-						`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
-					);
-					server.close(() => {
-						startServer(nextPort, attempt + 1);
-					});
-					return;
-				}
-
-				reject(error);
-			});
-		};
-
-		startServer(config.port);
+		server.on('error', (error: NodeJS.ErrnoException) => {
+			if (error.code === 'EADDRINUSE') {
+				reject(
+					new Error(
+						`Port ${config.port} is already in use. ` +
+						'Stop the other process or choose a different port. ',
+					),
+				);
+				return;
+			}
+			reject(error);
+		});
 	});
 }
