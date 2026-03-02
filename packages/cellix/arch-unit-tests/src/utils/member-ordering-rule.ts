@@ -12,11 +12,10 @@ interface MemberOrderGroup {
  *  1. instance fields
  *  2. constructor
  *  3. static methods
- *  4. instance methods
- *  5. static accessors
- *  6. instance accessors
+ *  4. static accessors
+ *  5. instance members (methods and accessors, unordered relative to each other)
  */
-export const defaultMemberOrder: MemberOrderGroup[] = [
+const defaultMemberOrder: MemberOrderGroup[] = [
 	{
 		name: 'static fields',
 		match: (m) =>
@@ -39,20 +38,17 @@ export const defaultMemberOrder: MemberOrderGroup[] = [
 			ts.isMethodDeclaration(m) && hasModifier(m, ts.SyntaxKind.StaticKeyword),
 	},
 	{
-		name: 'instance methods',
-		match: (m) =>
-			ts.isMethodDeclaration(m) && !hasModifier(m, ts.SyntaxKind.StaticKeyword),
-	},
-	{
 		name: 'static accessors',
 		match: (m) =>
 			(ts.isGetAccessorDeclaration(m) || ts.isSetAccessorDeclaration(m)) &&
 			hasModifier(m, ts.SyntaxKind.StaticKeyword),
 	},
 	{
-		name: 'instance accessors',
+		name: 'instance members',
 		match: (m) =>
-			(ts.isGetAccessorDeclaration(m) || ts.isSetAccessorDeclaration(m)) &&
+			(ts.isMethodDeclaration(m) ||
+				ts.isGetAccessorDeclaration(m) ||
+				ts.isSetAccessorDeclaration(m)) &&
 			!hasModifier(m, ts.SyntaxKind.StaticKeyword),
 	},
 ];
@@ -64,7 +60,7 @@ function hasModifier(node: ts.Node, kind: ts.SyntaxKind): boolean {
 	return !!modifiers?.some((m) => ts.isModifier(m) && m.kind === kind);
 }
 
-// Utility: best-effort member “name” for logging
+// Utility: best-effort member "name" for logging
 function getMemberName(member: ts.ClassElement): string {
 	if (
 		ts.isMethodDeclaration(member) ||
