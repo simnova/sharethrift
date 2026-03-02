@@ -6,9 +6,9 @@ import {
 
 export interface GraphqlResolverConventionsConfig {
   resolversGlob: string;
-  entityFilesPattern?: string;
-  repositoryFilesPattern?: string;
-  uowFilesPattern?: string;
+  entityFilesPattern: string;        // Required - prevents test false positives
+  repositoryFilesPattern: string;    // Required - prevents test false positives
+  uowFilesPattern: string;           // Required - prevents test false positives
   infrastructureServicesPattern?: string;
   persistenceFolder?: string;
 }
@@ -21,7 +21,7 @@ export function describeGraphqlResolverConventionsTests(
       it('resolver files should not import domain entities directly', async () => {
         const violations = await checkGraphqlResolverDependencies({
           resolversGlob: config.resolversGlob,
-          ...(config.entityFilesPattern && { entityFilesPattern: config.entityFilesPattern }),
+          entityFilesPattern: config.entityFilesPattern,
         });
         expect(violations).toStrictEqual([]);
       }, 30000);
@@ -29,7 +29,7 @@ export function describeGraphqlResolverConventionsTests(
       it('resolver files should not import repositories directly', async () => {
         const violations = await checkGraphqlResolverDependencies({
           resolversGlob: config.resolversGlob,
-          ...(config.repositoryFilesPattern && { repositoryFilesPattern: config.repositoryFilesPattern }),
+          repositoryFilesPattern: config.repositoryFilesPattern,
         });
         expect(violations).toStrictEqual([]);
       }, 30000);
@@ -37,7 +37,7 @@ export function describeGraphqlResolverConventionsTests(
       it('resolver files should not import Unit of Work classes directly', async () => {
         const violations = await checkGraphqlResolverDependencies({
           resolversGlob: config.resolversGlob,
-          ...(config.uowFilesPattern && { uowFilesPattern: config.uowFilesPattern }),
+          uowFilesPattern: config.uowFilesPattern,
         });
         expect(violations).toStrictEqual([]);
       }, 30000);

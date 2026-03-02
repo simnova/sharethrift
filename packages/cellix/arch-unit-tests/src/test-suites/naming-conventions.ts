@@ -20,18 +20,20 @@ export function describeNamingConventionTests(): void {
     });
 
     describe('TypeScript Files', () => {
-      it('domain files should follow TypeScript naming conventions', async () => {
-        // Currently skipped - TypeScript naming validation is aspirational
-        await checkGraphqlFileNaming({
-          graphqlFilePaths: ['../domain/src/**/*.ts'],
-        });
+      it.skip('domain files should follow TypeScript naming conventions', async () => {
+        // DISABLED: Tests call checkGraphqlFileNaming which enforces *.container.graphql pattern.
+        // This is incorrect for TypeScript domain files (.ts). Either:
+        // 1. Create a dedicated checkTypescriptFileNaming() function with TS-specific rules, or
+        // 2. Define TypeScript naming conventions and implement the checker.
+        // Keeping this test as a placeholder for future implementation.
       });
 
-      it('resolver files should follow TypeScript naming conventions', async () => {
-        // Currently skipped - TypeScript naming validation is aspirational
-        await checkGraphqlFileNaming({
-          graphqlFilePaths: ['../graphql/src/schema/types/**/*.ts'],
-        });
+      it.skip('resolver files should follow TypeScript naming conventions', async () => {
+        // DISABLED: Tests call checkGraphqlFileNaming which enforces *.container.graphql pattern.
+        // This is incorrect for TypeScript resolver files (.ts). Either:
+        // 1. Create a dedicated checkTypescriptFileNaming() function with TS-specific rules, or
+        // 2. Define TypeScript naming conventions and implement the checker.
+        // Keeping this test as a placeholder for future implementation.
       });
     });
   });

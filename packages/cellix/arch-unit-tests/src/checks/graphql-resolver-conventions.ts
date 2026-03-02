@@ -13,6 +13,21 @@ export interface GraphqlResolverConventionsConfig {
  * Check GraphQL resolver dependency rules
  */
 export async function checkGraphqlResolverDependencies(config: GraphqlResolverConventionsConfig): Promise<string[]> {
+  // Fail fast if no dependency patterns are provided - prevents false positive test passes
+  const hasDependencyPatterns =
+    config.entityFilesPattern ||
+    config.repositoryFilesPattern ||
+    config.uowFilesPattern ||
+    config.infrastructureServicesPattern ||
+    config.persistenceFolder;
+
+  if (!hasDependencyPatterns) {
+    throw new Error(
+      'checkGraphqlResolverDependencies requires at least one dependency pattern: ' +
+      'entityFilesPattern, repositoryFilesPattern, uowFilesPattern, infrastructureServicesPattern, or persistenceFolder',
+    );
+  }
+
   const violations: string[] = [];
 
   // Check: resolvers should not import entities
