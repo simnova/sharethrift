@@ -69,7 +69,8 @@
             "axios": ">=1.13.5",
             "lodash": "^4.17.23",
             "minimatch": ">=10.2.3",
-            "qs": ">=6.14.2"
+            "qs": ">=6.14.2",
+            "serialize-javascript": ">=7.0.3"
         }
     },
     "catalog": {

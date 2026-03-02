@@ -15,7 +15,7 @@ interface MemberOrderGroup {
  *  4. static accessors
  *  5. instance members (methods and accessors, unordered relative to each other)
  */
-export const defaultMemberOrder: MemberOrderGroup[] = [
+const defaultMemberOrder: MemberOrderGroup[] = [
 	{
 		name: 'static fields',
 		match: (m) =>

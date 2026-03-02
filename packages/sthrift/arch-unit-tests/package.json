@@ -14,7 +14,6 @@
     "@cellix/typescript-config": "workspace:*",
     "@cellix/vitest-config": "workspace:*",
     "@types/node": "^24.6.1",
-    "archunit": "^2.1.63",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }
