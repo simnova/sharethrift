@@ -125,7 +125,7 @@ export async function checkGraphqlResolverContent(config: GraphqlResolverConvent
     .withName('*.resolvers.ts')
     .should()
     .adhereTo((file) => {
-      const hasDefaultExport = /export default \w+/.test(file.content);
+      const hasDefaultExport = /export\s+default\s+\w+/.test(file.content);
       if (!hasDefaultExport) {
         allViolations.push(
           `[${file.path}] Missing default export of resolver object`,
@@ -144,31 +144,31 @@ export async function checkGraphqlResolverContent(config: GraphqlResolverConvent
     .adhereTo((file) => {
       const violations: string[] = [];
 
-      const interfacePattern = /^\s*(export\s+)?interface\s+\w+/gm;
+      const interfacePattern = /^(?:export\s+)?interface\s+\w+/gm;
       const interfaces = file.content.match(interfacePattern);
       if (interfaces) {
         violations.push(`interfaces: ${interfaces.join(', ')}`);
       }
 
-      const typePattern = /^\s*(export\s+)?type\s+\w+\s*=/gm;
+      const typePattern = /^(?:export\s+)?type\s+\w+\s*=/gm;
       const types = file.content.match(typePattern);
       if (types) {
         violations.push(`types: ${types.join(', ')}`);
       }
 
-      const classPattern = /^\s*(export\s+)?class\s+\w+/gm;
+      const classPattern = /^(?:export\s+)?class\s+\w+/gm;
       const classes = file.content.match(classPattern);
       if (classes) {
         violations.push(`classes: ${classes.join(', ')}`);
       }
 
-      const enumPattern = /^\s*(export\s+)?enum\s+\w+/gm;
+      const enumPattern = /^(?:export\s+)?enum\s+\w+/gm;
       const enums = file.content.match(enumPattern);
       if (enums) {
         violations.push(`enums: ${enums.join(', ')}`);
       }
 
-      const namedExportPattern = /^export\s+(const|function|interface|type|class|enum)\s+/gm;
+      const namedExportPattern = /^export\s+(?:const|function|interface|type|class|enum)\s+/gm;
       const namedExports = file.content.match(namedExportPattern);
       if (namedExports) {
         violations.push(`named exports: ${namedExports.join(', ')}`);
@@ -190,7 +190,7 @@ export async function checkGraphqlResolverContent(config: GraphqlResolverConvent
     .withName('*.resolvers.ts')
     .should()
     .adhereTo((file) => {
-      const hasResolversType = /:\s*Resolvers\s*=/.test(file.content);
+      const hasResolversType = /:\s*Resolvers\s*[=;]/.test(file.content);
       if (!hasResolversType) {
         allViolations.push(
           `[${file.path}] Resolver object not typed as Resolvers`,
@@ -208,7 +208,7 @@ export async function checkGraphqlResolverContent(config: GraphqlResolverConvent
     .should()
     .adhereTo((file) => {
       if (/context[,)]/.test(file.content)) {
-        const hasGraphContext = /context:\s*GraphContext/.test(file.content);
+        const hasGraphContext = /context:\s+GraphContext/.test(file.content);
         if (!hasGraphContext) {
           allViolations.push(
             `[${file.path}] Context parameter not typed as GraphContext`,
@@ -226,9 +226,9 @@ export async function checkGraphqlResolverContent(config: GraphqlResolverConvent
     .withName('*.resolvers.ts')
     .should()
     .adhereTo((file) => {
-      const hasResolverFunctions = /Query:|Mutation:|[A-Z]\w+:/.test(file.content);
+      const hasResolverFunctions = /(?:Query|Mutation|[A-Z]\w{0,100}):/.test(file.content);
       if (hasResolverFunctions) {
-        const hasAsyncFunctions = /async\s*\(/.test(file.content);
+        const hasAsyncFunctions = /async\s+\(/.test(file.content);
         if (!hasAsyncFunctions) {
           allViolations.push(
             `[${file.path}] Resolver functions should be declared as async`,
