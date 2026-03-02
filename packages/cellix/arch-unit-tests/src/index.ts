@@ -33,6 +33,8 @@ export { checkCodeMetrics } from './checks/code-metrics.js';
 export { checkCodeQuality } from './checks/code-quality.js';
 
 // Test suites (reusable test describe functions)
+export { describeDomainConventionTests } from './test-suites/domain-conventions.js';
+export { describeGraphqlResolverConventionsTests } from './test-suites/graphql-resolver-conventions.js';
 export { describeMemberOrderingTests } from './test-suites/member-ordering.js';
 export { describeFrontendArchitectureTests } from './test-suites/frontend-architecture.js';
 export { describeNamingConventionTests } from './test-suites/naming-conventions.js';
