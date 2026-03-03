@@ -1,18 +1,9 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
-import {
-	actorCalled,
-	configure,
-	Cast,
-	type Actor,
-	TakeNotes,
-	Notepad,
-} from '@serenity-js/core';
-import { BrowseTheWebWithPlaywright, PlaywrightOptions } from '@serenity-js/playwright';
-import { Browser, chromium } from '@playwright/test';
+import { actorCalled, configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
+import { RenderComponents } from '../abilities/RenderComponents.js';
 import { CreateListingAbility } from '../abilities/CreateListingAbility.js';
 import { DomainSession } from '../abilities/DomainSession.js';
 import { GraphQLSession } from '../abilities/GraphQLSession.js';
-import { MockBrowser } from '../abilities/MockBrowser.js';
 import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
 
@@ -21,45 +12,34 @@ import { createTestApplicationServicesFactory } from './test-application-service
  *
  * Following Screenplay.js design recommendations:
  * - tasks: Which task implementation to use (domain/session/dom)
- * - session: Which Session implementation (domain/http)
+ * - session: Which Session implementation (domain/graphql)
  *
- * Assemblies (from Screenplay.js - 4 configurations):
- * 1. session tasks + DomainSession = Fastest tests (domain layer, milliseconds)
- * 2. session tasks + HttpSession = Slower tests (http + domain layer)
- * 3. dom tasks + DomainSession = Slower tests (UI + domain layer)
- * 4. dom tasks + HttpSession = Slowest tests (full stack: UI + http + domain)
+ * Assemblies (from Screenplay.js):
+ * 1. domain + DomainSession = Fastest tests (pure domain layer, <1ms)
+ * 2. session + DomainSession = Fast tests (domain + session abstraction, <1ms)
+ * 3. session + GraphQLSession = Full integration tests (HTTP + domain, 100ms)
+ * 4. dom + DomainSession = Real UI tests with happy-dom (component tests, ~100-500ms per test)
+ * 5. dom + GraphQLSession = Real UI + Real API tests with happy-dom (~500ms-1s per test)
+ *
+ * DOM tests render the actual CreateListing component in happy-dom (headless DOM)
  *
  * @see https://github.com/cucumber/screenplay.js
  */
 export interface WorldParameters {
 	tasks: 'domain' | 'session' | 'dom';
-	session?: 'domain' | 'http';
+	session?: 'domain' | 'graphql';
 	apiUrl?: string;
-	baseUrl?: string;
 }
 
 /**
  * Custom Cast that prepares actors with abilities based on testing level.
  */
 class ShareThriftCast implements Cast {
-	// Store a reference to the current MockBrowser globally so actors use the latest one
-	private static currentMockBrowser: MockBrowser | undefined;
-
 	constructor(
 		private readonly tasksLevel: 'domain' | 'session' | 'dom',
-		private readonly sessionType: 'domain' | 'http',
+		private readonly sessionType: 'domain' | 'graphql',
 		private readonly apiUrl: string,
-		private readonly baseUrl: string,
-		private browser?: Browser,
-		private useMockBrowser: boolean = false,
-		private mockBrowserInstance?: MockBrowser,
-	) {
-		// Update the global reference whenever Cast is created
-		if (this.useMockBrowser && mockBrowserInstance) {
-			ShareThriftCast.currentMockBrowser = mockBrowserInstance;
-			console.log(`[Cast.constructor] Updated currentMockBrowser to:`, mockBrowserInstance.id);
-		}
-	}
+	) {}
 
 	prepare(actor: Actor): Actor {
 		switch (this.tasksLevel) {
@@ -71,7 +51,7 @@ class ShareThriftCast implements Cast {
 
 			case 'session': {
 				const session =
-					this.sessionType === 'http'
+					this.sessionType === 'graphql'
 						? GraphQLSession.at(this.apiUrl)
 						: DomainSession.withDirectDomainAccess();
 
@@ -80,37 +60,13 @@ class ShareThriftCast implements Cast {
 
 			case 'dom': {
 				const session =
-					this.sessionType === 'http'
+					this.sessionType === 'graphql'
 						? GraphQLSession.at(this.apiUrl)
 						: DomainSession.withDirectDomainAccess();
 
-				if (this.useMockBrowser) {
-					// Use the CURRENT MockBrowser (not the one from this cast instance)
-					// This ensures actors always use the latest MockBrowser for the current scenario
-					const browserToUse = ShareThriftCast.currentMockBrowser || this.mockBrowserInstance;
-					if (!browserToUse) {
-						throw new Error('MockBrowser instance not initialized in Cast');
-					}
-					console.log(`[Cast.prepare] Adding MockBrowser ability to actor (ID: ${browserToUse.id}):`, browserToUse);
-					return actor.whoCan(
-						TakeNotes.using(Notepad.empty()),
-						browserToUse,
-						session,
-					);
-				}
-
-				if (!this.browser) {
-					throw new Error(
-						'Browser not initialized for DOM testing. Call world.init() in Before hook.',
-					);
-				}
-
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),
-					BrowseTheWebWithPlaywright.using(this.browser, {
-						baseURL: this.baseUrl,
-						ignoreHTTPSErrors: true,
-					}),
+					RenderComponents.using(),
 					session,
 				);
 			}
@@ -123,66 +79,32 @@ class ShareThriftCast implements Cast {
 
 export class ShareThriftWorld extends World<WorldParameters> {
 	private readonly tasksLevel: 'domain' | 'session' | 'dom';
-	private readonly sessionType: 'domain' | 'http';
+	private readonly sessionType: 'domain' | 'graphql';
 	private readonly apiUrl: string;
-	private readonly baseUrl: string;
-	private browser?: Browser;
 	private testServer?: TestServer;
-	private useMockBrowser: boolean = true;
-	private mockBrowser?: MockBrowser;
 
 	constructor(options: IWorldOptions<WorldParameters>) {
 		super(options);
-		this.tasksLevel = options.parameters?.tasks || 'domain';
+		this.tasksLevel = (options.parameters?.tasks || 'domain') as any;
 		this.sessionType = options.parameters?.session || 'domain';
 		this.apiUrl = options.parameters?.apiUrl || 'http://localhost:4000/graphql';
-		this.baseUrl = options.parameters?.baseUrl || 'https://localhost:3000';
 	}
 
 	async init(): Promise<void> {
-		// Start test server for HTTP session tests
-		if (this.sessionType === 'http' && !this.testServer) {
+		// Start test server for GraphQL session tests
+		if (this.sessionType === 'graphql' && !this.testServer) {
 			// Create test ApplicationServicesFactory with in-memory storage
 			const testFactory = createTestApplicationServicesFactory();
 
 			this.testServer = new TestServer(testFactory);
 			const url = await this.testServer.start(4000);
-			console.log(`[WORLD] Test server started at ${url}`);
-		}
-
-		// For DOM tests: use mock browser by default, real browser if USE_REAL_BROWSER is set
-		if (this.tasksLevel === 'dom') {
-			if (process.env.USE_REAL_BROWSER) {
-				// Launch real browser for actual UI testing
-				const isCI = this.isRunningInCI();
-				const headlessEnv = process.env.HEADLESS?.toLowerCase();
-				const headless = headlessEnv !== undefined ? headlessEnv === 'true' : isCI;
-
-				this.browser = await chromium.launch({
-					headless,
-				});
-
-				this.useMockBrowser = false;
-				console.log(`[WORLD] Real browser started (headless: ${headless})`);
-			} else {
-				// Use mock browser (default) - no real browser needed
-				this.useMockBrowser = true;
-				// Create mock browser instance once per scenario (reused across steps)
-				if (!this.mockBrowser) {
-					this.mockBrowser = MockBrowser.using();
-				}
-				console.log('[WORLD] Using mock browser for DOM tests');
-			}
+			console.log(`[WORLD] GraphQL test server started at ${url}`);
 		}
 
 		const cast = new ShareThriftCast(
 			this.tasksLevel,
 			this.sessionType,
 			this.apiUrl,
-			this.baseUrl,
-			this.browser,
-			this.useMockBrowser,
-			this.mockBrowser,
 		);
 
 		configure({
@@ -190,47 +112,30 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			crew: [],
 		});
 
-		console.log(`[WORLD] Configured Cast with mock browser:`, this.mockBrowser, `(useMockBrowser: ${this.useMockBrowser})`);
+		console.log(`[WORLD] Configured Cast for ${this.tasksLevel} testing with ${this.sessionType} session`);
 	}
 
 	async cleanup(): Promise<void> {
-		// Stop test server
+		// Clean up DOM rendering environment (unmount React trees, keep globals)
+		if (this.tasksLevel === 'dom') {
+			try {
+				const { cleanup } = await import('@testing-library/react');
+				cleanup();
+			} catch {
+				// testing-library may not have been imported yet
+			}
+		}
+
+		// Stop GraphQL test server
 		if (this.testServer) {
 			await this.testServer.stop();
 			this.testServer = undefined;
-			console.log('[WORLD] Test server stopped');
-		}
-
-		// Close browser
-		if (this.browser) {
-			await this.browser.close();
-			this.browser = undefined;
-		}
-
-		// Reset mock browser for next scenario
-		if (this.mockBrowser) {
-			this.mockBrowser = undefined;
+			console.log('[WORLD] GraphQL test server stopped');
 		}
 	}
 
 	get level(): 'domain' | 'session' | 'dom' {
 		return this.tasksLevel;
-	}
-
-	/**
-	 * Detect if tests are running in a CI environment
-	 * Checks for common CI environment variables
-	 */
-	private isRunningInCI(): boolean {
-		return !!(
-			process.env.CI ||
-			process.env.GITHUB_ACTIONS ||
-			process.env.GITLAB_CI ||
-			process.env.TF_BUILD || // Azure Pipelines
-			process.env.CIRCLECI ||
-			process.env.JENKINS_URL ||
-			process.env.TRAVIS
-		);
 	}
 }
 

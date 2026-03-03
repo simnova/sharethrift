@@ -12,6 +12,11 @@
 			"types": "./dist/src/index.d.ts",
 			"default": "./dist/src/index.js"
 		},
+		"./create-listing-form": {
+			"vitest": "./src/organisms/create-listing-form/index.tsx",
+			"types": "./dist/src/organisms/create-listing-form/index.d.ts",
+			"default": "./dist/src/organisms/create-listing-form/index.js"
+		},
 		"./src/styles/theme.css": {
 			"default": "./src/styles/theme.css"
 		},

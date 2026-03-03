@@ -4,7 +4,7 @@ import { ShareThriftWorld } from './world.js';
 
 /**
  * Serenity/Screenplay pattern hooks.
- * 
+ *
  * Following Aslak Hellesøy's principles:
  * - Hooks should be minimal and focus on test infrastructure
  * - External dependencies (UI server, backend) should be managed outside tests

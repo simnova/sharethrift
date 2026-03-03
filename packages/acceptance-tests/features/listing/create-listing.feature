@@ -20,7 +20,7 @@ Feature: Create Listing
     When Alice creates a listing with:
       | title          | Mountain Bike                   |
       | description    | Trek 3900 with 21-speed gears   |
-      | category       | Sports Equipment                |
+      | category       | Sports & Recreation             |
       | location       | Portland, OR                    |
       | dailyRate      | 25.00                           |
       | weeklyRate     | 150.00                          |
@@ -33,7 +33,7 @@ Feature: Create Listing
   Scenario: Cannot create listing without required fields
     When Alice attempts to create a listing with:
       | description | Missing title |
-      | category    | Camping       |
+      | category    | Home & Garden |
       | location    | Seattle, WA   |
     Then she should see a validation error for "title"
     And no listing should be created

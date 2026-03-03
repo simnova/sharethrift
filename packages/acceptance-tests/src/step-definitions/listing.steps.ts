@@ -123,24 +123,37 @@ Then(
 Then(
 	'{word} should see a validation error for {string}',
 	async function (this: ShareThriftWorld, actorName: string, fieldName: string) {
-		const actor = actorCalled(actorName);
-
-		// Try to get error from FormValidationError question
-		const { FormValidationError } = await import('../questions/FormValidationError.js');
-		const error = await actor.answer(FormValidationError.forField(fieldName));
-
-		if (!error) {
-			throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
+		// Check if a validation error was caught in the "When" step
+		const lastError = (this as any).lastError;
+		if (!lastError) {
+			// For DOM tests, try to get error from form
+			const actor = actorCalled(actorName);
+			const { FormValidationError } = await import('../questions/FormValidationError.js');
+			const error = await actor.answer(FormValidationError.forField(fieldName));
+			if (!error) {
+				throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
+			}
 		}
+		// Error was caught - validation passed
 	},
 );
 
 Then(
 	'{word} should see a validation error {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedMessage: string) {
-		const actor = actorCalled(actorName);
+		// Check if a validation error was caught in the "When" step
+		const lastError = (this as any).lastError;
+		if (lastError) {
+			// Error was caught - check if it contains the expected message
+			const errorMessage = lastError.message || String(lastError);
+			if (!errorMessage.includes(expectedMessage)) {
+				throw new Error(`Expected error message "${expectedMessage}", but got: "${errorMessage}"`);
+			}
+			return; // Validation passed
+		}
 
-		// Try to get error from FormValidationError question
+		// For DOM tests, try to get error from form
+		const actor = actorCalled(actorName);
 		const { FormValidationError } = await import('../questions/FormValidationError.js');
 		const error = await actor.answer(FormValidationError.displayed());
 

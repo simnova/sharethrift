@@ -10,3 +10,4 @@ export { ListingsGrid } from './organisms/listings-grid/index.tsx';
 export { ComponentQueryLoader } from './molecules/component-query-loader/index.tsx';
 export { Dashboard } from './organisms/dashboard/index.tsx';
 export { ReservationStatusTag } from './atoms/reservation-status-tag/index.tsx';
+export { ListingForm, type ListingFormProps } from './organisms/create-listing-form/index.tsx';
