@@ -1,10 +1,12 @@
-import { Question, type Actor } from '@serenity-js/core';
-import { BrowseTheWebWithPlaywright } from '@serenity-js/playwright';
+import { Question } from '@serenity-js/core';
 
 /**
  * FormValidationError - Question that checks if a validation error is displayed in the DOM
  *
- * Works with both real browser (Playwright) and mock browser for testing.
+ * This question works with DOM tests that render components using RenderComponents ability.
+ * It queries the rendered DOM for validation error messages using accessible selectors.
+ *
+ * For domain/session level tests, returns empty string (no DOM rendered).
  */
 export class FormValidationError extends Question<string> {
 	/**
@@ -26,44 +28,38 @@ export class FormValidationError extends Question<string> {
 		super(`form validation error${fieldName ? ` for ${fieldName}` : ''}`);
 	}
 
-	async answeredBy(actor: Actor): Promise<string> {
-		// Try real browser (Playwright for future playwright-based DOM tests)
+	answeredBy(): Promise<string> {
+		// Query the DOM for validation errors using accessible selectors
+		// This works with tests that render components in happy-dom or real browsers
+
 		try {
-			const browser = BrowseTheWebWithPlaywright.as(actor);
-			const page = await browser.currentPage();
-			return this.fromRealBrowser(page);
+			// Try to get the error from document if it exists (for DOM tests)
+			if (typeof document === 'undefined') {
+				// No DOM available - expected for domain/session tests
+				return Promise.resolve('');
+			}
+
+			if (this.type === 'form') {
+				// Get general form error message
+				const errorElement = document.querySelector('[role="alert"]') ||
+					document.querySelector('.ant-message-error') ||
+					document.querySelector('[data-testid="form-error"]');
+				return Promise.resolve(errorElement?.textContent?.trim() || '');
+			}
+
+			if (this.type === 'field' && this.fieldName) {
+				// Get field-specific error message using aria-label or data attribute
+				const fieldLabel = this.normalizeFieldName(this.fieldName);
+				const errorElement = document.querySelector(`[data-error="${fieldLabel}"]`) ||
+					document.querySelector(`[aria-label*="error"][aria-label*="${this.fieldName}"]`);
+				return Promise.resolve(errorElement?.textContent?.trim() || '');
+			}
+
+			return Promise.resolve('');
 		} catch {
-			// No browser available - expected for domain/session tests
-			// DOM tests will use a different implementation
-			return '';
+			// No DOM available
+			return Promise.resolve('');
 		}
-	}
-
-	private async fromRealBrowser(page: any): Promise<string> {
-		if (this.type === 'form') {
-			// Get general form error message
-			const errorElement = await page.$('[data-testid="form-error-message"]');
-			if (!errorElement) {
-				return ''; // No error displayed
-			}
-			const errorText = await errorElement.textContent();
-			return errorText?.trim() || '';
-		}
-
-		if (this.type === 'field' && this.fieldName) {
-			// Get field-specific error message
-			const fieldErrorSelector = `[data-testid="error-${this.normalizeFieldName(this.fieldName)}"]`;
-			const errorElement = await page.$(fieldErrorSelector);
-
-			if (!errorElement) {
-				return ''; // No error for this field
-			}
-
-			const errorText = await errorElement.textContent();
-			return errorText?.trim() || '';
-		}
-
-		return '';
 	}
 
 	/**

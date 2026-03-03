@@ -1,5 +1,5 @@
 import { Given, When, Then, DataTable } from '@cucumber/cucumber';
-import { actorCalled } from '@serenity-js/core';
+import { actorCalled, notes } from '@serenity-js/core';
 import { Ensure, equals } from '@serenity-js/assertions';
 import type { ShareThriftWorld } from '../support/world.js';
 
@@ -70,34 +70,30 @@ When(
 		const { CreateListing } = await import(`../tasks/${taskLevel}/CreateListing.js`);
 
 		try {
-			// Execute the task - validation errors will be thrown
 			await actor.attemptsTo(CreateListing.with(details as any));
 		} catch (error) {
-			// Store error for validation in Then steps
-			(this as any).lastError = error;
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			await actor.attemptsTo(
+				notes<{lastValidationError: string}>().set('lastValidationError', errorMessage),
+			);
 		}
 	},
 );
 
 Then(
-	'the listing should be in {word} status',
-	async function (this: ShareThriftWorld, expectedStatus: string) {
-		// Import the question from the questions directory
+	'{word} sees the listing in {word} status',
+	async function (this: ShareThriftWorld, actorName: string, expectedStatus: string) {
+		const actor = actorCalled(actorName);
 		const { ListingStatus } = await import('../questions/ListingStatus.js');
 
-		// Use the same actor that performed the previous steps
-		const actor = actorCalled('Alice');
-		
-		// Use Serenity/JS assertions
 		await actor.attemptsTo(Ensure.that(ListingStatus.of(), equals(expectedStatus)));
 	},
 );
 
 Then(
-	'the listing title should be {string}',
-	async function (this: ShareThriftWorld, expectedTitle: string) {
-		const actor = actorCalled('Alice');
-
+	'{word} sees the listing title as {string}',
+	async function (this: ShareThriftWorld, actorName: string, expectedTitle: string) {
+		const actor = actorCalled(actorName);
 		const { ListingTitle } = await import('../questions/ListingTitle.js');
 
 		await actor.attemptsTo(Ensure.that(ListingTitle.displayed(), equals(expectedTitle)));
@@ -123,37 +119,51 @@ Then(
 Then(
 	'{word} should see a validation error for {string}',
 	async function (this: ShareThriftWorld, actorName: string, fieldName: string) {
-		// Check if a validation error was caught in the "When" step
-		const lastError = (this as any).lastError;
-		if (!lastError) {
-			// For DOM tests, try to get error from form
-			const actor = actorCalled(actorName);
-			const { FormValidationError } = await import('../questions/FormValidationError.js');
-			const error = await actor.answer(FormValidationError.forField(fieldName));
-			if (!error) {
-				throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
+		// Map pronouns to actual actor names
+		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const actor = actorCalled(resolvedActorName);
+
+		// Check if actor has a stored validation error from task execution
+		try {
+			const storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
+			if (storedError) {
+				// Error was caught during task execution - validation passed
+				return;
 			}
+		} catch {
+			// No error stored - check DOM instead
 		}
-		// Error was caught - validation passed
+
+		// For DOM tests, try to get error from form UI
+		const { FormValidationError } = await import('../questions/FormValidationError.js');
+		const error = await actor.answer(FormValidationError.forField(fieldName));
+		if (!error) {
+			throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
+		}
 	},
 );
 
 Then(
 	'{word} should see a validation error {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedMessage: string) {
-		// Check if a validation error was caught in the "When" step
-		const lastError = (this as any).lastError;
-		if (lastError) {
-			// Error was caught - check if it contains the expected message
-			const errorMessage = lastError.message || String(lastError);
-			if (!errorMessage.includes(expectedMessage)) {
-				throw new Error(`Expected error message "${expectedMessage}", but got: "${errorMessage}"`);
+		// Map pronouns to actual actor names
+		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const actor = actorCalled(resolvedActorName);
+
+		// Check if actor has a stored validation error from task execution
+		try {
+			const storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
+			if (storedError) {
+				if (!storedError.includes(expectedMessage)) {
+					throw new Error(`Expected error message "${expectedMessage}", but got: "${storedError}"`);
+				}
+				return;
 			}
-			return; // Validation passed
+		} catch {
+			// No error stored - check DOM instead
 		}
 
-		// For DOM tests, try to get error from form
-		const actor = actorCalled(actorName);
+		// For DOM tests, try to get error from form UI
 		const { FormValidationError } = await import('../questions/FormValidationError.js');
 		const error = await actor.answer(FormValidationError.displayed());
 
@@ -167,3 +177,24 @@ Then('no listing should be created', async function (this: ShareThriftWorld) {
 	// TODO: Verify no listing was created
 	console.log('TODO: Verify no listing was created');
 });
+
+// Backward-compatible step definitions for existing scenarios
+Then(
+	'the listing should be in {word} status',
+	async function (this: ShareThriftWorld, expectedStatus: string) {
+		const actor = actorCalled('Alice');
+		const { ListingStatus } = await import('../questions/ListingStatus.js');
+
+		await actor.attemptsTo(Ensure.that(ListingStatus.of(), equals(expectedStatus)));
+	},
+);
+
+Then(
+	'the listing title should be {string}',
+	async function (this: ShareThriftWorld, expectedTitle: string) {
+		const actor = actorCalled('Alice');
+		const { ListingTitle } = await import('../questions/ListingTitle.js');
+
+		await actor.attemptsTo(Ensure.that(ListingTitle.displayed(), equals(expectedTitle)));
+	},
+);

@@ -18,7 +18,14 @@ export class ListingTitle extends Question<string> {
 	}
 
 	async answeredBy(actor: Actor): Promise<string> {
-		return actor.answer(notes<{ lastListingTitle: string }>().get('lastListingTitle'));
+		const title = await actor.answer(notes<{ lastListingTitle: string }>().get('lastListingTitle'));
+		if (!title) {
+			throw new Error(
+				'No listing title found in actor notes. Did the actor create a listing first? ' +
+				'Use a When step like "Alice has created a draft listing titled ..."',
+			);
+		}
+		return title;
 	}
 
 	toString = () => 'listing title';

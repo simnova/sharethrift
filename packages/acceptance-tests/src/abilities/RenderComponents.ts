@@ -25,11 +25,21 @@ export class RenderComponents extends Ability {
 	 *
 	 * Returns @testing-library/react render result (queries scoped to container)
 	 * plus a userEvent instance for simulating user interactions.
+	 *
+	 * Throws descriptive error if component rendering fails.
 	 */
 	render(Component: ComponentType<any>, props: Record<string, any>) {
-		const result = render(createElement(Component, props));
-		const user = userEvent.setup();
-		return { ...result, user };
+		try {
+			const result = render(createElement(Component, props));
+			const user = userEvent.setup();
+			return { ...result, user };
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			throw new Error(
+				`Failed to render component: ${message}. ` +
+				`Check that all required props are provided and the component is properly importable.`,
+			);
+		}
 	}
 
 	/**
