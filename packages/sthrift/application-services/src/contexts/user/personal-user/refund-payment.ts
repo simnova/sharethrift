@@ -1,5 +1,5 @@
 import type { DataSources } from '@sthrift/persistence';
-import type {RefundPaymentRequest, RefundResponse} from '@cellix/payment-service';
+import type {RefundPaymentRequest, RefundResponse} from '@cellix/service-payment-base';
 
 export interface RefundPaymentCommand {
 	request: RefundPaymentRequest;

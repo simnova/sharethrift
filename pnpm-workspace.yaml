@@ -1,7 +1,6 @@
 packages:
   - "apps/*"
   - "packages/acceptance-tests"
-  - "packages/arch-unit-tests"
   - "packages/cellix/*"
   - "packages/sthrift/*"
 

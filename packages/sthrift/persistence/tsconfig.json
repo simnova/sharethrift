@@ -12,6 +12,6 @@
 		{ "path": "../../cellix/mongoose-seedwork" },
 		{ "path": "../domain" },
 		{ "path": "../data-sources-mongoose-models" },
-		{ "path": "../messaging-service-twilio" }
+		{ "path": "../../cellix/service-messaging-twilio" }
 	]
 }

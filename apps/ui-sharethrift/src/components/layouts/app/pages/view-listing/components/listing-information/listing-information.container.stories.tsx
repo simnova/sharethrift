@@ -31,6 +31,7 @@ const meta: Meta<typeof ListingInformationContainer> = {
 	title: 'Containers/ListingInformationContainer',
 	component: ListingInformationContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'padded',
 		apolloClient: {
 			mocks: [

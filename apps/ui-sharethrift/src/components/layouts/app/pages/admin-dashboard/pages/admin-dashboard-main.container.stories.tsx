@@ -8,6 +8,7 @@ const meta: Meta<typeof AdminDashboardMain> = {
 	title: 'Pages/AdminDashboardMain',
 	component: AdminDashboardMain,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

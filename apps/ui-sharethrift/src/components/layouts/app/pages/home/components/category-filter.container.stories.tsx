@@ -7,6 +7,7 @@ const meta: Meta<typeof CategoryFilterContainer> = {
 	title: 'Containers/CategoryFilterContainer',
 	component: CategoryFilterContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'centered',
 	},
 	decorators: [

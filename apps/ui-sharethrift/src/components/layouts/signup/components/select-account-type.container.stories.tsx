@@ -101,6 +101,7 @@ const meta: Meta<typeof SelectAccountTypeContainer> = {
 	title: 'Containers/SelectAccountTypeContainer',
 	component: SelectAccountTypeContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

@@ -25,8 +25,8 @@
 	"dependencies": {
 		"@cellix/domain-seedwork": "workspace:*",
 		"@cellix/event-bus-seedwork-node": "workspace:*",
-		"@cellix/messaging-service": "workspace:*",
-    "@cellix/payment-service": "workspace:*",
+		"@cellix/service-messaging-base": "workspace:*",
+    "@cellix/service-payment-base": "workspace:*",
 		"@cellix/mongoose-seedwork": "workspace:*",
 		"@sthrift/data-sources-mongoose-models": "workspace:*",
 		"@sthrift/domain": "workspace:*",
