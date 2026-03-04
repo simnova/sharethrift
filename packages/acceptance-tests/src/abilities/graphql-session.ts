@@ -13,10 +13,6 @@ import type { CreateItemListingInput, ItemListing, Session } from './session.js'
  * - Same code that production UI uses
  * - Catches integration issues
  *
- * Used by:
- * - Production UI code (React components)
- * - Integration tests (slower but full coverage)
- *
  * @see https://github.com/cucumber/screenplay.js
  */
 export class GraphqlSession extends Ability implements Session {

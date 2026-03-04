@@ -2,6 +2,9 @@ import { Given, When, Then, DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
 import type { ShareThriftWorld } from '../support/world.js';
 import type { ListingDetails } from '../tasks/domain/create-listing.js';
+import  { ListingStatus } from '../questions/listing-status.js';
+import  { ListingTitle } from '../questions/listing-title.js';
+import  { FormValidationError } from '../questions/form-validation-error.js';
 
 /**
  * Step definitions for listing-related scenarios.
@@ -29,7 +32,6 @@ Given(
 	async function (this: ShareThriftWorld, actorName: string, title: string) {
 		const actor = actorCalled(actorName);
 
-		// Import task from correct level based on world configuration
 		const taskLevel = this.level;
 		const { CreateListing } = await import(`../tasks/${taskLevel}/create-listing.js`);
 
@@ -85,7 +87,6 @@ Then(
 	'{word} sees the listing in {word} status',
 	async function (this: ShareThriftWorld, actorName: string, expectedStatus: string) {
 		const actor = actorCalled(actorName);
-		const { ListingStatus } = await import('../questions/listing-status.js');
 
 		const status = await actor.answer(ListingStatus.of());
 		if (status !== expectedStatus) {
@@ -98,8 +99,6 @@ Then(
 	'{word} sees the listing title as {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedTitle: string) {
 		const actor = actorCalled(actorName);
-		const { ListingTitle } = await import('../questions/listing-title.js');
-
 		const title = await actor.answer(ListingTitle.displayed());
 		if (title !== expectedTitle) {
 			throw new Error(`Expected listing title "${expectedTitle}" but got "${title}"`);
@@ -142,7 +141,6 @@ Then(
 		}
 
 		// For DOM tests, try to get error from form UI
-		const { FormValidationError } = await import('../questions/form-validation-error.js');
 		const error = await actor.answer(FormValidationError.forField(fieldName));
 		if (!error) {
 			throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
@@ -171,7 +169,6 @@ Then(
 		}
 
 		// For DOM tests, try to get error from form UI
-		const { FormValidationError } = await import('../questions/form-validation-error.js');
 		const error = await actor.answer(FormValidationError.displayed());
 
 		if (!error || !error.includes(expectedMessage)) {
@@ -190,7 +187,6 @@ Then(
 	'the listing should be in {word} status',
 	async function (this: ShareThriftWorld, expectedStatus: string) {
 		const actor = actorCalled('Alice');
-		const { ListingStatus } = await import('../questions/listing-status.js');
 
 		const status = await actor.answer(ListingStatus.of());
 		if (status !== expectedStatus) {
@@ -203,7 +199,6 @@ Then(
 	'the listing title should be {string}',
 	async function (this: ShareThriftWorld, expectedTitle: string) {
 		const actor = actorCalled('Alice');
-		const { ListingTitle } = await import('../questions/listing-title.js');
 
 		const title = await actor.answer(ListingTitle.displayed());
 		if (title !== expectedTitle) {

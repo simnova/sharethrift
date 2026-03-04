@@ -13,9 +13,6 @@ import type { CreateItemListingInput, ItemListing, Session } from './session.js'
  * - No network overhead
  * - No HTTP server needed
  * - Tests domain layer coverage only
- *
- * This is for TESTING ONLY - production code uses HttpSession.
- *
  * @see https://github.com/cucumber/screenplay.js
  */
 export class DomainSession extends Ability implements Session {

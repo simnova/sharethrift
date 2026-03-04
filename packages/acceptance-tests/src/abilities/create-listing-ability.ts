@@ -7,8 +7,6 @@ import type { Domain } from '@sthrift/domain';
  * This ability is used at the DOMAIN level to directly interact with domain models.
  * At other levels (GraphQL/DOM), different abilities are used instead.
  *
- * Current implementation uses mock dependencies for rapid prototyping.
- * TODO: Replace with real domain infrastructure (MongoDB Memory Server, etc.) when implementing actual domain integration.
  */
 export class CreateListingAbility extends Ability {
 	private createdListing?: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
