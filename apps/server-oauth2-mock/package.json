@@ -13,8 +13,8 @@
 		"clean": "rimraf dist node_modules tsconfig.tsbuildinfo && tsc --build --clean",
 		"lint": "biome lint",
 		"format": "biome format --write",
-		"start": "portless mock-auth.sharethrift.localhost node dist/src/index.js",
-		"dev": "portless mock-auth.sharethrift.localhost tsx watch src/index.ts"
+		"start": "node dist/src/index.js",
+		"dev": "portless mock-auth.sharethrift.localhost node dist/src/index.js"
 	},
 	"dependencies": {
 		"@cellix/server-oauth2-seedwork": "workspace:*",

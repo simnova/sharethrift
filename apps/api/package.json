@@ -16,7 +16,9 @@
 		"lint": "biome lint",
 		"clean": "rimraf dist",
 		"prestart": "pnpm run clean && pnpm run build",
-		"start": "portless data-access.sharethrift.localhost node start-dev.mjs",
+		"start": "func start --typescript",
+		"predev": "pnpm run clean && pnpm run build",
+		"dev": "portless data-access.sharethrift.localhost node start-dev.mjs",
 		"azurite": "azurite-blob --silent --location ../../__blobstorage__ & azurite-queue --silent --location ../../__queuestorage__ & azurite-table --silent --location ../../__tablestorage__"
 	},
 	"dependencies": {
