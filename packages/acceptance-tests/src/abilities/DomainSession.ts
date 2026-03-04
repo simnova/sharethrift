@@ -1,5 +1,5 @@
-import { Ability, type Actor } from '@serenity-js/core';
-import type { Session, CreateItemListingInput, ItemListing } from './Session.js';
+import { Ability } from '@serenity-js/core';
+import type { CreateItemListingInput, ItemListing, Session } from './Session.js';
 
 /**
  * DomainSession - talks directly to the domain layer with direct function calls (no networking).
@@ -19,7 +19,7 @@ import type { Session, CreateItemListingInput, ItemListing } from './Session.js'
  * @see https://github.com/cucumber/screenplay.js
  */
 export class DomainSession extends Ability implements Session {
-	private listings = new Map<string, ItemListing>();
+	readonly listings = new Map<string, ItemListing>();
 	private nextId = 1;
 
 	/**
@@ -32,7 +32,7 @@ export class DomainSession extends Ability implements Session {
 	/**
 	 * Create a listing by calling domain layer directly (no HTTP)
 	 */
-	async createItemListing(input: CreateItemListingInput): Promise<ItemListing> {
+	createItemListing(input: CreateItemListingInput): Promise<ItemListing> {
 		// Validate input (domain validation rules)
 		this.validateCreateInput(input);
 
@@ -53,14 +53,14 @@ export class DomainSession extends Ability implements Session {
 		// Store in memory (simulating persistence)
 		this.listings.set(id, listing);
 
-		return listing;
+		return Promise.resolve(listing);
 	}
 
 	/**
 	 * Get listing by ID
 	 */
-	async getListingById(id: string): Promise<ItemListing | null> {
-		return this.listings.get(id) || null;
+	getListingById(id: string): Promise<ItemListing | null> {
+		return Promise.resolve(this.listings.get(id) || null);
 	}
 
 	/**
@@ -93,10 +93,4 @@ export class DomainSession extends Ability implements Session {
 		}
 	}
 
-	/**
-	 * Required by Serenity/JS Ability interface
-	 */
-	static as(actor: Actor): DomainSession {
-		return actor.abilityTo(DomainSession);
-	}
 }

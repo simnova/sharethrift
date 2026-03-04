@@ -1,12 +1,6 @@
 import { Ability } from '@serenity-js/core';
 import type { Domain } from '@sthrift/domain';
 
-// Type aliases for mocked dependencies
-// TODO: Replace with real types when implementing actual domain integration
-type MockUow = unknown;
-type MockUser = unknown;
-type MockPassport = unknown;
-
 /**
  * CreateListingAbility represents an Actor's capacity to create listings in acceptance tests.
  *
@@ -14,16 +8,12 @@ type MockPassport = unknown;
  * At other levels (GraphQL/DOM), different abilities are used instead.
  *
  * Current implementation uses mock dependencies for rapid prototyping.
- * Future enhancement: Replace mocks with real domain infrastructure (MongoDB Memory Server, etc.)
+ * TODO: Replace with real domain infrastructure (MongoDB Memory Server, etc.) when implementing actual domain integration.
  */
 export class CreateListingAbility extends Ability {
 	private createdListing?: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 
-	constructor(
-		private readonly uow: MockUow,
-		private readonly user: MockUser,
-		private readonly passport: MockPassport,
-	) {
+	constructor(_uow: unknown, _user: unknown, _passport: unknown) {
 		super();
 	}
 
@@ -76,14 +66,8 @@ export class CreateListingAbility extends Ability {
 	/**
 	 * Factory method to create this ability with dependencies.
 	 */
-	static using(uow: MockUow, user: MockUser, passport: MockPassport): CreateListingAbility {
+	static using(uow: unknown, user: unknown, passport: unknown): CreateListingAbility {
 		return new CreateListingAbility(uow, user, passport);
 	}
 
-	/**
-	 * Get this ability from an actor.
-	 */
-	static as(actor: import('@serenity-js/core').Actor): CreateListingAbility {
-		return actor.abilityTo(CreateListingAbility);
-	}
 }

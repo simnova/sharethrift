@@ -1,5 +1,5 @@
-import { Ability, type Actor } from '@serenity-js/core';
-import type { Session, CreateItemListingInput, ItemListing } from './Session.js';
+import { Ability } from '@serenity-js/core';
+import type { CreateItemListingInput, ItemListing, Session } from './Session.js';
 
 /**
  * GraphQLSession - makes real GraphQL calls to the GraphQL API.
@@ -51,8 +51,9 @@ export class GraphQLSession extends Ability implements Session {
 			}
 		`;
 
-		const response = await this.executeGraphQL(mutation, { input: this.serializeInput(input) });
-		return this.deserializeItemListing(response.data.createItemListing);
+			const response = await this.executeGraphQL(mutation, { input: this.serializeInput(input) });
+		const createItemListingData = response.data['createItemListing'] as Record<string, unknown>;
+		return this.deserializeItemListing(createItemListingData);
 	}
 
 	/**
@@ -75,14 +76,18 @@ export class GraphQLSession extends Ability implements Session {
 			}
 		`;
 
-		const response = await this.executeGraphQL(query, { id });
-		return response.data.itemListing ? this.deserializeItemListing(response.data.itemListing) : null;
+			const response = await this.executeGraphQL(query, { id });
+		const itemListingData = response.data['itemListing'] as Record<string, unknown> | undefined;
+		return itemListingData ? this.deserializeItemListing(itemListingData) : null;
 	}
 
 	/**
 	* Execute GraphQL request using fetch
 	 */
-	private async executeGraphQL(query: string, variables: Record<string, any>): Promise<any> {
+	private async executeGraphQL(
+		query: string,
+		variables: Record<string, unknown>,
+	): Promise<{ data: Record<string, unknown>; errors?: Array<{ message: string }> }> {
 		const response = await fetch(this.apiUrl, {
 			method: 'POST',
 			headers: {
@@ -95,10 +100,10 @@ export class GraphQLSession extends Ability implements Session {
 		const result = await response.json();
 
 		// Handle GraphQL errors (these come with 200 OK or 400 Bad Request)
-		if (result.errors) {
+		if (result.errors && Array.isArray(result.errors)) {
 			// Extract meaningful error message from GraphQL errors
 			const errorMessage = result.errors
-				.map((err: any) => err.message)
+				.map((err: { message?: string }) => err.message ?? 'Unknown error')
 				.join('; ');
 			throw new Error(errorMessage);
 		}
@@ -113,7 +118,7 @@ export class GraphQLSession extends Ability implements Session {
 	/**
 	 * Serialize input for GraphQL (Date -> ISO 8601 DateTime string)
 	 */
-	private serializeInput(input: CreateItemListingInput): any {
+	private serializeInput(input: CreateItemListingInput): Record<string, unknown> {
 		return {
 			...input,
 			sharingPeriodStart: input.sharingPeriodStart.toISOString(),
@@ -124,18 +129,28 @@ export class GraphQLSession extends Ability implements Session {
 	/**
 	 * Deserialize GraphQL response (ISO string -> Date)
 	 */
-	private deserializeItemListing(data: any): ItemListing {
-		return {
-			...data,
-			sharingPeriodStart: data.sharingPeriodStart ? new Date(data.sharingPeriodStart) : undefined,
-			sharingPeriodEnd: data.sharingPeriodEnd ? new Date(data.sharingPeriodEnd) : undefined,
+	private deserializeItemListing(data: Record<string, unknown>): ItemListing {
+		const item = data as unknown as ItemListing;
+		const result: ItemListing = {
+			id: item['id'],
+			title: item['title'],
+			description: item['description'],
+			category: item['category'],
+			location: item['location'],
+			state: item['state'],
 		};
+
+		if (item['images']) {
+			result.images = item['images'];
+		}
+		if (data['sharingPeriodStart']) {
+			result.sharingPeriodStart = new Date(String(data['sharingPeriodStart']));
+		}
+		if (data['sharingPeriodEnd']) {
+			result.sharingPeriodEnd = new Date(String(data['sharingPeriodEnd']));
+		}
+
+		return result;
 	}
 
-	/**
-	 * Required by Serenity/JS Ability interface
-	 */
-	static as(actor: Actor): GraphQLSession {
-		return actor.abilityTo(GraphQLSession);
-	}
 }

@@ -1,4 +1,4 @@
-import { Ability, type Actor } from '@serenity-js/core';
+import type { Actor } from '@serenity-js/core';
 
 /**
  * Session interface - represents a user's interactive session with the ShareThrift system.
@@ -60,9 +60,9 @@ export interface ItemListing {
  */
 export function getSession(actor: Actor): Session {
 	// Try to get any Session implementation
-	const abilities = (actor as any).abilities as Map<any, any>;
-	for (const ability of abilities.values()) {
-		if ('createItemListing' in ability && 'getListingById' in ability) {
+	const actorWithAbilities = actor as unknown as { abilities: Map<unknown, unknown> };
+	for (const ability of actorWithAbilities.abilities.values()) {
+		if ('createItemListing' in (ability as object) && 'getListingById' in (ability as object)) {
 			return ability as Session;
 		}
 	}

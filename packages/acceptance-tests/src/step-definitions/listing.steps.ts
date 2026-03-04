@@ -1,7 +1,7 @@
 import { Given, When, Then, DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
-import { Ensure, equals } from '@serenity-js/assertions';
 import type { ShareThriftWorld } from '../support/world.js';
+import type { ListingDetails } from '../tasks/domain/CreateListing.js';
 
 /**
  * Step definitions for listing-related scenarios.
@@ -10,18 +10,19 @@ import type { ShareThriftWorld } from '../support/world.js';
  * by using the dynamically loaded task implementations.
  */
 
-Given('{word} is an authenticated user', async function (this: ShareThriftWorld, actorName: string) {
-	// Get the actor from the cast - this will be configured with the right abilities
-	const actor = actorCalled(actorName);
-
-	// Authentication is set up in world.ts based on testing level:
-	// - Domain: Mock authenticated passport (configured in domain tasks)
-	// - GraphQL: AuthenticateUser ability with JWT token from mock OAuth2 server
-	// - DOM: Login through UI (future implementation)
-	
-	// For GraphQL level, the actor already has AuthenticateUser ability
-	// which will be used automatically by CallAnApi when making requests
-});
+Given(
+	'{word} is an authenticated user',
+	function (this: ShareThriftWorld, actorName: string) {
+		// Get the actor from the cast - this will be configured with the right abilities
+		// Authentication is set up in world.ts based on testing level:
+		// - Domain: Mock authenticated passport (configured in domain tasks)
+		// - GraphQL: AuthenticateUser ability with JWT token from mock OAuth2 server
+		// - DOM: Login through UI (future implementation)
+		// For GraphQL level, the actor already has AuthenticateUser ability
+		// which will be used automatically by CallAnApi when making requests
+		actorCalled(actorName);
+	},
+);
 
 Given(
 	'{word} has created a draft listing titled {string}',
@@ -55,7 +56,7 @@ When(
 		const { CreateListing } = await import(`../tasks/${taskLevel}/CreateListing.js`);
 
 		// Execute the task
-		await actor.attemptsTo(CreateListing.with(details as any));
+		await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
 	},
 );
 
@@ -70,7 +71,7 @@ When(
 		const { CreateListing } = await import(`../tasks/${taskLevel}/CreateListing.js`);
 
 		try {
-			await actor.attemptsTo(CreateListing.with(details as any));
+			await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
 			await actor.attemptsTo(
@@ -86,7 +87,10 @@ Then(
 		const actor = actorCalled(actorName);
 		const { ListingStatus } = await import('../questions/ListingStatus.js');
 
-		await actor.attemptsTo(Ensure.that(ListingStatus.of(), equals(expectedStatus)));
+		const status = await actor.answer(ListingStatus.of());
+		if (status !== expectedStatus) {
+			throw new Error(`Expected listing status "${expectedStatus}" but got "${status}"`);
+		}
 	},
 );
 
@@ -96,13 +100,16 @@ Then(
 		const actor = actorCalled(actorName);
 		const { ListingTitle } = await import('../questions/ListingTitle.js');
 
-		await actor.attemptsTo(Ensure.that(ListingTitle.displayed(), equals(expectedTitle)));
+		const title = await actor.answer(ListingTitle.displayed());
+		if (title !== expectedTitle) {
+			throw new Error(`Expected listing title "${expectedTitle}" but got "${title}"`);
+		}
 	},
 );
 
 Then(
 	'the listing should have a daily rate of {string}',
-	async function (this: ShareThriftWorld, expectedRate: string) {
+	function (this: ShareThriftWorld, expectedRate: string) {
 		// TODO: Implement daily rate verification question
 		console.log(`TODO: Verify daily rate is ${expectedRate}`);
 	},
@@ -110,7 +117,7 @@ Then(
 
 Then(
 	'the listing should be visible in search results',
-	async function (this: ShareThriftWorld) {
+	function (this: ShareThriftWorld) {
 		// TODO: Implement SearchResults question
 		console.log('TODO: Verify listing is visible in search results');
 	},
@@ -173,7 +180,7 @@ Then(
 	},
 );
 
-Then('no listing should be created', async function (this: ShareThriftWorld) {
+Then('no listing should be created', function (this: ShareThriftWorld) {
 	// TODO: Verify no listing was created
 	console.log('TODO: Verify no listing was created');
 });
@@ -185,7 +192,10 @@ Then(
 		const actor = actorCalled('Alice');
 		const { ListingStatus } = await import('../questions/ListingStatus.js');
 
-		await actor.attemptsTo(Ensure.that(ListingStatus.of(), equals(expectedStatus)));
+		const status = await actor.answer(ListingStatus.of());
+		if (status !== expectedStatus) {
+			throw new Error(`Expected listing status "${expectedStatus}" but got "${status}"`);
+		}
 	},
 );
 
@@ -195,6 +205,9 @@ Then(
 		const actor = actorCalled('Alice');
 		const { ListingTitle } = await import('../questions/ListingTitle.js');
 
-		await actor.attemptsTo(Ensure.that(ListingTitle.displayed(), equals(expectedTitle)));
+		const title = await actor.answer(ListingTitle.displayed());
+		if (title !== expectedTitle) {
+			throw new Error(`Expected listing title "${expectedTitle}" but got "${title}"`);
+		}
 	},
 );

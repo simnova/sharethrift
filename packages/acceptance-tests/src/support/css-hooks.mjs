@@ -11,13 +11,16 @@ const ASSET_EXTENSIONS = ['.css', '.svg', '.png', '.jpg', '.jpeg', '.gif', '.web
 
 const STUBS_DIR = new URL('./stubs/', import.meta.url);
 
-export async function resolve(specifier, context, nextResolve) {
+export function resolve(specifier, context, nextResolve) {
 	// Redirect antd imports to lightweight stubs
 	if (specifier === 'antd') {
-		return { url: new URL('antd.mjs', STUBS_DIR).href, shortCircuit: true };
+		return { url: new URL('antd.js', STUBS_DIR).href, shortCircuit: true };
 	}
 	if (specifier === 'antd/es/input/TextArea') {
-		return { url: new URL('antd-textarea.mjs', STUBS_DIR).href, shortCircuit: true };
+		return { url: new URL('antd-textarea.js', STUBS_DIR).href, shortCircuit: true };
+	}
+	if (specifier === '@ant-design/icons') {
+		return { url: new URL('antd-icons.js', STUBS_DIR).href, shortCircuit: true };
 	}
 	if (specifier.startsWith('antd/') || specifier.startsWith('@ant-design/')) {
 		// Catch-all for any other antd subpath (e.g. type-only imports compiled away by tsx)
@@ -30,7 +33,7 @@ export async function resolve(specifier, context, nextResolve) {
 	return nextResolve(specifier, context);
 }
 
-export async function load(url, context, nextLoad) {
+export function load(url, context, nextLoad) {
 	if (ASSET_EXTENSIONS.some((ext) => url.endsWith(ext))) {
 		return {
 			format: 'module',

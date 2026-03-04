@@ -80,5 +80,5 @@ export class CreateListing extends Task {
 		return endDate;
 	}
 
-	toString = () => `creates listing "${this.details.title}" (session)`;
+	override toString = () => `creates listing "${this.details.title}" (session)`;
 }

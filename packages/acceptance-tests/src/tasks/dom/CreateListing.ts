@@ -1,5 +1,5 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
-import { ListingForm, type ListingFormProps } from '@sthrift/ui-components/create-listing-form';
+import { ListingForm, type ListingFormProps } from '@sthrift/ui-components';
 import { RenderComponents } from '../../abilities/RenderComponents.js';
 import { getSession } from '../../abilities/Session.js';
 
@@ -70,13 +70,15 @@ export class CreateListing extends Task {
 				submitCalled = true;
 				submitIsDraft = isDraft;
 			},
-			onCancel: () => {},
+			onCancel: () => {
+				// Test handler - no-op
+			},
 		};
 
 		// 1. Render the actual ListingForm component
 		const { getByPlaceholderText, getByRole, user } = renderer.render(
 			ListingForm,
-			formProps,
+			formProps as unknown as Record<string, unknown>,
 		);
 
 		// 2. Interact with the form using accessible queries
@@ -128,5 +130,5 @@ export class CreateListing extends Task {
 		);
 	}
 
-	toString = () => `creates listing "${this.details.title}" (dom)`;
+	override toString = () => `creates listing "${this.details.title}" (dom)`;
 }

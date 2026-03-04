@@ -1,11 +1,21 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
-import { actorCalled, configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
+import { configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
 import { RenderComponents } from '../abilities/RenderComponents.js';
 import { CreateListingAbility } from '../abilities/CreateListingAbility.js';
 import { DomainSession } from '../abilities/DomainSession.js';
-import { GraphQLSession } from '../abilities/GraphQLSession.js';
+import { GraphQLSession } from '../abilities/GraphqlSession.js';
 import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
+
+/**
+ * Task level determines which implementation to use (domain/session/dom)
+ */
+type TaskLevel = 'domain' | 'session' | 'dom';
+
+/**
+ * Session type determines which backend to use (domain/graphql)
+ */
+type SessionType = 'domain' | 'graphql';
 
 /**
  * World parameters passed via --world-parameters CLI flag
@@ -26,8 +36,8 @@ import { createTestApplicationServicesFactory } from './test-application-service
  * @see https://github.com/cucumber/screenplay.js
  */
 export interface WorldParameters {
-	tasks: 'domain' | 'session' | 'dom';
-	session?: 'domain' | 'graphql';
+	tasks: TaskLevel;
+	session?: SessionType;
 	apiUrl?: string;
 }
 
@@ -36,8 +46,8 @@ export interface WorldParameters {
  */
 class ShareThriftCast implements Cast {
 	constructor(
-		private readonly tasksLevel: 'domain' | 'session' | 'dom',
-		private readonly sessionType: 'domain' | 'graphql',
+		private readonly tasksLevel: TaskLevel,
+		private readonly sessionType: SessionType,
 		private readonly apiUrl: string,
 	) {}
 
@@ -46,7 +56,7 @@ class ShareThriftCast implements Cast {
 			case 'domain':
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),
-					CreateListingAbility.using({} as any, {} as any, {} as any),
+					CreateListingAbility.using({} as unknown, {} as unknown, {} as unknown),
 				);
 
 			case 'session': {
@@ -78,16 +88,17 @@ class ShareThriftCast implements Cast {
 }
 
 export class ShareThriftWorld extends World<WorldParameters> {
-	private readonly tasksLevel: 'domain' | 'session' | 'dom';
-	private readonly sessionType: 'domain' | 'graphql';
+	private readonly tasksLevel: TaskLevel;
+	private readonly sessionType: SessionType;
 	private readonly apiUrl: string;
-	private testServer?: TestServer;
+	private testServer: TestServer | undefined;
 
 	constructor(options: IWorldOptions<WorldParameters>) {
 		super(options);
-		this.tasksLevel = (options.parameters?.tasks || 'domain') as any;
+		this.tasksLevel = options.parameters?.tasks || 'domain';
 		this.sessionType = options.parameters?.session || 'domain';
 		this.apiUrl = options.parameters?.apiUrl || 'http://localhost:4000/graphql';
+		this.testServer = undefined;
 	}
 
 	async init(): Promise<void> {
@@ -134,7 +145,7 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		}
 	}
 
-	get level(): 'domain' | 'session' | 'dom' {
+	get level(): TaskLevel {
 		return this.tasksLevel;
 	}
 }

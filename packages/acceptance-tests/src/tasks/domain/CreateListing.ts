@@ -44,7 +44,9 @@ export class CreateListing extends Task {
 
 	private constructor(private readonly details: CreateListingInput) {
 		super(`creates listing "${details.title}" (domain)`);
-	}	async performAs(actor: Actor): Promise<void> {
+	}
+
+	async performAs(actor: Actor): Promise<void> {
 		// Use the CreateListingAbility to create the listing
 		const ability = CreateListingAbility.as(actor);
 		ability.createDraftListing(this.details);
@@ -62,5 +64,5 @@ export class CreateListing extends Task {
 		console.log(`[DOMAIN] Created listing: ${this.details.title}`);
 	}
 
-	toString = () => `creates listing "${this.details.title}" (domain)`;
+	override toString = () => `creates listing "${this.details.title}" (domain)`;
 }

@@ -23,21 +23,38 @@ globalThis.matchMedia = (query) => ({
 	matches: false,
 	media: query,
 	onchange: null,
-	addListener: () => {},
-	removeListener: () => {},
-	addEventListener: () => {},
-	removeEventListener: () => {},
+	addListener: () => {
+		// Mock implementation - no-op
+	},
+	removeListener: () => {
+		// Mock implementation - no-op
+	},
+	addEventListener: () => {
+		// Mock implementation - no-op
+	},
+	removeEventListener: () => {
+		// Mock implementation - no-op
+	},
 	dispatchEvent: () => false,
 });
 
 globalThis.ResizeObserver = class {
-	observe() {}
-	unobserve() {}
-	disconnect() {}
+	observe() {
+		// Mock implementation - no-op
+	}
+	unobserve() {
+		// Mock implementation - no-op
+	}
+	disconnect() {
+		// Mock implementation - no-op
+	}
 };
 
 globalThis.getComputedStyle = () => ({
-	getPropertyValue: () => '',
+	getPropertyValue: () => {
+		// Mock implementation - returns empty string
+		return '';
+	},
 });
 
 register(new URL('./css-hooks.mjs', import.meta.url));

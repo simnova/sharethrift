@@ -1,22 +1,22 @@
 {
+	"extends": "@cellix/typescript-config/node.json",
 	"compilerOptions": {
-		"target": "ES2022",
-		"module": "ESNext",
-		"moduleResolution": "bundler",
-		"jsx": "react-jsx",
-		"lib": ["ES2022", "DOM"],
 		"outDir": "./dist",
-		"rootDir": "./src",
-		"strict": true,
-		"esModuleInterop": true,
-		"skipLibCheck": true,
-		"forceConsistentCasingInFileNames": true,
-		"resolveJsonModule": true,
-		"declaration": true,
-		"declarationMap": true,
-		"sourceMap": true,
-		"allowSyntheticDefaultImports": true
+		"rootDir": ".",
+		"jsx": "react-jsx",
+		"lib": ["ES2023", "DOM", "DOM.Iterable"],
+		"erasableSyntaxOnly": false
 	},
-	"include": ["src/**/*", "features/**/*"],
-	"exclude": ["node_modules", "dist", "reports", "target"]
+	"include": [
+		"src/**/*",
+		"features/**/*"
+	],
+	"exclude": [
+		"node_modules",
+		"**/node_modules",
+		"dist",
+		"coverage",
+		"reports",
+		"target"
+	]
 }

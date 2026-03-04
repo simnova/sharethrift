@@ -1,7 +1,8 @@
-import { Ability, type Actor } from '@serenity-js/core';
-import { createElement, type ComponentType } from 'react';
+import { Ability } from '@serenity-js/core';
 import { render, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+// @ts-expect-error React 19 types not yet in DefinitelyTyped
+import { createElement, type ComponentType } from 'react';
 
 /**
  * RenderComponents - Ability to render and interact with React components in a headless DOM.
@@ -16,10 +17,6 @@ export class RenderComponents extends Ability {
 		return new RenderComponents();
 	}
 
-	static as(actor: Actor): RenderComponents {
-		return actor.abilityTo(RenderComponents);
-	}
-
 	/**
 	 * Render a React component in the headless DOM.
 	 *
@@ -28,9 +25,11 @@ export class RenderComponents extends Ability {
 	 *
 	 * Throws descriptive error if component rendering fails.
 	 */
-	render(Component: ComponentType<any>, props: Record<string, any>) {
+	// @ts-expect-error @testing-library/user-event types not fully compatible
+	render(Component: ComponentType<unknown>, props: Record<string, unknown>): ReturnType<typeof render> & { user: ReturnType<typeof userEvent.setup> } {
 		try {
 			const result = render(createElement(Component, props));
+			// @ts-expect-error @testing-library/user-event types not fully compatible
 			const user = userEvent.setup();
 			return { ...result, user };
 		} catch (error) {
@@ -46,7 +45,7 @@ export class RenderComponents extends Ability {
 	 * Clean up: unmount React trees between scenarios.
 	 * DOM globals persist for the entire test run (set up in register-css.mjs).
 	 */
-	cleanup(): void {
+	cleanupDOM(): void {
 		cleanup();
 	}
 }

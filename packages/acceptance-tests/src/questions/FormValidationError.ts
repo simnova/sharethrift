@@ -1,4 +1,4 @@
-import { Question } from '@serenity-js/core';
+import { Question, type AnswersQuestions, type UsesAbilities } from '@serenity-js/core';
 
 /**
  * FormValidationError - Question that checks if a validation error is displayed in the DOM
@@ -8,7 +8,7 @@ import { Question } from '@serenity-js/core';
  *
  * For domain/session level tests, returns empty string (no DOM rendered).
  */
-export class FormValidationError extends Question<string> {
+export class FormValidationError extends Question<Promise<string>> {
 	/**
 	 * Get the general form error message
 	 */
@@ -28,7 +28,7 @@ export class FormValidationError extends Question<string> {
 		super(`form validation error${fieldName ? ` for ${fieldName}` : ''}`);
 	}
 
-	answeredBy(): Promise<string> {
+	override answeredBy(_actor: AnswersQuestions & UsesAbilities): Promise<string> {
 		// Query the DOM for validation errors using accessible selectors
 		// This works with tests that render components in happy-dom or real browsers
 
@@ -70,5 +70,5 @@ export class FormValidationError extends Question<string> {
 		return name.toLowerCase().replace(/\s+/g, '-');
 	}
 
-	toString = () => `form validation error${this.fieldName ? ` for ${this.fieldName}` : ''}`;
+	override toString = () => `form validation error${this.fieldName ? ` for ${this.fieldName}` : ''}`;
 }

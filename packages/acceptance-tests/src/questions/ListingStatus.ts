@@ -1,4 +1,4 @@
-import { Question, type Actor, notes } from '@serenity-js/core';
+import { Question, type AnswersQuestions, type UsesAbilities, notes } from '@serenity-js/core';
 
 /**
  * ListingStatus is a Question that retrieves the status of a listing.
@@ -6,7 +6,7 @@ import { Question, type Actor, notes } from '@serenity-js/core';
  * Questions are used in assertions to query the current state.
  * The status is retrieved from actor notes set during task execution.
  */
-export class ListingStatus extends Question<string> {
+export class ListingStatus extends Question<Promise<string>> {
 	constructor() {
 		super('listing status');
 	}
@@ -14,15 +14,16 @@ export class ListingStatus extends Question<string> {
 	/**
 	 * Retrieve the listing status from actor notes
 	 */
-	async answeredBy(actor: Actor): Promise<string> {
-		const status = await actor.answer(notes<{ lastListingStatus: string }>().get('lastListingStatus'));
-		if (!status) {
-			throw new Error(
-				'No listing status found in actor notes. Did the actor create a listing first? ' +
-				'Use a When step like "Alice has created a draft listing titled ..."',
-			);
-		}
-		return status;
+	override answeredBy(actor: AnswersQuestions & UsesAbilities): Promise<string> {
+		return actor.answer(notes<{ lastListingStatus: string }>().get('lastListingStatus')).then((status: unknown) => {
+			if (!status) {
+				throw new Error(
+					'No listing status found in actor notes. Did the actor create a listing first? ' +
+					'Use a When step like "Alice has created a draft listing titled ..."',
+				);
+			}
+			return status as string;
+		});
 	}
 
 	/**
@@ -32,7 +33,7 @@ export class ListingStatus extends Question<string> {
 		return new ListingStatus();
 	}
 
-	toString(): string {
+	override toString(): string {
 		return 'the listing status';
 	}
 }

@@ -1,6 +1,8 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { applyMiddleware } from 'graphql-middleware';
+// @ts-expect-error graphql-depth-limit has no type definitions
+// eslint-disable-next-line import/no-unresolved
 import depthLimit from 'graphql-depth-limit';
 import type { ApplicationServicesFactory } from '@sthrift/application-services';
 import { combinedSchema } from '@sthrift/graphql';
