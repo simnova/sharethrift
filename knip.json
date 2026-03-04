@@ -47,6 +47,10 @@
 		"packages/sthrift/*": {
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.{ts,tsx}"]
+		},
+		"packages/acceptance-tests": {
+			"entry": ["src/step-definitions/**/*.ts"],
+			"project": ["src/**/*.{ts,mjs,js}"]
 		}
 	},
 	"ignoreWorkspaces": [
@@ -78,7 +82,10 @@
 		"vitest.shims.d.ts",
 		"**/vitest.config.ts",
 		"**/vite.config.ts",
-		"packages/cellix/server-payment-seedwork/src/copy-assets.ts"
+		"packages/cellix/server-payment-seedwork/src/copy-assets.ts",
+		"packages/acceptance-tests/src/support/**/*.ts",
+		"packages/acceptance-tests/src/support/stubs/**",
+		"packages/acceptance-tests/src/tasks/**/*.ts"
 	],
 	"ignoreDependencies": [
 		"@cucumber/node",

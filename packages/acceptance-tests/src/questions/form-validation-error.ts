@@ -25,7 +25,8 @@ export class FormValidationError extends Question<Promise<string>> {
 	}
 
 	constructor(private readonly type: 'form' | 'field' = 'form', private readonly fieldName?: string) {
-		super(`form validation error${fieldName ? ` for ${fieldName}` : ''}`);
+		const message = fieldName ? `form validation error for ${fieldName}` : 'form validation error';
+		super(message);
 	}
 
 	override answeredBy(_actor: AnswersQuestions & UsesAbilities): Promise<string> {
