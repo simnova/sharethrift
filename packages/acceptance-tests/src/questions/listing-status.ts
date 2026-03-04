@@ -10,10 +10,7 @@ export class ListingStatus extends Question<Promise<string>> {
 	constructor() {
 		super('listing status');
 	}
-
-	/**
-	 * Retrieve the listing status from actor notes
-	 */
+    
 	override answeredBy(actor: AnswersQuestions & UsesAbilities): Promise<string> {
 		return actor.answer(notes<{ lastListingStatus: string }>().get('lastListingStatus')).then((status: unknown) => {
 			if (!status) {

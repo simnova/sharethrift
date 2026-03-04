@@ -20,23 +20,6 @@ export interface ListingDetails {
 	tags?: string;
 }
 
-/**
- * CreateListing task for the DOM level.
- *
- * Following screenplay.js philosophy, this task:
- * 1. Renders the ACTUAL ListingForm component in a headless DOM (happy-dom)
- * 2. Interacts with the form via @testing-library (accessible queries + userEvent)
- * 3. Uses Session to persist the listing (DomainSession or GraphqlSession)
- *
- * This tests the full flow from component rendering through data persistence,
- * without needing a running UI server or browser.
- *
- * Assembly combinations:
- * - dom + DomainSession:  component + domain layer (fast)
- * - dom + GraphqlSession: component + HTTP + domain layer (full coverage)
- *
- * @see https://github.com/cucumber/screenplay.js
- */
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
 		return new CreateListing(details);

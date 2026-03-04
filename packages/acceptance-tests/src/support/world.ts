@@ -6,6 +6,7 @@ import { DomainSession } from '../abilities/domain-session.js';
 import { GraphqlSession } from '../abilities/graphql-session.js';
 import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
+import { cleanup } from '@testing-library/react';
 
 /**
  * Task level determines which implementation to use (domain/session/dom)
@@ -130,7 +131,6 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		// Clean up DOM rendering environment (unmount React trees, keep globals)
 		if (this.tasksLevel === 'dom') {
 			try {
-				const { cleanup } = await import('@testing-library/react');
 				cleanup();
 			} catch {
 				// testing-library may not have been imported yet

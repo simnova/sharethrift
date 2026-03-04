@@ -9,17 +9,10 @@ import { Question, type AnswersQuestions, type UsesAbilities } from '@serenity-j
  * For domain/session level tests, returns empty string (no DOM rendered).
  */
 export class FormValidationError extends Question<Promise<string>> {
-	/**
-	 * Get the general form error message
-	 */
 	static displayed(): FormValidationError {
 		return new FormValidationError('form');
 	}
-
-	/**
-	 * Get error message for a specific field
-	 * Example: FormValidationError.forField('title')
-	 */
+    
 	static forField(fieldName: string): FormValidationError {
 		return new FormValidationError('field', fieldName);
 	}
@@ -68,8 +61,11 @@ export class FormValidationError extends Question<Promise<string>> {
 	 * "title" stays "title", "Daily Rate" becomes "daily-rate"
 	 */
 	private normalizeFieldName(name: string): string {
-		return name.toLowerCase().replace(/\s+/g, '-');
+		return name.toLowerCase().replaceAll(/\s+/g, '-');
 	}
 
-	override toString = () => `form validation error${this.fieldName ? ` for ${this.fieldName}` : ''}`;
+	override toString = () => {
+		const suffix = this.fieldName ? ` for ${this.fieldName}` : '';
+		return `form validation error${suffix}`;
+	};
 }

@@ -10,9 +10,6 @@ export class ListingTitle extends Question<Promise<string>> {
 		super('listing title');
 	}
 
-	/**
-	 * Get the listing title
-	 */
 	static displayed(): ListingTitle {
 		return new ListingTitle();
 	}

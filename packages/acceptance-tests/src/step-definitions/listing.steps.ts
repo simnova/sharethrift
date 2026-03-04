@@ -6,23 +6,10 @@ import  { ListingStatus } from '../questions/listing-status.js';
 import  { ListingTitle } from '../questions/listing-title.js';
 import  { FormValidationError } from '../questions/form-validation-error.js';
 
-/**
- * Step definitions for listing-related scenarios.
- *
- * These steps work across all testing levels (domain/graphql/dom)
- * by using the dynamically loaded task implementations.
- */
 
 Given(
 	'{word} is an authenticated user',
 	function (this: ShareThriftWorld, actorName: string) {
-		// Get the actor from the cast - this will be configured with the right abilities
-		// Authentication is set up in world.ts based on testing level:
-		// - Domain: Mock authenticated passport (configured in domain tasks)
-		// - GraphQL: AuthenticateUser ability with JWT token from mock OAuth2 server
-		// - DOM: Login through UI (future implementation)
-		// For GraphQL level, the actor already has AuthenticateUser ability
-		// which will be used automatically by CallAnApi when making requests
 		actorCalled(actorName);
 	},
 );
@@ -109,16 +96,7 @@ Then(
 Then(
 	'the listing should have a daily rate of {string}',
 	function (this: ShareThriftWorld, expectedRate: string) {
-		// TODO: Implement daily rate verification question
 		console.log(`TODO: Verify daily rate is ${expectedRate}`);
-	},
-);
-
-Then(
-	'the listing should be visible in search results',
-	function (this: ShareThriftWorld) {
-		// TODO: Implement SearchResults question
-		console.log('TODO: Verify listing is visible in search results');
 	},
 );
 
@@ -171,14 +149,13 @@ Then(
 		// For DOM tests, try to get error from form UI
 		const error = await actor.answer(FormValidationError.displayed());
 
-		if (!error || !error.includes(expectedMessage)) {
+		if (!error?.includes(expectedMessage)) {
 			throw new Error(`Expected error message "${expectedMessage}", but got: "${error || 'none'}"`);
 		}
 	},
 );
 
 Then('no listing should be created', function (this: ShareThriftWorld) {
-	// TODO: Verify no listing was created
 	console.log('TODO: Verify no listing was created');
 });
 

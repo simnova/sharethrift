@@ -17,26 +17,12 @@ export interface ListingDetails {
 	deposit?: string;
 	tags?: string;
 }
-
-/**
- * CreateListing task for DOMAIN level.
- *
- * Uses domain CreateListingAbility to create a listing directly.
- * This is the fastest test level - no HTTP or browser overhead.
- */
 export interface CreateListingInput {
 	title: string;
 	description: string;
 	category: string;
 	location: string;
 }
-
-/**
- * CreateListing task for DOMAIN level.
- *
- * Uses domain CreateListingAbility to create a listing directly.
- * This is the fastest test level - no HTTP or browser overhead.
- */
 export class CreateListing extends Task {
 	static with(details: CreateListingInput) {
 		return new CreateListing(details);

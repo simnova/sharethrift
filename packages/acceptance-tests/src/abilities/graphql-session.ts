@@ -88,7 +88,6 @@ export class GraphqlSession extends Ability implements Session {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				// TODO: Add authentication headers when needed
 			},
 			body: JSON.stringify({ query, variables }),
 		});
