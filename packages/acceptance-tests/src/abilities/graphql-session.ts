@@ -1,11 +1,11 @@
 import { Ability } from '@serenity-js/core';
-import type { CreateItemListingInput, ItemListing, Session } from './Session.js';
+import type { CreateItemListingInput, ItemListing, Session } from './session.js';
 
 /**
- * GraphQLSession - makes real GraphQL calls to the GraphQL API.
+ * GraphqlSession - makes real GraphQL calls to the GraphQL API.
  *
  * Following Screenplay.js design recommendations:
- * "The GraphQLSession is where you encapsulate all of the fetch, WebSocket and EventSource logic.
+ * "The GraphqlSession is where you encapsulate all of the fetch, WebSocket and EventSource logic.
  *  This is the class your UI will use in production. You will also use it in tests."
  *
  * Benefits:
@@ -19,7 +19,7 @@ import type { CreateItemListingInput, ItemListing, Session } from './Session.js'
  *
  * @see https://github.com/cucumber/screenplay.js
  */
-export class GraphQLSession extends Ability implements Session {
+export class GraphqlSession extends Ability implements Session {
 	constructor(private readonly apiUrl: string) {
 		super();
 	}
@@ -27,8 +27,8 @@ export class GraphQLSession extends Ability implements Session {
 	/**
 	 * Factory method following Serenity/JS Ability pattern
 	 */
-	static at(apiUrl: string): GraphQLSession {
-		return new GraphQLSession(apiUrl);
+	static at(apiUrl: string): GraphqlSession {
+		return new GraphqlSession(apiUrl);
 	}
 
 	/**

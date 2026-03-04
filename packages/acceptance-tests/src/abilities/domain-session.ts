@@ -1,5 +1,5 @@
 import { Ability } from '@serenity-js/core';
-import type { CreateItemListingInput, ItemListing, Session } from './Session.js';
+import type { CreateItemListingInput, ItemListing, Session } from './session.js';
 
 /**
  * DomainSession - talks directly to the domain layer with direct function calls (no networking).

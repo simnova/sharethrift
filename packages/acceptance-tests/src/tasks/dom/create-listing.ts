@@ -1,7 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { ListingForm, type ListingFormProps } from '@sthrift/ui-components';
-import { RenderComponents } from '../../abilities/RenderComponents.js';
-import { getSession } from '../../abilities/Session.js';
+import { RenderComponents } from '../../abilities/render-components.js';
+import { getSession } from '../../abilities/session.js';
 
 interface ListingNotes {
 	lastListingId: string;
@@ -26,14 +26,14 @@ export interface ListingDetails {
  * Following screenplay.js philosophy, this task:
  * 1. Renders the ACTUAL ListingForm component in a headless DOM (happy-dom)
  * 2. Interacts with the form via @testing-library (accessible queries + userEvent)
- * 3. Uses Session to persist the listing (DomainSession or GraphQLSession)
+ * 3. Uses Session to persist the listing (DomainSession or GraphqlSession)
  *
  * This tests the full flow from component rendering through data persistence,
  * without needing a running UI server or browser.
  *
  * Assembly combinations:
  * - dom + DomainSession:  component + domain layer (fast)
- * - dom + GraphQLSession: component + HTTP + domain layer (full coverage)
+ * - dom + GraphqlSession: component + HTTP + domain layer (full coverage)
  *
  * @see https://github.com/cucumber/screenplay.js
  */

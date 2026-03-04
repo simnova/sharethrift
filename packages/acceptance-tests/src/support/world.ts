@@ -1,9 +1,9 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
 import { configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
-import { RenderComponents } from '../abilities/RenderComponents.js';
-import { CreateListingAbility } from '../abilities/CreateListingAbility.js';
-import { DomainSession } from '../abilities/DomainSession.js';
-import { GraphQLSession } from '../abilities/GraphqlSession.js';
+import { RenderComponents } from '../abilities/render-components.js';
+import { CreateListingAbility } from '../abilities/create-listing-ability.js';
+import { DomainSession } from '../abilities/domain-session.js';
+import { GraphqlSession } from '../abilities/graphql-session.js';
 import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
 
@@ -27,9 +27,9 @@ type SessionType = 'domain' | 'graphql';
  * Assemblies (from Screenplay.js):
  * 1. domain + DomainSession = Fastest tests (pure domain layer, <1ms)
  * 2. session + DomainSession = Fast tests (domain + session abstraction, <1ms)
- * 3. session + GraphQLSession = Full integration tests (HTTP + domain, 100ms)
+ * 3. session + GraphqlSession = Full integration tests (HTTP + domain, 100ms)
  * 4. dom + DomainSession = Real UI tests with happy-dom (component tests, ~100-500ms per test)
- * 5. dom + GraphQLSession = Real UI + Real API tests with happy-dom (~500ms-1s per test)
+ * 5. dom + GraphqlSession = Real UI + Real API tests with happy-dom (~500ms-1s per test)
  *
  * DOM tests render the actual CreateListing component in happy-dom (headless DOM)
  *
@@ -62,7 +62,7 @@ class ShareThriftCast implements Cast {
 			case 'session': {
 				const session =
 					this.sessionType === 'graphql'
-						? GraphQLSession.at(this.apiUrl)
+						? GraphqlSession.at(this.apiUrl)
 						: DomainSession.withDirectDomainAccess();
 
 				return actor.whoCan(TakeNotes.using(Notepad.empty()), session);
@@ -71,7 +71,7 @@ class ShareThriftCast implements Cast {
 			case 'dom': {
 				const session =
 					this.sessionType === 'graphql'
-						? GraphQLSession.at(this.apiUrl)
+						? GraphqlSession.at(this.apiUrl)
 						: DomainSession.withDirectDomainAccess();
 
 				return actor.whoCan(
