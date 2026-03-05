@@ -1,10 +1,10 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
 import { configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
 import { RenderComponents } from '../abilities/render-components.js';
-import { CreateListingAbility } from '../../contexts/listing/abilities/create-listing-ability.js';
+import { createListingAbilities } from '../../contexts/listing/abilities/index.js';
 import { DomainListingSession } from '../../contexts/listing/abilities/domain-listing-session.js';
 import { GraphQLListingSession } from '../../contexts/listing/abilities/graphql-listing-session.js';
-import { CreateReservationRequestAbility } from '../../contexts/reservation-request/abilities/create-reservation-request-ability.js';
+import { createReservationRequestAbilities } from '../../contexts/reservation-request/abilities/index.js';
 import { DomainReservationRequestSession } from '../../contexts/reservation-request/abilities/domain-reservation-request-session.js';
 import { GraphQLReservationRequestSession } from '../../contexts/reservation-request/abilities/graphql-reservation-request-session.js';
 import { MultiContextSession } from '../abilities/multi-context-session.js';
@@ -61,9 +61,8 @@ class ShareThriftCast implements Cast {
 			case 'domain':
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),
-					CreateListingAbility.using({} as unknown, {} as unknown, {} as unknown),
-					CreateReservationRequestAbility.using({} as unknown, {} as unknown, {} as unknown),
-					new DomainReservationRequestSession(),
+					createListingAbilities(),
+					createReservationRequestAbilities(),
 				);
 
 			case 'session': {
@@ -132,6 +131,12 @@ export class ShareThriftWorld extends World<WorldParameters> {
 	}
 
 	async init(): Promise<void> {
+		// Display test execution level
+		const levelIcon = this.tasksLevel === 'dom' ? '🎨' : '⚡';
+		console.log(`\n${'─'.repeat(70)}`);
+		console.log(`${levelIcon} ${this.tasksLevel.toUpperCase()} tests with ${this.sessionType.toUpperCase()} backend`);
+		console.log(`${'─'.repeat(70)}\n`);
+
 		// Start test server for GraphQL session tests
 		if (this.sessionType === 'graphql' && !this.testServer) {
 			// Create test ApplicationServicesFactory with in-memory storage
