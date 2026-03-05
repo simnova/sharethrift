@@ -64,6 +64,9 @@
 		"packages/cellix/server-mongodb-memory-seedwork",
 		"packages/cellix/server-oauth2-seedwork",
 		"packages/cellix/server-payment-seedwork",
+		"packages/cellix/arch-unit-tests",
+		"packages/sthrift/arch-unit-tests",
+		"packages/sthrift/ui-components",
 		"apps/server-messaging-mock",
 		"apps/server-mongodb-memory-mock",
 		"apps/server-oauth2-mock",
@@ -83,9 +86,8 @@
 		"**/vitest.config.ts",
 		"**/vite.config.ts",
 		"packages/cellix/server-payment-seedwork/src/copy-assets.ts",
-		"packages/acceptance-tests/src/support/**/*.ts",
-		"packages/acceptance-tests/src/support/stubs/**",
-		"packages/acceptance-tests/src/tasks/**/*.ts"
+		"packages/acceptance-tests/src/shared/support/**",
+		"packages/acceptance-tests/src/context/**/tasks/**/*.ts"
 	],
 	"ignoreDependencies": [
 		"@cucumber/node",
@@ -102,7 +104,11 @@
 		"@graphql-tools/load",
 		"rollup",
 		"vite",
-		"axios"
+		"axios",
+		"@ant-design/icons",
+		"antd",
+		"react-router-dom",
+		"tsx"
 	],
 	"ignoreBinaries": ["func", "open", "concurrently", "container"]
 }

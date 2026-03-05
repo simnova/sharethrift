@@ -2,9 +2,23 @@ import { Given, When, Then, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
 import type { ShareThriftWorld } from '../../../shared/support/world.js';
 import type { ListingDetails } from '../tasks/domain/create-listing.js';
+import { CreateListing as DomCreateListing } from '../tasks/dom/create-listing.js';
+import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.js';
+import { CreateListing as DomainCreateListing } from '../tasks/domain/create-listing.js';
 import  { ListingStatus } from '../questions/listing-status.js';
 import  { ListingTitle } from '../questions/listing-title.js';
 import  { FormValidationError } from '../questions/form-validation-error.js';
+
+function getCreateListingTask(level: string) {
+	switch (level) {
+		case 'dom':
+			return DomCreateListing;
+		case 'session':
+			return SessionCreateListing;
+		default:
+			return DomainCreateListing;
+	}
+}
 
 Given(
 	'{word} is an authenticated user',
@@ -18,8 +32,7 @@ Given(
 	async function (this: ShareThriftWorld, actorName: string, title: string) {
 		const actor = actorCalled(actorName);
 
-		const taskLevel = this.level;
-		const { CreateListing } = await import(`../tasks/${taskLevel}/create-listing.js`);
+		const CreateListing = getCreateListingTask(this.level);
 
 		// Execute the task using Serenity/JS actor
 		await actor.attemptsTo(
@@ -39,9 +52,7 @@ When(
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
-		// Import task from correct level
-		const taskLevel = this.level;
-		const { CreateListing } = await import(`../tasks/${taskLevel}/create-listing.js`);
+		const CreateListing = getCreateListingTask(this.level);
 
 		// Execute the task
 		await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
@@ -54,9 +65,7 @@ When(
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
-		// Import task from correct level
-		const taskLevel = this.level;
-		const { CreateListing } = await import(`../tasks/${taskLevel}/create-listing.js`);
+		const CreateListing = getCreateListingTask(this.level);
 
 		try {
 			await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));

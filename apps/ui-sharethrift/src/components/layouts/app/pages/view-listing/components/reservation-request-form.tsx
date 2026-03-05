@@ -26,7 +26,7 @@ function isBetweenManual(
 	return isAfterStart && isBeforeEnd;
 }
 
-export interface ReservationRequestFormProps {
+interface ReservationRequestFormProps {
 	userIsSharer: boolean;
 	isAuthenticated: boolean;
 	userReservationRequest:

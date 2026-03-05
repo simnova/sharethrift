@@ -2,6 +2,13 @@ import { Given, Then, When, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
 import type { ShareThriftWorld } from '../../../shared/support/world.js';
 import type { CreateReservationRequestInput } from '../abilities/reservation-request-session.js';
+import { CreateListing as DomCreateListing } from '../../listing/tasks/dom/create-listing.js';
+import { CreateListing as SessionCreateListing } from '../../listing/tasks/session/create-listing.js';
+import { CreateListing as DomainCreateListing } from '../../listing/tasks/domain/create-listing.js';
+import { CreateReservationRequest as DomCreateReservationRequest } from '../tasks/dom/create-reservation-request.js';
+import { CreateReservationRequest as SessionCreateReservationRequest } from '../tasks/session/create-reservation-request.js';
+import { CreateReservationRequest as DomainCreateReservationRequest } from '../tasks/domain/create-reservation-request.js';
+import { GetReservationRequestCountForListing } from '../questions/get-reservation-request-count-for-listing.js';
 
 interface ReservationRequestNotes {
 	lastReservationRequestId: string;
@@ -12,6 +19,28 @@ interface ReservationRequestNotes {
 	reservationRequestCountForListing: number;
 }
 
+function getCreateListingTask(level: string) {
+	switch (level) {
+		case 'dom':
+			return DomCreateListing;
+		case 'session':
+			return SessionCreateListing;
+		default:
+			return DomainCreateListing;
+	}
+}
+
+function getCreateReservationRequestTask(level: string) {
+	switch (level) {
+		case 'dom':
+			return DomCreateReservationRequest;
+		case 'session':
+			return SessionCreateReservationRequest;
+		default:
+			return DomainCreateReservationRequest;
+	}
+}
+
 let lastCreatedListingId = '';
 
 Given(
@@ -20,8 +49,7 @@ Given(
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
-		const taskLevel = this.level;
-		const { CreateListing } = await import(`../../listing/tasks/${taskLevel}/create-listing.js`);
+		const CreateListing = getCreateListingTask(this.level);
 
 		await actor.attemptsTo(
 			CreateListing.with(details as unknown as Record<string, unknown>),
@@ -38,8 +66,7 @@ When(
 		const actor = actorCalled(reserver);
 		const data = dataTable.rowsHash();
 
-		const taskLevel = this.level;
-		const { CreateReservationRequest } = await import(`../tasks/${taskLevel}/create-reservation-request.js`);
+		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
 
 		const startDate = data['reservationPeriodStart'];
 		const endDate = data['reservationPeriodEnd'];
@@ -66,8 +93,7 @@ When(
 		const actor = actorCalled(actorName);
 		const data = dataTable.rowsHash();
 
-		const taskLevel = this.level;
-		const { CreateReservationRequest } = await import(`../tasks/${taskLevel}/create-reservation-request.js`);
+		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
 
 		try {
 			const startDate = data['reservationPeriodStart'];
@@ -220,8 +246,7 @@ Then(
 	'only one reservation request should exist for the listing',
 	async function (this: ShareThriftWorld) {
 		const actor = actorCalled('Alice');
-		const { GetReservationRequestCountForListing } = await import('../questions/get-reservation-request-count-for-listing.js');
-		
+
 		try {
 			const count = await actor.answer(
 				GetReservationRequestCountForListing.forListing(lastCreatedListingId),
@@ -242,8 +267,7 @@ Given(
 		const actor = actorCalled(reserver);
 		const data = dataTable.rowsHash();
 
-		const taskLevel = this.level;
-		const { CreateReservationRequest } = await import(`../tasks/${taskLevel}/create-reservation-request.js`);
+		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
 
 		const startDate = data['reservationPeriodStart'];
 		const endDate = data['reservationPeriodEnd'];
@@ -270,8 +294,7 @@ When(
 		const actor = actorCalled(actorName);
 		const data = dataTable.rowsHash();
 
-		const taskLevel = this.level;
-		const { CreateReservationRequest } = await import(`../tasks/${taskLevel}/create-reservation-request.js`);
+		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
 
 		try {
 			const startDate = data['reservationPeriodStart'];

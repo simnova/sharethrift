@@ -2,6 +2,7 @@ import Row from 'antd/es/row';
 import Col from 'antd/es/col';
 import type { ViewListingActiveReservationRequestForListingQuery, ItemListing, ViewListingQueryActiveByListingIdQuery } from '../../../../../../../generated.tsx';
 import { ReservationRequestForm } from '../reservation-request-form.js';
+
 interface ListingInformationProps {
 	listing: ItemListing;
 	userIsSharer: boolean;

@@ -67,6 +67,7 @@ class ShareThriftCast implements Cast {
 					TakeNotes.using(Notepad.empty()),
 					...listingAbilities,
 					...reservationRequestAbilities,
+					new DomainListingSession(this.sharedListingStore),
 					new DomainReservationRequestSession(this.sharedReservationRequestStore),
 				);
 

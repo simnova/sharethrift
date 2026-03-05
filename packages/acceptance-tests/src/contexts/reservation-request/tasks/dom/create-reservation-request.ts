@@ -1,5 +1,5 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
-import { ReservationRequestForm } from '../../../../../../../apps/ui-sharethrift/src/components/layouts/app/pages/view-listing/components/index.js';
+import { ReservationRequestForm } from '../../../../../../../apps/ui-sharethrift/src/components/layouts/app/pages/view-listing/components/reservation-request-form.js';
 import { RenderComponents } from '../../../../shared/abilities/render-components.js';
 import { getSession } from '../../../../shared/abilities/session.js';
 import type { CreateReservationRequestInput, ReservationRequest } from '../../abilities/reservation-request-session.js';
