@@ -1,5 +1,5 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
-import { getSession } from '../../abilities/session.js';
+import { getSession } from '../../../../shared/abilities/session.js';
 
 interface ListingNotes {
 	lastListingId: string;

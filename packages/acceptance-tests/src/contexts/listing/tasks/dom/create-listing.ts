@@ -1,7 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { ListingForm, type ListingFormProps } from '@sthrift/ui-components';
-import { RenderComponents } from '../../abilities/render-components.js';
-import { getSession } from '../../abilities/session.js';
+import { RenderComponents } from '../../../../shared/abilities/render-components.js';
+import { getSession } from '../../../../shared/abilities/session.js';
 
 interface ListingNotes {
 	lastListingId: string;

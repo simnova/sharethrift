@@ -1,6 +1,6 @@
 import { Given, When, Then, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
-import type { ShareThriftWorld } from '../support/world.js';
+import type { ShareThriftWorld } from '../../../shared/support/world.js';
 import type { ListingDetails } from '../tasks/domain/create-listing.js';
 import  { ListingStatus } from '../questions/listing-status.js';
 import  { ListingTitle } from '../questions/listing-title.js';

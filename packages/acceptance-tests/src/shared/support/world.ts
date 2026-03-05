@@ -1,9 +1,9 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
 import { configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
 import { RenderComponents } from '../abilities/render-components.js';
-import { CreateListingAbility } from '../abilities/create-listing-ability.js';
-import { DomainSession } from '../abilities/domain-session.js';
-import { GraphqlSession } from '../abilities/graphql-session.js';
+import { CreateListingAbility } from '../../contexts/listing/abilities/create-listing-ability.js';
+import { DomainListingSession } from '../../contexts/listing/abilities/domain-listing-session.js';
+import { GraphQLListingSession } from '../../contexts/listing/abilities/graphql-listing-session.js';
 import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
 import { cleanup } from '@testing-library/react';
@@ -63,8 +63,8 @@ class ShareThriftCast implements Cast {
 			case 'session': {
 				const session =
 					this.sessionType === 'graphql'
-						? GraphqlSession.at(this.apiUrl)
-						: DomainSession.withDirectDomainAccess();
+						? new GraphQLListingSession(this.apiUrl)
+						: new DomainListingSession();
 
 				return actor.whoCan(TakeNotes.using(Notepad.empty()), session);
 			}
@@ -72,8 +72,8 @@ class ShareThriftCast implements Cast {
 			case 'dom': {
 				const session =
 					this.sessionType === 'graphql'
-						? GraphqlSession.at(this.apiUrl)
-						: DomainSession.withDirectDomainAccess();
+						? new GraphQLListingSession(this.apiUrl)
+						: new DomainListingSession();
 
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),

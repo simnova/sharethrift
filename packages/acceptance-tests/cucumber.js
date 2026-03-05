@@ -1,5 +1,6 @@
 export default {
 	default: {
+		paths: ['src/contexts/**/features/**/*.feature'],
 		import: ['src/**/*.ts'],
 		requireModule: ['tsx/esm'],
 		format: [
