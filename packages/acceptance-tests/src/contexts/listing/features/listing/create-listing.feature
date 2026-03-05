@@ -35,7 +35,7 @@ Feature: Create Listing
       | description | Missing title |
       | category    | Home & Garden |
       | location    | Seattle, WA   |
-    Then she should see a validation error for "title"
+    Then she should see a listing error for "title"
     And no listing should be created
 
   @validation
@@ -45,4 +45,4 @@ Feature: Create Listing
       | description | Short title            |
       | category    | Other                  |
       | location    | Anywhere               |
-    Then she should see a validation error "Title must be at least 5 characters"
+    Then she should see a listing error "Title must be at least 5 characters"

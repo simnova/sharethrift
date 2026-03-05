@@ -101,7 +101,7 @@ Then(
 );
 
 Then(
-	'{word} should see a validation error for {string}',
+	'{word} should see a listing error for {string}',
 	async function (this: ShareThriftWorld, actorName: string, fieldName: string) {
 		// Map pronouns to actual actor names
 		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
@@ -127,7 +127,7 @@ Then(
 );
 
 Then(
-	'{word} should see a validation error {string}',
+	'{word} should see a listing error {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedMessage: string) {
 		// Map pronouns to actual actor names
 		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;

@@ -5,11 +5,16 @@
 		"rootDir": ".",
 		"jsx": "react-jsx",
 		"lib": ["ES2023", "DOM", "DOM.Iterable"],
-		"erasableSyntaxOnly": false
+		"erasableSyntaxOnly": false,
+		"baseUrl": ".",
+		"paths": {
+			"@ui-sharethrift/*": ["../../apps/ui-sharethrift/src/*"]
+		}
 	},
 	"include": [
 		"src/**/*",
-		"features/**/*"
+		"features/**/*",
+		"../../apps/ui-sharethrift/src/**/*"
 	],
 	"exclude": [
 		"node_modules",

@@ -31,7 +31,7 @@ export class CreateListing extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const renderer = RenderComponents.as(actor);
-		const session = getSession(actor);
+		const session = getSession(actor, 'listing');
 
 		// Track form submission
 		let submitCalled = false;
@@ -94,7 +94,7 @@ export class CreateListing extends Task {
 		}
 
 		// 4. Use Session to create the listing (screenplay.js: DOM tasks use Session)
-		const listing = await session.createItemListing({
+		const listing = await session.execute<unknown, unknown>('listing:create', {
 			title: this.details.title,
 			description: this.details.description,
 			category: this.details.category,

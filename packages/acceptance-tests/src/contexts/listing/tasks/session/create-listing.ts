@@ -28,11 +28,11 @@ export class CreateListing extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		// Get the Session ability (could be DomainSession or GraphqlSession)
-		const session = getSession(actor);
+		// Get the listing-specific Session ability
+		const session = getSession(actor, 'listing');
 
-		// Create the listing via Session interface
-		const listing = await session.createItemListing({
+		// Create the listing via generic Session interface
+		const listing = await session.execute<unknown, unknown>('listing:create', {
 			title: this.details.title,
 			description: this.details.description,
 			category: this.details.category,

@@ -17,6 +17,11 @@ import type { Actor } from '@serenity-js/core';
  */
 export interface Session {
 	/**
+	 * Optional context identifier for multi-session scenarios (e.g., 'listing', 'reservation')
+	 */
+	context?: string;
+
+	/**
 	 * Execute any domain operation generically.
 	 *
 	 * @param operationName - Fully qualified operation (e.g., 'listing:create', 'reservation:request')
@@ -31,14 +36,35 @@ export interface Session {
 
 /**
  * Helper to get Session ability from an actor
+ * @param actor The actor to get the session from
+ * @param contextHint Optional hint about which session to prefer (e.g., 'listing', 'reservation')
  */
-export function getSession(actor: Actor): Session {
-	// Get first Session ability found
+export function getSession(actor: Actor, contextHint?: string): Session {
 	const actorWithAbilities = actor as unknown as { abilities: Map<unknown, unknown> };
-	for (const ability of actorWithAbilities.abilities.values()) {
+	const sessions: Array<[unknown, Session]> = [];
+
+	// Collect all session-like abilities
+	for (const [key, ability] of actorWithAbilities.abilities.entries()) {
 		if ('execute' in (ability as object)) {
-			return ability as Session;
+			sessions.push([key, ability as Session]);
 		}
 	}
-	throw new Error('Actor does not have a Session ability');
+
+	if (sessions.length === 0) {
+		throw new Error('Actor does not have a Session ability');
+	}
+
+	// If we have a context hint and multiple sessions, try to match by context property
+	if (contextHint && sessions.length > 1) {
+		const hintedSession = sessions.find(([_, session]) => {
+			const sessionContext = (session as Session & { context?: string }).context?.toLowerCase();
+			return sessionContext === contextHint.toLowerCase();
+		});
+		if (hintedSession) {
+			return hintedSession[1];
+		}
+	}
+
+	// Default to first session (for backward compatibility)
+	return sessions[0][1];
 }

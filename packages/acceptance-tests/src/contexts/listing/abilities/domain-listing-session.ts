@@ -10,6 +10,7 @@ import type { CreateItemListingInput, ItemListing } from './listing-session.js';
 export class DomainListingSession extends DomainSession {
 	private listings = new Map<string, ItemListing>();
 	private nextId = 1;
+	context = 'listing';
 
 	constructor() {
 		super();

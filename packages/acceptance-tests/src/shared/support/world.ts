@@ -4,6 +4,10 @@ import { RenderComponents } from '../abilities/render-components.js';
 import { CreateListingAbility } from '../../contexts/listing/abilities/create-listing-ability.js';
 import { DomainListingSession } from '../../contexts/listing/abilities/domain-listing-session.js';
 import { GraphQLListingSession } from '../../contexts/listing/abilities/graphql-listing-session.js';
+import { CreateReservationRequestAbility } from '../../contexts/reservation-request/abilities/create-reservation-request-ability.js';
+import { DomainReservationRequestSession } from '../../contexts/reservation-request/abilities/domain-reservation-request-session.js';
+import { GraphQLReservationRequestSession } from '../../contexts/reservation-request/abilities/graphql-reservation-request-session.js';
+import { MultiContextSession } from '../abilities/multi-context-session.js';
 import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
 import { cleanup } from '@testing-library/react';
@@ -58,27 +62,52 @@ class ShareThriftCast implements Cast {
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),
 					CreateListingAbility.using({} as unknown, {} as unknown, {} as unknown),
+					CreateReservationRequestAbility.using({} as unknown, {} as unknown, {} as unknown),
+					new DomainReservationRequestSession(),
 				);
 
 			case 'session': {
-				const session =
+				const listingSession =
 					this.sessionType === 'graphql'
 						? new GraphQLListingSession(this.apiUrl)
 						: new DomainListingSession();
 
-				return actor.whoCan(TakeNotes.using(Notepad.empty()), session);
+				const reservationRequestSession =
+					this.sessionType === 'graphql'
+						? new GraphQLReservationRequestSession(this.apiUrl)
+						: new DomainReservationRequestSession();
+
+				// Create a master session that routes to the right context-specific session
+				const multiSession = new MultiContextSession();
+				multiSession.registerSession('listing', listingSession);
+				multiSession.registerSession('reservation', reservationRequestSession);
+
+				return actor.whoCan(
+					TakeNotes.using(Notepad.empty()),
+					multiSession,
+				);
 			}
 
 			case 'dom': {
-				const session =
+				const listingSession =
 					this.sessionType === 'graphql'
 						? new GraphQLListingSession(this.apiUrl)
 						: new DomainListingSession();
+
+				const reservationRequestSession =
+					this.sessionType === 'graphql'
+						? new GraphQLReservationRequestSession(this.apiUrl)
+						: new DomainReservationRequestSession();
+
+				// Create a master session that routes to the right context-specific session
+				const multiSession = new MultiContextSession();
+				multiSession.registerSession('listing', listingSession);
+				multiSession.registerSession('reservation', reservationRequestSession);
 
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),
 					RenderComponents.using(),
-					session,
+					multiSession,
 				);
 			}
 

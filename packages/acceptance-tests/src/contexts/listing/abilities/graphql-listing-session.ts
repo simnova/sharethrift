@@ -8,6 +8,8 @@ import type { CreateItemListingInput, ItemListing } from './listing-session.js';
  * Registers operation handlers in constructor and provides convenience methods.
  */
 export class GraphQLListingSession extends GraphqlSession {
+	context = 'listing';
+
 	constructor(apiUrl: string) {
 		super(apiUrl);
 		// Register listing operations with the parent Session
