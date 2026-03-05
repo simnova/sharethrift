@@ -259,4 +259,32 @@ export function Tag({ children, color, ...props }) {
 	return h('span', { className: 'ant-tag', 'data-color': color, ...props }, children);
 }
 
-export default { Form, Input, Select, DatePicker, Button, Layout, Menu, Dropdown, Drawer, Card, Empty, Pagination, Skeleton, Result, message, Table, Typography, ConfigProvider, Tag };
+// --- Row & Col ---
+
+export function Row({ children, gutter, ...props }) {
+	return h('div', { className: 'ant-row', 'data-gutter': gutter, ...props }, children);
+}
+
+export function Col({ children, span, xs, sm, md, lg, xl, xxl, ...props }) {
+	const className = [
+		'ant-col',
+		span ? `ant-col-${span}` : '',
+		xs ? `ant-col-xs-${xs}` : '',
+		sm ? `ant-col-sm-${sm}` : '',
+		md ? `ant-col-md-${md}` : '',
+		lg ? `ant-col-lg-${lg}` : '',
+		xl ? `ant-col-xl-${xl}` : '',
+		xxl ? `ant-col-xxl-${xxl}` : '',
+	].filter(Boolean).join(' ');
+	return h('div', { className, ...props }, children);
+}
+
+// --- Avatar ---
+
+export function Avatar({ children, src, size, icon, ...props }) {
+	return h('span', { className: 'ant-avatar', 'data-size': size, ...props },
+		src ? h('img', { src, alt: '' }) : (children || icon || null),
+	);
+}
+
+export default { Form, Input, Select, DatePicker, Button, Layout, Menu, Dropdown, Drawer, Card, Empty, Pagination, Skeleton, Result, message, Table, Typography, ConfigProvider, Tag, Row, Col, Avatar };

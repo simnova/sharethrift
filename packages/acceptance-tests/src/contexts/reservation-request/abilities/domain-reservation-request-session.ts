@@ -8,18 +8,23 @@ import type { CreateReservationRequestInput, ReservationRequest } from './reserv
  * Registers operation handlers in constructor and provides convenience methods.
  */
 export class DomainReservationRequestSession extends DomainSession {
-	private reservationRequests = new Map<string, ReservationRequest>();
+	private reservationRequests: Map<string, ReservationRequest>;
 	private nextId = 1;
 	context = 'reservation';
 
-	constructor() {
+	constructor(sharedStore?: Map<string, ReservationRequest>) {
 		super();
+		// Use provided shared store or create a new Map for this session
+		this.reservationRequests = sharedStore || new Map<string, ReservationRequest>();
 		// Register reservation request operations with the parent Session
-		this.registerOperation('reservationRequest:create', (input) =>
+		this.registerOperation('reservation:create', (input) =>
 			this.handleCreateReservationRequest(input as unknown as CreateReservationRequestInput),
 		);
-		this.registerOperation('reservationRequest:getById', (input) =>
+		this.registerOperation('reservation:getById', (input) =>
 			this.handleGetReservationRequestById(input as unknown as { id: string }),
+		);
+		this.registerOperation('reservation:getCountForListing', (input) =>
+			this.handleGetCountForListing(input as unknown as { listingId: string }),
 		);
 	}
 
@@ -28,7 +33,7 @@ export class DomainReservationRequestSession extends DomainSession {
 	 * (delegates to registered operation for backward compatibility)
 	 */
 	createReservationRequest(input: CreateReservationRequestInput): Promise<ReservationRequest> {
-		return this.execute<CreateReservationRequestInput, ReservationRequest>('reservationRequest:create', input);
+		return this.execute<CreateReservationRequestInput, ReservationRequest>('reservation:create', input);
 	}
 
 	/**
@@ -36,7 +41,17 @@ export class DomainReservationRequestSession extends DomainSession {
 	 * (delegates to registered operation for backward compatibility)
 	 */
 	getReservationRequestById(id: string): Promise<ReservationRequest | null> {
-		return this.execute<{ id: string }, ReservationRequest | null>('reservationRequest:getById', { id });
+		return this.execute<{ id: string }, ReservationRequest | null>('reservation:getById', { id });
+	}
+
+	/**
+	 * Get count of reservation requests for a specific listing
+	 */
+	getReservationRequestCountForListing(listingId: string): Promise<number> {
+		const count = Array.from(this.reservationRequests.values()).filter(
+			(req) => req.listingId === listingId,
+		).length;
+		return Promise.resolve(count);
 	}
 
 	/**
@@ -82,6 +97,16 @@ export class DomainReservationRequestSession extends DomainSession {
 	 */
 	private handleGetReservationRequestById(input: { id: string }): Promise<ReservationRequest | null> {
 		return this.reservationRequests.get(input.id) || null;
+	}
+
+	/**
+	 * Handle getting count of reservation requests for a listing
+	 */
+	private handleGetCountForListing(input: { listingId: string }): Promise<number> {
+		const count = Array.from(this.reservationRequests.values()).filter(
+			(req) => req.listingId === input.listingId,
+		).length;
+		return Promise.resolve(count);
 	}
 
 	/**

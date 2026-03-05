@@ -1,4 +1,8 @@
-import { Row, Col, Button, Form, message } from 'antd';
+import Row from 'antd/es/row';
+import Col from 'antd/es/col';
+import Button from 'antd/es/button';
+import Form from 'antd/es/form';
+import message from 'antd/es/message';
 import { LeftOutlined } from '@ant-design/icons';
 import { useRef, useState, useEffect } from 'react';
 import { ListingForm } from '@sthrift/ui-components';

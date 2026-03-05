@@ -24,7 +24,7 @@ export class CreateReservationRequest extends Task {
 
 		// Create the reservation request via Session interface
 		const reservationRequest = await session.execute<CreateReservationRequestInput, ReservationRequest>(
-			'reservationRequest:create',
+			'reservation:create',
 			this.input,
 		);
 

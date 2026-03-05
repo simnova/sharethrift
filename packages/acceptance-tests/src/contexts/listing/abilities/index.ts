@@ -1,8 +1,9 @@
 import { CreateListingAbility } from './create-listing-ability.js';
 
 /**
- * Creates all abilities for the listing context at domain level.
+ * All abilities for the listing context.
+ * Add new listing abilities here as they're created.
  */
-export function createListingAbilities() {
-	return CreateListingAbility.using({} as unknown, {} as unknown, {} as unknown);
-}
+export const listingAbilities = [
+	CreateListingAbility.using({} as unknown, {} as unknown, {} as unknown),
+];

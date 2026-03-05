@@ -1,4 +1,7 @@
-import { Button, Avatar, Row, Col } from 'antd';
+import Button from 'antd/es/button';
+import Avatar from 'antd/es/avatar';
+import Row from 'antd/es/row';
+import Col from 'antd/es/col';
 import { useEffect, useState } from 'react';
 import { MessageOutlined } from '@ant-design/icons';
 import { useMutation } from '@apollo/client/react';

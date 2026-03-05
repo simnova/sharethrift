@@ -1,4 +1,7 @@
-import { Col, DatePicker, Form, Row } from 'antd';
+import Col from 'antd/es/col';
+import DatePicker from 'antd/es/date-picker';
+import Form from 'antd/es/form';
+import Row from 'antd/es/row';
 import dayjs from 'dayjs';
 import { useCallback, useEffect, useState, type FC } from 'react';
 import utc from 'dayjs/plugin/utc';

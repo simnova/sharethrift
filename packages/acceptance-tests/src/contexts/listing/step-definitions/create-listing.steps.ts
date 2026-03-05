@@ -6,7 +6,6 @@ import  { ListingStatus } from '../questions/listing-status.js';
 import  { ListingTitle } from '../questions/listing-title.js';
 import  { FormValidationError } from '../questions/form-validation-error.js';
 
-
 Given(
 	'{word} is an authenticated user',
 	function (this: ShareThriftWorld, actorName: string) {

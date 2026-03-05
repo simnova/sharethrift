@@ -1,8 +1,9 @@
 import { CreateReservationRequestAbility } from './create-reservation-request-ability.js';
 
 /**
- * Creates all abilities for the reservation request context at domain level.
+ * All abilities for the reservation request context.
+ * Add new reservation request abilities here as they're created.
  */
-export function createReservationRequestAbilities() {
-	return CreateReservationRequestAbility.using({} as unknown, {} as unknown, {} as unknown);
-}
+export const reservationRequestAbilities = [
+	CreateReservationRequestAbility.using({} as unknown, {} as unknown, {} as unknown),
+];

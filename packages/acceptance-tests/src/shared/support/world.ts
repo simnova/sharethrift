@@ -1,12 +1,14 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
 import { configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
 import { RenderComponents } from '../abilities/render-components.js';
-import { createListingAbilities } from '../../contexts/listing/abilities/index.js';
+import { listingAbilities } from '../../contexts/listing/abilities/index.js';
 import { DomainListingSession } from '../../contexts/listing/abilities/domain-listing-session.js';
 import { GraphQLListingSession } from '../../contexts/listing/abilities/graphql-listing-session.js';
-import { createReservationRequestAbilities } from '../../contexts/reservation-request/abilities/index.js';
+import type { ItemListing } from '../../contexts/listing/abilities/listing-session.js';
+import { reservationRequestAbilities } from '../../contexts/reservation-request/abilities/index.js';
 import { DomainReservationRequestSession } from '../../contexts/reservation-request/abilities/domain-reservation-request-session.js';
 import { GraphQLReservationRequestSession } from '../../contexts/reservation-request/abilities/graphql-reservation-request-session.js';
+import type { ReservationRequest } from '../../contexts/reservation-request/abilities/reservation-request-session.js';
 import { MultiContextSession } from '../abilities/multi-context-session.js';
 import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
@@ -54,6 +56,8 @@ class ShareThriftCast implements Cast {
 		private readonly tasksLevel: TaskLevel,
 		private readonly sessionType: SessionType,
 		private readonly apiUrl: string,
+		private readonly sharedReservationRequestStore: Map<string, ReservationRequest>,
+		private readonly sharedListingStore: Map<string, ItemListing>,
 	) {}
 
 	prepare(actor: Actor): Actor {
@@ -61,20 +65,21 @@ class ShareThriftCast implements Cast {
 			case 'domain':
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),
-					createListingAbilities(),
-					createReservationRequestAbilities(),
+					...listingAbilities,
+					...reservationRequestAbilities,
+					new DomainReservationRequestSession(this.sharedReservationRequestStore),
 				);
 
 			case 'session': {
 				const listingSession =
 					this.sessionType === 'graphql'
 						? new GraphQLListingSession(this.apiUrl)
-						: new DomainListingSession();
+						: new DomainListingSession(this.sharedListingStore);
 
 				const reservationRequestSession =
 					this.sessionType === 'graphql'
-						? new GraphQLReservationRequestSession(this.apiUrl)
-						: new DomainReservationRequestSession();
+						? new GraphQLReservationRequestSession(this.apiUrl, this.sharedReservationRequestStore)
+						: new DomainReservationRequestSession(this.sharedReservationRequestStore);
 
 				// Create a master session that routes to the right context-specific session
 				const multiSession = new MultiContextSession();
@@ -91,12 +96,12 @@ class ShareThriftCast implements Cast {
 				const listingSession =
 					this.sessionType === 'graphql'
 						? new GraphQLListingSession(this.apiUrl)
-						: new DomainListingSession();
+						: new DomainListingSession(this.sharedListingStore);
 
 				const reservationRequestSession =
 					this.sessionType === 'graphql'
-						? new GraphQLReservationRequestSession(this.apiUrl)
-						: new DomainReservationRequestSession();
+						? new GraphQLReservationRequestSession(this.apiUrl, this.sharedReservationRequestStore)
+						: new DomainReservationRequestSession(this.sharedReservationRequestStore);
 
 				// Create a master session that routes to the right context-specific session
 				const multiSession = new MultiContextSession();
@@ -131,12 +136,6 @@ export class ShareThriftWorld extends World<WorldParameters> {
 	}
 
 	async init(): Promise<void> {
-		// Display test execution level
-		const levelIcon = this.tasksLevel === 'dom' ? '🎨' : '⚡';
-		console.log(`\n${'─'.repeat(70)}`);
-		console.log(`${levelIcon} ${this.tasksLevel.toUpperCase()} tests with ${this.sessionType.toUpperCase()} backend`);
-		console.log(`${'─'.repeat(70)}\n`);
-
 		// Start test server for GraphQL session tests
 		if (this.sessionType === 'graphql' && !this.testServer) {
 			// Create test ApplicationServicesFactory with in-memory storage
@@ -147,10 +146,16 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			console.log(`[WORLD] GraphQL test server started at ${url}`);
 		}
 
+		// Create fresh shared stores for each scenario
+		const sharedReservationRequestStore = new Map();
+		const sharedListingStore = new Map();
+
 		const cast = new ShareThriftCast(
 			this.tasksLevel,
 			this.sessionType,
 			this.apiUrl,
+			sharedReservationRequestStore,
+			sharedListingStore,
 		);
 
 		configure({

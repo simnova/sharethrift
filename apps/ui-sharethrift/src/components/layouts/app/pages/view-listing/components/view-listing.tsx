@@ -1,4 +1,6 @@
-import { Row, Col, Button } from 'antd';
+import Row from 'antd/es/row';
+import Col from 'antd/es/col';
+import Button from 'antd/es/button';
 import { LeftOutlined } from '@ant-design/icons';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';

@@ -11,6 +11,9 @@ import { Window } from 'happy-dom';
 
 const window = new Window();
 
+// Expose minimal browser globals needed by @testing-library/react.
+// antd and @ant-design/icons are stubbed via css-loader.mjs, so we don't
+// need the full browser API surface (getComputedStyle, SVGElement, etc.).
 globalThis.window = window;
 globalThis.document = window.document;
 globalThis.navigator = window.navigator;

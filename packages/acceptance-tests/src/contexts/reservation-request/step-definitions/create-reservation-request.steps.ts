@@ -34,36 +34,29 @@ Given(
 
 When(
 	'{word} creates a reservation request for {word}\'s listing with:',
-	async function (this: ShareThriftWorld, reserver: string, dataTable: DataTable) {
+	async function (this: ShareThriftWorld, reserver: string, owner: string, dataTable: DataTable) {
 		const actor = actorCalled(reserver);
 		const data = dataTable.rowsHash();
 
 		const taskLevel = this.level;
 		const { CreateReservationRequest } = await import(`../tasks/${taskLevel}/create-reservation-request.js`);
 
-		try {
-			const startDate = data['reservationPeriodStart'];
-			const endDate = data['reservationPeriodEnd'];
+		const startDate = data['reservationPeriodStart'];
+		const endDate = data['reservationPeriodEnd'];
 
-			await actor.attemptsTo(
-				CreateReservationRequest.with({
-					listingId: lastCreatedListingId,
-					reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
-					reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
-					reserver: {
-						id: 'test-user-1',
-						email: `${reserver.toLowerCase()}@test.com`,
-						firstName: reserver,
-						lastName: 'Tester',
-					},
-				}),
-			);
-		} catch (error) {
-			const errorMessage = error instanceof Error ? error.message : String(error);
-			await actor.attemptsTo(
-				notes<ReservationRequestNotes>().set('lastValidationError', errorMessage),
-			);
-		}
+		await actor.attemptsTo(
+			CreateReservationRequest.with({
+				listingId: lastCreatedListingId,
+				reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
+				reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
+				reserver: {
+					id: 'test-user-1',
+					email: `${reserver.toLowerCase()}@test.com`,
+					firstName: reserver,
+					lastName: 'Tester',
+				},
+			}),
+		);
 	},
 );
 
@@ -113,18 +106,21 @@ Then(
 	'the reservation request should be in requested status',
 	async function (this: ShareThriftWorld) {
 		const actor = actorCalled('Alice');
-		// Check if actor has the reservation request ID stored in notes
+		// Check if actor has the reservation request ID and state stored in notes
 		try {
 			const requestId = await actor.answer(notes<ReservationRequestNotes>().get('lastReservationRequestId'));
 			if (!requestId) {
-				throw new Error('No reservation request was created');
+				throw new Error('No reservation request was created - lastReservationRequestId not found in notes');
 			}
 			const state = await actor.answer(notes<ReservationRequestNotes>().get('lastReservationRequestState'));
+			if (!state) {
+				throw new Error('Reservation request state not found in notes');
+			}
 			if (state !== 'Requested') {
 				throw new Error(`Expected reservation request status "Requested" but got "${state}"`);
 			}
-		} catch {
-			throw new Error('Could not verify reservation request status');
+		} catch (error) {
+			throw new Error(`Could not verify reservation request status: ${error instanceof Error ? error.message : String(error)}`);
 		}
 	},
 );
@@ -224,13 +220,83 @@ Then(
 	'only one reservation request should exist for the listing',
 	async function (this: ShareThriftWorld) {
 		const actor = actorCalled('Alice');
+		const { GetReservationRequestCountForListing } = await import('../questions/get-reservation-request-count-for-listing.js');
+		
 		try {
-			const count = await actor.answer(notes<ReservationRequestNotes>().get('reservationRequestCountForListing'));
+			const count = await actor.answer(
+				GetReservationRequestCountForListing.forListing(lastCreatedListingId),
+			);
 			if (count !== 1) {
 				throw new Error(`Expected 1 reservation request for listing but got ${count}`);
 			}
-		} catch {
-			throw new Error('Could not verify reservation request count');
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			throw new Error(`Could not verify reservation request count: ${message}`);
+		}
+	},
+);
+
+Given(
+	'{word} has already created a reservation request for {word}\'s listing with:',
+	async function (this: ShareThriftWorld, reserver: string, owner: string, dataTable: DataTable) {
+		const actor = actorCalled(reserver);
+		const data = dataTable.rowsHash();
+
+		const taskLevel = this.level;
+		const { CreateReservationRequest } = await import(`../tasks/${taskLevel}/create-reservation-request.js`);
+
+		const startDate = data['reservationPeriodStart'];
+		const endDate = data['reservationPeriodEnd'];
+
+		await actor.attemptsTo(
+			CreateReservationRequest.with({
+				listingId: lastCreatedListingId,
+				reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
+				reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
+				reserver: {
+					id: 'test-user-1',
+					email: `${reserver.toLowerCase()}@test.com`,
+					firstName: reserver,
+					lastName: 'Tester',
+				},
+			}),
+		);
+	},
+);
+
+When(
+	'{word} attempts to create another reservation request for the same listing with:',
+	async function (this: ShareThriftWorld, actorName: string, dataTable: DataTable) {
+		const actor = actorCalled(actorName);
+		const data = dataTable.rowsHash();
+
+		const taskLevel = this.level;
+		const { CreateReservationRequest } = await import(`../tasks/${taskLevel}/create-reservation-request.js`);
+
+		try {
+			const startDate = data['reservationPeriodStart'];
+			const endDate = data['reservationPeriodEnd'];
+
+			await actor.attemptsTo(
+				CreateReservationRequest.with({
+					listingId: lastCreatedListingId,
+					reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
+					reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
+					reserver: {
+						id: 'test-user-1',
+						email: `${actorName.toLowerCase()}@test.com`,
+						firstName: actorName,
+						lastName: 'Tester',
+					},
+				}),
+			);
+
+			// Store that no error occurred
+			await actor.attemptsTo(notes<{lastValidationError?: string}>().set('lastValidationError', undefined));
+		} catch (error) {
+			if (error instanceof Error) {
+				await actor.attemptsTo(notes<{lastValidationError?: string}>().set('lastValidationError', error.message));
+			}
 		}
 	},
 );

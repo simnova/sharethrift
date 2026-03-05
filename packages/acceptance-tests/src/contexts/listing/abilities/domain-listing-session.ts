@@ -8,12 +8,14 @@ import type { CreateItemListingInput, ItemListing } from './listing-session.js';
  * Registers operation handlers in constructor and provides convenience methods.
  */
 export class DomainListingSession extends DomainSession {
-	private listings = new Map<string, ItemListing>();
+	private listings: Map<string, ItemListing>;
 	private nextId = 1;
 	context = 'listing';
 
-	constructor() {
+	constructor(sharedStore?: Map<string, ItemListing>) {
 		super();
+		// Use provided shared store or create a new Map for this session
+		this.listings = sharedStore || new Map<string, ItemListing>();
 		// Register listing operations with the parent Session
 		this.registerOperation('listing:create', (input) =>
 			this.handleCreateListing(input as unknown as CreateItemListingInput),

@@ -1,4 +1,7 @@
-import { Row, Col, DatePicker, Button } from 'antd';
+import Row from 'antd/es/row';
+import Col from 'antd/es/col';
+import DatePicker from 'antd/es/date-picker';
+import Button from 'antd/es/button';
 import dayjs from 'dayjs';
 import type { Dayjs } from 'dayjs';
 import { LoadingOutlined } from '@ant-design/icons';
