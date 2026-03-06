@@ -4,7 +4,7 @@ import type { ShareThriftWorld } from '../../../shared/support/world.js';
 import type { CreateReservationRequestInput } from '../abilities/reservation-request-session.js';
 import { CreateListing as DomCreateListing } from '../../listing/tasks/dom/create-listing.js';
 import { CreateListing as SessionCreateListing } from '../../listing/tasks/session/create-listing.js';
-import { CreateListing as DomainCreateListing } from '../../listing/tasks/domain/create-listing.js';
+import { CreateListing as DomainCreateListing, type CreateListingInput } from '../../listing/tasks/domain/create-listing.js';
 import { CreateReservationRequest as DomCreateReservationRequest } from '../tasks/dom/create-reservation-request.js';
 import { CreateReservationRequest as SessionCreateReservationRequest } from '../tasks/session/create-reservation-request.js';
 import { CreateReservationRequest as DomainCreateReservationRequest } from '../tasks/domain/create-reservation-request.js';
@@ -63,7 +63,7 @@ Given(
 		const CreateListing = getCreateListingTask(this.level);
 
 		await actor.attemptsTo(
-			CreateListing.with(details as unknown as Record<string, unknown>),
+			CreateListing.with(details as unknown as CreateListingInput),
 		);
 		console.log(`  ✓ ${actorName} has created a listing with: ${JSON.stringify(details)}`);
 	},

@@ -41,7 +41,7 @@ export class FormValidationError extends Question<Promise<string>> {
 	}
 
 	private normalizeFieldName(name: string): string {
-		return name.toLowerCase().replaceAll(/\s+/g, '-');
+		return name.toLowerCase().replace(/\s+/g, '-');
 	}
 
 	override toString = () => {

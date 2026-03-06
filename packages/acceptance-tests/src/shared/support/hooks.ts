@@ -7,13 +7,9 @@ import { ShareThriftWorld } from './world.js';
 let printedContexts: Set<string> | undefined;
 let lastTestConfig: string | undefined;
 
-interface HookScenario {
-	sourceLocation: { uri: string };
-}
-
 setDefaultTimeout(30_000);
 
-Before(async function (this: IWorld, scenario: HookScenario) {
+Before(async function (this: IWorld, scenario: unknown) {
 	const world = this as unknown as ShareThriftWorld;
 
 	const pickleLike = scenario as Record<string, unknown>;

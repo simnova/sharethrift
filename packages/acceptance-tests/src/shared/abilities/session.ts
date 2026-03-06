@@ -13,7 +13,8 @@ export function getSession(actor: Actor, contextHint?: string): Session {
 	const actorWithAbilities = actor as unknown as { abilities: Map<unknown, unknown> };
 	const sessions: Array<[unknown, Session]> = [];
 
-	for (const [key, ability] of actorWithAbilities.abilities.entries()) {
+	const entries = Array.from(actorWithAbilities.abilities.entries());
+	for (const [key, ability] of entries) {
 		if ('execute' in (ability as object)) {
 			sessions.push([key, ability as Session]);
 		}

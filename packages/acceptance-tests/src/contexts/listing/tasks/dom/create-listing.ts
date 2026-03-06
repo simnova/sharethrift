@@ -81,7 +81,7 @@ export class CreateListing extends Task {
 			throw new Error('ListingForm handleFormSubmit was not called');
 		}
 
-		const listing = await session.execute<unknown, unknown>('listing:create', {
+		const listing = await session.execute<unknown, Record<string, unknown>>('listing:create', {
 			title: this.details.title,
 			description: this.details.description,
 			category: this.details.category,
@@ -93,9 +93,9 @@ export class CreateListing extends Task {
 		});
 
 		await actor.attemptsTo(
-			notes<ListingNotes>().set('lastListingId', listing.id),
-			notes<ListingNotes>().set('lastListingTitle', listing.title),
-			notes<ListingNotes>().set('lastListingStatus', listing.state),
+			notes<ListingNotes>().set('lastListingId', String(listing['id'])),
+			notes<ListingNotes>().set('lastListingTitle', String(listing['title'])),
+			notes<ListingNotes>().set('lastListingStatus', String(listing['state'])),
 		);
 	}
 

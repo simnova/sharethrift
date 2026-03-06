@@ -23,16 +23,19 @@ export class CreateReservationRequest extends Task {
 
 		const reservationRequest = await session.createReservationRequest(this.input);
 
+		const startDate = reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ?? '';
+		const endDate = reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
+
 		await actor.attemptsTo(
 			notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
 			notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
 			notes<ReservationRequestNotes>().set(
 				'lastReservationRequestStartDate',
-				reservationRequest.reservationPeriodStart.toISOString().split('T')[0],
+				startDate,
 			),
 			notes<ReservationRequestNotes>().set(
 				'lastReservationRequestEndDate',
-				reservationRequest.reservationPeriodEnd.toISOString().split('T')[0],
+				endDate,
 			),
 		);
 

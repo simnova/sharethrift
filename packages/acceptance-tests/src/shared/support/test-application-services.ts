@@ -71,12 +71,12 @@ export function createTestApplicationServicesFactory(): ApplicationServicesFacto
 				User: {
 					PersonalUser: {
 						createIfNotExists: async () => aliceUser as unknown,
-						queryById: async ({ id }: Record<string, unknown>) => {
+						queryById: ({ id }: Record<string, unknown>) => {
 							const user = Array.from(users.values()).find(u => u['id'] === String(id));
 							return (user ?? aliceUser) as unknown;
 						},
 						update: async () => aliceUser as unknown,
-						queryByEmail: async ({ email }: Record<string, unknown>) => {
+						queryByEmail: ({ email }: Record<string, unknown>) => {
 							return (getOrCreateUser(String(email)) ?? null) as unknown;
 						},
 						getAllUsers: async () => ({
@@ -100,7 +100,7 @@ export function createTestApplicationServicesFactory(): ApplicationServicesFacto
 						unblockUser: async () => ({ id: '' } as unknown),
 					},
 					User: {
-						queryById: async ({ id }: Record<string, unknown>) => {
+						queryById: ({ id }: Record<string, unknown>) => {
 							const user = Array.from(users.values()).find(u => u['id'] === String(id));
 							return (user ?? null) as unknown;
 						},
@@ -233,10 +233,10 @@ export function createTestApplicationServicesFactory(): ApplicationServicesFacto
 				get verifiedUser(): VerifiedUser | null {
 					return {
 						verifiedJwt: {
-							email: aliceUser.email,
-							given_name: aliceUser.firstName,
-							family_name: aliceUser.lastName,
-							sub: aliceUser.id,
+							email: String(aliceUser['email']),
+							given_name: String(aliceUser['firstName']),
+							family_name: String(aliceUser['lastName']),
+							sub: String(aliceUser['id']),
 						},
 						openIdConfigKey: 'UserPortal',
 						hints: undefined,

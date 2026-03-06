@@ -18,22 +18,24 @@ export class CreateReservationRequestAbility extends Ability {
 		};
 	}): void {
 		const passport = makeTestPassport();
-		const listing = makeListingReference({ id: params.listingId });
+		const listing = makeListingReference({ id: params.listingId ?? 'test-listing-1' });
 		const reserver = makeSharerUser({
-			id: params.reserver?.id,
-			email: params.reserver?.email,
-			firstName: params.reserver?.firstName,
-			lastName: params.reserver?.lastName,
+			id: params.reserver?.id ?? 'test-reserver-1',
+			email: params.reserver?.email ?? 'test-reserver@test.com',
+			firstName: params.reserver?.firstName ?? 'TestReserver',
+			lastName: params.reserver?.lastName ?? 'Tester',
 		});
 		const props = makeReservationRequestProps();
+		const startDate = params.reservationPeriodStart ?? new Date(Date.now() + 86400000);
+		const endDate = params.reservationPeriodEnd ?? new Date(Date.now() + 86400000 * 30);
 
 		ReservationRequestAggregate.getNewInstance<ReservationRequestProps>(
 			props,
 			'Requested',
 			listing,
 			reserver,
-			params.reservationPeriodStart,
-			params.reservationPeriodEnd,
+			startDate,
+			endDate,
 			passport,
 		);
 	}
