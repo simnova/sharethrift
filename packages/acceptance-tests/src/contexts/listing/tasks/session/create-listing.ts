@@ -1,5 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { getSession } from '../../../../shared/abilities/session.js';
+import { ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../../shared/support/domain-test-helpers.js';
 import type { ListingDetails } from '../../abilities/listing-session.js';
 
 interface ListingNotes {
@@ -40,11 +41,11 @@ export class CreateListing extends Task {
 	}
 
 	private calculateStartDate(): Date {
-		return new Date(Date.now() + 86400000);
+		return new Date(Date.now() + ONE_DAY_MS);
 	}
 
 	private calculateEndDate(): Date {
-		return new Date(Date.now() + 86400000 * 30);
+		return new Date(Date.now() + ONE_DAY_MS * DEFAULT_SHARING_PERIOD_DAYS);
 	}
 
 	override toString = () => `creates listing "${this.details.title}" (session)`;

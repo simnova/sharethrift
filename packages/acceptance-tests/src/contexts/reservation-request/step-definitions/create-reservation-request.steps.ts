@@ -1,6 +1,7 @@
 import { Given, Then, When, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
 import type { ShareThriftWorld } from '../../../shared/support/world.js';
+import { makeTestUserData } from '../../../shared/support/domain-test-helpers.js';
 import type { CreateReservationRequestInput } from '../abilities/reservation-request-session.js';
 import { CreateListing as DomCreateListing } from '../../listing/tasks/dom/create-listing.js';
 import { CreateListing as SessionCreateListing } from '../../listing/tasks/session/create-listing.js';
@@ -86,12 +87,7 @@ When(
 				listingId,
 				reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
 				reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
-				reserver: {
-					id: 'test-user-1',
-					email: `${reserver.toLowerCase()}@test.com`,
-					firstName: reserver,
-					lastName: 'Tester',
-				},
+				reserver: makeTestUserData(reserver),
 			}),
 		);
 		console.log(`  ✓ ${reserver} creates a reservation request for ${owner}'s listing`);
@@ -115,12 +111,7 @@ When(
 
 			const input: Partial<CreateReservationRequestInput> = {
 				listingId,
-				reserver: {
-					id: 'test-user-1',
-					email: `${actorName.toLowerCase()}@test.com`,
-					firstName: actorName,
-					lastName: 'Tester',
-				},
+				reserver: makeTestUserData(actorName),
 			};
 
 			if (startDate) {
@@ -296,12 +287,7 @@ Given(
 				listingId,
 				reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
 				reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
-				reserver: {
-					id: 'test-user-1',
-					email: `${reserver.toLowerCase()}@test.com`,
-					firstName: reserver,
-					lastName: 'Tester',
-				},
+				reserver: makeTestUserData(reserver),
 			}),
 		);
 	},

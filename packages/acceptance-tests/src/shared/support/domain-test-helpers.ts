@@ -1,5 +1,8 @@
 import type { Domain } from '@sthrift/domain';
 
+export const ONE_DAY_MS = 86_400_000;
+export const DEFAULT_SHARING_PERIOD_DAYS = 30;
+
 type ItemListingProps = Domain.Contexts.Listing.ItemListing.ItemListingProps;
 type ItemListingEntityReference = Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 type ReservationRequestProps = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps;
@@ -19,6 +22,27 @@ export function makeTestPassport(): Passport {
 		accountPlan: { forAccountPlan: () => alwaysAllow },
 		appealRequest: { forAppealRequest: () => alwaysAllow },
 	} as unknown as Passport;
+}
+
+export interface TestUserData {
+	id: string;
+	email: string;
+	firstName: string;
+	lastName: string;
+}
+
+export function makeTestUserData(actorName: string, overrides?: Partial<TestUserData>): TestUserData {
+	const defaultId = `test-user-${actorName.toLowerCase()}`;
+	const defaultEmail = `${actorName.toLowerCase()}@test.com`;
+	const defaultFirstName = actorName;
+	const defaultLastName = 'Tester';
+
+	return {
+		id: overrides?.id ?? defaultId,
+		email: overrides?.email ?? defaultEmail,
+		firstName: overrides?.firstName ?? defaultFirstName,
+		lastName: overrides?.lastName ?? defaultLastName,
+	};
 }
 
 export function makeSharerUser(overrides: Partial<{ id: string; email: string; firstName: string; lastName: string }> = {}): UserEntityReference {

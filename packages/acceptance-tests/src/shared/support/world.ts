@@ -36,6 +36,24 @@ class ShareThriftCast implements Cast {
 		private readonly sharedListingStore: Map<string, ItemListing>,
 	) {}
 
+	private createMultiContextSession(): MultiContextSession {
+		const listingSession =
+			this.sessionType === 'graphql'
+				? new GraphQLListingSession(this.apiUrl)
+				: new DomainListingSession(this.sharedListingStore);
+
+		const reservationRequestSession =
+			this.sessionType === 'graphql'
+				? new GraphQLReservationRequestSession(this.apiUrl)
+				: new DomainReservationRequestSession(this.sharedReservationRequestStore);
+
+		const multiSession = new MultiContextSession();
+		multiSession.registerSession('listing', listingSession);
+		multiSession.registerSession('reservation', reservationRequestSession);
+
+		return multiSession;
+	}
+
 	prepare(actor: Actor): Actor {
 		switch (this.tasksLevel) {
 			case 'domain':
@@ -47,48 +65,18 @@ class ShareThriftCast implements Cast {
 					new DomainReservationRequestSession(this.sharedReservationRequestStore),
 				);
 
-			case 'session': {
-				const listingSession =
-					this.sessionType === 'graphql'
-						? new GraphQLListingSession(this.apiUrl)
-						: new DomainListingSession(this.sharedListingStore);
-
-				const reservationRequestSession =
-					this.sessionType === 'graphql'
-						? new GraphQLReservationRequestSession(this.apiUrl)
-						: new DomainReservationRequestSession(this.sharedReservationRequestStore);
-
-					const multiSession = new MultiContextSession();
-				multiSession.registerSession('listing', listingSession);
-				multiSession.registerSession('reservation', reservationRequestSession);
-
+			case 'session':
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),
-					multiSession,
+					this.createMultiContextSession(),
 				);
-			}
 
-			case 'dom': {
-				const listingSession =
-					this.sessionType === 'graphql'
-						? new GraphQLListingSession(this.apiUrl)
-						: new DomainListingSession(this.sharedListingStore);
-
-				const reservationRequestSession =
-					this.sessionType === 'graphql'
-						? new GraphQLReservationRequestSession(this.apiUrl)
-						: new DomainReservationRequestSession(this.sharedReservationRequestStore);
-
-					const multiSession = new MultiContextSession();
-				multiSession.registerSession('listing', listingSession);
-				multiSession.registerSession('reservation', reservationRequestSession);
-
+			case 'dom':
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),
 					RenderComponents.using(),
-					multiSession,
+					this.createMultiContextSession(),
 				);
-			}
 
 			default:
 				throw new Error(`Unknown testing level: ${this.tasksLevel}`);

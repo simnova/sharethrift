@@ -16,7 +16,7 @@ export class MultiContextSession extends Ability implements Session {
 		// Extract context from operation name (e.g., 'listing:create' -> 'listing')
 		const [context] = operationName.split(':');
 
-		const session = this.sessions.get(context);
+		const session = this.sessions.get(context ?? '');
 		if (!session) {
 			const availableContexts = Array.from(this.sessions.keys()).join(', ');
 			return Promise.reject(

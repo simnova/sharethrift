@@ -1,11 +1,22 @@
 import { Ability } from '@serenity-js/core';
 import { Domain } from '@sthrift/domain';
-import { makeReservationRequestProps, makeListingReference, makeSharerUser, makeTestPassport } from '../../../shared/support/domain-test-helpers.js';
+import { makeReservationRequestProps, makeListingReference, makeSharerUser, ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../shared/support/domain-test-helpers.js';
 
+type Passport = Domain.Passport;
 type ReservationRequestProps = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps;
-const ReservationRequestAggregate = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest;
+type ReservationRequestAggregate = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<ReservationRequestProps>;
+const ReservationRequestAggregateClass = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest;
+const { PassportFactory } = Domain;
 
 export class CreateReservationRequestAbility extends Ability {
+	private createdAggregate?: ReservationRequestAggregate;
+
+	constructor(
+		private readonly passport: Passport,
+	) {
+		super();
+	}
+
 	createReservationRequest(params: {
 		listingId?: string;
 		reservationPeriodStart?: Date;
@@ -17,7 +28,6 @@ export class CreateReservationRequestAbility extends Ability {
 			lastName: string;
 		};
 	}): void {
-		const passport = makeTestPassport();
 		const listing = makeListingReference({ id: params.listingId ?? 'test-listing-1' });
 		const reserver = makeSharerUser({
 			id: params.reserver?.id ?? 'test-reserver-1',
@@ -26,21 +36,27 @@ export class CreateReservationRequestAbility extends Ability {
 			lastName: params.reserver?.lastName ?? 'Tester',
 		});
 		const props = makeReservationRequestProps();
-		const startDate = params.reservationPeriodStart ?? new Date(Date.now() + 86400000);
-		const endDate = params.reservationPeriodEnd ?? new Date(Date.now() + 86400000 * 30);
+		const startDate = params.reservationPeriodStart ?? new Date(Date.now() + ONE_DAY_MS);
+		const endDate = params.reservationPeriodEnd ?? new Date(Date.now() + ONE_DAY_MS * DEFAULT_SHARING_PERIOD_DAYS);
 
-		ReservationRequestAggregate.getNewInstance<ReservationRequestProps>(
+		const aggregate = ReservationRequestAggregateClass.getNewInstance<ReservationRequestProps>(
 			props,
 			'Requested',
 			listing,
 			reserver,
 			startDate,
 			endDate,
-			passport,
+			this.passport,
 		);
+
+		this.createdAggregate = aggregate;
+	}
+
+	getCreatedAggregate(): ReservationRequestAggregate | undefined {
+		return this.createdAggregate;
 	}
 
 	static using(): CreateReservationRequestAbility {
-		return new CreateReservationRequestAbility();
+		return new CreateReservationRequestAbility(PassportFactory.forSystem());
 	}
 }

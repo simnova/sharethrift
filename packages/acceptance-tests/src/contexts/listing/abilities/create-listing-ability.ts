@@ -1,6 +1,6 @@
 import { Ability } from '@serenity-js/core';
 import { Domain } from '@sthrift/domain';
-import { makeItemListingProps, makeSharerUser } from '../../../shared/support/domain-test-helpers.js';
+import { makeItemListingProps, makeSharerUser, ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../shared/support/domain-test-helpers.js';
 
 type Passport = Domain.Passport;
 type ItemListingProps = Domain.Contexts.Listing.ItemListing.ItemListingProps;
@@ -34,8 +34,8 @@ export class CreateListingAbility extends Ability {
 			params.description as string,
 			params.category as string,
 			params.location as string,
-			new Date(Date.now() + 86_400_000),
-			new Date(Date.now() + 86_400_000 * 30),
+			new Date(Date.now() + ONE_DAY_MS),
+			new Date(Date.now() + ONE_DAY_MS * DEFAULT_SHARING_PERIOD_DAYS),
 			[],
 			true,
 		);
