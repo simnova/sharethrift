@@ -1,10 +1,5 @@
 import { Question, type AnswersQuestions, type UsesAbilities, notes } from '@serenity-js/core';
 
-/**
- * ListingTitle question - gets the title of the last created listing.
- *
- * The title is retrieved from actor notes set during task execution.
- */
 export class ListingTitle extends Question<Promise<string>> {
 	constructor() {
 		super('listing title');

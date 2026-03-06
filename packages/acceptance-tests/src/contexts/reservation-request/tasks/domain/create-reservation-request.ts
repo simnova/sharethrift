@@ -21,10 +21,8 @@ export class CreateReservationRequest extends Task {
 	async performAs(actor: Actor): Promise<void> {
 		const session = DomainReservationRequestSession.as(actor);
 
-		// Create the reservation request via session
 		const reservationRequest = await session.createReservationRequest(this.input);
 
-		// Store results for Then steps
 		await actor.attemptsTo(
 			notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
 			notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
@@ -38,9 +36,6 @@ export class CreateReservationRequest extends Task {
 			),
 		);
 
-		console.log(
-			`[DOMAIN] Created reservation request: ${reservationRequest.id} for listing ${this.input.listingId}`,
-		);
 	}
 
 	override toString = () => `creates reservation request for listing "${this.input.listingId}" (domain)`;

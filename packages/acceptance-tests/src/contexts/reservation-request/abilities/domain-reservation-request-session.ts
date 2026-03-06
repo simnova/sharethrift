@@ -1,22 +1,18 @@
+import { Domain } from '@sthrift/domain';
 import { DomainSession } from '../../../shared/abilities/domain-session.js';
 import type { CreateReservationRequestInput, ReservationRequest } from './reservation-request-session.js';
+import { makeReservationRequestProps, makeListingReference, makeSharerUser, makeTestPassport } from '../../../shared/support/domain-test-helpers.js';
 
-/**
- * DomainReservationRequestSession - Domain-specific implementation of reservation request operations over DomainSession.
- *
- * Extends generic DomainSession with reservation request-specific handlers.
- * Registers operation handlers in constructor and provides convenience methods.
- */
+type ReservationRequestProps = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps;
+const ReservationRequestAggregate = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest;
+
 export class DomainReservationRequestSession extends DomainSession {
-	private reservationRequests: Map<string, ReservationRequest>;
-	private nextId = 1;
+	private readonly reservationRequests: Map<string, ReservationRequest>;
 	context = 'reservation';
 
 	constructor(sharedStore?: Map<string, ReservationRequest>) {
 		super();
-		// Use provided shared store or create a new Map for this session
 		this.reservationRequests = sharedStore || new Map<string, ReservationRequest>();
-		// Register reservation request operations with the parent Session
 		this.registerOperation('reservation:create', (input) =>
 			this.handleCreateReservationRequest(input as unknown as CreateReservationRequestInput),
 		);
@@ -28,25 +24,14 @@ export class DomainReservationRequestSession extends DomainSession {
 		);
 	}
 
-	/**
-	 * Convenience method: Create a reservation request
-	 * (delegates to registered operation for backward compatibility)
-	 */
 	createReservationRequest(input: CreateReservationRequestInput): Promise<ReservationRequest> {
 		return this.execute<CreateReservationRequestInput, ReservationRequest>('reservation:create', input);
 	}
 
-	/**
-	 * Convenience method: Get reservation request by ID
-	 * (delegates to registered operation for backward compatibility)
-	 */
 	getReservationRequestById(id: string): Promise<ReservationRequest | null> {
 		return this.execute<{ id: string }, ReservationRequest | null>('reservation:getById', { id });
 	}
 
-	/**
-	 * Get count of reservation requests for a specific listing
-	 */
 	getReservationRequestCountForListing(listingId: string): Promise<number> {
 		const count = Array.from(this.reservationRequests.values()).filter(
 			(req) => req.listingId === listingId,
@@ -54,90 +39,65 @@ export class DomainReservationRequestSession extends DomainSession {
 		return Promise.resolve(count);
 	}
 
-	/**
-	 * Handle creating a reservation request
-	 */
 	private handleCreateReservationRequest(input: CreateReservationRequestInput): Promise<ReservationRequest> {
-		// Validate input (domain validation rules)
-		this.validateCreateInput(input);
-
 		// Check for overlapping reservations
 		const hasOverlap = Array.from(this.reservationRequests.values()).some(
 			(req) =>
 				req.listingId === input.listingId &&
 				['Requested', 'Accepted'].includes(req.state) &&
-				this.hasOverlapingPeriod(input.reservationPeriodStart, input.reservationPeriodEnd, req),
+				input.reservationPeriodStart < req.reservationPeriodEnd &&
+				input.reservationPeriodEnd > req.reservationPeriodStart,
 		);
 
 		if (hasOverlap) {
 			throw new Error('Validation error: Reservation period overlaps with existing active reservation requests');
 		}
 
-		// Generate ID and create reservation request
-		const id = `reservation-request-${this.nextId++}`;
+		const passport = makeTestPassport();
+		const listing = makeListingReference({ id: input.listingId });
+		const reserver = makeSharerUser({
+			id: input.reserver.id,
+			email: input.reserver.email,
+			firstName: input.reserver.firstName,
+			lastName: input.reserver.lastName,
+		});
+		const props = makeReservationRequestProps({
+			id: `rr-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+		});
+
+		const aggregate = ReservationRequestAggregate.getNewInstance<ReservationRequestProps>(
+			props,
+			'Requested',
+			listing,
+			reserver,
+			input.reservationPeriodStart,
+			input.reservationPeriodEnd,
+			passport,
+		);
+
 		const reservationRequest: ReservationRequest = {
-			id,
+			id: aggregate.id,
 			listingId: input.listingId,
 			reserver: input.reserver,
-			reservationPeriodStart: input.reservationPeriodStart,
-			reservationPeriodEnd: input.reservationPeriodEnd,
-			state: 'Requested',
+			reservationPeriodStart: aggregate.reservationPeriodStart,
+			reservationPeriodEnd: aggregate.reservationPeriodEnd,
+			state: aggregate.state as ReservationRequest['state'],
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
 
-		// Store in memory (simulating persistence)
-		this.reservationRequests.set(id, reservationRequest);
-
-		return reservationRequest;
+		this.reservationRequests.set(reservationRequest.id, reservationRequest);
+		return Promise.resolve(reservationRequest);
 	}
 
-	/**
-	 * Handle getting a reservation request by ID
-	 */
 	private handleGetReservationRequestById(input: { id: string }): Promise<ReservationRequest | null> {
-		return this.reservationRequests.get(input.id) || null;
+		return Promise.resolve(this.reservationRequests.get(input.id) || null);
 	}
 
-	/**
-	 * Handle getting count of reservation requests for a listing
-	 */
 	private handleGetCountForListing(input: { listingId: string }): Promise<number> {
 		const count = Array.from(this.reservationRequests.values()).filter(
 			(req) => req.listingId === input.listingId,
 		).length;
 		return Promise.resolve(count);
-	}
-
-	/**
-	 * Check if two date ranges overlap
-	 */
-	private hasOverlapingPeriod(
-		start1: Date,
-		end1: Date,
-		req: ReservationRequest,
-	): boolean {
-		return start1 < req.reservationPeriodEnd && end1 > req.reservationPeriodStart;
-	}
-
-	/**
-	 * Domain validation rules
-	 */
-	private validateCreateInput(input: CreateReservationRequestInput): void {
-		if (!input.listingId) {
-			throw new Error('Validation error: listingId is required');
-		}
-		if (!input.reservationPeriodStart) {
-			throw new Error('Validation error: reservationPeriodStart is required');
-		}
-		if (!input.reservationPeriodEnd) {
-			throw new Error('Validation error: reservationPeriodEnd is required');
-		}
-		if (!input.reserver) {
-			throw new Error('Validation error: reserver is required');
-		}
-		if (input.reservationPeriodStart >= input.reservationPeriodEnd) {
-			throw new Error('Validation error: reservationPeriodStart must be before reservationPeriodEnd');
-		}
 	}
 }

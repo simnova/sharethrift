@@ -19,16 +19,13 @@ export class CreateReservationRequest extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		// Get the reservation-request-specific Session ability
 		const session = getSession(actor, 'reservation');
 
-		// Create the reservation request via Session interface
 		const reservationRequest = await session.execute<CreateReservationRequestInput, ReservationRequest>(
 			'reservation:create',
 			this.input,
 		);
 
-		// Store reservation request details in notes for later tasks
 		await actor.attemptsTo(
 			notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
 			notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
@@ -42,9 +39,6 @@ export class CreateReservationRequest extends Task {
 			),
 		);
 
-		console.log(
-			`[SESSION] Created reservation request: ${reservationRequest.id} for listing ${this.input.listingId}`,
-		);
 	}
 
 	override toString = () => `creates reservation request for listing "${this.input.listingId}"`;

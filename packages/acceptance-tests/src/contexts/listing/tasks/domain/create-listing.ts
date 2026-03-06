@@ -1,5 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { CreateListingAbility } from '../../abilities/create-listing-ability.js';
+import type { ListingDetails } from '../../abilities/listing-session.js';
 
 interface ListingNotes {
 	lastListingId: string;
@@ -7,16 +8,8 @@ interface ListingNotes {
 	lastListingStatus: string;
 }
 
-export interface ListingDetails {
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	dailyRate?: string;
-	weeklyRate?: string;
-	deposit?: string;
-	tags?: string;
-}
+export type { ListingDetails };
+
 export interface CreateListingInput {
 	title: string;
 	description: string;
@@ -33,11 +26,9 @@ export class CreateListing extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		// Use the CreateListingAbility to create the listing
 		const ability = CreateListingAbility.as(actor);
 		ability.createDraftListing(this.details);
 
-		// Get the created listing and store in notes
 		const listing = ability.getCreatedListing();
 		if (listing) {
 			await actor.attemptsTo(
@@ -46,8 +37,6 @@ export class CreateListing extends Task {
 				notes<ListingNotes>().set('lastListingStatus', 'draft'),
 			);
 		}
-
-		console.log(`[DOMAIN] Created listing: ${this.details.title}`);
 	}
 
 	override toString = () => `creates listing "${this.details.title}" (domain)`;

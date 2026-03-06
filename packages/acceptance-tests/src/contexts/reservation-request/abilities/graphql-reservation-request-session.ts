@@ -1,37 +1,19 @@
 import { GraphqlSession } from '../../../shared/abilities/graphql-session.js';
 import type { CreateReservationRequestInput, ReservationRequest } from './reservation-request-session.js';
 
-/**
- * GraphQLReservationRequestSession - Reservation request-specific implementation of GraphQL operations.
- *
- * Extends generic GraphqlSession with reservation request-specific GraphQL queries/mutations.
- * Registers operation handlers in constructor and provides convenience methods.
- */
 export class GraphQLReservationRequestSession extends GraphqlSession {
-	private reservationRequests: Map<string, ReservationRequest>;
-	private nextId = 1;
 	context = 'reservation';
 
-	constructor(apiUrl: string, sharedStore?: Map<string, ReservationRequest>) {
+	constructor(apiUrl: string) {
 		super(apiUrl);
-		// Use provided shared store or create a new Map for this session
-		this.reservationRequests = sharedStore || new Map<string, ReservationRequest>();
-		// Register reservation request operations with the parent Session
 		this.registerOperation('reservation:create', (input) =>
 			this.handleCreateReservationRequest(input as unknown as CreateReservationRequestInput),
-		);
-		this.registerOperation('reservation:getById', (input) =>
-			this.handleGetReservationRequestById(input as unknown as { id: string }),
 		);
 		this.registerOperation('reservation:getCountForListing', (input) =>
 			this.handleGetCountForListing(input as unknown as { listingId: string }),
 		);
 	}
 
-	/**
-	 * Convenience method: Create a reservation request
-	 * (delegates to registered operation for backward compatibility)
-	 */
 	createReservationRequest(input: CreateReservationRequestInput): Promise<ReservationRequest> {
 		return this.execute<CreateReservationRequestInput, ReservationRequest>(
 			'reservation:create',
@@ -39,17 +21,6 @@ export class GraphQLReservationRequestSession extends GraphqlSession {
 		);
 	}
 
-	/**
-	 * Convenience method: Get reservation request by ID
-	 * (delegates to registered operation for backward compatibility)
-	 */
-	getReservationRequestById(id: string): Promise<ReservationRequest | null> {
-		return this.execute<{ id: string }, ReservationRequest | null>('reservation:getById', { id });
-	}
-
-	/**
-	 * Convenience method: Get count of reservation requests for a listing
-	 */
 	getReservationRequestCountForListing(listingId: string): Promise<number> {
 		return this.execute<{ listingId: string }, number>(
 			'reservation:getCountForListing',
@@ -57,96 +28,78 @@ export class GraphQLReservationRequestSession extends GraphqlSession {
 		);
 	}
 
-	/**
-	 * Handle creating a reservation request via GraphQL
-	 */
-	private handleCreateReservationRequest(
+	private async handleCreateReservationRequest(
 		input: CreateReservationRequestInput,
 	): Promise<ReservationRequest> {
-		// Validate input (domain validation rules)
-		this.validateCreateInput(input);
+		const mutation = `
+			mutation CreateReservationRequest($input: CreateReservationRequestInput!) {
+				createReservationRequest(input: $input) {
+					id
+					state
+					reservationPeriodStart
+					reservationPeriodEnd
+					listing {
+						id
+					}
+					reserver {
+						... on PersonalUser { id }
+						... on AdminUser { id }
+					}
+					createdAt
+					updatedAt
+				}
+			}
+		`;
 
-		// Check for overlapping reservations
-		const hasOverlap = Array.from(this.reservationRequests.values()).some(
-			(req) =>
-				req.listingId === input.listingId &&
-				['Requested', 'Accepted'].includes(req.state) &&
-				this.hasOverlapingPeriod(input.reservationPeriodStart, input.reservationPeriodEnd, req),
-		);
+		const response = await this.executeGraphQL(mutation, {
+			input: {
+				listingId: input.listingId,
+				reservationPeriodStart: input.reservationPeriodStart.toISOString(),
+				reservationPeriodEnd: input.reservationPeriodEnd.toISOString(),
+			},
+		});
 
-		if (hasOverlap) {
-			throw new Error('Validation error: Reservation period overlaps with existing active reservation requests');
-		}
-
-		// Generate ID and create reservation request
-		const id = `reservation-request-${this.nextId++}`;
-		const reservationRequest: ReservationRequest = {
-			id,
-			listingId: input.listingId,
-			reserver: input.reserver,
-			reservationPeriodStart: input.reservationPeriodStart,
-			reservationPeriodEnd: input.reservationPeriodEnd,
-			state: 'Requested',
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		};
-
-		// Store in memory
-		this.reservationRequests.set(id, reservationRequest);
-
-		return Promise.resolve(reservationRequest);
+		const data = response.data['createReservationRequest'] as Record<string, unknown>;
+		return this.deserializeReservationRequest(data, input);
 	}
 
-	/**
-	 * Handle getting a reservation request by ID via GraphQL
-	 */
-	private handleGetReservationRequestById(input: {
-		id: string;
-	}): Promise<ReservationRequest | null> {
-		return Promise.resolve(this.reservationRequests.get(input.id) || null);
-	}
-
-	/**
-	 * Handle getting count of reservation requests for a listing via GraphQL
-	 */
-	private handleGetCountForListing(input: {
+	private async handleGetCountForListing(input: {
 		listingId: string;
 	}): Promise<number> {
-		const count = Array.from(this.reservationRequests.values()).filter(
-			(req) => req.listingId === input.listingId,
-		).length;
-		return Promise.resolve(count);
+		const query = `
+			query GetReservationRequestsForListing($listingId: ObjectID!) {
+				queryActiveByListingId(listingId: $listingId) {
+					id
+				}
+			}
+		`;
+
+		const response = await this.executeGraphQL(query, { listingId: input.listingId });
+		const items = response.data['queryActiveByListingId'] as unknown[];
+		return Array.isArray(items) ? items.length : 0;
 	}
 
-	/**
-	 * Check if two date ranges overlap
-	 */
-	private hasOverlapingPeriod(
-		start1: Date,
-		end1: Date,
-		req: ReservationRequest,
-	): boolean {
-		return start1 < req.reservationPeriodEnd && end1 > req.reservationPeriodStart;
-	}
+	private deserializeReservationRequest(
+		data: Record<string, unknown>,
+		originalInput?: CreateReservationRequestInput,
+	): ReservationRequest {
+		const listing = data['listing'] as Record<string, unknown> | undefined;
+		const reserver = data['reserver'] as Record<string, unknown> | undefined;
 
-	/**
-	 * Domain validation rules
-	 */
-	private validateCreateInput(input: CreateReservationRequestInput): void {
-		if (!input.listingId) {
-			throw new Error('Validation error: listingId is required');
-		}
-		if (!input.reservationPeriodStart) {
-			throw new Error('Validation error: reservationPeriodStart is required');
-		}
-		if (!input.reservationPeriodEnd) {
-			throw new Error('Validation error: reservationPeriodEnd is required');
-		}
-		if (!input.reserver) {
-			throw new Error('Validation error: reserver is required');
-		}
-		if (input.reservationPeriodStart >= input.reservationPeriodEnd) {
-			throw new Error('Validation error: reservationPeriodStart must be before reservationPeriodEnd');
-		}
+		return {
+			id: String(data['id']),
+			listingId: listing ? String(listing['id']) : (originalInput?.listingId ?? ''),
+			reserver: originalInput?.reserver ?? {
+				id: reserver ? String(reserver['id']) : '',
+				email: '',
+				firstName: '',
+				lastName: '',
+			},
+			reservationPeriodStart: data['reservationPeriodStart'] ? new Date(String(data['reservationPeriodStart'])) : new Date(),
+			reservationPeriodEnd: data['reservationPeriodEnd'] ? new Date(String(data['reservationPeriodEnd'])) : new Date(),
+			state: String(data['state']) as ReservationRequest['state'],
+			createdAt: data['createdAt'] ? new Date(String(data['createdAt'])) : new Date(),
+			updatedAt: data['updatedAt'] ? new Date(String(data['updatedAt'])) : new Date(),
+		};
 	}
 }

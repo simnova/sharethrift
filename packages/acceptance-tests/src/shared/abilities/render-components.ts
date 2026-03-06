@@ -4,27 +4,11 @@ import userEvent from '@testing-library/user-event';
 // @ts-expect-error React 19 types not yet in DefinitelyTyped
 import { createElement, type ComponentType } from 'react';
 
-/**
- * RenderComponents - Ability to render and interact with React components in a headless DOM.
- *
- * DOM globals (window, document, navigator) are set up once in register-css.mjs
- * before any modules load. This avoids module-caching issues with @testing-library.
- *
- * @see https://github.com/cucumber/screenplay.js
- */
 export class RenderComponents extends Ability {
 	static using(): RenderComponents {
 		return new RenderComponents();
 	}
 
-	/**
-	 * Render a React component in the headless DOM.
-	 *
-	 * Returns @testing-library/react render result (queries scoped to container)
-	 * plus a userEvent instance for simulating user interactions.
-	 *
-	 * Router context is provided by the react-router-dom stub (see css-loader.mjs).
-	 */
 	// @ts-expect-error @testing-library/user-event types not fully compatible
 	render(Component: ComponentType<unknown>, props: Record<string, unknown>): ReturnType<typeof render> & { user: ReturnType<typeof userEvent.setup> } {
 		const wrappedComponent = createElement(Component, props);
@@ -34,10 +18,6 @@ export class RenderComponents extends Ability {
 		return { ...result, user };
 	}
 
-	/**
-	 * Clean up: unmount React trees between scenarios.
-	 * DOM globals persist for the entire test run (set up in register-css.mjs).
-	 */
 	cleanupDOM(): void {
 		cleanup();
 	}

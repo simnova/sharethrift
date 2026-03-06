@@ -1,11 +1,5 @@
 import { Question, type AnswersQuestions, type UsesAbilities, notes } from '@serenity-js/core';
 
-/**
- * ListingStatus is a Question that retrieves the status of a listing.
- *
- * Questions are used in assertions to query the current state.
- * The status is retrieved from actor notes set during task execution.
- */
 export class ListingStatus extends Question<Promise<string>> {
 	constructor() {
 		super('listing status');
@@ -23,9 +17,6 @@ export class ListingStatus extends Question<Promise<string>> {
 		});
 	}
 
-	/**
-	 * Factory method to create this question
-	 */
 	static of(): ListingStatus {
 		return new ListingStatus();
 	}

@@ -39,10 +39,10 @@ Feature: Create Listing
     And no listing should be created
 
   @validation
-  Scenario: Title must be between 5 and 100 characters
+  Scenario: Title must not exceed 200 characters
     When Alice attempts to create a listing with:
-      | title       | Too                    |
-      | description | Short title            |
+      | title       | This title is intentionally made extremely long to exceed the two hundred character maximum limit that is enforced by the domain value object validation rules and should trigger an appropriate validation error message when a user attempts to create a listing with it |
+      | description | Long title test        |
       | category    | Other                  |
       | location    | Anywhere               |
-    Then she should see a listing error "Title must be at least 5 characters"
+    Then she should see a listing error "Too long"

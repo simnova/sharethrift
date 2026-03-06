@@ -21,49 +21,45 @@ export class CreateReservationRequest extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		// Get abilities
 		const renderer = RenderComponents.as(actor);
 		const session = getSession(actor, 'reservation');
 
-		// Track date changes
-		let selectedDates: { startDate: Date | null; endDate: Date | null } = {
-			startDate: null,
-			endDate: null,
-		};
+		renderer.cleanupDOM();
 
-		// Render the ReservationRequestForm component (date picker + reserve button)
-		renderer.render(
+		let reserveClicked = false;
+
+		const { getByRole, user } = renderer.render(
 			ReservationRequestForm,
 			{
-				reservationDates: selectedDates,
-				onReservationDatesChange: (dates: { startDate: Date | null; endDate: Date | null }) => {
-					selectedDates = dates;
+				userIsSharer: false,
+				isAuthenticated: true,
+				userReservationRequest: null,
+				reservationDates: {
+					startDate: this.input.reservationPeriodStart,
+					endDate: this.input.reservationPeriodEnd,
 				},
+				onReservationDatesChange: () => { /* no-op */ },
 				onReserveClick: () => {
-					// Will be triggered when user clicks Reserve button
+					reserveClicked = true;
 				},
-				disabled: false,
-				loading: false,
-				userReservationRequestState: null,
-				otherReservations: [],
+				onCancelClick: () => { /* no-op */ },
+				reservationLoading: false,
 				otherReservationsLoading: false,
+				otherReservations: [],
 			} as unknown as Record<string, unknown>,
 		);
 
-		// Select the reservation dates in the DatePicker
-		// The component accepts date range selection through the onReservationDatesChange callback
-		selectedDates = {
-			startDate: this.input.reservationPeriodStart,
-			endDate: this.input.reservationPeriodEnd,
-		};
+		await user.click(getByRole('button', { name: /reserve/i }));
 
-		// Create the reservation request via Session
+		if (!reserveClicked) {
+			throw new Error('ReservationRequestForm onReserveClick was not called');
+		}
+
 		const reservationRequest = await session.execute<CreateReservationRequestInput, ReservationRequest>(
 			'reservation:create',
 			this.input,
 		);
 
-		// Store reservation request details in notes for later tasks
 		await actor.attemptsTo(
 			notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
 			notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
@@ -77,9 +73,6 @@ export class CreateReservationRequest extends Task {
 			),
 		);
 
-		console.log(
-			`[DOM] Created reservation request: ${reservationRequest.id} for listing ${this.input.listingId}`,
-		);
 	}
 
 	override toString = () => `creates reservation request for listing "${this.input.listingId}" (dom)`;

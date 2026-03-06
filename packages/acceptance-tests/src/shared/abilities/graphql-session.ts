@@ -1,28 +1,7 @@
 import { Ability } from '@serenity-js/core';
 import type { Session } from './session.js';
 
-/**
- * GraphqlSession - makes real GraphQL calls to the GraphQL API.
- *
- * Following Screenplay.js design recommendations:
- * "The GraphqlSession is where you encapsulate all of the fetch, WebSocket and EventSource logic.
- *  This is the class your UI will use in production. You will also use it in tests."
- *
- * Benefits:
- * - Tests full GraphQL + Domain layer coverage
- * - Same code that production UI uses
- * - Catches integration issues
- *
- * **Key Design**: Completely domain-agnostic.
- * Domain-specific logic (listing operations, GraphQL queries, etc.) is provided by context-specific wrappers.
- *
- * @see https://github.com/cucumber/screenplay.js
- */
 export class GraphqlSession extends Ability implements Session {
-	/**
-	 * Map of operation handlers: operationName -> handler function
-	 * Populated by domain contexts (e.g., ListingSession registers 'listing:create' handler)
-	 */
 	private operationHandlers = new Map<
 		string,
 		(input: Record<string, unknown>) => Promise<unknown>
@@ -32,17 +11,10 @@ export class GraphqlSession extends Ability implements Session {
 		super();
 	}
 
-	/**
-	 * Factory method following Serenity/JS Ability pattern
-	 */
 	static at(apiUrl: string): GraphqlSession {
 		return new GraphqlSession(apiUrl);
 	}
 
-	/**
-	 * Register an operation handler.
-	 * Domain contexts call this to register their operations.
-	 */
 	registerOperation(
 		operationName: string,
 		handler: (input: Record<string, unknown>) => Promise<unknown>,
@@ -50,10 +22,6 @@ export class GraphqlSession extends Ability implements Session {
 		this.operationHandlers.set(operationName, handler);
 	}
 
-	/**
-	 * Execute any registered domain operation.
-	 * No domain-specific knowledge - just routes to registered handlers.
-	 */
 	execute<TInput = Record<string, unknown>, TOutput = unknown>(
 		operationName: string,
 		input: TInput,
@@ -67,10 +35,6 @@ export class GraphqlSession extends Ability implements Session {
 		return handler(input as Record<string, unknown>) as Promise<TOutput>;
 	}
 
-	/**
-	 * Helper to execute GraphQL requests.
-	 * Public so domain contexts can use it if needed.
-	 */
 	async executeGraphQL(
 		query: string,
 		variables: Record<string, unknown>,

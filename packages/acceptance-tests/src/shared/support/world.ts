@@ -14,43 +14,19 @@ import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
 import { cleanup } from '@testing-library/react';
 
-/**
- * Task level determines which implementation to use (domain/session/dom)
- */
-type TaskLevel = 'domain' | 'session' | 'dom';
+// Shared stores cleared per scenario
+const sharedReservationRequestStore = new Map<string, ReservationRequest>();
+const sharedListingStore = new Map<string, ItemListing>();
 
-/**
- * Session type determines which backend to use (domain/graphql)
- */
+type TaskLevel = 'domain' | 'session' | 'dom';
 type SessionType = 'domain' | 'graphql';
 
-/**
- * World parameters passed via --world-parameters CLI flag
- *
- * Following Screenplay.js design recommendations:
- * - tasks: Which task implementation to use (domain/session/dom)
- * - session: Which Session implementation (domain/graphql)
- *
- * Assemblies (from Screenplay.js):
- * 1. domain + DomainSession = Fastest tests (pure domain layer, <1ms)
- * 2. session + DomainSession = Fast tests (domain + session abstraction, <1ms)
- * 3. session + GraphqlSession = Full integration tests (HTTP + domain, 100ms)
- * 4. dom + DomainSession = Real UI tests with happy-dom (component tests, ~100-500ms per test)
- * 5. dom + GraphqlSession = Real UI + Real API tests with happy-dom (~500ms-1s per test)
- *
- * DOM tests render the actual CreateListing component in happy-dom (headless DOM)
- *
- * @see https://github.com/cucumber/screenplay.js
- */
 export interface WorldParameters {
 	tasks: TaskLevel;
 	session?: SessionType;
 	apiUrl?: string;
 }
 
-/**
- * Custom Cast that prepares actors with abilities based on testing level.
- */
 class ShareThriftCast implements Cast {
 	constructor(
 		private readonly tasksLevel: TaskLevel,
@@ -79,11 +55,10 @@ class ShareThriftCast implements Cast {
 
 				const reservationRequestSession =
 					this.sessionType === 'graphql'
-						? new GraphQLReservationRequestSession(this.apiUrl, this.sharedReservationRequestStore)
+						? new GraphQLReservationRequestSession(this.apiUrl)
 						: new DomainReservationRequestSession(this.sharedReservationRequestStore);
 
-				// Create a master session that routes to the right context-specific session
-				const multiSession = new MultiContextSession();
+					const multiSession = new MultiContextSession();
 				multiSession.registerSession('listing', listingSession);
 				multiSession.registerSession('reservation', reservationRequestSession);
 
@@ -101,11 +76,10 @@ class ShareThriftCast implements Cast {
 
 				const reservationRequestSession =
 					this.sessionType === 'graphql'
-						? new GraphQLReservationRequestSession(this.apiUrl, this.sharedReservationRequestStore)
+						? new GraphQLReservationRequestSession(this.apiUrl)
 						: new DomainReservationRequestSession(this.sharedReservationRequestStore);
 
-				// Create a master session that routes to the right context-specific session
-				const multiSession = new MultiContextSession();
+					const multiSession = new MultiContextSession();
 				multiSession.registerSession('listing', listingSession);
 				multiSession.registerSession('reservation', reservationRequestSession);
 
@@ -137,9 +111,7 @@ export class ShareThriftWorld extends World<WorldParameters> {
 	}
 
 	async init(): Promise<void> {
-		// Start test server for GraphQL session tests
 		if (this.sessionType === 'graphql' && !this.testServer) {
-			// Create test ApplicationServicesFactory with in-memory storage
 			const testFactory = createTestApplicationServicesFactory();
 
 			this.testServer = new TestServer(testFactory);
@@ -147,9 +119,8 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			console.log(`[WORLD] GraphQL test server started at ${url}`);
 		}
 
-		// Create fresh shared stores for each scenario
-		const sharedReservationRequestStore = new Map();
-		const sharedListingStore = new Map();
+		sharedReservationRequestStore.clear();
+		sharedListingStore.clear();
 
 		const cast = new ShareThriftCast(
 			this.tasksLevel,
@@ -164,20 +135,18 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			crew: [],
 		});
 
-		console.log(`[WORLD] Configured Cast for ${this.tasksLevel} testing with ${this.sessionType} session`);
+
 	}
 
 	async cleanup(): Promise<void> {
-		// Clean up DOM rendering environment (unmount React trees, keep globals)
 		if (this.tasksLevel === 'dom') {
 			try {
 				cleanup();
 			} catch {
-				// testing-library may not have been imported yet
+				// testing-library not imported
 			}
 		}
 
-		// Stop GraphQL test server
 		if (this.testServer) {
 			await this.testServer.stop();
 			this.testServer = undefined;

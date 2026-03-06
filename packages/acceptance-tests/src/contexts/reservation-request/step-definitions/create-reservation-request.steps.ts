@@ -41,7 +41,18 @@ function getCreateReservationRequestTask(level: string) {
 	}
 }
 
-let lastCreatedListingId = '';
+async function getListingIdFromOwner(ownerName: string): Promise<string> {
+	const owner = actorCalled(ownerName);
+	const listingId = await owner.answer(
+		notes<{ lastListingId: string }>().get('lastListingId'),
+	);
+	if (!listingId) {
+		throw new Error(
+			`No listing ID found in ${ownerName}'s notes. Did ${ownerName} create a listing first?`,
+		);
+	}
+	return listingId;
+}
 
 Given(
 	'{word} has created a listing with:',
@@ -54,9 +65,7 @@ Given(
 		await actor.attemptsTo(
 			CreateListing.with(details as unknown as Record<string, unknown>),
 		);
-
-		// Store the listing ID from notes
-		lastCreatedListingId = `test-listing-${Date.now()}`;
+		console.log(`  ✓ ${actorName} has created a listing with: ${JSON.stringify(details)}`);
 	},
 );
 
@@ -68,12 +77,13 @@ When(
 
 		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
 
+		const listingId = await getListingIdFromOwner(owner);
 		const startDate = data['reservationPeriodStart'];
 		const endDate = data['reservationPeriodEnd'];
 
 		await actor.attemptsTo(
 			CreateReservationRequest.with({
-				listingId: lastCreatedListingId,
+				listingId,
 				reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
 				reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
 				reserver: {
@@ -84,6 +94,7 @@ When(
 				},
 			}),
 		);
+		console.log(`  ✓ ${reserver} creates a reservation request for ${owner}'s listing`);
 	},
 );
 
@@ -99,8 +110,11 @@ When(
 			const startDate = data['reservationPeriodStart'];
 			const endDate = data['reservationPeriodEnd'];
 
+			// Get the listing ID from the owner (Bob) — set during Background step
+			const listingId = await getListingIdFromOwner('Bob');
+
 			const input: Partial<CreateReservationRequestInput> = {
-				listingId: lastCreatedListingId,
+				listingId,
 				reserver: {
 					id: 'test-user-1',
 					email: `${actorName.toLowerCase()}@test.com`,
@@ -145,6 +159,7 @@ Then(
 			if (state !== 'Requested') {
 				throw new Error(`Expected reservation request status "Requested" but got "${state}"`);
 			}
+			console.log(`  ✓ the reservation request should be in requested status`);
 		} catch (error) {
 			throw new Error(`Could not verify reservation request status: ${error instanceof Error ? error.message : String(error)}`);
 		}
@@ -239,6 +254,7 @@ Then(
 		} catch {
 			// Expected - no reservation request was created
 		}
+		console.log(`  ✓ no reservation request should be created`);
 	},
 );
 
@@ -248,12 +264,14 @@ Then(
 		const actor = actorCalled('Alice');
 
 		try {
+			const listingId = await getListingIdFromOwner('Bob');
 			const count = await actor.answer(
-				GetReservationRequestCountForListing.forListing(lastCreatedListingId),
+				GetReservationRequestCountForListing.forListing(listingId),
 			);
 			if (count !== 1) {
 				throw new Error(`Expected 1 reservation request for listing but got ${count}`);
 			}
+			console.log(`  ✓ only one reservation request should exist for the listing`);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
 			throw new Error(`Could not verify reservation request count: ${message}`);
@@ -269,12 +287,13 @@ Given(
 
 		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
 
+		const listingId = await getListingIdFromOwner(owner);
 		const startDate = data['reservationPeriodStart'];
 		const endDate = data['reservationPeriodEnd'];
 
 		await actor.attemptsTo(
 			CreateReservationRequest.with({
-				listingId: lastCreatedListingId,
+				listingId,
 				reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
 				reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
 				reserver: {
@@ -297,12 +316,13 @@ When(
 		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
 
 		try {
+			const listingId = await getListingIdFromOwner('Bob');
 			const startDate = data['reservationPeriodStart'];
 			const endDate = data['reservationPeriodEnd'];
 
 			await actor.attemptsTo(
 				CreateReservationRequest.with({
-					listingId: lastCreatedListingId,
+					listingId,
 					reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
 					reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
 					reserver: {
@@ -317,9 +337,8 @@ When(
 			// Store that no error occurred
 			await actor.attemptsTo(notes<{lastValidationError?: string}>().set('lastValidationError', undefined));
 		} catch (error) {
-			if (error instanceof Error) {
-				await actor.attemptsTo(notes<{lastValidationError?: string}>().set('lastValidationError', error.message));
-			}
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			await actor.attemptsTo(notes<{lastValidationError?: string}>().set('lastValidationError', errorMessage));
 		}
 	},
 );

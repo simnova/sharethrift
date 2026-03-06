@@ -1,7 +1,13 @@
-/**
- * Shared types for listing session operations.
- * Used by both DomainListingSession and GraphQLListingSession.
- */
+export interface ListingDetails {
+	title: string;
+	description: string;
+	category: string;
+	location: string;
+	dailyRate?: string;
+	weeklyRate?: string;
+	deposit?: string;
+	tags?: string;
+}
 
 export interface CreateItemListingInput {
 	title: string;

@@ -13,18 +13,7 @@ interface GraphContext {
 
 const MAX_QUERY_DEPTH = 10;
 
-/**
- * Test server using REAL GraphQL schema and resolvers from @sthrift/graphql.
- * 
- * This is your actual Apollo Server running in-process for tests.
- * GraphqlSession tests will make real GraphQL calls to this server, testing:
- * - Real GraphQL resolvers
- * - Domain layer business logic
- * - Full integration (minus database - uses in-memory/mock services)
- * 
- * Following Screenplay.js pattern:
- * "GraphqlSession makes real GraphQL calls to test the full stack"
- */
+// Real GraphQL Apollo Server for tests
 export class TestServer {
 	private server: ApolloServer<GraphContext> | null = null;
 	private url: string | null = null;
@@ -36,7 +25,6 @@ export class TestServer {
 			throw new Error('Test server already started');
 		}
 
-		// Use the REAL combined schema with all resolvers
 		const securedSchema = applyMiddleware(combinedSchema);
 
 		this.server = new ApolloServer<GraphContext>({

@@ -2,22 +2,12 @@ import { Task, type Actor, notes } from '@serenity-js/core';
 import { ListingForm, type ListingFormProps } from '@sthrift/ui-components';
 import { RenderComponents } from '../../../../shared/abilities/render-components.js';
 import { getSession } from '../../../../shared/abilities/session.js';
+import type { ListingDetails } from '../../abilities/listing-session.js';
 
 interface ListingNotes {
 	lastListingId: string;
 	lastListingTitle: string;
 	lastListingStatus: string;
-}
-
-export interface ListingDetails {
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	dailyRate?: string;
-	weeklyRate?: string;
-	deposit?: string;
-	tags?: string;
 }
 
 export class CreateListing extends Task {
@@ -33,7 +23,8 @@ export class CreateListing extends Task {
 		const renderer = RenderComponents.as(actor);
 		const session = getSession(actor, 'listing');
 
-		// Track form submission
+		renderer.cleanupDOM();
+
 		let submitCalled = false;
 		let submitIsDraft = false;
 
@@ -54,17 +45,15 @@ export class CreateListing extends Task {
 				submitIsDraft = isDraft;
 			},
 			onCancel: () => {
-				// Test handler - no-op
+				/* no-op */
 			},
 		};
 
-		// 1. Render the actual ListingForm component
 		const { getByPlaceholderText, getByRole, user } = renderer.render(
 			ListingForm,
 			formProps as unknown as Record<string, unknown>,
 		);
 
-		// 2. Interact with the form using accessible queries
 		if (this.details.title) {
 			await user.type(
 				getByPlaceholderText('Enter listing title'),
@@ -86,14 +75,12 @@ export class CreateListing extends Task {
 			);
 		}
 
-		// 3. Click "Save as Draft" to trigger form submission
 		await user.click(getByRole('button', { name: /save as draft/i }));
 
 		if (!submitCalled) {
 			throw new Error('ListingForm handleFormSubmit was not called');
 		}
 
-		// 4. Use Session to create the listing (screenplay.js: DOM tasks use Session)
 		const listing = await session.execute<unknown, unknown>('listing:create', {
 			title: this.details.title,
 			description: this.details.description,
@@ -105,7 +92,6 @@ export class CreateListing extends Task {
 			isDraft: submitIsDraft,
 		});
 
-		// 5. Store results for Then steps
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listing.id),
 			notes<ListingNotes>().set('lastListingTitle', listing.title),

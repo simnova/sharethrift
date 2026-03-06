@@ -1,25 +1,14 @@
 import { Ability } from '@serenity-js/core';
 import type { Session } from './session.js';
 
-/**
- * MultiContextSession - Routes operations to the appropriate context-specific session
- *
- * Wraps multiple context-specific sessions (e.g., ListingSession, ReservationRequestSession)
- * and delegates execute() calls to the right one based on the operation name prefix.
- */
+// Routes operations to context-specific sessions
 export class MultiContextSession extends Ability implements Session {
 	private readonly sessions = new Map<string, Session>();
 
-	/**
-	 * Register a context-specific session
-	 */
 	registerSession(context: string, session: Session): void {
 		this.sessions.set(context, session);
 	}
 
-	/**
-	 * Execute an operation by routing to the appropriate context-specific session
-	 */
 	execute<TInput = Record<string, unknown>, TOutput = unknown>(
 		operationName: string,
 		input: TInput,

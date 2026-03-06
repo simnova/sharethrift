@@ -1,21 +1,10 @@
-/**
- * Test application services factory for in-memory test data storage.
- *
- * Provides mock application services that implement the real ApplicationServices interface:
- * - In-memory data storage (no database required)
- * - Guest user passport (no authentication required)
- * - Minimal infrastructure dependencies
- *
- * Perfect for testing GraphQL resolvers without needing a full database setup.
- */
-
+import { Domain } from '@sthrift/domain';
 import type {
 	ApplicationServices,
 	ApplicationServicesFactory,
 	VerifiedUser,
 } from '@sthrift/application-services';
 
-// In-memory test listing representation
 interface TestListing {
 	id: string;
 	title: string;
@@ -28,6 +17,17 @@ interface TestListing {
 	images: unknown[];
 }
 
+interface TestReservationRequest {
+	id: string;
+	listingId: string;
+	reserverId: string;
+	reservationPeriodStart: Date;
+	reservationPeriodEnd: Date;
+	state: string;
+	createdAt: Date;
+	updatedAt: Date;
+}
+
 function generateObjectId(): string {
 		const timestamp = Math.floor(Date.now() / 1000).toString(16).padStart(8, '0');
 		const random = Math.random().toString(16).substring(2, 18).padStart(16, '0');
@@ -37,32 +37,51 @@ function generateObjectId(): string {
 export function createTestApplicationServicesFactory(): ApplicationServicesFactory {
 	// In-memory storage for test data
 	const listings = new Map<string, TestListing>();
+	const reservationRequests = new Map<string, TestReservationRequest>();
 
 	// Helper to generate valid MongoDB ObjectID-like strings
 	
 
-	// Create test user (Alice)
-	const aliceUser = {
-		id: 'user-alice-123',
-		email: 'alice@test.com',
-		firstName: 'Alice',
-		lastName: 'Test',
-	};
+	// Create test users with valid ObjectId-like IDs
+	const users = new Map<string, Record<string, unknown>>();
+
+	function getOrCreateUser(email: string, firstName?: string, lastName?: string): Record<string, unknown> {
+		let user = users.get(email);
+		if (!user) {
+			user = {
+				id: generateObjectId(),
+				email,
+				firstName: firstName ?? email.split('@')[0],
+				lastName: lastName ?? 'Test',
+				userType: 'personal-user',
+			};
+			users.set(email, user);
+		}
+		return user;
+	}
+
+	// Pre-create Alice
+	const aliceUser = getOrCreateUser('alice@test.com', 'Alice', 'Test');
 
 	return {
 		forRequest: (): Promise<ApplicationServices> => {
 			// Create mock application services implementing ApplicationServices interface
 			const services = {
-				// User service with test user
+				// User service with test users
 				User: {
 					PersonalUser: {
-						createIfNotExists: async () => ({ id: aliceUser.id } as unknown),
-						queryById: async () => ({ id: aliceUser.id } as unknown),
-						update: async () => ({ id: aliceUser.id } as unknown),
-						queryByEmail: async () => ({ id: aliceUser.id } as unknown),
+						createIfNotExists: async () => aliceUser as unknown,
+						queryById: async ({ id }: Record<string, unknown>) => {
+							const user = Array.from(users.values()).find(u => u['id'] === String(id));
+							return (user ?? aliceUser) as unknown;
+						},
+						update: async () => aliceUser as unknown,
+						queryByEmail: async ({ email }: Record<string, unknown>) => {
+							return (getOrCreateUser(String(email)) ?? null) as unknown;
+						},
 						getAllUsers: async () => ({
-							users: [{ id: aliceUser.id }],
-							total: 1,
+							users: Array.from(users.values()).map(u => ({ id: u['id'] })),
+							total: users.size,
 							page: 1,
 							pageSize: 10,
 						}),
@@ -81,44 +100,111 @@ export function createTestApplicationServicesFactory(): ApplicationServicesFacto
 						unblockUser: async () => ({ id: '' } as unknown),
 					},
 					User: {
-						queryById: async () => null,
+						queryById: async ({ id }: Record<string, unknown>) => {
+							const user = Array.from(users.values()).find(u => u['id'] === String(id));
+							return (user ?? null) as unknown;
+						},
 					},
 				},
 
 				Conversation: {} as unknown,
 				AccountPlan: {} as unknown,
 				AppealRequest: {} as unknown,
-				ReservationRequest: {} as unknown,
+
+				// Reservation Request service with in-memory storage
+				ReservationRequest: {
+					ReservationRequest: {
+						create: (input: Record<string, unknown>) => {
+							const id = generateObjectId();
+							const reserverEmail = String(input['reserverEmail'] ?? '');
+							const reserverUser = getOrCreateUser(reserverEmail);
+							const listingId = String(input['listingId']);
+							const reservationPeriodStart = input['reservationPeriodStart'] as Date;
+							const reservationPeriodEnd = input['reservationPeriodEnd'] as Date;
+
+							// Check for overlapping active reservations (matches real app service behavior)
+							const overlapping = Array.from(reservationRequests.values()).filter(
+								(r) =>
+									r.listingId === listingId &&
+									['Requested', 'Accepted'].includes(r.state) &&
+									reservationPeriodStart < r.reservationPeriodEnd &&
+									reservationPeriodEnd > r.reservationPeriodStart,
+							);
+							if (overlapping.length > 0) {
+								throw new Error(
+									'Reservation period overlaps with existing active reservation requests',
+								);
+							}
+
+							const reservation: TestReservationRequest = {
+								id,
+								listingId,
+								reserverId: String(reserverUser['id']),
+								reservationPeriodStart,
+								reservationPeriodEnd,
+								state: 'Requested',
+								createdAt: new Date(),
+								updatedAt: new Date(),
+							};
+							reservationRequests.set(id, reservation);
+							return Promise.resolve({
+								id: reservation.id,
+								state: reservation.state,
+								reservationPeriodStart: reservation.reservationPeriodStart,
+								reservationPeriodEnd: reservation.reservationPeriodEnd,
+								listing: { id: reservation.listingId },
+								reserver: { id: reservation.reserverId },
+								createdAt: reservation.createdAt,
+								updatedAt: reservation.updatedAt,
+							} as unknown);
+						},
+						queryById: ({ id }: Record<string, unknown>) => {
+							return Promise.resolve((reservationRequests.get(String(id)) || null) as unknown);
+						},
+						queryActiveByListingId: ({ listingId }: Record<string, unknown>) => {
+							const results = Array.from(reservationRequests.values())
+								.filter(r => r.listingId === String(listingId));
+							return Promise.resolve(results as unknown[]);
+						},
+						queryActiveByReserverId: async () => [] as unknown[],
+						queryPastByReserverId: async () => [] as unknown[],
+						queryActiveByReserverIdAndListingId: async () => null as unknown,
+						queryOverlapByListingIdAndReservationPeriod: async () => [] as unknown[],
+						queryListingRequestsBySharerId: async () => ({
+							items: [],
+							total: 0,
+							page: 1,
+							pageSize: 10,
+						}),
+					},
+				},
 
 				// Listing service with in-memory storage
 				Listing: {
 					ItemListing: {
 						create: (input: Record<string, unknown>) => {
-							const id = generateObjectId();
-							const state: 'draft' | 'published' = input['isDraft'] ? 'draft' : 'published';
-							const listing: TestListing = {
-								id,
-								title: String(input['title']),
-								description: String(input['description']),
-								category: String(input['category']),
-								location: String(input['location']),
+						const { Title, Description, Category, Location } =
+							Domain.Contexts.Listing.ItemListing.ItemListingValueObjects;
+
+						// Validate using real domain value objects (throws on invalid input)
+						const title = new Title(input['title'] as string).valueOf();
+						const description = new Description(input['description'] as string).valueOf();
+						const category = new Category(input['category'] as string).valueOf();
+						const location = new Location(input['location'] as string).valueOf();
+
+						const id = generateObjectId();
+						const state: 'draft' | 'published' = input['isDraft'] ? 'draft' : 'published';
+						const listing: TestListing = {
+							id,
+							title,
+							description,
+							category,
+							location,
 								state,
 								sharingPeriodStart: input['sharingPeriodStart'] as Date,
 								sharingPeriodEnd: input['sharingPeriodEnd'] as Date,
 								images: (input['images'] as unknown[]) || [],
 							};
-
-							// Validation (matches domain rules)
-							if (!input['title']) {
-								throw new Error('Field "title" is required');
-							}
-							const titleStr = String(input['title']);
-							if (titleStr.length < 5) {
-								throw new Error('Title must be at least 5 characters');
-							}
-							if (titleStr.length > 100) {
-								throw new Error('Title must not exceed 100 characters');
-							}
 
 							listings.set(id, listing);
 							return Promise.resolve(listing as unknown);

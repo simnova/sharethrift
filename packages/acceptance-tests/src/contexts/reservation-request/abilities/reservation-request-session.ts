@@ -1,8 +1,3 @@
-/**
- * Shared types for reservation request session operations.
- * Used by both DomainReservationRequestSession and GraphQLReservationRequestSession.
- */
-
 export interface CreateReservationRequestInput {
 	listingId: string;
 	reservationPeriodStart: Date;
