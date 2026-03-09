@@ -34,5 +34,9 @@ export function getSession(actor: Actor, contextHint?: string): Session {
 		}
 	}
 
-	return sessions[0][1];
+	const session = sessions[0];
+	if (!session) {
+		throw new Error('No session found');
+	}
+	return session[1];
 }

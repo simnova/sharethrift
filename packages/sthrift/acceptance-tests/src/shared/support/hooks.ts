@@ -13,8 +13,8 @@ Before(async function (this: IWorld, scenario: unknown) {
 	const world = this as unknown as ShareThriftWorld;
 
 	const pickleLike = scenario as Record<string, unknown>;
-	const pickle = pickleLike.pickle as Record<string, unknown> | undefined;
-	const featurePath = String(pickle?.uri || '');
+	const pickle = pickleLike['pickle'] as Record<string, unknown> | undefined;
+	const featurePath = String(pickle?.['uri'] || '');
 	let context = 'unknown';
 	if (featurePath.includes('/listing/')) {
 		context = 'listing';
@@ -29,7 +29,7 @@ Before(async function (this: IWorld, scenario: unknown) {
 		printedContexts = new Set();
 	}
 
-	if (!printedContexts.has(context)) {
+	if (printedContexts && !printedContexts.has(context)) {
 		printedContexts.add(context);
 		const levelIcon = world.level === 'dom' ? '🎨' : '⚡';
 		const contextName =

@@ -96,7 +96,7 @@ export class CreateListing extends Task {
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', String(listing['id'])),
 			notes<ListingNotes>().set('lastListingTitle', String(listing['title'])),
-			notes<ListingNotes>().set('lastListingStatus', String(listing['state'])),
+			notes<ListingNotes>().set('lastListingStatus', String(listing['state']).toLowerCase()),
 		);
 	}
 

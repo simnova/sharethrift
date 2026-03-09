@@ -31,10 +31,11 @@ export class CreateListing extends Task {
 
 		const listing = ability.getCreatedListing();
 		if (listing) {
+			const state = String(listing['state'] ?? 'draft').toLowerCase();
 			await actor.attemptsTo(
 				notes<ListingNotes>().set('lastListingId', listing.id),
 				notes<ListingNotes>().set('lastListingTitle', this.details.title),
-				notes<ListingNotes>().set('lastListingStatus', 'draft'),
+				notes<ListingNotes>().set('lastListingStatus', state),
 			);
 		}
 	}
