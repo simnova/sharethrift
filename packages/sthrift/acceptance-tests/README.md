@@ -335,21 +335,21 @@ export class ActorWorld extends SerenityWorld {
   displayName: 'Run Fast Tests (Domain + Session)'
   inputs:
     command: custom
-    customCommand: 'run test:fast --filter @sharethrift/acceptance-tests'
+    customCommand: 'run test:fast --filter @sthrift/acceptance-tests'
 
 # DOM tests: Run on PRs and main branch (requires UI app running)
 - task: Npm@1
   displayName: 'Start UI Application'
   inputs:
     command: custom
-    customCommand: 'run dev --filter @sharethrift/ui-sharethrift'
+    customCommand: 'run dev --filter @app/ui-sharethrift'
   condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
 
 - task: Npm@1
   displayName: 'Run DOM Tests (Full E2E)'
   inputs:
     command: custom
-    customCommand: 'run test:dom --filter @sharethrift/acceptance-tests'
+    customCommand: 'run test:dom --filter @sthrift/acceptance-tests'
   condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   timeoutInMinutes: 10
 ```

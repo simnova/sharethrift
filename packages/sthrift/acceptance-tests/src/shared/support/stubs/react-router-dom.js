@@ -40,7 +40,7 @@ export function useMatch(pattern) {
 }
 
 export function useSearchParams() {
-	return [new URLSearchParams(), () => {}];
+	return [new URLSearchParams(), () => { /* no-op setter */ }];
 }
 
 export function Link({ to, children, ...props }) {

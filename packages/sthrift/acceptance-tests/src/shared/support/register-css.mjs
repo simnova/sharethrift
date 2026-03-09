@@ -8,6 +8,7 @@
 
 import { register } from 'node:module';
 import { Window } from 'happy-dom';
+import React from 'react';
 
 const window = new Window();
 
@@ -22,6 +23,7 @@ globalThis.HTMLInputElement = window.HTMLInputElement;
 globalThis.HTMLTextAreaElement = window.HTMLTextAreaElement;
 globalThis.HTMLSelectElement = window.HTMLSelectElement;
 globalThis.HTMLFormElement = window.HTMLFormElement;
+globalThis.React = React; // Make React available for JSX compiled to createElement calls
 
 // Register ESM loader hook to handle CSS and asset imports
 register('./css-loader.mjs', import.meta.url);

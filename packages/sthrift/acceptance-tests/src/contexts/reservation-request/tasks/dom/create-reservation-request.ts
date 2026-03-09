@@ -1,5 +1,4 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
-import { ReservationRequestForm } from '../../../../../../../apps/ui-sharethrift/src/components/layouts/app/pages/view-listing/components/reservation-request-form.js';
 import { RenderComponents } from '../../../../shared/abilities/render-components.js';
 import { getSession } from '../../../../shared/abilities/session.js';
 import type { CreateReservationRequestInput, ReservationRequest } from '../../abilities/reservation-request-session.js';
@@ -27,6 +26,11 @@ export class CreateReservationRequest extends Task {
 		renderer.cleanupDOM();
 
 		let reserveClicked = false;
+
+		// Lazy-load UI component to avoid import errors in non-DOM tests
+		const { ReservationRequestForm } = await import(
+			'../../../../../../../../apps/ui-sharethrift/src/components/layouts/app/pages/view-listing/components/reservation-request-form.tsx' as string
+		);
 
 		const { getByRole, user } = renderer.render(
 			ReservationRequestForm,
