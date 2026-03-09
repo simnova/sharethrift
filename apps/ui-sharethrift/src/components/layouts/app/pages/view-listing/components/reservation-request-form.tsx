@@ -225,7 +225,7 @@ export const ReservationRequestForm: React.FC<ReservationRequestFormProps> = ({
 												? 'default'
 												: 'primary'
 										}
-										block
+										style={{ width: '100%' }}
 										onClick={
 											reservationRequestStatus === 'Requested'
 												? onCancelClick
@@ -248,7 +248,7 @@ export const ReservationRequestForm: React.FC<ReservationRequestFormProps> = ({
 								return (
 									<Button
 										type="primary"
-										block
+										style={{ width: '100%' }}
 										onClick={() => navigate('/signup/select-account-type')}
 									>
 										Log in to Reserve

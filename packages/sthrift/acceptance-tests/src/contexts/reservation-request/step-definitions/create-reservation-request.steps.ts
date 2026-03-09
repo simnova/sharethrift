@@ -10,6 +10,7 @@ import { CreateReservationRequest as DomCreateReservationRequest } from '../task
 import { CreateReservationRequest as SessionCreateReservationRequest } from '../tasks/session/create-reservation-request.js';
 import { CreateReservationRequest as DomainCreateReservationRequest } from '../tasks/domain/create-reservation-request.js';
 import { GetReservationRequestCountForListing } from '../questions/get-reservation-request-count-for-listing.js';
+import { DomainGetReservationRequestCountForListing } from '../questions/domain-get-reservation-request-count-for-listing.js';
 
 interface ReservationRequestNotes {
 	lastReservationRequestId: string;
@@ -66,7 +67,6 @@ Given(
 		await actor.attemptsTo(
 			CreateListing.with(details as unknown as CreateListingInput),
 		);
-		console.log(`  ✓ ${actorName} has created a listing with: ${JSON.stringify(details)}`);
 	},
 );
 
@@ -90,7 +90,6 @@ When(
 				reserver: makeTestUserData(reserver),
 			}),
 		);
-		console.log(`  ✓ ${reserver} creates a reservation request for ${owner}'s listing`);
 	},
 );
 
@@ -150,7 +149,6 @@ Then(
 			if (state !== 'Requested') {
 				throw new Error(`Expected reservation request status "Requested" but got "${state}"`);
 			}
-			console.log(`  ✓ the reservation request should be in requested status`);
 		} catch (error) {
 			throw new Error(`Could not verify reservation request status: ${error instanceof Error ? error.message : String(error)}`);
 		}
@@ -245,7 +243,6 @@ Then(
 		} catch {
 			// Expected - no reservation request was created
 		}
-		console.log(`  ✓ no reservation request should be created`);
 	},
 );
 
@@ -256,13 +253,13 @@ Then(
 
 		try {
 			const listingId = await getListingIdFromOwner('Bob');
-			const count = await actor.answer(
-				GetReservationRequestCountForListing.forListing(listingId),
-			);
+			const countQuestion = this.level === 'domain'
+				? DomainGetReservationRequestCountForListing.forListing(listingId)
+				: GetReservationRequestCountForListing.forListing(listingId);
+			const count = await actor.answer(countQuestion);
 			if (count !== 1) {
 				throw new Error(`Expected 1 reservation request for listing but got ${count}`);
 			}
-			console.log(`  ✓ only one reservation request should exist for the listing`);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
 			throw new Error(`Could not verify reservation request count: ${message}`);

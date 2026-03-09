@@ -29,14 +29,14 @@ function createMockUser(email: string, firstName: string, lastName: string): Per
 					state: '',
 					country: '',
 					zipCode: '',
-				} as unknown,
-				billing: {} as unknown,
+				},
+				billing: {},
 			},
 		},
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		schemaVersion: '1.0.0',
-	} as unknown as PersonalUserEntityReference;
+	} as PersonalUserEntityReference;
 }
 
 export function getOrCreateUser(email: string, firstName?: string, lastName?: string): PersonalUserEntityReference {
@@ -120,7 +120,7 @@ export function createMockAdminUser(email?: string, firstName?: string, lastName
 		schemaVersion: '1.0.0',
 		createdAt: new Date(),
 		updatedAt: new Date(),
-	} as unknown as AdminUserEntityReference;
+	} as AdminUserEntityReference;
 	adminUsers.set(adminUser.id, adminUser);
 	return adminUser;
 }

@@ -50,7 +50,7 @@ export function createMockListing(input: CreateListingInput): ItemListingEntityR
 		loadSharer: async () => input.sharer,
 		loadListing: async () => null as never,
 		loadReserver: async () => null as never,
-	} as unknown as ItemListingEntityReference;
+	} as ItemListingEntityReference;
 
 	listings.set(id, listing);
 	return listing;

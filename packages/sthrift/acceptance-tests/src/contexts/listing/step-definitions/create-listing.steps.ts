@@ -24,8 +24,7 @@ Given(
 	'{word} is an authenticated user',
 	function (this: ShareThriftWorld, actorName: string) {
 		actorCalled(actorName);
-		console.log(`  ✓ ${actorName} is an authenticated user`);
-	},
+		},
 );
 
 Given(
@@ -44,8 +43,7 @@ Given(
 			}),
 		);
 
-		console.log(`  ✓ ${actorName} has created a draft listing titled "${title}"`);
-	},
+		},
 );
 
 When(
@@ -59,7 +57,6 @@ When(
 		// Execute the task
 		await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
 
-		console.log(`  ✓ ${actorName} creates a listing with: ${JSON.stringify(details)}`);
 	},
 );
 
@@ -80,7 +77,6 @@ When(
 			);
 		}
 
-		console.log(`  ✓ ${actorName} attempts to create a listing with validation`);
 	},
 );
 
@@ -94,7 +90,6 @@ Then(
 			throw new Error(`Expected listing status "${expectedStatus}" but got "${status}"`);
 		}
 
-		console.log(`  ✓ ${actorName} sees the listing in ${expectedStatus} status`);
 	},
 );
 
@@ -107,7 +102,6 @@ Then(
 			throw new Error(`Expected listing title "${expectedTitle}" but got "${title}"`);
 		}
 
-		console.log(`  ✓ ${actorName} sees the listing title as "${expectedTitle}"`);
 	},
 );
 
@@ -121,7 +115,6 @@ Then(
 		if (!status) {
 			throw new Error('Expected a listing to exist before checking its daily rate');
 		}
-		console.log(`  ✓ the listing should have a daily rate of "${_expectedRate}"`);
 	},
 );
 
@@ -134,7 +127,6 @@ Then(
 		try {
 			const storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
 			if (storedError) {
-				console.log(`  ✓ ${resolvedActorName} should see a listing error for "${fieldName}"`);
 				return;
 			}
 		} catch {
@@ -144,7 +136,6 @@ Then(
 		if (!error) {
 			throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
 		}
-		console.log(`  ✓ ${resolvedActorName} should see a listing error for "${fieldName}"`);
 	},
 );
 
@@ -162,7 +153,6 @@ Then(
 				if (!storedError.includes(expectedMessage)) {
 					throw new Error(`Expected error message "${expectedMessage}", but got: "${storedError}"`);
 				}
-				console.log(`  ✓ ${resolvedActorName} should see a listing error "${expectedMessage}"`);
 				return;
 			}
 		} catch {
@@ -175,7 +165,6 @@ Then(
 		if (!error?.includes(expectedMessage)) {
 			throw new Error(`Expected error message "${expectedMessage}", but got: "${error || 'none'}"`);
 		}
-		console.log(`  ✓ ${resolvedActorName} should see a listing error "${expectedMessage}"`);
 	},
 );
 
@@ -191,7 +180,6 @@ Then('no listing should be created', async function (this: ShareThriftWorld) {
 	} catch {
 		// No listing ID in notes — this is the expected state
 	}
-	console.log(`  ✓ no listing should be created`);
 });
 
 // Backward-compatible step definitions for existing scenarios
@@ -204,7 +192,6 @@ Then(
 		if (status !== expectedStatus) {
 			throw new Error(`Expected listing status "${expectedStatus}" but got "${status}"`);
 		}
-		console.log(`  ✓ the listing should be in ${expectedStatus} status`);
 	},
 );
 
@@ -217,6 +204,5 @@ Then(
 		if (title !== expectedTitle) {
 			throw new Error(`Expected listing title "${expectedTitle}" but got "${title}"`);
 		}
-		console.log(`  ✓ the listing title should be "${expectedTitle}"`);
 	},
 );

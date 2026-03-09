@@ -19,15 +19,3 @@ export interface CreateItemListingInput {
 	images?: string[];
 	isDraft?: boolean;
 }
-
-export interface ItemListing {
-	id: string;
-	title: string;
-	description: string;
-	category: string;
-	location: string;
-	state: 'draft' | 'published';
-	sharingPeriodStart: Date;
-	sharingPeriodEnd: Date;
-	images: string[];
-}

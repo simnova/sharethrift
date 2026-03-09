@@ -1,6 +1,7 @@
 import { Ability } from '@serenity-js/core';
 import { Domain } from '@sthrift/domain';
 import { makeItemListingProps, makeSharerUser, ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../shared/support/domain-test-helpers.js';
+import { listings } from '../../../shared/support/test-data/listing.test-data.js';
 
 type Passport = Domain.Passport;
 type ItemListingProps = Domain.Contexts.Listing.ItemListing.ItemListingProps;
@@ -41,6 +42,8 @@ export class CreateListingAbility extends Ability {
 		);
 
 		this.createdListing = listing;
+		// Store in shared test-data so sessions can access it
+		listings.set(listing.id, listing);
 	}
 
 	getCreatedListing(): ItemListingEntityReference | undefined {

@@ -4,20 +4,15 @@ import { RenderComponents } from '../abilities/render-components.js';
 import { listingAbilities } from '../../contexts/listing/abilities/index.js';
 import { DomainListingSession } from '../../contexts/listing/abilities/domain-listing-session.js';
 import { GraphQLListingSession } from '../../contexts/listing/abilities/graphql-listing-session.js';
-import type { ItemListing } from '../../contexts/listing/abilities/listing-session.js';
 import { reservationRequestAbilities } from '../../contexts/reservation-request/abilities/index.js';
 import { DomainReservationRequestSession } from '../../contexts/reservation-request/abilities/domain-reservation-request-session.js';
 import { GraphQLReservationRequestSession } from '../../contexts/reservation-request/abilities/graphql-reservation-request-session.js';
-import type { ReservationRequest } from '../../contexts/reservation-request/abilities/reservation-request-session.js';
 import { MultiContextSession } from '../abilities/multi-context-session.js';
 import { TestServer } from './test-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
 import { cleanup } from '@testing-library/react';
-
-// Shared stores cleared per scenario
-const sharedReservationRequestStore = new Map<string, ReservationRequest>();
-const sharedListingStore = new Map<string, ItemListing>();
-
+import { listings, clearMockListings } from './test-data/listing.test-data.js';
+import { reservationRequests, clearMockReservationRequests } from './test-data/reservation-request.test-data.js';
 type TaskLevel = 'domain' | 'session' | 'dom';
 type SessionType = 'domain' | 'graphql';
 
@@ -32,20 +27,18 @@ class ShareThriftCast implements Cast {
 		private readonly tasksLevel: TaskLevel,
 		private readonly sessionType: SessionType,
 		private readonly apiUrl: string,
-		private readonly sharedReservationRequestStore: Map<string, ReservationRequest>,
-		private readonly sharedListingStore: Map<string, ItemListing>,
 	) {}
 
 	private createMultiContextSession(): MultiContextSession {
 		const listingSession =
 			this.sessionType === 'graphql'
 				? new GraphQLListingSession(this.apiUrl)
-				: new DomainListingSession(this.sharedListingStore);
+				: new DomainListingSession(listings);
 
 		const reservationRequestSession =
 			this.sessionType === 'graphql'
 				? new GraphQLReservationRequestSession(this.apiUrl)
-				: new DomainReservationRequestSession(this.sharedReservationRequestStore);
+				: new DomainReservationRequestSession(reservationRequests);
 
 		const multiSession = new MultiContextSession();
 		multiSession.registerSession('listing', listingSession);
@@ -61,8 +54,6 @@ class ShareThriftCast implements Cast {
 					TakeNotes.using(Notepad.empty()),
 					...listingAbilities,
 					...reservationRequestAbilities,
-					new DomainListingSession(this.sharedListingStore),
-					new DomainReservationRequestSession(this.sharedReservationRequestStore),
 				);
 
 			case 'session':
@@ -103,19 +94,16 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			const testFactory = createTestApplicationServicesFactory();
 
 			this.testServer = new TestServer(testFactory);
-			const url = await this.testServer.start(4000);
-			console.log(`[WORLD] GraphQL test server started at ${url}`);
+			await this.testServer.start(4000);
 		}
 
-		sharedReservationRequestStore.clear();
-		sharedListingStore.clear();
+		clearMockReservationRequests();
+		clearMockListings();
 
 		const cast = new ShareThriftCast(
 			this.tasksLevel,
 			this.sessionType,
 			this.apiUrl,
-			sharedReservationRequestStore,
-			sharedListingStore,
 		);
 
 		configure({
@@ -138,7 +126,6 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		if (this.testServer) {
 			await this.testServer.stop();
 			this.testServer = undefined;
-			console.log('[WORLD] GraphQL test server stopped');
 		}
 	}
 

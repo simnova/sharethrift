@@ -1,46 +1,29 @@
 import type { IWorld } from '@cucumber/cucumber';
 import { After, Before, setDefaultTimeout } from '@cucumber/cucumber';
 
-import { ShareThriftWorld } from './world.js';
+import type { ShareThriftWorld } from './world.js';
 
-// Track printed contexts per test configuration
-let printedContexts: Set<string> | undefined;
+// Track printed headers per test configuration
 let lastTestConfig: string | undefined;
 
 setDefaultTimeout(30_000);
 
-Before(async function (this: IWorld, scenario: unknown) {
+Before(async function (this: IWorld) {
 	const world = this as unknown as ShareThriftWorld;
 
-	const pickleLike = scenario as Record<string, unknown>;
-	const pickle = pickleLike['pickle'] as Record<string, unknown> | undefined;
-	const featurePath = String(pickle?.['uri'] || '');
-	let context = 'unknown';
-	if (featurePath.includes('/listing/')) {
-		context = 'listing';
-	} else if (featurePath.includes('/reservation-request/')) {
-		context = 'reservation-request';
-	}
-
-	const testConfig = `${world.level}:${world.parameters?.session || 'domain'}`;
+	const sessionType = (world.parameters as unknown as Record<string, unknown>)['session'] || 'domain';
+	const testConfig = `${world.level}:${sessionType}`;
 
 	if (lastTestConfig !== testConfig) {
 		lastTestConfig = testConfig;
-		printedContexts = new Set();
-	}
 
-	if (printedContexts && !printedContexts.has(context)) {
-		printedContexts.add(context);
 		const levelIcon = world.level === 'dom' ? '🎨' : '⚡';
-		const contextName =
-			context === 'listing' ? 'Listing Context' : 'Reservation Request Context';
 		const testLevelStr = world.level.toUpperCase();
-		const sessionType = world.parameters?.session || 'domain';
-		const backendStr = sessionType.toUpperCase();
+		const backendStr = String(sessionType).toUpperCase();
 
-		console.log(`\n${'─'.repeat(70)}`);
-		console.log(`${levelIcon} ${contextName} ${testLevelStr} tests with ${backendStr} backend`);
-		console.log(`${'─'.repeat(70)}\n`);
+		console.log(`\n${levelIcon} ${testLevelStr} tests with ${backendStr} backend`);
+		console.log('  • Listing Context');
+		console.log('  • Reservation Request Context\n');
 	}
 
 	await world.init();

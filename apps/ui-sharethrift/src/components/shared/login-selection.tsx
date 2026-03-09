@@ -242,10 +242,10 @@ export const LoginSelection: React.FC = () => {
 							<Divider style={{ margin: '24px 0' }}>or</Divider>
                             <br />
 							<Button
-								block
 								size="large"
 								onClick={handleOnSignUp}
 								style={{
+									width: '100%',
 									height: '48px',
 									fontSize: '16px',
 									fontWeight: 600,

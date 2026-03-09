@@ -1,8 +1,3 @@
-/**
- * Application Services Factory for tests
- * Composes context-specific services from test-app-services folder
- */
-
 import type {
 	ApplicationServices,
 	ApplicationServicesFactory,

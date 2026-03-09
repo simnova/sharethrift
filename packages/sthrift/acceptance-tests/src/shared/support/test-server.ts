@@ -58,7 +58,6 @@ export class TestServer {
 		});
 
 		this.url = url;
-		console.log(`[TEST SERVER] Real GraphQL server ready at ${url}`);
 		return url;
 	}
 
@@ -70,7 +69,6 @@ export class TestServer {
 		await this.server.stop();
 		this.server = null;
 		this.url = null;
-		console.log('[TEST SERVER] Real GraphQL server stopped');
 	}
 
 	getUrl(): string {

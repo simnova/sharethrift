@@ -16,6 +16,7 @@ export function makeTestPassport(): Passport {
 		user: {
 			forPersonalUser: () => alwaysAllow,
 			forAdminUser: () => alwaysAllow,
+			forAdminRole: () => alwaysAllow,
 		},
 		conversation: { forConversation: () => alwaysAllow },
 		reservationRequest: { forReservationRequest: () => alwaysAllow },

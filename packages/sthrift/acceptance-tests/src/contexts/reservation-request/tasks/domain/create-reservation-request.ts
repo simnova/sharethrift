@@ -1,6 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
+import { CreateReservationRequestAbility } from '../../abilities/create-reservation-request-ability.js';
 import type { CreateReservationRequestInput } from '../../abilities/reservation-request-session.js';
-import { DomainReservationRequestSession } from '../../abilities/domain-reservation-request-session.js';
 
 interface ReservationRequestNotes {
 	lastReservationRequestId: string;
@@ -19,26 +19,27 @@ export class CreateReservationRequest extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		const session = DomainReservationRequestSession.as(actor);
+		const ability = CreateReservationRequestAbility.as(actor);
+		ability.createReservationRequest(this.input);
 
-		const reservationRequest = await session.createReservationRequest(this.input);
+		const reservationRequest = ability.getCreatedAggregate();
+		if (reservationRequest) {
+			const startDate = reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ?? '';
+			const endDate = reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
 
-		const startDate = reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ?? '';
-		const endDate = reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
-
-		await actor.attemptsTo(
-			notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
-			notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestStartDate',
-				startDate,
-			),
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestEndDate',
-				endDate,
-			),
-		);
-
+			await actor.attemptsTo(
+				notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
+				notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
+				notes<ReservationRequestNotes>().set(
+					'lastReservationRequestStartDate',
+					startDate,
+				),
+				notes<ReservationRequestNotes>().set(
+					'lastReservationRequestEndDate',
+					endDate,
+				),
+			);
+		}
 	}
 
 	override toString = () => `creates reservation request for listing "${this.input.listingId}" (domain)`;

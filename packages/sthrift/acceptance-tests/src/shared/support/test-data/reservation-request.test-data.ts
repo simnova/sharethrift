@@ -51,7 +51,7 @@ export function createMockReservationRequest(input: CreateReservationRequestInpu
 		loadListing: async () => listing,
 		loadReserver: async () => reserverUser,
 		loadSharer: async () => null as never,
-	} as unknown as ReservationRequestEntityReference;
+	} as ReservationRequestEntityReference;
 
 	reservationRequests.set(id, reservation);
 	return reservation;
