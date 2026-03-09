@@ -29,9 +29,10 @@
         "start-emulator:payment-server": "pnpm --filter=@cellix/mock-payment-server run start",
         "start-emulator:messaging-server": "pnpm --filter=@app/mock-messaging-server run start",
         "test:all": "turbo run test:all",
-        "test:coverage": "turbo run test:coverage:ui && turbo run test:coverage:node",
+        "test:coverage": "turbo run test:coverage:ui && turbo run test:coverage:node && turbo run test:coverage:arch",
         "test:coverage:node": "turbo run test:coverage:node",
         "test:coverage:ui": "turbo run test:coverage:ui",
+        "test:coverage:arch": "turbo run test:coverage:arch",
         "test:coverage:merge": "pnpm run test:coverage && pnpm run merge-lcov-reports",
         "merge-lcov-reports": "node build-pipeline/scripts/merge-coverage.js",
         "test:integration": "turbo run test:integration",
@@ -68,7 +69,8 @@
             "axios": ">=1.13.5",
             "lodash": "^4.17.23",
             "minimatch": ">=10.2.3",
-            "qs": ">=6.14.2"
+            "qs": ">=6.14.2",
+            "serialize-javascript": ">=7.0.3"
         }
     },
     "catalog": {

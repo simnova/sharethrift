@@ -16,7 +16,7 @@
 		},
 		"packages/cellix/*": {
 			"project": ["src/**/*.ts"],
-			"ignore": ["**/graphql-tools-scalars.ts"]
+			"ignore": ["**/graphql-tools-scalars.ts", "**/fixtures/**/*.ts"]
 		},
 		"packages/cellix/ui-core/*": {
 			"entry": ["src/index.ts"],
