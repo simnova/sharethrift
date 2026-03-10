@@ -21,6 +21,9 @@ export class CreateListing extends Task {
 	async performAs(actor: Actor): Promise<void> {
 		const session = getSession(actor, 'listing');
 
+		// Convert isDraft string from feature file to boolean (isDraft: false = Active)
+		const isDraft = !(this.details.isDraft === 'false' || this.details.isDraft === false);
+
 		const listing = await session.execute<unknown, Record<string, unknown>>('listing:create', {
 			title: this.details.title,
 			description: this.details.description,
@@ -29,7 +32,7 @@ export class CreateListing extends Task {
 			sharingPeriodStart: this.calculateStartDate(),
 			sharingPeriodEnd: this.calculateEndDate(),
 			images: [],
-			isDraft: true,
+			isDraft,
 		});
 
 		await actor.attemptsTo(

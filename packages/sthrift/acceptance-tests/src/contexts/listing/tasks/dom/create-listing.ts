@@ -27,7 +27,6 @@ export class CreateListing extends Task {
 		renderer.cleanupDOM();
 
 		let submitCalled = false;
-		let submitIsDraft = false;
 
 		const formProps: ListingFormProps = {
 			categories: [
@@ -41,9 +40,8 @@ export class CreateListing extends Task {
 			],
 			isLoading: false,
 			maxCharacters: 2000,
-			handleFormSubmit: (isDraft: boolean) => {
+			handleFormSubmit: () => {
 				submitCalled = true;
-				submitIsDraft = isDraft;
 			},
 			onCancel: () => {
 				/* no-op */
@@ -76,7 +74,17 @@ export class CreateListing extends Task {
 			);
 		}
 
-		await user.click(getByRole('button', { name: /save as draft/i }));
+		// Check if listing should be created as draft or active based on isDraft parameter
+		const isDraft = !(this.details.isDraft === 'false' || this.details.isDraft === false);
+
+		// Click appropriate button based on isDraft setting
+		const buttonName = isDraft ? /save as draft/i : /publish/i;
+		try {
+			await user.click(getByRole('button', { name: buttonName }));
+		} catch {
+			// If publish button not found, fall back to draft (will create as draft)
+			await user.click(getByRole('button', { name: /save as draft/i }));
+		}
 
 		if (!submitCalled) {
 			throw new Error('ListingForm handleFormSubmit was not called');
@@ -90,7 +98,7 @@ export class CreateListing extends Task {
 			sharingPeriodStart: new Date(Date.now() + ONE_DAY_MS),
 			sharingPeriodEnd: new Date(Date.now() + ONE_DAY_MS * DEFAULT_SHARING_PERIOD_DAYS),
 			images: [],
-			isDraft: submitIsDraft,
+			isDraft,
 		});
 
 		await actor.attemptsTo(

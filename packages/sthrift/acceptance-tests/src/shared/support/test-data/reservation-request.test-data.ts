@@ -1,6 +1,6 @@
 import { Domain } from '@sthrift/domain';
 import { generateObjectId } from './utils.js';
-import { getOrCreateUser } from './user.test-data.js';
+import { createMockUser } from './user.test-data.js';
 import { getMockListingById } from './listing.test-data.js';
 
 type ReservationRequestEntityReference = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
@@ -16,7 +16,8 @@ interface CreateReservationRequestInput {
 
 export function createMockReservationRequest(input: CreateReservationRequestInput): ReservationRequestEntityReference {
 	const id = generateObjectId();
-	const reserverUser = getOrCreateUser(input.reserverEmail);
+	const firstName = input.reserverEmail.split('@')[0] || 'Reserver';
+	const reserverUser = createMockUser(input.reserverEmail, firstName, 'Reserver');
 	const listing = getMockListingById(input.listingId);
 
 	if (!listing) {
@@ -59,6 +60,10 @@ export function createMockReservationRequest(input: CreateReservationRequestInpu
 
 export function getMockReservationRequestById(id: string): ReservationRequestEntityReference | null {
 	return reservationRequests.get(id) ?? null;
+}
+
+export function getAllMockReservationRequests(): ReservationRequestEntityReference[] {
+	return Array.from(reservationRequests.values());
 }
 
 export function getMockActiveByListingId(listingId: string): ReservationRequestEntityReference[] {

@@ -23,9 +23,14 @@ export class CreateListingAbility extends Ability {
 		description?: string;
 		category?: string;
 		location?: string;
+		state?: string;
 	}): void {
 		const props = makeItemListingProps();
 		const sharer = makeSharerUser();
+
+		// Determine if this should be a draft based on state parameter
+		// If state is "Active", isDraft is false; otherwise isDraft is true
+		const isDraft = !params.state || params.state !== 'Active';
 
 		const listing = ItemListing.getNewInstance<ItemListingProps>(
 			props,
@@ -38,7 +43,7 @@ export class CreateListingAbility extends Ability {
 			new Date(Date.now() + ONE_DAY_MS),
 			new Date(Date.now() + ONE_DAY_MS * DEFAULT_SHARING_PERIOD_DAYS),
 			[],
-			true,
+			isDraft,
 		);
 
 		this.createdListing = listing;

@@ -15,6 +15,8 @@ export interface CreateListingInput {
 	description: string;
 	category: string;
 	location: string;
+	state?: string;
+	isDraft?: boolean | string;
 }
 export class CreateListing extends Task {
 	static with(details: CreateListingInput) {
@@ -27,7 +29,15 @@ export class CreateListing extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const ability = CreateListingAbility.as(actor);
-		ability.createDraftListing(this.details);
+		// Convert isDraft from feature file to state parameter (isDraft: false = Active)
+		const state = this.details.isDraft === 'false' || this.details.isDraft === false ? 'Active' : 'Draft';
+		ability.createDraftListing({
+			title: this.details.title,
+			description: this.details.description,
+			category: this.details.category,
+			location: this.details.location,
+			state,
+		});
 
 		const listing = ability.getCreatedListing();
 		if (listing) {

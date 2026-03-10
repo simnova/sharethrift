@@ -7,6 +7,7 @@ export interface ListingDetails {
 	weeklyRate?: string;
 	deposit?: string;
 	tags?: string;
+	isDraft?: boolean | string;
 }
 
 export interface CreateItemListingInput {

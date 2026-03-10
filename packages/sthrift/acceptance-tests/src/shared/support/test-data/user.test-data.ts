@@ -4,12 +4,106 @@ import { generateObjectId } from './utils.js';
 
 type PersonalUserEntityReference = Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 type AdminUserEntityReference = Domain.Contexts.User.AdminUser.AdminUserEntityReference;
+type UserEntityReference = PersonalUserEntityReference | AdminUserEntityReference;
 
-const users = new Map<string, PersonalUserEntityReference>();
+const aliceId = generateObjectId();
+const adminId = generateObjectId();
 
-function createMockUser(email: string, firstName: string, lastName: string): PersonalUserEntityReference {
+export const users = new Map<string, UserEntityReference>([
+	[
+		aliceId,
+		{
+			id: aliceId,
+			userType: 'personal-user',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			account: {
+				accountType: 'email',
+				email: 'alice@example.com',
+				username: 'alice',
+				profile: {
+					firstName: 'Alice',
+					lastName: 'Smith',
+					aboutMe: '',
+					location: {
+						address1: '',
+						address2: null,
+						city: '',
+						state: '',
+						country: '',
+						zipCode: '',
+					},
+					billing: {},
+				},
+			},
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			schemaVersion: '1.0.0',
+		} as PersonalUserEntityReference,
+	],
+	[
+		adminId,
+		{
+			id: adminId,
+			userType: 'admin-user',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			role: {
+				id: generateObjectId(),
+				roleName: 'Admin',
+				isDefault: true,
+				roleType: 'admin',
+			} as unknown,
+			loadRole: async () => ({
+				id: generateObjectId(),
+				roleName: 'Admin',
+				isDefault: true,
+				roleType: 'admin',
+			} as unknown),
+			account: {
+				accountType: 'admin',
+				email: 'admin@test.com',
+				username: 'admin',
+				profile: {
+					firstName: 'Admin',
+					lastName: 'User',
+					aboutMe: '',
+					location: {
+						address1: '123 Test St',
+						address2: null,
+						city: 'Seattle',
+						state: 'WA',
+						country: 'US',
+						zipCode: '98101',
+					},
+					billing: {
+						cybersourceCustomerId: null,
+						subscription: {
+							status: 'inactive',
+							planCode: 'free',
+							startDate: new Date('2020-01-01'),
+							subscriptionId: null,
+						},
+						transactions: {
+							items: [],
+							getNewItem: () => ({}),
+							addItem: () => { /* no-op */ },
+							removeItem: () => { /* no-op */ },
+							removeAll: () => { /* no-op */ },
+						},
+					},
+				},
+			},
+			schemaVersion: '1.0.0',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		} as AdminUserEntityReference,
+	],
+]);
+
+export function createMockUser(email: string, firstName: string, lastName: string): PersonalUserEntityReference {
 	const id = generateObjectId();
-	return {
+	const user = {
 		id,
 		userType: 'personal-user',
 		isBlocked: false,
@@ -37,43 +131,9 @@ function createMockUser(email: string, firstName: string, lastName: string): Per
 		updatedAt: new Date(),
 		schemaVersion: '1.0.0',
 	} as PersonalUserEntityReference;
-}
-
-export function getOrCreateUser(email: string, firstName?: string, lastName?: string): PersonalUserEntityReference {
-	let user = users.get(email);
-	if (!user) {
-		user = createMockUser(
-			email,
-			firstName || email.split('@')[0] || 'Test',
-			lastName || 'Test',
-		);
-		users.set(email, user);
-	}
+	users.set(id, user);
 	return user;
 }
-
-export function getUserById(id: string): PersonalUserEntityReference | null {
-	for (const user of users.values()) {
-		if (user.id === id) {
-			return user;
-		}
-	}
-	return null;
-}
-
-export function getAllUsers(): PersonalUserEntityReference[] {
-	return Array.from(users.values());
-}
-
-export function clearUsers(): void {
-	users.clear();
-	clearMockAdminUsers();
-}
-
-// Pre-create Alice for tests
-export const aliceUser = getOrCreateUser('alice@test.com', 'Alice', 'Test');
-
-const adminUsers = new Map<string, AdminUserEntityReference>();
 
 export function createMockAdminUser(email?: string, firstName?: string, lastName?: string): AdminUserEntityReference {
 	const adminUser = {
@@ -81,8 +141,18 @@ export function createMockAdminUser(email?: string, firstName?: string, lastName
 		userType: 'admin-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: {},
-		loadRole: async () => ({}),
+		role: {
+			id: generateObjectId(),
+			roleName: 'Admin',
+			isDefault: true,
+			roleType: 'admin',
+		} as unknown,
+		loadRole: async () => ({
+			id: generateObjectId(),
+			roleName: 'Admin',
+			isDefault: true,
+			roleType: 'admin',
+		} as unknown),
 		account: {
 			accountType: 'admin',
 			email: email || 'admin@test.com',
@@ -121,20 +191,75 @@ export function createMockAdminUser(email?: string, firstName?: string, lastName
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	} as AdminUserEntityReference;
-	adminUsers.set(adminUser.id, adminUser);
+	users.set(adminUser.id, adminUser);
 	return adminUser;
 }
 
-export function getMockAdminUserById(id: string): AdminUserEntityReference | null {
-	return adminUsers.get(id) ?? null;
+export function getMockUserById(id: string): UserEntityReference | null {
+	return users.get(id) ?? null;
 }
 
-export function getAllMockAdminUsers(): AdminUserEntityReference[] {
-	return Array.from(adminUsers.values());
+export function getAllMockUsers(): UserEntityReference[] {
+	return Array.from(users.values());
 }
 
-export function clearMockAdminUsers(): void {
-	adminUsers.clear();
+export function clearUsers(): void {
+	users.clear();
+	// Recreate defaults
+	const alice = users.get(aliceId);
+	const admin = users.get(adminId);
+	if (!alice) {
+		users.set(aliceId, {
+			id: aliceId,
+			userType: 'personal-user',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			account: {
+				accountType: 'email',
+				email: 'alice@example.com',
+				username: 'alice',
+				profile: {
+					firstName: 'Alice',
+					lastName: 'Smith',
+					aboutMe: '',
+					location: { address1: '', address2: null, city: '', state: '', country: '', zipCode: '' },
+					billing: {},
+				},
+			},
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			schemaVersion: '1.0.0',
+		} as PersonalUserEntityReference);
+	}
+	if (!admin) {
+		users.set(adminId, {
+			id: adminId,
+			userType: 'admin-user',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			role: { id: generateObjectId(), roleName: 'Admin', isDefault: true, roleType: 'admin' } as unknown,
+			loadRole: async () => ({ id: generateObjectId(), roleName: 'Admin', isDefault: true, roleType: 'admin' } as unknown),
+			account: {
+				accountType: 'admin',
+				email: 'admin@test.com',
+				username: 'admin',
+				profile: {
+					firstName: 'Admin',
+					lastName: 'User',
+					aboutMe: '',
+					location: { address1: '123 Test St', address2: null, city: 'Seattle', state: 'WA', country: 'US', zipCode: '98101' },
+					billing: {
+						cybersourceCustomerId: null,
+						subscription: { status: 'inactive', planCode: 'free', startDate: new Date('2020-01-01'), subscriptionId: null },
+						transactions: { items: [], getNewItem: () => ({}), addItem: () => { /* no-op */ }, removeItem: () => { /* no-op */ }, removeAll: () => { /* no-op */ } },
+					},
+				},
+			},
+			schemaVersion: '1.0.0',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		} as AdminUserEntityReference);
+	}
 }
 
 export function getVerifiedUserFromMock(user: PersonalUserEntityReference): VerifiedUser {

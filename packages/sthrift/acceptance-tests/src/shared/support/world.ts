@@ -4,17 +4,20 @@ import { RenderComponents } from '../abilities/render-components.js';
 import { listingAbilities } from '../../contexts/listing/abilities/index.js';
 import { DomainListingSession } from '../../contexts/listing/abilities/domain-listing-session.js';
 import { GraphQLListingSession } from '../../contexts/listing/abilities/graphql-listing-session.js';
+import { MongoListingSession } from '../../contexts/listing/abilities/mongo-listing-session.js';
 import { reservationRequestAbilities } from '../../contexts/reservation-request/abilities/index.js';
 import { DomainReservationRequestSession } from '../../contexts/reservation-request/abilities/domain-reservation-request-session.js';
 import { GraphQLReservationRequestSession } from '../../contexts/reservation-request/abilities/graphql-reservation-request-session.js';
+import { MongoReservationRequestSession } from '../../contexts/reservation-request/abilities/mongo-reservation-request-session.js';
 import { MultiContextSession } from '../abilities/multi-context-session.js';
 import { TestServer } from './test-server.js';
+import { MongoDBTestServer } from './test-mongodb-server.js';
 import { createTestApplicationServicesFactory } from './test-application-services.js';
 import { cleanup } from '@testing-library/react';
 import { listings, clearMockListings } from './test-data/listing.test-data.js';
 import { reservationRequests, clearMockReservationRequests } from './test-data/reservation-request.test-data.js';
 type TaskLevel = 'domain' | 'session' | 'dom';
-type SessionType = 'domain' | 'graphql';
+type SessionType = 'domain' | 'graphql' | 'mongodb';
 
 export interface WorldParameters {
 	tasks: TaskLevel;
@@ -30,15 +33,23 @@ class ShareThriftCast implements Cast {
 	) {}
 
 	private createMultiContextSession(): MultiContextSession {
-		const listingSession =
-			this.sessionType === 'graphql'
-				? new GraphQLListingSession(this.apiUrl)
-				: new DomainListingSession(listings);
+		let listingSession: GraphQLListingSession | MongoListingSession | DomainListingSession;
+		let reservationRequestSession: GraphQLReservationRequestSession | MongoReservationRequestSession | DomainReservationRequestSession;
 
-		const reservationRequestSession =
-			this.sessionType === 'graphql'
-				? new GraphQLReservationRequestSession(this.apiUrl)
-				: new DomainReservationRequestSession(reservationRequests);
+		switch (this.sessionType) {
+			case 'graphql':
+				listingSession = new GraphQLListingSession(this.apiUrl);
+				reservationRequestSession = new GraphQLReservationRequestSession(this.apiUrl);
+				break;
+			case 'mongodb':
+				listingSession = new MongoListingSession(this.apiUrl);
+				reservationRequestSession = new MongoReservationRequestSession(this.apiUrl);
+				break;
+			default:
+				listingSession = new DomainListingSession(listings);
+				reservationRequestSession = new DomainReservationRequestSession(reservationRequests);
+				break;
+		}
 
 		const multiSession = new MultiContextSession();
 		multiSession.registerSession('listing', listingSession);
@@ -78,8 +89,9 @@ class ShareThriftCast implements Cast {
 export class ShareThriftWorld extends World<WorldParameters> {
 	private readonly tasksLevel: TaskLevel;
 	private readonly sessionType: SessionType;
-	private readonly apiUrl: string;
+	private apiUrl: string;
 	private testServer: TestServer | undefined;
+	private mongodbTestServer: MongoDBTestServer | undefined;
 
 	constructor(options: IWorldOptions<WorldParameters>) {
 		super(options);
@@ -95,6 +107,18 @@ export class ShareThriftWorld extends World<WorldParameters> {
 
 			this.testServer = new TestServer(testFactory);
 			await this.testServer.start(4000);
+		}
+
+		if (this.sessionType === 'mongodb') {
+			// Always create a fresh MongoDBTestServer for each scenario to avoid Mongoose
+			// discriminator re-registration issues. Stop the old one if it exists.
+			if (this.mongodbTestServer) {
+				await this.mongodbTestServer.stop();
+			}
+
+			this.mongodbTestServer = new MongoDBTestServer();
+			const url = await this.mongodbTestServer.start(4001);
+			this.apiUrl = url;
 		}
 
 		clearMockReservationRequests();
@@ -126,6 +150,11 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		if (this.testServer) {
 			await this.testServer.stop();
 			this.testServer = undefined;
+		}
+
+		if (this.mongodbTestServer) {
+			await this.mongodbTestServer.stop();
+			this.mongodbTestServer = undefined;
 		}
 	}
 

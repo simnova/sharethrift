@@ -1,11 +1,8 @@
 import type { Domain } from '@sthrift/domain';
 import {
-	aliceUser,
 	createMockAdminUser,
-	getAllMockAdminUsers,
-	getAllUsers,
-	getOrCreateUser,
-	getUserById,
+	createMockUser,
+	users,
 } from '../test-data/user.test-data.js';
 
 interface PersonalUserQueryByIdCommand {
@@ -65,21 +62,26 @@ interface MockUserContextApplicationService {
 }
 
 export function createMockUserService(): MockUserContextApplicationService {
+	const allUsers = Array.from(users.values());
+	const alice = allUsers.find((u) => u.account.email === 'alice@example.com') as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
+
 	return {
 		PersonalUser: {
-			createIfNotExists: async () => aliceUser,
+			createIfNotExists: async () => alice,
 			queryById: (command: PersonalUserQueryByIdCommand) => {
-				return Promise.resolve(getUserById(command.id) ?? aliceUser);
+				const user = users.get(command.id);
+				return Promise.resolve(user && user.userType === 'personal-user' ? (user as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) : null);
 			},
-			update: async () => aliceUser,
+			update: async () => alice,
 			queryByEmail: (command: PersonalUserQueryByEmailCommand) => {
-				return Promise.resolve(getOrCreateUser(command.email) ?? null);
+				const newUser = createMockUser(command.email, command.email.split('@')[0] || 'User', 'Test');
+				return Promise.resolve(newUser);
 			},
 			getAllUsers: (command: GetAllUsersCommand) => {
-				const allUsers = getAllUsers();
+				const personalUsers = allUsers.filter((u) => u.userType === 'personal-user') as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference[];
 				return Promise.resolve({
-					items: allUsers,
-					total: allUsers.length,
+					items: personalUsers,
+					total: personalUsers.length,
 					page: command.page,
 					pageSize: command.pageSize,
 				});
@@ -103,15 +105,16 @@ export function createMockUserService(): MockUserContextApplicationService {
 			queryByUsername: () => Promise.resolve(null),
 			update: () => Promise.resolve(createMockAdminUser()),
 			getAllUsers: (command: GetAllAdminUsersCommand) => {
-				const all = getAllMockAdminUsers();
-				return Promise.resolve({ items: all, total: all.length, page: command.page, pageSize: command.pageSize });
+				const adminUsers = allUsers.filter((u) => u.userType === 'admin-user') as Domain.Contexts.User.AdminUser.AdminUserEntityReference[];
+				return Promise.resolve({ items: adminUsers, total: adminUsers.length, page: command.page, pageSize: command.pageSize });
 			},
 			blockUser: () => Promise.resolve(createMockAdminUser()),
 			unblockUser: () => Promise.resolve(createMockAdminUser()),
 		},
 		User: {
 			queryById: (command: UserQueryByIdCommand) => {
-				return Promise.resolve(getUserById(command.id) ?? null);
+				const user = users.get(command.id);
+				return Promise.resolve(user && user.userType === 'personal-user' ? (user as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) : null);
 			},
 		},
 	};

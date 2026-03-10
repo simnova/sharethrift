@@ -15,6 +15,7 @@ interface CreateListingInput {
 	sharingPeriodEnd: Date;
 	images?: string[];
 	isDraft?: boolean;
+	state?: string;
 }
 
 export function createMockListing(input: CreateListingInput): ItemListingEntityReference {
@@ -28,7 +29,7 @@ export function createMockListing(input: CreateListingInput): ItemListingEntityR
 	const location = new Location(input.location).valueOf();
 
 	const id = generateObjectId();
-	const state = input.isDraft ? 'Draft' : 'Active';
+	const state = input.state || (input.isDraft ? 'Draft' : 'Active');
 
 	const listing: ItemListingEntityReference = {
 		id,

@@ -11,6 +11,7 @@ Feature: Create Reservation Request
       | description | Canon AE-1 in great condition |
       | category    | Electronics                 |
       | location    | Seattle, WA                 |
+      | isDraft     | false                       |
 
   Scenario: Create a reservation request with valid dates
     When Alice creates a reservation request for Bob's listing with:
