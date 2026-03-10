@@ -1,7 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { RenderComponents } from '../../../../shared/abilities/render-components.js';
 import { getSession } from '../../../../shared/abilities/session.js';
-import type { CreateReservationRequestInput, ReservationRequest } from '../../abilities/reservation-request-session.js';
+import type { CreateReservationRequestInput, ReservationRequestResponse } from '../../abilities/reservation-request-session.js';
 
 interface ReservationRequestNotes {
 	lastReservationRequestId: string;
@@ -59,7 +59,7 @@ export class CreateReservationRequest extends Task {
 			throw new Error('ReservationRequestForm onReserveClick was not called');
 		}
 
-		const reservationRequest = await session.execute<CreateReservationRequestInput, ReservationRequest>(
+		const reservationRequest = await session.execute<CreateReservationRequestInput, ReservationRequestResponse>(
 			'reservation:create',
 			this.input,
 		);

@@ -1,5 +1,5 @@
 import { GraphqlSession } from '../../../shared/abilities/graphql-session.js';
-import type { CreateReservationRequestInput, ReservationRequest } from './reservation-request-session.js';
+import type { CreateReservationRequestInput, ReservationRequestResponse } from './reservation-request-session.js';
 
 export class GraphQLReservationRequestSession extends GraphqlSession {
 	context = 'reservation';
@@ -14,8 +14,8 @@ export class GraphQLReservationRequestSession extends GraphqlSession {
 		);
 	}
 
-	createReservationRequest(input: CreateReservationRequestInput): Promise<ReservationRequest> {
-		return this.execute<CreateReservationRequestInput, ReservationRequest>(
+	createReservationRequest(input: CreateReservationRequestInput): Promise<ReservationRequestResponse> {
+		return this.execute<CreateReservationRequestInput, ReservationRequestResponse>(
 			'reservation:create',
 			input,
 		);
@@ -30,7 +30,7 @@ export class GraphQLReservationRequestSession extends GraphqlSession {
 
 	private async handleCreateReservationRequest(
 		input: CreateReservationRequestInput,
-	): Promise<ReservationRequest> {
+	): Promise<ReservationRequestResponse> {
 		const mutation = `
 			mutation CreateReservationRequest($input: CreateReservationRequestInput!) {
 				createReservationRequest(input: $input) {
@@ -82,7 +82,7 @@ export class GraphQLReservationRequestSession extends GraphqlSession {
 	private deserializeReservationRequest(
 		data: Record<string, unknown>,
 		originalInput?: CreateReservationRequestInput,
-	): ReservationRequest {
+	): ReservationRequestResponse {
 		const listing = data['listing'] as Record<string, unknown> | undefined;
 		const reserver = data['reserver'] as Record<string, unknown> | undefined;
 
@@ -97,7 +97,7 @@ export class GraphQLReservationRequestSession extends GraphqlSession {
 			},
 			reservationPeriodStart: data['reservationPeriodStart'] ? new Date(String(data['reservationPeriodStart'])) : new Date(),
 			reservationPeriodEnd: data['reservationPeriodEnd'] ? new Date(String(data['reservationPeriodEnd'])) : new Date(),
-			state: String(data['state']) as ReservationRequest['state'],
+			state: String(data['state']) as ReservationRequestResponse['state'],
 			createdAt: data['createdAt'] ? new Date(String(data['createdAt'])) : new Date(),
 			updatedAt: data['updatedAt'] ? new Date(String(data['updatedAt'])) : new Date(),
 		};

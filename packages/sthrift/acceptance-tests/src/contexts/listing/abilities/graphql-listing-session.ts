@@ -1,5 +1,5 @@
 import { GraphqlSession } from '../../../shared/abilities/graphql-session.js';
-import type { CreateItemListingInput, ItemListing } from './listing-session.js';
+import type { CreateItemListingInput, ItemListingResponse } from './listing-session.js';
 
 export class GraphQLListingSession extends GraphqlSession {
 	context = 'listing';
@@ -14,15 +14,15 @@ export class GraphQLListingSession extends GraphqlSession {
 		);
 	}
 
-	createItemListing(input: CreateItemListingInput): Promise<ItemListing> {
-		return this.execute<CreateItemListingInput, ItemListing>('listing:create', input);
+	createItemListing(input: CreateItemListingInput): Promise<ItemListingResponse> {
+		return this.execute<CreateItemListingInput, ItemListingResponse>('listing:create', input);
 	}
 
-	getListingById(id: string): Promise<ItemListing | null> {
-		return this.execute<{ id: string }, ItemListing | null>('listing:getById', { id });
+	getListingById(id: string): Promise<ItemListingResponse | null> {
+		return this.execute<{ id: string }, ItemListingResponse | null>('listing:getById', { id });
 	}
 
-	private async handleCreateListing(input: CreateItemListingInput): Promise<ItemListing> {
+	private async handleCreateListing(input: CreateItemListingInput): Promise<ItemListingResponse> {
 		const mutation = `
 			mutation CreateItemListing($input: CreateItemListingInput!) {
 				createItemListing(input: $input) {
@@ -46,7 +46,7 @@ export class GraphQLListingSession extends GraphqlSession {
 		return this.deserializeItemListing(createItemListingData);
 	}
 
-	private async handleGetListingById(input: { id: string }): Promise<ItemListing | null> {
+	private async handleGetListingById(input: { id: string }): Promise<ItemListingResponse | null> {
 		const query = `
 			query GetListing($id: ID!) {
 				itemListing(id: $id) {
@@ -76,8 +76,8 @@ export class GraphQLListingSession extends GraphqlSession {
 		};
 	}
 
-	private deserializeItemListing(data: Record<string, unknown>): ItemListing {
-		const item = data as unknown as ItemListing;
+	private deserializeItemListing(data: Record<string, unknown>): ItemListingResponse {
+		const item = data as unknown as ItemListingResponse;
 		return {
 			id: String(item.id),
 			title: String(item.title),

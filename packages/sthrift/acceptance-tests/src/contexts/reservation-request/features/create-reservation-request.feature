@@ -14,24 +14,24 @@ Feature: Create Reservation Request
 
   Scenario: Create a reservation request with valid dates
     When Alice creates a reservation request for Bob's listing with:
-      | reservationPeriodStart | 2026-03-10 |
-      | reservationPeriodEnd   | 2026-03-15 |
+      | reservationPeriodStart | +1 |
+      | reservationPeriodEnd   | +5 |
     Then the reservation request should be in requested status
-    And the reservation request should have a start date of "2026-03-10"
-    And the reservation request should have an end date of "2026-03-15"
+    And the reservation request should have a start date that is 1 day from now
+    And the reservation request should have an end date that is 5 days from now
 
   Scenario: Cannot create reservation request without required fields
     When Alice attempts to create a reservation request with:
-      | reservationPeriodStart | 2026-03-10 |
+      | reservationPeriodStart | +1 |
     Then she should see a reservation error for "reservationPeriodEnd"
     And no reservation request should be created
 
   Scenario: Cannot create overlapping reservation requests
     Given Alice has already created a reservation request for Bob's listing with:
-      | reservationPeriodStart | 2026-03-10 |
-      | reservationPeriodEnd   | 2026-03-15 |
+      | reservationPeriodStart | +1 |
+      | reservationPeriodEnd   | +5 |
     When Alice attempts to create another reservation request for the same listing with:
-      | reservationPeriodStart | 2026-03-12 |
-      | reservationPeriodEnd   | 2026-03-18 |
+      | reservationPeriodStart | +3 |
+      | reservationPeriodEnd   | +8 |
     Then she should see a reservation error "Reservation period overlaps with existing active reservation requests"
     And only one reservation request should exist for the listing

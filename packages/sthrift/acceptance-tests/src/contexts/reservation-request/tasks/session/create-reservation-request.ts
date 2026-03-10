@@ -1,6 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { getSession } from '../../../../shared/abilities/session.js';
-import type { CreateReservationRequestInput, ReservationRequest } from '../../abilities/reservation-request-session.js';
+import type { CreateReservationRequestInput, ReservationRequestResponse } from '../../abilities/reservation-request-session.js';
 
 interface ReservationRequestNotes {
 	lastReservationRequestId: string;
@@ -21,7 +21,7 @@ export class CreateReservationRequest extends Task {
 	async performAs(actor: Actor): Promise<void> {
 		const session = getSession(actor, 'reservation');
 
-		const reservationRequest = await session.execute<CreateReservationRequestInput, ReservationRequest>(
+		const reservationRequest = await session.execute<CreateReservationRequestInput, ReservationRequestResponse>(
 			'reservation:create',
 			this.input,
 		);

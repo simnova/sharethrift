@@ -43,6 +43,25 @@ function getCreateReservationRequestTask(level: string) {
 	}
 }
 
+function parseDateInput(input: string): Date {
+	// Handle relative dates like "+1" (tomorrow), "+5" (5 days from now)
+	if (input.startsWith('+')) {
+		const days = parseInt(input.substring(1), 10);
+		const date = new Date();
+		date.setDate(date.getDate() + days);
+		date.setHours(0, 0, 0, 0);
+		return date;
+	}
+	// Handle ISO date strings
+	const date = new Date(input);
+	date.setHours(0, 0, 0, 0);
+	return date;
+}
+
+function formatDateForComparison(date: Date): string {
+	return date.toISOString().split('T')[0];
+}
+
 async function getListingIdFromOwner(ownerName: string): Promise<string> {
 	const owner = actorCalled(ownerName);
 	const listingId = await owner.answer(
@@ -85,8 +104,8 @@ When(
 		await actor.attemptsTo(
 			CreateReservationRequest.with({
 				listingId,
-				reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
-				reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
+				reservationPeriodStart: startDate ? parseDateInput(String(startDate)) : new Date(),
+				reservationPeriodEnd: endDate ? parseDateInput(String(endDate)) : new Date(),
 				reserver: makeTestUserData(reserver),
 			}),
 		);
@@ -114,10 +133,10 @@ When(
 			};
 
 			if (startDate) {
-				input.reservationPeriodStart = new Date(String(startDate));
+				input.reservationPeriodStart = parseDateInput(String(startDate));
 			}
 			if (endDate) {
-				input.reservationPeriodEnd = new Date(String(endDate));
+				input.reservationPeriodEnd = parseDateInput(String(endDate));
 			}
 
 			await actor.attemptsTo(
@@ -171,6 +190,42 @@ Then(
 );
 
 Then(
+	'the reservation request should have a start date that is {int} day from now',
+	async function (this: ShareThriftWorld, daysFromNow: number) {
+		const actor = actorCalled('Alice');
+		try {
+			const startDate = await actor.answer(notes<ReservationRequestNotes>().get('lastReservationRequestStartDate'));
+			const expectedDate = new Date();
+			expectedDate.setDate(expectedDate.getDate() + daysFromNow);
+			const expectedDateStr = formatDateForComparison(expectedDate);
+			if (startDate !== expectedDateStr) {
+				throw new Error(`Expected start date ${daysFromNow} day(s) from now (${expectedDateStr}) but got "${startDate}"`);
+			}
+		} catch (error) {
+			throw new Error(`Could not verify reservation request start date: ${error instanceof Error ? error.message : String(error)}`);
+		}
+	},
+);
+
+Then(
+	'the reservation request should have a start date that is {int} days from now',
+	async function (this: ShareThriftWorld, daysFromNow: number) {
+		const actor = actorCalled('Alice');
+		try {
+			const startDate = await actor.answer(notes<ReservationRequestNotes>().get('lastReservationRequestStartDate'));
+			const expectedDate = new Date();
+			expectedDate.setDate(expectedDate.getDate() + daysFromNow);
+			const expectedDateStr = formatDateForComparison(expectedDate);
+			if (startDate !== expectedDateStr) {
+				throw new Error(`Expected start date ${daysFromNow} days from now (${expectedDateStr}) but got "${startDate}"`);
+			}
+		} catch (error) {
+			throw new Error(`Could not verify reservation request start date: ${error instanceof Error ? error.message : String(error)}`);
+		}
+	},
+);
+
+Then(
 	'the reservation request should have an end date of {string}',
 	async function (this: ShareThriftWorld, expectedDate: string) {
 		const actor = actorCalled('Alice');
@@ -181,6 +236,42 @@ Then(
 			}
 		} catch {
 			throw new Error(`Could not verify reservation request end date`);
+		}
+	},
+);
+
+Then(
+	'the reservation request should have an end date that is {int} day from now',
+	async function (this: ShareThriftWorld, daysFromNow: number) {
+		const actor = actorCalled('Alice');
+		try {
+			const endDate = await actor.answer(notes<ReservationRequestNotes>().get('lastReservationRequestEndDate'));
+			const expectedDate = new Date();
+			expectedDate.setDate(expectedDate.getDate() + daysFromNow);
+			const expectedDateStr = formatDateForComparison(expectedDate);
+			if (endDate !== expectedDateStr) {
+				throw new Error(`Expected end date ${daysFromNow} day(s) from now (${expectedDateStr}) but got "${endDate}"`);
+			}
+		} catch (error) {
+			throw new Error(`Could not verify reservation request end date: ${error instanceof Error ? error.message : String(error)}`);
+		}
+	},
+);
+
+Then(
+	'the reservation request should have an end date that is {int} days from now',
+	async function (this: ShareThriftWorld, daysFromNow: number) {
+		const actor = actorCalled('Alice');
+		try {
+			const endDate = await actor.answer(notes<ReservationRequestNotes>().get('lastReservationRequestEndDate'));
+			const expectedDate = new Date();
+			expectedDate.setDate(expectedDate.getDate() + daysFromNow);
+			const expectedDateStr = formatDateForComparison(expectedDate);
+			if (endDate !== expectedDateStr) {
+				throw new Error(`Expected end date ${daysFromNow} days from now (${expectedDateStr}) but got "${endDate}"`);
+			}
+		} catch (error) {
+			throw new Error(`Could not verify reservation request end date: ${error instanceof Error ? error.message : String(error)}`);
 		}
 	},
 );
@@ -282,8 +373,8 @@ Given(
 		await actor.attemptsTo(
 			CreateReservationRequest.with({
 				listingId,
-				reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
-				reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
+				reservationPeriodStart: startDate ? parseDateInput(String(startDate)) : new Date(),
+				reservationPeriodEnd: endDate ? parseDateInput(String(endDate)) : new Date(),
 				reserver: makeTestUserData(reserver),
 			}),
 		);
@@ -306,8 +397,8 @@ When(
 			await actor.attemptsTo(
 				CreateReservationRequest.with({
 					listingId,
-					reservationPeriodStart: startDate ? new Date(String(startDate)) : new Date(),
-					reservationPeriodEnd: endDate ? new Date(String(endDate)) : new Date(),
+					reservationPeriodStart: startDate ? parseDateInput(String(startDate)) : new Date(),
+					reservationPeriodEnd: endDate ? parseDateInput(String(endDate)) : new Date(),
 					reserver: {
 						id: 'test-user-1',
 						email: `${actorName.toLowerCase()}@test.com`,

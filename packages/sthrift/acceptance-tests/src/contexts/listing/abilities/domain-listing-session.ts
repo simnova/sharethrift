@@ -1,18 +1,19 @@
 import { Domain } from '@sthrift/domain';
 import { DomainSession } from '../../../shared/abilities/domain-session.js';
-import type { CreateItemListingInput, ItemListing } from './listing-session.js';
+import type { CreateItemListingInput } from './listing-session.js';
 import { makeItemListingProps, makeSharerUser, makeTestPassport } from '../../../shared/support/domain-test-helpers.js';
 
+type ItemListingEntityReference = Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 type ItemListingProps = Domain.Contexts.Listing.ItemListing.ItemListingProps;
 const ItemListingAggregate = Domain.Contexts.Listing.ItemListing.ItemListing;
 
 export class DomainListingSession extends DomainSession {
-	private readonly listings: Map<string, ItemListing>;
+	private readonly listings: Map<string, ItemListingEntityReference>;
 	context = 'listing';
 
-	constructor(sharedStore?: Map<string, ItemListing>) {
+	constructor(sharedStore?: Map<string, ItemListingEntityReference>) {
 		super();
-		this.listings = sharedStore || new Map<string, ItemListing>();
+		this.listings = sharedStore || new Map<string, ItemListingEntityReference>();
 		this.registerOperation('listing:create', (input) =>
 			this.handleCreateListing(input as unknown as CreateItemListingInput),
 		);
@@ -21,15 +22,15 @@ export class DomainListingSession extends DomainSession {
 		);
 	}
 
-	createItemListing(input: CreateItemListingInput): Promise<ItemListing> {
-		return this.execute<CreateItemListingInput, ItemListing>('listing:create', input);
+	createItemListing(input: CreateItemListingInput): Promise<ItemListingEntityReference> {
+		return this.execute<CreateItemListingInput, ItemListingEntityReference>('listing:create', input);
 	}
 
-	getListingById(id: string): Promise<ItemListing | null> {
-		return this.execute<{ id: string }, ItemListing | null>('listing:getById', { id });
+	getListingById(id: string): Promise<ItemListingEntityReference | null> {
+		return this.execute<{ id: string }, ItemListingEntityReference | null>('listing:getById', { id });
 	}
 
-	private handleCreateListing(input: CreateItemListingInput): Promise<ItemListing> {
+	private handleCreateListing(input: CreateItemListingInput): Promise<ItemListingEntityReference> {
 		const passport = makeTestPassport();
 		const sharer = makeSharerUser();
 		const props = makeItemListingProps({ id: `listing-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` });
@@ -48,23 +49,33 @@ export class DomainListingSession extends DomainSession {
 			input.isDraft,
 		);
 
-		const listing: ItemListing = {
+		const listing = {
 			id: aggregate.id,
+			sharer,
 			title: aggregate.title,
 			description: aggregate.description,
 			category: aggregate.category,
 			location: aggregate.location,
-			state: (aggregate.state === 'Draft' ? 'draft' : aggregate.state) as ItemListing['state'],
+			state: aggregate.state,
 			sharingPeriodStart: aggregate.sharingPeriodStart,
 			sharingPeriodEnd: aggregate.sharingPeriodEnd,
 			images: aggregate.images ?? [],
-		};
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			schemaVersion: '1.0.0',
+			listingType: 'item-sharing',
+			isBlocked: false,
+			hasReports: false,
+			loadSharer: async () => sharer,
+			loadListing: async () => null as never,
+			loadReserver: async () => null as never,
+		} as ItemListingEntityReference;
 
 		this.listings.set(listing.id, listing);
 		return Promise.resolve(listing);
 	}
 
-	private handleGetListingById(input: { id: string }): Promise<ItemListing | null> {
+	private handleGetListingById(input: { id: string }): Promise<ItemListingEntityReference | null> {
 		return Promise.resolve(this.listings.get(input.id) || null);
 	}
 }

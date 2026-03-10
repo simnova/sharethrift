@@ -9,7 +9,7 @@
 		"test:session:graphql": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"session\",\"session\":\"graphql\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-session-graphql.json",
 		"test:dom:domain": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"dom\",\"session\":\"domain\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-dom-domain.json",
 		"test:dom:graphql": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"dom\",\"session\":\"graphql\"}' --require-module tsx/esm --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-dom-graphql.json",
-		"test:fast": "pnpm run test:domain && pnpm run test:dom:domain",
+		"test:fast": "pnpm run test:domain && pnpm run test:session:graphql",
 		"test:ui": "pnpm run test:dom:domain && pnpm run test:dom:graphql",
 		"test:all": "pnpm run test:domain && pnpm run test:session:graphql && pnpm run test:dom:domain && pnpm run test:dom:graphql",
 		"test:serenity": "pnpm run test:all && pnpm run test:serenity:report",
