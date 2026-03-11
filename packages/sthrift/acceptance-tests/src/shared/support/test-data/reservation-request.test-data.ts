@@ -1,7 +1,7 @@
-import { Domain } from '@sthrift/domain';
-import { generateObjectId } from './utils.js';
-import { createMockUser } from './user.test-data.js';
-import { getMockListingById } from './listing.test-data.js';
+import type { Domain } from '@sthrift/domain';
+import { generateObjectId } from './utils.ts';
+import { createMockUser } from './user.test-data.ts';
+import { getMockListingById } from './listing.test-data.ts';
 
 type ReservationRequestEntityReference = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
 

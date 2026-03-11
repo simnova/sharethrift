@@ -1,9 +1,11 @@
 import type { Domain } from '@sthrift/domain';
-import { DomainSession } from '../../../shared/abilities/domain-session.js';
-import type { CreateReservationRequestInput } from './reservation-request-types.js';
-import { generateObjectId } from '../../../shared/support/test-data/utils.js';
+import { DomainSession } from '../../../shared/abilities/domain-session.ts';
+import type { CreateReservationRequestInput } from './reservation-request-types.ts';
+import { generateObjectId } from '../../../shared/support/test-data/utils.ts';
 
 type ReservationRequestEntityReference = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
+type ItemListingEntityReference = Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+type UserEntityReference = Domain.Contexts.User.UserEntityReference;
 
 const ONE_DAY_MS = 86400000;
 const DEFAULT_SHARING_PERIOD_DAYS = 7;
@@ -52,22 +54,23 @@ export class DomainReservationRequestSession extends DomainSession {
 
 		// Create a placeholder reservation request entity
 		const id = generateObjectId();
+		const listingRef = { id: input.listingId } as Readonly<ItemListingEntityReference>;
+		const reserverRef = { id: input.reserver.id } as Readonly<UserEntityReference>;
 		const placeholder = {
 			id,
 			state: 'Requested',
 			reservationPeriodStart: startDate,
 			reservationPeriodEnd: endDate,
-			listing: { id: input.listingId } as unknown,
-			reserver: { id: input.reserver.id } as unknown,
+			listing: listingRef,
+			reserver: reserverRef,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			schemaVersion: '1.0.0',
 			closeRequestedBySharer: false,
 			closeRequestedByReserver: false,
-			loadListing: async () => ({ id: input.listingId } as unknown),
-			loadReserver: async () => ({ id: input.reserver.id } as unknown),
-			loadSharer: async () => null as never,
-		} as unknown as ReservationRequestEntityReference;
+			loadListing: async () => listingRef as ItemListingEntityReference,
+			loadReserver: async () => reserverRef as UserEntityReference,
+		} as ReservationRequestEntityReference;
 
 		this.reservationRequests.set(id, placeholder);
 		return Promise.resolve(placeholder);

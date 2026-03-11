@@ -8,7 +8,7 @@ export class RenderComponents extends Ability {
 		return new RenderComponents();
 	}
 
-	render(Component: ComponentType<unknown>, props: Record<string, unknown>): ReturnType<typeof render> & { user: ReturnType<typeof userEvent.setup> } {
+	render<P extends Record<string, unknown>>(Component: ComponentType<P>, props: P): ReturnType<typeof render> & { user: ReturnType<typeof userEvent.setup> } {
 		const wrappedComponent = createElement(Component, props);
 		const result = render(wrappedComponent);
 		const user = userEvent.setup();

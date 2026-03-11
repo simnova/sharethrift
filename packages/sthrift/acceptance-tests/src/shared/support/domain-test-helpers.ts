@@ -52,8 +52,6 @@ export function makeSharerUser(overrides: Partial<{ id: string; email: string; f
 		userType: 'personal-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: {},
-		loadRole: async () => ({}),
 		account: {
 			accountType: 'standard',
 			email: overrides.email ?? 'sharer@test.com',

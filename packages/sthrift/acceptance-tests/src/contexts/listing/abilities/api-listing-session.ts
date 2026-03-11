@@ -1,5 +1,5 @@
-import { GraphqlSession } from '../../../shared/abilities/graphql-session.js';
-import type { CreateItemListingInput, ItemListingResponse } from './listing-types.js';
+import { GraphqlSession } from '../../../shared/abilities/graphql-session.ts';
+import type { CreateItemListingInput, ItemListingResponse } from './listing-types.ts';
 
 
 export interface ListingSessionConfig {
@@ -18,19 +18,19 @@ export abstract class ApiListingSession extends GraphqlSession {
 
 	protected registerOperations(): void {
 		this.registerOperation('listing:create', (input) =>
-			this.handleCreateListing(input as unknown as CreateItemListingInput),
+			this.handleCreateListing(input as CreateItemListingInput),
 		);
 		this.registerOperation('listing:getById', (input) =>
-			this.handleGetListingById(input as unknown as { id: string }),
+			this.handleGetListingById(input as { id: string }),
 		);
 	}
 
 	createItemListing(input: CreateItemListingInput): Promise<ItemListingResponse> {
-		return this.session.execute<CreateItemListingInput, ItemListingResponse>('listing:create', input);
+		return this.execute<CreateItemListingInput, ItemListingResponse>('listing:create', input);
 	}
 
 	getListingById(id: string): Promise<ItemListingResponse | null> {
-		return this.session.execute<{ id: string }, ItemListingResponse | null>('listing:getById', { id });
+		return this.execute<{ id: string }, ItemListingResponse | null>('listing:getById', { id });
 	}
 
 	protected async handleCreateListing(input: CreateItemListingInput): Promise<ItemListingResponse> {
@@ -88,24 +88,23 @@ export abstract class ApiListingSession extends GraphqlSession {
 
 		// MongoDB requires explicit isDraft parameter, GraphQL doesn't
 		if (this.config.includeIsDraft) {
-			serialized.isDraft = input.isDraft ?? true;
+			serialized['isDraft'] = input.isDraft ?? true;
 		}
 
 		return serialized;
 	}
 
 	protected deserializeItemListing(data: Record<string, unknown>): ItemListingResponse {
-		const item = data as unknown as ItemListingResponse;
 		return {
-			id: String(item.id),
-			title: String(item.title),
-			description: String(item.description),
-			category: String(item.category),
-			location: String(item.location),
-			state: String(item.state) as 'draft' | 'published',
-			sharingPeriodStart: item.sharingPeriodStart ? new Date(String(item.sharingPeriodStart)) : new Date(),
-			sharingPeriodEnd: item.sharingPeriodEnd ? new Date(String(item.sharingPeriodEnd)) : new Date(),
-			images: Array.isArray(item.images) ? item.images : [],
+			id: String(data['id']),
+			title: String(data['title']),
+			description: String(data['description']),
+			category: String(data['category']),
+			location: String(data['location']),
+			state: String(data['state']) as 'draft' | 'published',
+			sharingPeriodStart: data['sharingPeriodStart'] ? new Date(String(data['sharingPeriodStart'])) : new Date(),
+			sharingPeriodEnd: data['sharingPeriodEnd'] ? new Date(String(data['sharingPeriodEnd'])) : new Date(),
+			images: Array.isArray(data['images']) ? data['images'] : [],
 		};
 	}
 }

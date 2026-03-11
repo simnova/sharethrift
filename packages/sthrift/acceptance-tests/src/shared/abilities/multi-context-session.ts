@@ -1,5 +1,5 @@
 import { Ability } from '@serenity-js/core';
-import type { Session } from './session.js';
+import type { Session, OperationInput, OperationResult } from './session.ts';
 
 // Routes operations to context-specific sessions
 export class MultiContextSession extends Ability implements Session {
@@ -9,7 +9,7 @@ export class MultiContextSession extends Ability implements Session {
 		this.sessions.set(context, session);
 	}
 
-	execute<TInput = Record<string, unknown>, TOutput = unknown>(
+	execute<TInput extends OperationInput = OperationInput, TOutput extends OperationResult = OperationResult>(
 		operationName: string,
 		input: TInput,
 	): Promise<TOutput> {

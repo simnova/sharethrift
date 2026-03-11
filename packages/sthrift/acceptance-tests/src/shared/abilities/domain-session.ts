@@ -1,16 +1,19 @@
 import { Ability } from '@serenity-js/core';
+import type { OperationInput, OperationResult } from './session.ts';
+
+export type DomainOperationHandler = (input: OperationInput) => Promise<OperationResult>;
 
 export abstract class DomainSession extends Ability {
-	protected operations: Map<string, (input: unknown) => Promise<unknown>> = new Map();
+	protected operations: Map<string, DomainOperationHandler> = new Map();
 
 	protected registerOperation(
 		operationName: string,
-		handler: (input: unknown) => Promise<unknown>,
+		handler: DomainOperationHandler,
 	): void {
 		this.operations.set(operationName, handler);
 	}
 
-	public execute<Input, Output>(operationName: string, input: Input): Promise<Output> {
+	public execute<Input extends OperationInput, Output extends OperationResult>(operationName: string, input: Input): Promise<Output> {
 		const handler = this.operations.get(operationName);
 		if (!handler) {
 			throw new Error(`Operation not found: ${operationName}`);

@@ -3,7 +3,7 @@ import {
 	createMockAdminUser,
 	createMockUser,
 	users,
-} from '../../test-data/user.test-data.js';
+} from '../../test-data/user.test-data.ts';
 
 interface PersonalUserQueryByIdCommand {
 	id: string;
@@ -70,7 +70,7 @@ export function createMockUserService(): MockUserContextApplicationService {
 			createIfNotExists: async () => alice,
 			queryById: (command: PersonalUserQueryByIdCommand) => {
 				const user = users.get(command.id);
-				return Promise.resolve(user && user.userType === 'personal-user' ? (user as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) : null);
+				return Promise.resolve(user?.userType === 'personal-user' ? (user as Domain.Contexts.User.PersonalUser.PersonalUserEntityReference) : null);
 			},
 			update: async () => alice,
 			queryByEmail: (command: PersonalUserQueryByEmailCommand) => {

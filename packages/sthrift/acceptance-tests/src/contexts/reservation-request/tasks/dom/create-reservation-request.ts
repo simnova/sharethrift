@@ -1,7 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
-import { RenderComponents } from '../../../../shared/abilities/render-components.js';
-import { getSession } from '../../../../shared/abilities/session.js';
-import type { CreateReservationRequestInput, ReservationRequestResponse } from '../../abilities/reservation-request-session.js';
+import { RenderComponents } from '../../../../shared/abilities/render-components.ts';
+import { getSession } from '../../../../shared/abilities/session.ts';
+import type { CreateReservationRequestInput, ReservationRequestResponse } from '../../abilities/reservation-request-types.ts';
 
 interface ReservationRequestNotes {
 	lastReservationRequestId: string;
@@ -50,7 +50,7 @@ export class CreateReservationRequest extends Task {
 				reservationLoading: false,
 				otherReservationsLoading: false,
 				otherReservations: [],
-			} as unknown as Record<string, unknown>,
+			} as Record<string, unknown>,
 		);
 
 		await user.click(getByRole('button', { name: /reserve/i }));

@@ -1,19 +1,23 @@
 import type { Actor } from '@serenity-js/core';
 
+export type OperationInput = object;
+export type OperationResult = object | string | number | boolean | null;
+
 export interface Session {
 	context?: string;
 
-	execute<TInput = Record<string, unknown>, TOutput = unknown>(
+	execute<TInput extends OperationInput = OperationInput, TOutput extends OperationResult = OperationResult>(
 		operationName: string,
 		input: TInput,
 	): Promise<TOutput>;
 }
 
 export function getSession(actor: Actor, contextHint?: string): Session {
-	const actorWithAbilities = actor as unknown as { abilities: Map<unknown, unknown> };
-	const sessions: Array<[unknown, Session]> = [];
+	// Accessing private `abilities` map — requires type assertion to cross Serenity.js internal boundary
+	const actorAbilities = (actor as unknown as { abilities: Map<Function, object> }).abilities;
+	const sessions: Array<[Function, Session]> = [];
 
-	const entries = Array.from(actorWithAbilities.abilities.entries());
+	const entries = Array.from(actorAbilities.entries());
 	for (const [key, ability] of entries) {
 		if ('execute' in (ability as object)) {
 			sessions.push([key, ability as Session]);
@@ -26,8 +30,7 @@ export function getSession(actor: Actor, contextHint?: string): Session {
 
 	if (contextHint && sessions.length > 1) {
 		const hintedSession = sessions.find(([_, session]) => {
-			const sessionContext = (session as Session & { context?: string }).context?.toLowerCase();
-			return sessionContext === contextHint.toLowerCase();
+			return session.context?.toLowerCase() === contextHint.toLowerCase();
 		});
 		if (hintedSession) {
 			return hintedSession[1];

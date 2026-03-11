@@ -1,5 +1,5 @@
 import { type Actor, Question } from '@serenity-js/core';
-import { CreateReservationRequestAbility } from '../abilities/create-reservation-request-ability.js';
+import { CreateReservationRequestAbility } from '../abilities/create-reservation-request-ability.ts';
 
 export class DomainGetReservationRequestCountForListing extends Question<number> {
 	static forListing(listingId: string) {

@@ -4,7 +4,7 @@ import {
 	createMockUserAppeal,
 	getAllMockListingAppeals,
 	getAllMockUserAppeals,
-} from '../../test-data/appeal-request.test-data.js';
+} from '../../test-data/appeal-request.test-data.ts';
 
 interface MockAppealRequestContextApplicationService {
 	ListingAppealRequest: {

@@ -4,7 +4,7 @@ import {
 	getAllMockListings,
 	getMockListingById,
 	listings,
-} from '../../test-data/listing.test-data.js';
+} from '../../test-data/listing.test-data.ts';
 
 interface ItemListingCreateCommand {
 	sharer: Domain.Contexts.User.UserEntityReference;

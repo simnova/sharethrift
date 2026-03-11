@@ -1,7 +1,7 @@
 import { Ability } from '@serenity-js/core';
 import { Domain } from '@sthrift/domain';
-import { makeReservationRequestProps, makeListingReference, makeSharerUser, ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../shared/support/domain-test-helpers.js';
-import { reservationRequests } from '../../../shared/support/test-data/reservation-request.test-data.js';
+import { makeReservationRequestProps, makeListingReference, makeSharerUser, ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../shared/support/domain-test-helpers.ts';
+import { reservationRequests } from '../../../shared/support/test-data/reservation-request.test-data.ts';
 
 type Passport = Domain.Passport;
 type ReservationRequestProps = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps;

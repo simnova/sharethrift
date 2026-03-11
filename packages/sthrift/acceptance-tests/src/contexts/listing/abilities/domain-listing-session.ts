@@ -1,7 +1,7 @@
 import { Domain } from '@sthrift/domain';
-import { DomainSession } from '../../../shared/abilities/domain-session.js';
-import type { CreateItemListingInput } from './listing-types.js';
-import { makeItemListingProps, makeSharerUser, makeTestPassport } from '../../../shared/support/domain-test-helpers.js';
+import { DomainSession } from '../../../shared/abilities/domain-session.ts';
+import type { CreateItemListingInput } from './listing-types.ts';
+import { makeItemListingProps, makeSharerUser, makeTestPassport } from '../../../shared/support/domain-test-helpers.ts';
 
 type ItemListingEntityReference = Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 type ItemListingProps = Domain.Contexts.Listing.ItemListing.ItemListingProps;

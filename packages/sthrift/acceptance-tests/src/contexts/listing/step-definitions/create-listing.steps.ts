@@ -1,13 +1,13 @@
 import { Given, When, Then, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
-import type { ShareThriftWorld } from '../../../world.js';
-import type { ListingDetails } from '../tasks/domain/create-listing.js';
-import { CreateListing as DomCreateListing } from '../tasks/dom/create-listing.js';
-import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.js';
-import { CreateListing as DomainCreateListing } from '../tasks/domain/create-listing.js';
-import  { ListingStatus } from '../questions/listing-status.js';
-import  { ListingTitle } from '../questions/listing-title.js';
-import  { FormValidationError } from '../questions/form-validation-error.js';
+import type { ShareThriftWorld } from '../../../world.ts';
+import type { ListingDetails } from '../tasks/domain/create-listing.ts';
+import { CreateListing as DomCreateListing } from '../tasks/dom/create-listing.ts';
+import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.ts';
+import { CreateListing as DomainCreateListing } from '../tasks/domain/create-listing.ts';
+import  { ListingStatus } from '../questions/listing-status.ts';
+import  { ListingTitle } from '../questions/listing-title.ts';
+import  { FormValidationError } from '../questions/form-validation-error.ts';
 
 function getCreateListingTask(level: string) {
 	switch (level) {

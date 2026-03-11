@@ -1,6 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
-import { CreateReservationRequestAbility } from '../../abilities/create-reservation-request-ability.js';
-import type { CreateReservationRequestInput } from '../../abilities/reservation-request-session.js';
+import { CreateReservationRequestAbility } from '../../abilities/create-reservation-request-ability.ts';
+import type { CreateReservationRequestInput } from '../../abilities/reservation-request-types.ts';
 
 interface ReservationRequestNotes {
 	lastReservationRequestId: string;

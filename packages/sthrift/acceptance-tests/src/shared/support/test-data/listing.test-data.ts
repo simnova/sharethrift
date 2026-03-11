@@ -1,5 +1,5 @@
 import { Domain } from '@sthrift/domain';
-import { generateObjectId } from './utils.js';
+import { generateObjectId } from './utils.ts';
 
 type ItemListingEntityReference = Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 

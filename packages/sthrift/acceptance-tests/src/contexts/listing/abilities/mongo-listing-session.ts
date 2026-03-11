@@ -1,4 +1,4 @@
-import { ApiListingSession } from './api-listing-session.js';
+import { ApiListingSession } from './api-listing-session.ts';
 
 export class MongoListingSession extends ApiListingSession {
 	constructor(apiUrl: string) {

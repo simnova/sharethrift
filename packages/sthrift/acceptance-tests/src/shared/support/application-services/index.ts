@@ -1,2 +1,2 @@
-export { createTestApplicationServicesFactory, clearAllTestData } from './test-application-services.js';
-export { createRealApplicationServicesFactory } from './real-application-services.js';
+export { createTestApplicationServicesFactory, clearAllTestData } from './test-application-services.ts';
+export { createRealApplicationServicesFactory } from './real-application-services.ts';

@@ -1,10 +1,64 @@
 import { Domain } from '@sthrift/domain';
 import type { VerifiedUser } from '@sthrift/application-services';
-import { generateObjectId } from './utils.js';
+import { generateObjectId } from './utils.ts';
 
 type PersonalUserEntityReference = Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 type AdminUserEntityReference = Domain.Contexts.User.AdminUser.AdminUserEntityReference;
+type AdminRoleEntityReference = Domain.Contexts.User.Role.AdminRole.AdminRoleEntityReference;
 type UserEntityReference = PersonalUserEntityReference | AdminUserEntityReference;
+
+function createMockAdminRole(overrides?: Partial<{ id: string; roleName: string }>): AdminRoleEntityReference {
+	return {
+		id: overrides?.id ?? generateObjectId(),
+		roleName: overrides?.roleName ?? 'Admin',
+		isDefault: true,
+		roleType: 'admin',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		schemaVersion: '1.0.0',
+		get permissions() {
+			return {
+				userPermissions: {
+					canBlockUsers: false,
+					canViewAllUsers: false,
+					canEditUsers: false,
+					canDeleteUsers: false,
+					canManageUserRoles: false,
+					canAccessAnalytics: false,
+					canManageRoles: false,
+					canViewReports: false,
+					canDeleteContent: false,
+				},
+				conversationPermissions: {
+					canViewAllConversations: false,
+					canEditConversations: false,
+					canDeleteConversations: false,
+					canCloseConversations: false,
+					canModerateConversations: false,
+				},
+				listingPermissions: {
+					canViewAllListings: false,
+					canManageAllListings: false,
+					canEditListings: false,
+					canDeleteListings: false,
+					canApproveListings: false,
+					canRejectListings: false,
+					canBlockListings: false,
+					canUnblockListings: false,
+					canModerateListings: false,
+				},
+				reservationRequestPermissions: {
+					canViewAllReservations: false,
+					canApproveReservations: false,
+					canRejectReservations: false,
+					canCancelReservations: false,
+					canEditReservations: false,
+					canModerateReservations: false,
+				},
+			};
+		},
+	} as AdminRoleEntityReference;
+}
 
 const aliceId = generateObjectId();
 const adminId = generateObjectId();
@@ -48,18 +102,8 @@ export const users = new Map<string, UserEntityReference>([
 			userType: 'admin-user',
 			isBlocked: false,
 			hasCompletedOnboarding: true,
-			role: {
-				id: generateObjectId(),
-				roleName: 'Admin',
-				isDefault: true,
-				roleType: 'admin',
-			} as unknown,
-			loadRole: async () => ({
-				id: generateObjectId(),
-				roleName: 'Admin',
-				isDefault: true,
-				roleType: 'admin',
-			} as unknown),
+			role: createMockAdminRole(),
+			loadRole: async () => createMockAdminRole(),
 			account: {
 				accountType: 'admin',
 				email: 'admin@test.com',
@@ -141,18 +185,8 @@ export function createMockAdminUser(email?: string, firstName?: string, lastName
 		userType: 'admin-user',
 		isBlocked: false,
 		hasCompletedOnboarding: true,
-		role: {
-			id: generateObjectId(),
-			roleName: 'Admin',
-			isDefault: true,
-			roleType: 'admin',
-		} as unknown,
-		loadRole: async () => ({
-			id: generateObjectId(),
-			roleName: 'Admin',
-			isDefault: true,
-			roleType: 'admin',
-		} as unknown),
+		role: createMockAdminRole(),
+		loadRole: async () => createMockAdminRole(),
 		account: {
 			accountType: 'admin',
 			email: email || 'admin@test.com',
@@ -237,8 +271,8 @@ export function clearUsers(): void {
 			userType: 'admin-user',
 			isBlocked: false,
 			hasCompletedOnboarding: true,
-			role: { id: generateObjectId(), roleName: 'Admin', isDefault: true, roleType: 'admin' } as unknown,
-			loadRole: async () => ({ id: generateObjectId(), roleName: 'Admin', isDefault: true, roleType: 'admin' } as unknown),
+			role: createMockAdminRole(),
+			loadRole: async () => createMockAdminRole(),
 			account: {
 				accountType: 'admin',
 				email: 'admin@test.com',

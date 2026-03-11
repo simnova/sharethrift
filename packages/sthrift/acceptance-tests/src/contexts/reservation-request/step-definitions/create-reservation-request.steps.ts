@@ -1,16 +1,16 @@
 import { Given, Then, When, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
-import type { ShareThriftWorld } from '../../../world.js';
-import { makeTestUserData } from '../../../shared/support/domain-test-helpers.js';
-import type { CreateReservationRequestInput } from '../abilities/reservation-request-session.js';
-import { CreateListing as DomCreateListing } from '../../listing/tasks/dom/create-listing.js';
-import { CreateListing as SessionCreateListing } from '../../listing/tasks/session/create-listing.js';
-import { CreateListing as DomainCreateListing, type CreateListingInput } from '../../listing/tasks/domain/create-listing.js';
-import { CreateReservationRequest as DomCreateReservationRequest } from '../tasks/dom/create-reservation-request.js';
-import { CreateReservationRequest as SessionCreateReservationRequest } from '../tasks/session/create-reservation-request.js';
-import { CreateReservationRequest as DomainCreateReservationRequest } from '../tasks/domain/create-reservation-request.js';
-import { GetReservationRequestCountForListing } from '../questions/get-reservation-request-count-for-listing.js';
-import { DomainGetReservationRequestCountForListing } from '../questions/domain-get-reservation-request-count-for-listing.js';
+import type { ShareThriftWorld } from '../../../world.ts';
+import { makeTestUserData } from '../../../shared/support/domain-test-helpers.ts';
+import type { CreateReservationRequestInput } from '../abilities/reservation-request-types.ts';
+import { CreateListing as DomCreateListing } from '../../listing/tasks/dom/create-listing.ts';
+import { CreateListing as SessionCreateListing } from '../../listing/tasks/session/create-listing.ts';
+import { CreateListing as DomainCreateListing, type CreateListingInput } from '../../listing/tasks/domain/create-listing.ts';
+import { CreateReservationRequest as DomCreateReservationRequest } from '../tasks/dom/create-reservation-request.ts';
+import { CreateReservationRequest as SessionCreateReservationRequest } from '../tasks/session/create-reservation-request.ts';
+import { CreateReservationRequest as DomainCreateReservationRequest } from '../tasks/domain/create-reservation-request.ts';
+import { GetReservationRequestCountForListing } from '../questions/get-reservation-request-count-for-listing.ts';
+import { DomainGetReservationRequestCountForListing } from '../questions/domain-get-reservation-request-count-for-listing.ts';
 
 interface ReservationRequestNotes {
 	lastReservationRequestId: string;
@@ -59,7 +59,7 @@ function parseDateInput(input: string): Date {
 }
 
 function formatDateForComparison(date: Date): string {
-	return date.toISOString().split('T')[0];
+	return date.toISOString().split('T')[0] ?? '';
 }
 
 async function getListingIdFromOwner(ownerName: string): Promise<string> {

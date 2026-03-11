@@ -1,17 +1,17 @@
 import type { IWorld } from '@cucumber/cucumber';
 import { After, Before, setDefaultTimeout } from '@cucumber/cucumber';
 
-import type { ShareThriftWorld } from '../../world.js';
+import type { ShareThriftWorld } from '../../world.ts';
 
 // Track printed headers per test configuration
 let lastTestConfig: string | undefined;
 
 setDefaultTimeout(30_000);
 
-Before(async function (this: IWorld) {
-	const world = this as unknown as ShareThriftWorld;
+Before(async function (this: IWorld<{ session?: string; tasks?: string }>) {
+	const world = this as IWorld<{ session?: string; tasks?: string }> & ShareThriftWorld;
 
-	const sessionType = (world.parameters as unknown as Record<string, unknown>)['session'] || 'domain';
+	const sessionType = this.parameters?.session || 'domain';
 	const testConfig = `${world.level}:${sessionType}`;
 
 	if (lastTestConfig !== testConfig) {
@@ -29,7 +29,7 @@ Before(async function (this: IWorld) {
 	await world.init();
 });
 
-After(async function (this: IWorld) {
-	const world = this as unknown as ShareThriftWorld;
+After(async function (this: IWorld<{ session?: string; tasks?: string }>) {
+	const world = this as IWorld<{ session?: string; tasks?: string }> & ShareThriftWorld;
 	await world.cleanup();
 });

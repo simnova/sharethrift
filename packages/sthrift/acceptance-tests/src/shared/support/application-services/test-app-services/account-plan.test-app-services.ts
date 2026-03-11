@@ -2,7 +2,7 @@ import type { Domain } from '@sthrift/domain';
 import {
 	createMockAccountPlan,
 	getAllMockAccountPlans,
-} from '../../test-data/account-plan.test-data.js';
+} from '../../test-data/account-plan.test-data.ts';
 
 interface MockAccountPlanContextApplicationService {
 	AccountPlan: {

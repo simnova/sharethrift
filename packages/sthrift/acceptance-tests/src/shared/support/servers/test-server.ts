@@ -2,11 +2,11 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { applyMiddleware } from 'graphql-middleware';
 import depthLimit from 'graphql-depth-limit';
-import type { ApplicationServicesFactory } from '@sthrift/application-services';
+import type { ApplicationServices, ApplicationServicesFactory } from '@sthrift/application-services';
 import { combinedSchema } from '@sthrift/graphql';
 
 interface GraphContext {
-	applicationServices: unknown;
+	applicationServices: ApplicationServices;
 }
 
 const MAX_QUERY_DEPTH = 10;

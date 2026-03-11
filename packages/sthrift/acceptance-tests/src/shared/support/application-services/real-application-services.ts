@@ -1,4 +1,4 @@
-import { ServiceMongoose } from '@cellix/service-mongoose';
+import type { ServiceMongoose } from '@cellix/service-mongoose';
 import { Persistence } from '@sthrift/persistence';
 import {
 	buildApplicationServicesFactory,

@@ -1,11 +1,15 @@
 import { Ability } from '@serenity-js/core';
-import type { Session } from './session.js';
+import type { Session, OperationInput, OperationResult } from './session.ts';
+
+export type GraphQLOperationHandler = (input: OperationInput) => Promise<OperationResult>;
+
+export interface GraphQLResponseData {
+	data: Record<string, unknown>;
+	errors?: Array<{ message: string }>;
+}
 
 export class GraphqlSession extends Ability implements Session {
-	private operationHandlers = new Map<
-		string,
-		(input: Record<string, unknown>) => Promise<unknown>
-	>();
+	private operationHandlers = new Map<string, GraphQLOperationHandler>();
 
 	constructor(private readonly apiUrl: string) {
 		super();
@@ -17,12 +21,12 @@ export class GraphqlSession extends Ability implements Session {
 
 	registerOperation(
 		operationName: string,
-		handler: (input: Record<string, unknown>) => Promise<unknown>,
+		handler: GraphQLOperationHandler,
 	): void {
 		this.operationHandlers.set(operationName, handler);
 	}
 
-	execute<TInput = Record<string, unknown>, TOutput = unknown>(
+	execute<TInput extends OperationInput = OperationInput, TOutput extends OperationResult = OperationResult>(
 		operationName: string,
 		input: TInput,
 	): Promise<TOutput> {
@@ -32,13 +36,13 @@ export class GraphqlSession extends Ability implements Session {
 				new Error(`Operation not registered: '${operationName}'. Available operations: ${Array.from(this.operationHandlers.keys()).join(', ')}`),
 			);
 		}
-		return handler(input as Record<string, unknown>) as Promise<TOutput>;
+		return handler(input as OperationInput) as Promise<TOutput>;
 	}
 
 	async executeGraphQL(
 		query: string,
 		variables: Record<string, unknown>,
-	): Promise<{ data: Record<string, unknown>; errors?: Array<{ message: string }> }> {
+	): Promise<GraphQLResponseData> {
 		const response = await fetch(this.apiUrl, {
 			method: 'POST',
 			headers: {
@@ -47,7 +51,7 @@ export class GraphqlSession extends Ability implements Session {
 			body: JSON.stringify({ query, variables }),
 		});
 
-		const result = await response.json();
+		const result = (await response.json()) as GraphQLResponseData;
 
 		// Handle GraphQL errors (these come with 200 OK or 400 Bad Request)
 		if (result.errors && Array.isArray(result.errors)) {

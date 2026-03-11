@@ -1,2 +1,2 @@
-export { TestServer } from './test-server.js';
-export { MongoDBTestServer } from './test-mongodb-server.js';
+export { TestServer } from './test-server.ts';
+export { MongoDBTestServer } from './test-mongodb-server.ts';

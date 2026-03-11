@@ -1,9 +1,9 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { ListingForm, type ListingFormProps } from '@sthrift/ui-components';
-import { RenderComponents } from '../../../../shared/abilities/render-components.js';
-import { getSession } from '../../../../shared/abilities/session.js';
-import { ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../../shared/support/domain-test-helpers.js';
-import type { ListingDetails } from '../../abilities/listing-session.js';
+import { RenderComponents } from '../../../../shared/abilities/render-components.ts';
+import { getSession } from '../../../../shared/abilities/session.ts';
+import { ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../../shared/support/domain-test-helpers.ts';
+import type { ListingDetails, CreateItemListingInput, ItemListingResponse } from '../../abilities/listing-types.ts';
 
 interface ListingNotes {
 	lastListingId: string;
@@ -50,7 +50,7 @@ export class CreateListing extends Task {
 
 		const { getByPlaceholderText, getByRole, user } = renderer.render(
 			ListingForm,
-			formProps as unknown as Record<string, unknown>,
+			formProps as ListingFormProps & Record<string, unknown>,
 		);
 
 		if (this.details.title) {
@@ -90,7 +90,7 @@ export class CreateListing extends Task {
 			throw new Error('ListingForm handleFormSubmit was not called');
 		}
 
-		const listing = await session.execute<unknown, Record<string, unknown>>('listing:create', {
+		const listing = await session.execute<CreateItemListingInput, ItemListingResponse>('listing:create', {
 			title: this.details.title,
 			description: this.details.description,
 			category: this.details.category,
@@ -102,9 +102,9 @@ export class CreateListing extends Task {
 		});
 
 		await actor.attemptsTo(
-			notes<ListingNotes>().set('lastListingId', String(listing['id'])),
-			notes<ListingNotes>().set('lastListingTitle', String(listing['title'])),
-			notes<ListingNotes>().set('lastListingStatus', String(listing['state']).toLowerCase()),
+			notes<ListingNotes>().set('lastListingId', listing.id),
+			notes<ListingNotes>().set('lastListingTitle', listing.title),
+			notes<ListingNotes>().set('lastListingStatus', listing.state.toLowerCase()),
 		);
 	}
 

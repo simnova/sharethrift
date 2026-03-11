@@ -1,4 +1,4 @@
-import { GraphqlSession } from './graphql-session.js';
+import { GraphqlSession } from './graphql-session.ts';
 
 export class MongoSession extends GraphqlSession {
 

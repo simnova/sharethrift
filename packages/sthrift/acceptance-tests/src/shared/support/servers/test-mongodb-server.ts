@@ -1,8 +1,8 @@
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { ObjectId } from 'mongodb';
 import { ServiceMongoose } from '@cellix/service-mongoose';
-import { getAllMockAccountPlans } from '../test-data/account-plan.test-data.js';
-import { getAllMockUsers } from '../test-data/user.test-data.js';
+import { getAllMockAccountPlans } from '../test-data/account-plan.test-data.ts';
+import { getAllMockUsers } from '../test-data/user.test-data.ts';
 
 async function seedTestDatabase(
 	serviceMongoose: ServiceMongoose,
@@ -23,16 +23,15 @@ async function seedTestDatabase(
 	if (usersList.length > 0) {
 		await connection.collection('users').insertMany(
 			usersList.map((user) => {
-				const userRecord = user as unknown as Record<string, unknown>;
 				return {
-					_id: new ObjectId(String(userRecord['id'])),
-					userType: userRecord['userType'],
-					isBlocked: userRecord['isBlocked'],
-					hasCompletedOnboarding: userRecord['hasCompletedOnboarding'],
-					account: userRecord['account'],
-					schemaVersion: userRecord['schemaVersion'],
-					createdAt: userRecord['createdAt'],
-					updatedAt: userRecord['updatedAt'],
+					_id: new ObjectId(user.id),
+					userType: 'userType' in user ? user.userType : 'personal-user',
+					isBlocked: user.isBlocked,
+					hasCompletedOnboarding: 'hasCompletedOnboarding' in user ? user.hasCompletedOnboarding : false,
+					account: user.account,
+					schemaVersion: user.schemaVersion,
+					createdAt: user.createdAt,
+					updatedAt: user.updatedAt,
 				};
 			}),
 		);

@@ -1,6 +1,6 @@
 import { type Actor, Question } from '@serenity-js/core';
 
-import { getSession } from '../../../shared/abilities/session.js';
+import { getSession } from '../../../shared/abilities/session.ts';
 
 export class GetReservationRequestCountForListing extends Question<Promise<number>> {
 	static forListing(listingId: string) {

@@ -1,6 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
-import { CreateListingAbility } from '../../abilities/create-listing-ability.js';
-import type { ListingDetails } from '../../abilities/listing-session.js';
+import { CreateListingAbility } from '../../abilities/create-listing-ability.ts';
+import type { ListingDetails } from '../../abilities/listing-types.ts';
 
 interface ListingNotes {
 	lastListingId: string;

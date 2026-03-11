@@ -1,5 +1,5 @@
-import { GraphqlSession } from '../../../shared/abilities/graphql-session.js';
-import type { CreateReservationRequestInput, ReservationRequestResponse } from './reservation-request-types.js';
+import { GraphqlSession } from '../../../shared/abilities/graphql-session.ts';
+import type { CreateReservationRequestInput, ReservationRequestResponse } from './reservation-request-types.ts';
 
 export abstract class ApiReservationRequestSession extends GraphqlSession {
 	context = 'reservation';
@@ -11,10 +11,10 @@ export abstract class ApiReservationRequestSession extends GraphqlSession {
 
 	protected registerOperations(): void {
 		this.registerOperation('reservation:create', (input) =>
-			this.handleCreateReservationRequest(input as unknown as CreateReservationRequestInput),
+			this.handleCreateReservationRequest(input as CreateReservationRequestInput),
 		);
 		this.registerOperation('reservation:getCountForListing', (input) =>
-			this.handleGetCountForListing(input as unknown as { listingId: string }),
+			this.handleGetCountForListing(input as { listingId: string }),
 		);
 	}
 
@@ -79,7 +79,7 @@ export abstract class ApiReservationRequestSession extends GraphqlSession {
 		`;
 
 		const response = await this.executeGraphQL(query, { listingId: input.listingId });
-		const items = response.data['queryActiveByListingId'] as unknown[];
+		const items = response.data['queryActiveByListingId'] as Record<string, unknown>[];
 		return Array.isArray(items) ? items.length : 0;
 	}
 
