@@ -1,7 +1,7 @@
 import type { IWorld } from '@cucumber/cucumber';
 import { After, Before, setDefaultTimeout } from '@cucumber/cucumber';
 
-import type { ShareThriftWorld } from './world.js';
+import type { ShareThriftWorld } from '../../world.js';
 
 // Track printed headers per test configuration
 let lastTestConfig: string | undefined;

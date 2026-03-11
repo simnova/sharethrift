@@ -3,7 +3,7 @@ import {
 	createMockReservationRequest,
 	getMockActiveByListingId,
 	getMockReservationRequestById,
-} from '../test-data/reservation-request.test-data.js';
+} from '../../test-data/reservation-request.test-data.js';
 
 interface ReservationRequestCreateCommand {
 	listingId: string;

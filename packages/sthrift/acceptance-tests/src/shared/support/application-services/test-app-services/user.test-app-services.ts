@@ -3,7 +3,7 @@ import {
 	createMockAdminUser,
 	createMockUser,
 	users,
-} from '../test-data/user.test-data.js';
+} from '../../test-data/user.test-data.js';
 
 interface PersonalUserQueryByIdCommand {
 	id: string;

@@ -1,21 +1,20 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
 import { configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
-import { RenderComponents } from '../abilities/render-components.js';
-import { listingAbilities } from '../../contexts/listing/abilities/index.js';
-import { DomainListingSession } from '../../contexts/listing/abilities/domain-listing-session.js';
-import { GraphQLListingSession } from '../../contexts/listing/abilities/graphql-listing-session.js';
-import { MongoListingSession } from '../../contexts/listing/abilities/mongo-listing-session.js';
-import { reservationRequestAbilities } from '../../contexts/reservation-request/abilities/index.js';
-import { DomainReservationRequestSession } from '../../contexts/reservation-request/abilities/domain-reservation-request-session.js';
-import { GraphQLReservationRequestSession } from '../../contexts/reservation-request/abilities/graphql-reservation-request-session.js';
-import { MongoReservationRequestSession } from '../../contexts/reservation-request/abilities/mongo-reservation-request-session.js';
-import { MultiContextSession } from '../abilities/multi-context-session.js';
-import { TestServer } from './test-server.js';
-import { MongoDBTestServer } from './test-mongodb-server.js';
-import { createTestApplicationServicesFactory } from './test-application-services.js';
+import { RenderComponents } from './shared/abilities/render-components.js';
+import { listingAbilities } from './contexts/listing/abilities/index.js';
+import { DomainListingSession } from './contexts/listing/abilities/domain-listing-session.js';
+import { GraphQLListingSession } from './contexts/listing/abilities/graphql-listing-session.js';
+import { MongoListingSession } from './contexts/listing/abilities/mongo-listing-session.js';
+import { reservationRequestAbilities } from './contexts/reservation-request/abilities/index.js';
+import { DomainReservationRequestSession } from './contexts/reservation-request/abilities/domain-reservation-request-session.js';
+import { GraphQLReservationRequestSession } from './contexts/reservation-request/abilities/graphql-reservation-request-session.js';
+import { MongoReservationRequestSession } from './contexts/reservation-request/abilities/mongo-reservation-request-session.js';
+import { MultiContextSession } from './shared/abilities/multi-context-session.js';
+import { TestServer, MongoDBTestServer } from './shared/support/servers/index.js';
+import { createTestApplicationServicesFactory, createRealApplicationServicesFactory } from './shared/support/application-services/index.js';
 import { cleanup } from '@testing-library/react';
-import { listings, clearMockListings } from './test-data/listing.test-data.js';
-import { reservationRequests, clearMockReservationRequests } from './test-data/reservation-request.test-data.js';
+import { listings, clearMockListings } from './shared/support/test-data/listing.test-data.js';
+import { reservationRequests, clearMockReservationRequests } from './shared/support/test-data/reservation-request.test-data.js';
 type TaskLevel = 'domain' | 'session' | 'dom';
 type SessionType = 'domain' | 'graphql' | 'mongodb';
 
@@ -110,14 +109,17 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		}
 
 		if (this.sessionType === 'mongodb') {
-			// Always create a fresh MongoDBTestServer for each scenario to avoid Mongoose
-			// discriminator re-registration issues. Stop the old one if it exists.
 			if (this.mongodbTestServer) {
 				await this.mongodbTestServer.stop();
 			}
 
 			this.mongodbTestServer = new MongoDBTestServer();
-			const url = await this.mongodbTestServer.start(4001);
+			await this.mongodbTestServer.start();
+
+			const serviceMongoose = this.mongodbTestServer.getServiceMongoose();
+			const realFactory = createRealApplicationServicesFactory(serviceMongoose);
+			this.testServer = new TestServer(realFactory);
+			const url = await this.testServer.start(4001);
 			this.apiUrl = url;
 		}
 

@@ -3,7 +3,7 @@ import {
 	createMockConversation,
 	createMockMessage,
 	getAllMockConversations,
-} from '../test-data/conversation.test-data.js';
+} from '../../test-data/conversation.test-data.js';
 
 interface MockConversationContextApplicationService {
 	Conversation: {

@@ -1,6 +1,6 @@
-import { Domain } from '@sthrift/domain';
+import type { Domain } from '@sthrift/domain';
 import { DomainSession } from '../../../shared/abilities/domain-session.js';
-import type { CreateReservationRequestInput } from './reservation-request-session.js';
+import type { CreateReservationRequestInput } from './reservation-request-types.js';
 import { generateObjectId } from '../../../shared/support/test-data/utils.js';
 
 type ReservationRequestEntityReference = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference;
