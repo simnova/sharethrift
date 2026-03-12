@@ -47,6 +47,10 @@
 		"packages/sthrift/*": {
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.{ts,tsx}"]
+		},
+		"packages/sthrift/acceptance-tests": {
+			"entry": ["src/world.ts", "src/step-definitions/**/*.ts"],
+			"project": ["src/**/*.{ts,mjs,js}"]
 		}
 	},
 	"ignoreWorkspaces": [
@@ -60,6 +64,9 @@
 		"packages/cellix/server-mongodb-memory-seedwork",
 		"packages/cellix/server-oauth2-seedwork",
 		"packages/cellix/server-payment-seedwork",
+		"packages/cellix/arch-unit-tests",
+		"packages/sthrift/arch-unit-tests",
+		"packages/sthrift/ui-components",
 		"apps/server-messaging-mock",
 		"apps/server-mongodb-memory-mock",
 		"apps/server-oauth2-mock",
@@ -78,7 +85,9 @@
 		"vitest.shims.d.ts",
 		"**/vitest.config.ts",
 		"**/vite.config.ts",
-		"packages/cellix/server-payment-seedwork/src/copy-assets.ts"
+		"packages/cellix/server-payment-seedwork/src/copy-assets.ts",
+		"packages/sthrift/acceptance-tests/src/shared/support/css-loader.mjs",
+		"packages/sthrift/acceptance-tests/src/shared/support/stubs/**"
 	],
 	"ignoreDependencies": [
 		"@cucumber/node",
@@ -95,7 +104,11 @@
 		"@graphql-tools/load",
 		"rollup",
 		"vite",
-		"axios"
+		"axios",
+		"@ant-design/icons",
+		"antd",
+		"react-router-dom",
+		"tsx"
 	],
 	"ignoreBinaries": ["func", "open", "concurrently", "container", "portless"]
 }

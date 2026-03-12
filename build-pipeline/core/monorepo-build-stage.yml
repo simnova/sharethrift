@@ -294,7 +294,7 @@ stages:
 
     # Analyze dependencies with pnpm analyze
     - task: Bash@3
-      displayName: 'Analyze dependencies with pnpm analyze'
+      displayName: 'e18e: Code Quality Analysis'
       inputs:
         targetType: 'inline'
         script: |

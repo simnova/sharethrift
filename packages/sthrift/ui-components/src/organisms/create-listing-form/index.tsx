@@ -1,10 +1,8 @@
 import { Form, Input, Select, DatePicker, Button } from 'antd';
-import type { RangePickerProps } from 'antd/es/date-picker';
-import TextArea from 'antd/es/input/TextArea';
 
 const { Option } = Select;
 
-interface ListingFormProps {
+export interface ListingFormProps {
 	categories: string[];
 	isLoading: boolean;
 	maxCharacters: number;
@@ -19,9 +17,10 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 	handleFormSubmit,
 	onCancel,
 }) => {
-	const disabledDate: RangePickerProps['disabledDate'] = (current) => {
+	const disabledDate = (current: unknown) => {
 		// Can not select days before today
-		return current && current.isBefore(new Date().setHours(0, 0, 0, 0));
+		if (!current) return false;
+		return (current as { isBefore(date: number): boolean }).isBefore(new Date().setHours(0, 0, 0, 0));
 	};
 
 	return (
@@ -39,7 +38,7 @@ export const ListingForm: React.FC<ListingFormProps> = ({
 				name="description"
 				rules={[{ required: true, message: 'Please enter a description' }]}
 			>
-				<TextArea
+				<Input.TextArea
 					placeholder="Describe your item and sharing terms"
 					rows={6}
 					maxLength={maxCharacters}
