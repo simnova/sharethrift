@@ -270,7 +270,7 @@ stages:
     # Run acceptance tests (Serenity-JS + Cucumber)
     - task: Bash@3
       displayName: 'Acceptance Tests: Run all scenarios'
-      condition: eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true')
+      # condition: eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true')
       inputs:
         targetType: 'inline'
         script: |
