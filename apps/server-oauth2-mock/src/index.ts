@@ -1,6 +1,4 @@
 import dotenv from 'dotenv';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import {
 	startMockOAuth2Server,
 	type OAuth2Config,
@@ -16,37 +14,18 @@ const setupEnvironment = () => {
 
 setupEnvironment();
 
-// Detect certificate availability to determine protocol and base URL
-const projectRoot = path.resolve(
-	path.dirname(fileURLToPath(import.meta.url)),
-	'../../../../',
-);
-const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
-const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
-
 // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 const port = Number(process.env['PORT'] ?? 4000);
 
-const fs = await import('node:fs');
-const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
-
-console.log('[mock-oauth2-server] Project root:', projectRoot);
-console.log('[mock-oauth2-server] Cert key path:', certKeyPath, 'exists:', fs.existsSync(certKeyPath));
-console.log('[mock-oauth2-server] Cert path:', certPath, 'exists:', fs.existsSync(certPath));
-console.log('[mock-oauth2-server] hasCerts:', hasCerts);
-
-const BASE_URL = hasCerts
-	? `https://mock-auth.sharethrift.localhost:${port}`
-	: `http://localhost:${port}`;
+const BASE_URL = process.env['BASE_URL'] ?? 'https://mock-auth.sharethrift.localhost:1355';
 
 const allowedRedirectUris = new Set([
 	'http://localhost:3000/auth-redirect-user',
 	'http://localhost:3000/auth-redirect-admin',
-	'https://sharethrift.localhost:3000/auth-redirect-user',
-	'https://sharethrift.localhost:3000/auth-redirect-admin',
+	'https://sharethrift.localhost:1355/auth-redirect-user',
+	'https://sharethrift.localhost:1355/auth-redirect-admin',
 ]);
 
-// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 const allowedRedirectUri =
 	process.env['ALLOWED_REDIRECT_URI'] ||
 	'http://localhost:3000/auth-redirect-user';
@@ -54,30 +33,23 @@ const allowedRedirectUri =
 const redirectUriToAudience = new Map([
 	['http://localhost:3000/auth-redirect-user', 'user-portal'],
 	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
-	['https://sharethrift.localhost:3000/auth-redirect-user', 'user-portal'],
-	['https://sharethrift.localhost:3000/auth-redirect-admin', 'admin-portal'],
+	['https://sharethrift.localhost:1355/auth-redirect-user', 'user-portal'],
+	['https://sharethrift.localhost:1355/auth-redirect-admin', 'admin-portal'],
 ]);
 
 const config: OAuth2Config = {
-	port: port,
+	port,
 	baseUrl: BASE_URL,
-	host: hasCerts ? 'mock-auth.sharethrift.localhost' : 'localhost',
-	allowedRedirectUris: allowedRedirectUris,
-	allowedRedirectUri: allowedRedirectUri,
-	redirectUriToAudience: redirectUriToAudience,
-	hasCerts: hasCerts,
-	certKeyPath: certKeyPath,
-	certPath: certPath,
+	allowedRedirectUris,
+	allowedRedirectUri,
+	redirectUriToAudience,
 	getUserProfile: (isAdminPortal) => {
-		// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 		const email = isAdminPortal
 			? process.env['ADMIN_EMAIL'] || process.env['EMAIL'] || ''
 			: process.env['EMAIL'] || '';
-		// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 		const given_name = isAdminPortal
 			? process.env['ADMIN_GIVEN_NAME'] || process.env['GIVEN_NAME'] || ''
 			: process.env['GIVEN_NAME'] || '';
-		// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 		const family_name = isAdminPortal
 			? process.env['ADMIN_FAMILY_NAME'] || process.env['FAMILY_NAME'] || ''
 			: process.env['FAMILY_NAME'] || '';

@@ -1,8 +1,6 @@
 import express from 'express';
 import type { Application, Request, Response, NextFunction } from 'express';
-import * as https from 'node:https';
 import * as http from 'node:http';
-import * as fs from 'node:fs';
 import { config as dotenvConfig } from 'dotenv';
 import { setupConversationRoutes } from './routes/conversations.js';
 import { setupMessageRoutes } from './routes/messages.js';
@@ -12,11 +10,8 @@ import type { Server } from 'node:http';
 
 export interface MockMessagingServerConfig {
   port: number;
-  useHttps: boolean;
   seedData: boolean;
   seedMockData?: () => void;
-  certKeyPath?: string;
-  certPath?: string;
   host?: string;
   env?: NodeJS.ProcessEnv;
 }
@@ -72,35 +67,17 @@ export function createMockMessagingApp(): Application {
 
 export function startMockMessagingServer(config: MockMessagingServerConfig): Promise<Server> {
   const app = createMockMessagingApp();
-  const {port, useHttps, host, certKeyPath, certPath} = config;
-  const hasCerts = certKeyPath && certPath && fs.existsSync(certKeyPath) && fs.existsSync(certPath);
   return new Promise((resolve) => {
-    if (hasCerts && useHttps && certKeyPath && certPath) {
-      const httpsOptions = {
-        key: fs.readFileSync(certKeyPath),
-        cert: fs.readFileSync(certPath),
-      };
-      const server = https.createServer(httpsOptions, app).listen(port, host, () => {
-        console.log(` Mock Messaging Server listening on https://${host}:${port}`);
-        if (config.seedData && config.seedMockData) {
-          config.seedMockData();
-        } else {
-          console.log('Starting with empty data store (set seedData=true to seed)');
-        }
-        resolve(server);
-      });
-    } else {
-      const server = http.createServer(app).listen(port, () => {
-        const reason = hasCerts ? '(HTTP mode)' : '(no certs found)';
-        console.log(` Mock Messaging Server listening on http://${host}:${port} ${reason}`);
-        if (config.seedData && config.seedMockData) {
-          config.seedMockData();
-        } else {
-          console.log('Starting with empty data store (set seedData=true to seed)');
-        }
-        resolve(server);
-      });
-    }
+    // HTTP server — portless handles TLS/proxy at the subdomain level
+    const server = http.createServer(app).listen(config.port, () => {
+      console.log(` Mock Messaging Server listening on http://localhost:${config.port}`);
+      if (config.seedData && config.seedMockData) {
+        config.seedMockData();
+      } else {
+        console.log('Starting with empty data store (set seedData=true to seed)');
+      }
+      resolve(server);
+    });
   });
 }
 

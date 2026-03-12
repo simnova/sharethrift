@@ -5,11 +5,12 @@
 	"type": "module",
 	"scripts": {
 		"start": "vite",
+		"dev": "portless sharethrift.localhost vite",
 		"build": "tsc -b && vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
 		"tswatch": "tsc --build --watch",
-		"storybook": "storybook dev -p 6006",
+		"storybook": "portless storybook.sharethrift.localhost sh -c 'storybook dev -p $PORT --host 127.0.0.1 --no-open'",
 		"build-storybook": "storybook build",
 		"test": "echo 'UI Storybook tests disabled (memory constraints)'",
 		"test:coverage:ui": "echo 'UI Storybook tests disabled (memory constraints)'",

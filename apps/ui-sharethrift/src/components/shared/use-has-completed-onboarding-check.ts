@@ -9,10 +9,16 @@ export function useOnboardingRedirect(
 	const location = useLocation();
 
 	useEffect(() => {
+		// Admin portal sessions never go through onboarding
+		const isAdminPortal =
+			globalThis.sessionStorage.getItem('loginPortalType') === 'AdminPortal';
+		if (isAdminPortal) return;
+
 		const isOnOnboarding = location.pathname.startsWith('/signup');
+		const isOnAuthRedirect = location.pathname.startsWith('/auth-redirect');
 
 		if (isAuthenticated) {
-			if (!hasCompletedOnboarding && !isOnOnboarding) {
+			if (!hasCompletedOnboarding && !isOnOnboarding && !isOnAuthRedirect) {
 				console.log(
 					'Redirecting to onboarding because user has not completed onboarding',
 				);

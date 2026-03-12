@@ -110,5 +110,5 @@
 		"react-router-dom",
 		"tsx"
 	],
-	"ignoreBinaries": ["func", "open", "concurrently", "container"]
+	"ignoreBinaries": ["func", "open", "concurrently", "container", "portless"]
 }

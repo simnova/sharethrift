@@ -1,6 +1,4 @@
 import dotenv from 'dotenv';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import {
 	startMockMessagingServer,
 	type MockMessagingServerConfig,
@@ -17,27 +15,12 @@ const setupEnvironment = () => {
 
 setupEnvironment();
 
-// Detect certificate availability to determine protocol
-const projectRoot = path.resolve(
-	path.dirname(fileURLToPath(import.meta.url)),
-	'../../../../',
-);
-const certKeyPath = path.join(projectRoot, '.certs/sharethrift.localhost-key.pem');
-const certPath = path.join(projectRoot, '.certs/sharethrift.localhost.pem');
-
 // biome-ignore lint: using bracket notation for environment variable access
 const port = Number(process.env['PORT'] ?? 10000);
 
-const fs = await import('node:fs');
-const hasCerts = fs.existsSync(certKeyPath) && fs.existsSync(certPath);
-
 const config: MockMessagingServerConfig = {
 	port,
-	useHttps: hasCerts,
 	seedData: true,
-	host: hasCerts ? 'mock-messaging.sharethrift.localhost' : 'localhost',
-	certKeyPath,
-	certPath,
 	seedMockData,
 };
 
