@@ -21,7 +21,12 @@ const window = new Window();
 // need the full browser API surface (getComputedStyle, SVGElement, etc.).
 globalThis.window = window;
 globalThis.document = window.document;
-globalThis.navigator = window.navigator;
+// Use Object.defineProperty for navigator since it's read-only in Node.js v22+
+Object.defineProperty(globalThis, 'navigator', {
+	value: window.navigator,
+	writable: true,
+	configurable: true,
+});
 globalThis.HTMLElement = window.HTMLElement;
 globalThis.HTMLInputElement = window.HTMLInputElement;
 globalThis.HTMLTextAreaElement = window.HTMLTextAreaElement;
