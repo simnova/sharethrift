@@ -267,6 +267,25 @@ stages:
         ${{ each pair in parameters.buildEnvSettings }}:
           ${{ pair.key }}: ${{ pair.value }}
 
+    # Run acceptance tests (Serenity-JS + Cucumber)
+    - task: Bash@3
+      displayName: 'Acceptance Tests: Run all scenarios'
+      # condition: eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true')
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          echo "Building packages required for acceptance tests..."
+          export NODE_OPTIONS=--max_old_space_size=16384
+          pnpm run build
+
+          echo "Running acceptance tests (all scenarios)..."
+          export PLAYWRIGHT_BROWSERS_PATH="$(PLAYWRIGHT_BROWSERS_PATH)"
+          pnpm run test:acceptance:all
+        workingDirectory: ''
+      env:
+        PLAYWRIGHT_BROWSERS_PATH: $(PLAYWRIGHT_BROWSERS_PATH)
+
     # Generate Serenity BDD HTML reports from test results
     - task: Bash@3
       displayName: 'Generate Serenity BDD reports'
