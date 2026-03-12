@@ -10,6 +10,7 @@
 		"build": "tsc --build",
 		"clean": "rimraf dist",
 		"start": "node dist/src/index.js",
+		"dev": "node dist/src/index.js",
 		"prebuild": "biome lint"
 	},
 	"dependencies": {

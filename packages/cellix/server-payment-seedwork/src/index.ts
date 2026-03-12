@@ -1,6 +1,6 @@
 import * as crypto from 'node:crypto';
-import * as https from 'node:https';
-import * as fs from 'node:fs';
+import { dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import express, { type Express, type Request, type Response, type NextFunction } from 'express';
 import { generateKeyPair } from 'jose';
 import { exportPKCS8 } from 'jose';
@@ -26,13 +26,8 @@ import type {
 
 export interface PaymentConfig {
 	port: number;
-	protocol: 'http' | 'https';
-	host: string;
-	paymentHost: string;
 	frontendBaseUrl: string;
 	paymentBaseUrl: string;
-	certKeyPath?: string;
-	certPath?: string;
 	iframeJsPath?: string;
 }
 
@@ -42,21 +37,13 @@ export function startMockPaymentServer(config: PaymentConfig): Promise<void> {
 
 	const CYBERSOURCE_MERCHANT_ID = 'simnova_sharethrift';
 
-	// Check for certificates
-	const hasCerts =
-		config.certKeyPath &&
-		config.certPath &&
-		fs.existsSync(config.certKeyPath) &&
-		fs.existsSync(config.certPath);
-
 	app.use(express.json());
 
-	// Serve static files for iframe.min.js (optional)
-	if (config.iframeJsPath) {
-		app.use('/microform/bundle/:version', express.static(config.iframeJsPath));
-	}
+	// Serve iframe.min.js — use explicit path or fall back to the bundled copy
+	const iframeStaticDir = config.iframeJsPath ?? dirname(fileURLToPath(import.meta.url));
+	app.use('/microform/bundle/:version', express.static(iframeStaticDir));
 
-	// Enable CORS for all origins (or restrict to 'https://sharethrift.localhost:3000' if needed)
+	// Enable CORS for all origins (or restrict to sharethrift.localhost if needed)
 	app.use((req: Request, res: Response, next: NextFunction) => {
 		res.header('Access-Control-Allow-Origin', config.frontendBaseUrl);
 		res.header(
@@ -73,14 +60,6 @@ export function startMockPaymentServer(config: PaymentConfig): Promise<void> {
 		}
 		next();
 	});
-
-	app.use(express.json());
-
-	// Use fileURLToPath(import.meta.url) to get current file path in ES modules
-	// Serve static files for iframe.min.js (optional)
-	if (config.iframeJsPath) {
-		app.use('/microform/bundle/:version', express.static(config.iframeJsPath));
-	}
 
 	// Simulate /flex/v2/capture-contexts endpoint
 	app.get('/pts/v2/public-key', async (_req: Request, res: Response) => {
@@ -1356,62 +1335,25 @@ export function startMockPaymentServer(config: PaymentConfig): Promise<void> {
 		},
 	);
 
-	// Start the server
 	return new Promise((resolve, reject) => {
-		const startServer = (portToTry: number, attempt = 0): void => {
-			if (hasCerts) {
-				const httpsOptions = {
-					key: fs.readFileSync(config.certKeyPath as string),
-					cert: fs.readFileSync(config.certPath as string),
-				};
+		const server = app.listen(config.port, () => {
+			console.log(`   Mock Payment Server externally reachable at: ${config.paymentBaseUrl}`);
+			console.log(`   Internal bind (HTTP): http://localhost:${config.port}`);
+			console.log(`   CORS origin: ${config.frontendBaseUrl}`);
+			resolve();
+		});
 
-				const server = https.createServer(httpsOptions, app).listen(portToTry, config.host, () => {
-					console.log(` Mock Payment Server listening on ${config.protocol}://${config.paymentHost}`);
-					console.log(`   CORS origin: ${config.frontendBaseUrl}`);
-					console.log(`   Microform origin: ${config.paymentBaseUrl}`);
-					resolve();
-				});
-
-				server.on('error', (error: NodeJS.ErrnoException) => {
-					if (error.code === 'EADDRINUSE' && attempt < 5) {
-						const nextPort = portToTry + 1;
-						console.warn(
-							`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
-						);
-						server.close(() => {
-							startServer(nextPort, attempt + 1);
-						});
-						return;
-					}
-
-					reject(error);
-				});
-			} else {
-				// Fallback to HTTP when certs don't exist (CI/CD)
-				const server = app.listen(portToTry, config.host, () => {
-					console.log(` Mock Payment Server listening on ${config.protocol}://localhost:${portToTry} (no certs found)`);
-					console.log(`   CORS origin: ${config.frontendBaseUrl}`);
-					console.log(`   Microform origin: ${config.paymentBaseUrl}`);
-					resolve();
-				});
-
-				server.on('error', (error: NodeJS.ErrnoException) => {
-					if (error.code === 'EADDRINUSE' && attempt < 5) {
-						const nextPort = portToTry + 1;
-						console.warn(
-							`Port ${portToTry} in use. Retrying mock-payment-server on ${nextPort}...`,
-						);
-						server.close(() => {
-							startServer(nextPort, attempt + 1);
-						});
-						return;
-					}
-
-					reject(error);
-				});
+		server.on('error', (error: NodeJS.ErrnoException) => {
+			if (error.code === 'EADDRINUSE') {
+				reject(
+					new Error(
+						`Port ${config.port} is already in use. ` +
+						'Stop the other process or choose a different port. ',
+					),
+				);
+				return;
 			}
-		};
-
-		startServer(config.port);
+			reject(error);
+		});
 	});
 }

@@ -13,7 +13,7 @@
 		"lint": "biome lint",
 		"format": "biome format --write",
 		"start": "node dist/src/index.js",
-		"dev": "tsx watch src/index.ts"
+		"dev": "portless mock-payment.sharethrift.localhost node dist/src/index.js"
 	},
 	"dependencies": {
 		"@cellix/server-payment-seedwork": "workspace:*",

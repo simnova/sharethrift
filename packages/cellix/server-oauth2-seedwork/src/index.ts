@@ -1,6 +1,5 @@
+// biome-ignore-all lint/complexity/useLiteralKeys: process.env has an index signature returning string | undefined; bracket notation is required to satisfy TypeScript's strict null checking for environment variable access
 import crypto, { type KeyObject, type webcrypto } from 'node:crypto';
-import fs from 'node:fs';
-import https from 'node:https';
 import express from 'express';
 import {
 	exportJWK,
@@ -19,13 +18,10 @@ app.disable('x-powered-by');
 export type OAuth2Config = {
     port: number;
     baseUrl: string;
-    host: string;
+    host?: string;
     allowedRedirectUris: Set<string>;
     allowedRedirectUri: string;
     redirectUriToAudience: Map<string, string>;
-    certKeyPath?: string;
-    hasCerts?: boolean;
-    certPath?: string;
     env?: NodeJS.ProcessEnv;
     getUserProfile: (isAdminPortal: boolean) => {
         email: string;
@@ -46,6 +42,7 @@ function normalizeUrl(urlString: string): string {
 		return urlString;
 	}
 }
+
 // Type for user profile used in token claims
 interface TokenProfile {
 	aud: string;
@@ -136,7 +133,6 @@ async function buildTokenResponse(
 
 // Main async startup
 async function main(config: OAuth2Config) {
-
 	// Generate signing keypair with jose
 	const { publicKey, privateKey } = await generateKeyPair('RS256');
 	const publicJwk = await exportJWK(publicKey);
@@ -281,30 +277,11 @@ async function main(config: OAuth2Config) {
 		return;
 	});
 
-	// Load SSL certificates for HTTPS
-	if (config?.hasCerts) {
-		const httpsOptions = {
-			key: fs.readFileSync(config?.certKeyPath || ''),
-			cert: fs.readFileSync(config?.certPath || ''),
-		};
-
-		https
-			.createServer(httpsOptions, app)
-			.listen(config.port, config.host, () => {
-				// eslint-disable-next-line no-console
-				console.log(`Mock OAuth2 server running on ${config.baseUrl}`);
-				console.log(
-					`JWKS endpoint running on ${config.baseUrl}/.well-known/jwks.json`,
-				);
-			});
-	} else {
-		// Fallback to HTTP when certs don't exist (CI/CD)
-		app.listen(config.port, config.host, () => {
-			// eslint-disable-next-line no-console
-			console.log(`Mock OAuth2 server running on ${config.baseUrl} (no certs found)`);
-			console.log(`JWKS endpoint running on ${config.baseUrl}/.well-known/jwks.json`);
-		});
-	}
+	// HTTP server — portless handles TLS/proxy at the subdomain level
+	app.listen(config.port, () => {
+		console.log(`Mock OAuth2 server running on ${config.baseUrl}`);
+		console.log(`JWKS endpoint running on ${config.baseUrl}/.well-known/jwks.json`);
+	});
 }
 
 export async function startMockOAuth2Server(config: OAuth2Config) {
