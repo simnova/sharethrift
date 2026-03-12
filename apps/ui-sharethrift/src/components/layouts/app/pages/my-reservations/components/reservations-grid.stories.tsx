@@ -10,7 +10,7 @@ import {
 	withReservationMocks,
 } from '../../../../../../test/utils/storybook-providers.tsx';
 const meta: Meta<typeof ReservationsGrid> = {
-	title: 'Organisms/ReservationsGrid',
+	title: 'Components/Organisms/ReservationsGrid',
 	component: ReservationsGrid,
 	parameters: { layout: 'padded' },
 	tags: ['autodocs'],

@@ -1,7 +1,6 @@
 import { TermsContainer } from "../components/terms.container.tsx";
 
-const TermsPage = () => {
+export const TermsPage = () => {
   return <TermsContainer />;
 };
 
-export default TermsPage;

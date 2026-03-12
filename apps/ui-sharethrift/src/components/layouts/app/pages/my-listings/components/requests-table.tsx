@@ -90,7 +90,7 @@ export const RequestsTable: React.FC<RequestsTableProps> = ({
 			render: (_: unknown, record: ListingRequestData) => (
 				<div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
 					<Image
-						src={record.image ?? ''}
+						src={record.image ?? undefined}
 						alt={record.title}
 						width={60}
 						height={60}

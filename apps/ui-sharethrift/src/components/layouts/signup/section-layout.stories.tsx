@@ -1,11 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, userEvent, within } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
-import { MockLink } from '@apollo/client/testing';
-import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
 import { SectionLayout } from './section-layout.tsx';
+import { MockAuthWrapper } from '../../../test-utils/storybook-mock-auth-wrappers.tsx';
+import { MockLink } from '@apollo/client/testing';
+import { ApolloClient, InMemoryCache } from '@apollo/client';
 
 const mockApolloClient = new ApolloClient({
 	link: new MockLink([]),
@@ -13,7 +13,7 @@ const mockApolloClient = new ApolloClient({
 });
 
 const meta: Meta<typeof SectionLayout> = {
-	title: 'Layouts/SignupLayout',
+	title: 'Components/SignUp/Layouts/SectionLayout',
 	component: SectionLayout,
 	parameters: {
 		layout: 'fullscreen',

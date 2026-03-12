@@ -1,13 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import {
-	withMockApolloClient,
-	MockAuthWrapper,
-} from '../../test-utils/storybook-decorators.tsx';
+import { withMockApolloClient } from '../../test-utils/storybook-decorators.tsx';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from 'react-oidc-context';
 import { RequireAuthAdmin } from './require-auth-admin.tsx';
 import { UseUserIsAdminDocument } from '../../generated.tsx';
+import { MockAuthWrapper } from '../../test-utils/storybook-mock-auth-wrappers.tsx';
 import { createMockAuth } from '../../test/utils/mock-auth.ts';
 
 const meta: Meta<typeof RequireAuthAdmin> = {
@@ -34,10 +32,26 @@ const meta: Meta<typeof RequireAuthAdmin> = {
 		},
 	},
 	decorators: [withMockApolloClient],
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 
 export default meta;
 type Story = StoryObj<typeof RequireAuthAdmin>;
+
+const UseUserIsAdminMock = {
+	request: {
+		query: UseUserIsAdminDocument,
+	},
+	result: {
+		data: {
+			currentUser: {
+				id: 'user-1',
+				__typename: 'PersonalUser',
+				userIsAdmin: true,
+			},
+		},
+	},
+};
 
 const AdminProtectedContent = () => (
 	<div style={{ padding: '20px', background: '#e3f2fd' }}>
@@ -60,6 +74,11 @@ export const WithAuthenticationAndAdmin: Story = {
 		children: <AdminProtectedContent />,
 	},
 	decorators: [withAuthAndRouter],
+	parameters: {
+		apolloClient: {
+			mocks: [UseUserIsAdminMock],
+		},
+	},
 	play: async ({ canvasElement }) => {
 		// MockAuthWrapper provides isAuthenticated: true
 		// Apollo mock provides isAdmin: true
@@ -74,6 +93,11 @@ export const WithForceLogin: Story = {
 		forceLogin: true,
 	},
 	decorators: [withAuthAndRouter],
+	parameters: {
+		apolloClient: {
+			mocks: [UseUserIsAdminMock],
+		},
+	},
 	play: async ({ canvasElement }) => {
 		// When forceLogin is true, component will trigger signin redirect if not authenticated
 		// MockAuthWrapper provides isAuthenticated: true, so content should render
@@ -87,6 +111,11 @@ export const WithCustomRedirect: Story = {
 		redirectPath: '/custom-login',
 	},
 	decorators: [withAuthAndRouter],
+	parameters: {
+		apolloClient: {
+			mocks: [UseUserIsAdminMock],
+		},
+	},
 	play: async ({ canvasElement }) => {
 		// Component uses custom redirect path when provided
 		// MockAuthWrapper provides isAuthenticated: true, so content should render
@@ -126,21 +155,7 @@ export const NotAdmin: Story = {
 	decorators: [withAuthAndRouter],
 	parameters: {
 		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: UseUserIsAdminDocument,
-					},
-					result: {
-						data: {
-							currentUser: {
-								__typename: 'PersonalUser',
-								userIsAdmin: false,
-							},
-						},
-					},
-				},
-			],
+			mocks: [UseUserIsAdminMock],
 		},
 	},
 	play: async ({ canvasElement }) => {
@@ -153,6 +168,11 @@ export const NotAdmin: Story = {
 export const UnauthenticatedWithError: Story = {
 	args: {
 		children: <AdminProtectedContent />,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [UseUserIsAdminMock],
+		},
 	},
 	decorators: [
 		withMockApolloClient,
@@ -181,6 +201,11 @@ export const UnauthenticatedWithError: Story = {
 export const UnauthenticatedLoading: Story = {
 	args: {
 		children: <AdminProtectedContent />,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [UseUserIsAdminMock],
+		},
 	},
 	decorators: [
 		withMockApolloClient,
@@ -214,6 +239,11 @@ export const UnauthenticatedNoForceLogin: Story = {
 		children: <AdminProtectedContent />,
 		forceLogin: false,
 	},
+	parameters: {
+		apolloClient: {
+			mocks: [UseUserIsAdminMock],
+		},
+	},
 	decorators: [
 		withMockApolloClient,
 		(Story) => {
@@ -242,6 +272,11 @@ export const ForceLoginTriggersSigninRedirect: Story = {
 	args: {
 		children: <AdminProtectedContent />,
 		forceLogin: true,
+	},
+	parameters: {
+		apolloClient: {
+			mocks: [UseUserIsAdminMock],
+		},
 	},
 	decorators: [
 		withMockApolloClient,
@@ -281,7 +316,7 @@ export const AccessTokenExpiringTriggersSilent: Story = {
 				setTimeout(() => callback(), 100);
 				return () => {}; // Return a no-op unsubscribe function
 			};
-			const signinSilent = async () => Promise.resolve(null);
+			const signinSilent = async () => null;
 			const mockAuth = createMockAuth({
 				isAuthenticated: true,
 				isLoading: false,
@@ -321,6 +356,11 @@ export const AuthenticationErrorNoForceLogin: Story = {
 	args: {
 		children: <AdminProtectedContent />,
 		forceLogin: false,
+	},
+  parameters: {
+		apolloClient: {
+			mocks: [UseUserIsAdminMock],
+		},
 	},
 	decorators: [
 		withMockApolloClient,

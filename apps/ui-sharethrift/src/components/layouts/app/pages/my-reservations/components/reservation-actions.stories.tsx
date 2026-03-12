@@ -3,7 +3,7 @@ import { ReservationActions } from '../components/reservation-actions.js';
 import { expect, fn, userEvent, within } from 'storybook/test';
 
 const meta: Meta<typeof ReservationActions> = {
-  title: 'Molecules/ReservationActions',
+  title: 'Components/Molecules/ReservationActions',
   component: ReservationActions,
   parameters: {
     layout: 'centered',
@@ -36,7 +36,7 @@ export const Requested: Story = {
     onClose: fn(),
     onMessage: fn(),
   },
-  play: async ({ canvasElement }) => {
+  play:  ({ canvasElement }) => {
     const canvas = within(canvasElement);
     
     // Verify action buttons are present
@@ -57,7 +57,7 @@ export const Accepted: Story = {
     onClose: fn(),
     onMessage: fn(),
   },
-  play: async ({ canvasElement }) => {
+  play:  ({ canvasElement }) => {
     const canvas = within(canvasElement);
     
     // Verify buttons are rendered for accepted state
@@ -85,6 +85,7 @@ export const ButtonInteraction: Story = {
       await userEvent.click(buttons[0]);
       // Verify the callback was called
       const callbacks = [args.onCancel, args.onClose, args.onMessage];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const called = callbacks.some(cb => cb && (cb as any).mock?.calls?.length > 0);
       expect(called || true).toBe(true); // Allow pass if callbacks are called
     }
@@ -117,7 +118,7 @@ export const LoadingStates: Story = {
     onMessage: fn(),
     cancelLoading: true,
   },
-  play: async ({ canvasElement }) => {
+  play:  ({ canvasElement }) => {
     const canvas = within(canvasElement);
     
     // Verify loading state is rendered

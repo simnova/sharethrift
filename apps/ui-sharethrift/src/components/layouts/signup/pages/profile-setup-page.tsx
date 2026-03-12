@@ -1,7 +1,6 @@
 import { ProfileSetupContainer } from "../components/profile-setup.container.tsx";
 
-const ProfileSetupPage = () => {
+export const ProfileSetupPage = () => {
   return <ProfileSetupContainer />;
 };
 
-export default ProfileSetupPage;

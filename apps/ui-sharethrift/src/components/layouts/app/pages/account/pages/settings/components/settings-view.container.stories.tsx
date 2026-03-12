@@ -79,6 +79,7 @@ const mockAdminUser = {
 const meta: Meta<typeof SettingsViewContainer> = {
 	title: 'Containers/SettingsViewContainer',
 	component: SettingsViewContainer,
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
 	parameters: {
 		a11y: { disable: true },
 		layout: 'fullscreen',
@@ -146,7 +147,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingText = canvas.queryByText(/Loading/i);
 		expect(loadingText || canvasElement).toBeTruthy();
@@ -216,7 +217,7 @@ export const UserNotFound: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const notFoundText = canvas.queryByText(/User not found/i);
 		expect(notFoundText || canvasElement).toBeTruthy();

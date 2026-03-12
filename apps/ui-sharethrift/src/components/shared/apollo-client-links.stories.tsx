@@ -55,6 +55,7 @@ const meta: Meta = {
 			</ApolloProvider>
 		),
 	],
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 } satisfies Meta;
 
 export default meta;

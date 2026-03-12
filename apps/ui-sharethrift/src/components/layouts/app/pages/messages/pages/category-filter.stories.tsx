@@ -3,7 +3,7 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 
 const meta: Meta<typeof CategoryFilter> = {
-	title: 'Listing/Category Filter',
+	title: 'Components/Listing/Category Filter',
 	component: CategoryFilter,
 	parameters: {
 		layout: 'centered',

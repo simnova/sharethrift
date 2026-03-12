@@ -10,6 +10,7 @@ const meta: Meta<typeof HeroSectionContainer> = {
 		a11y: { disable: true },
 		layout: 'fullscreen',
 	},
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
 	decorators: [
 		(Story) => (
 			<MemoryRouter>
@@ -28,7 +29,7 @@ export const Default: Story = {
 		onSearchChange: fn(),
 		onSearch: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };

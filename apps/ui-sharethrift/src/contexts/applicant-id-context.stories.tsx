@@ -41,6 +41,7 @@ const meta: Meta<typeof ApplicantIdConsumer> = {
 			</ApplicantIdProvider>
 		),
 	],
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 };
 
 export default meta;

@@ -4,7 +4,7 @@ import { Form } from 'antd';
 import { countriesMockData } from '../../layouts/signup/components/countries-mock-data.ts';
 
 const meta: Meta<typeof BillingAddressFormItems> = {
-	title: 'Shared/Payment/BillingAddressFormItems',
+	title: 'Components/Shared/Payment/BillingAddressFormItems',
 	component: BillingAddressFormItems,
 	parameters: {
 		layout: 'padded',

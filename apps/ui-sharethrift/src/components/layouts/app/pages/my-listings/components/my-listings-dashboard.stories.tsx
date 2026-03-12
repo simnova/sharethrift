@@ -38,7 +38,7 @@ const mockRequests = {
 };
 
 const meta: Meta<typeof MyListingsDashboard> = {
-	title: 'My Listings/Dashboard',
+	title: 'Components/My Listings/Dashboard',
 	component: MyListingsDashboard,
 	parameters: {
 		layout: 'fullscreen',
@@ -82,7 +82,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }) => {
+	play:  async ({ canvasElement }) => {
 		await expect(canvasElement).toBeTruthy();
 	},
 };

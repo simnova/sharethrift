@@ -1,15 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { SelectAccountTypeContainer } from './select-account-type.container.tsx';
-import {
-	withMockApolloClient,
-	withMockRouter,
-} from '../../../../test-utils/storybook-decorators.tsx';
-import {
-	SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
-	SelectAccountTypePersonalUserUpdateDocument,
-	SelectAccountTypeContainerAccountPlansDocument,
-} from '../../../../generated.tsx';
+import { withMockApolloClient, withMockRouter } from '../../../../test-utils/storybook-decorators.tsx';
+import { SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument, SelectAccountTypePersonalUserUpdateDocument, SelectAccountTypeContainerAccountPlansDocument } from '../../../../generated.tsx';
+import { mockAccountPlans } from '../../../../test-utils/storybook-mock-helpers.ts';
+
+const AccountPlansMockRequest = {
+	request: {
+		query: SelectAccountTypeContainerAccountPlansDocument,
+	},
+	result: {
+		data: {
+			accountPlans: mockAccountPlans,
+		},
+	},
+};
 
 const mockCurrentUser = {
 	__typename: 'PersonalUser',
@@ -25,81 +30,11 @@ const mockCurrentUser = {
 	},
 };
 
-const mockAccountPlans = [
-	{
-		__typename: 'AccountPlan',
-		id: 'plan-1',
-		name: 'non-verified-personal',
-		description: 'Basic free plan',
-		billingPeriodLength: 1,
-		billingPeriodUnit: 'month',
-		billingAmount: 0,
-		currency: 'USD',
-		setupFee: 0,
-		status: 'active',
-		cybersourcePlanId: null,
-		schemaVersion: '1.0',
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString(),
-		feature: {
-			__typename: 'AccountPlanFeature',
-			activeReservations: 5,
-			bookmarks: 10,
-			itemsToShare: 0,
-			friends: 20,
-		},
-	},
-	{
-		__typename: 'AccountPlan',
-		id: 'plan-2',
-		name: 'verified-personal',
-		description: 'Verified personal plan',
-		billingPeriodLength: 1,
-		billingPeriodUnit: 'month',
-		billingAmount: 9.99,
-		currency: 'USD',
-		setupFee: 0,
-		status: 'active',
-		cybersourcePlanId: 'cyber-1',
-		schemaVersion: '1.0',
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString(),
-		feature: {
-			__typename: 'AccountPlanFeature',
-			activeReservations: 20,
-			bookmarks: 50,
-			itemsToShare: 10,
-			friends: 100,
-		},
-	},
-	{
-		__typename: 'AccountPlan',
-		id: 'plan-3',
-		name: 'verified-personal-plus',
-		description: 'Premium plan',
-		billingPeriodLength: 1,
-		billingPeriodUnit: 'month',
-		billingAmount: 19.99,
-		currency: 'USD',
-		setupFee: 0,
-		status: 'active',
-		cybersourcePlanId: 'cyber-2',
-		schemaVersion: '1.0',
-		createdAt: new Date().toISOString(),
-		updatedAt: new Date().toISOString(),
-		feature: {
-			__typename: 'AccountPlanFeature',
-			activeReservations: 100,
-			bookmarks: 200,
-			itemsToShare: 50,
-			friends: 500,
-		},
-	},
-];
-
 const meta: Meta<typeof SelectAccountTypeContainer> = {
 	title: 'Containers/SelectAccountTypeContainer',
 	component: SelectAccountTypeContainer,
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags. These are all functional testing stories.
+
 	parameters: {
 		a11y: { disable: true },
 		layout: 'fullscreen',
@@ -107,8 +42,7 @@ const meta: Meta<typeof SelectAccountTypeContainer> = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -116,16 +50,7 @@ const meta: Meta<typeof SelectAccountTypeContainer> = {
 						},
 					},
 				},
-				{
-					request: {
-						query: SelectAccountTypeContainerAccountPlansDocument,
-					},
-					result: {
-						data: {
-							accountPlans: mockAccountPlans,
-						},
-					},
-				},
+				AccountPlansMockRequest,
 				{
 					request: {
 						query: SelectAccountTypePersonalUserUpdateDocument,
@@ -156,10 +81,7 @@ const meta: Meta<typeof SelectAccountTypeContainer> = {
 			],
 		},
 	},
-	decorators: [
-		withMockApolloClient,
-		withMockRouter('/signup/select-account-type'),
-	],
+	decorators: [withMockApolloClient, withMockRouter('/signup/select-account-type')],
 };
 
 export default meta;
@@ -171,9 +93,7 @@ export const Default: Story = {
 		try {
 			await waitFor(
 				() => {
-					expect(
-						canvas.queryAllByText(/Non-Verified Personal/i).length,
-					).toBeGreaterThan(0);
+					expect(canvas.queryAllByText(/Non-Verified Personal/i).length).toBeGreaterThan(0);
 				},
 				{ timeout: 3000 },
 			);
@@ -189,18 +109,16 @@ export const Loading: Story = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					delay: Infinity,
 				},
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const loadingSpinner =
-			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		const loadingSpinner = canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
 		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
@@ -211,8 +129,7 @@ export const SelectReserver: Story = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -220,16 +137,7 @@ export const SelectReserver: Story = {
 						},
 					},
 				},
-				{
-					request: {
-						query: SelectAccountTypeContainerAccountPlansDocument,
-					},
-					result: {
-						data: {
-							accountPlans: mockAccountPlans,
-						},
-					},
-				},
+				AccountPlansMockRequest,
 				{
 					request: {
 						query: SelectAccountTypePersonalUserUpdateDocument,
@@ -265,9 +173,7 @@ export const SelectReserver: Story = {
 		try {
 			await waitFor(
 				() => {
-					expect(
-						canvas.queryAllByText(/Non-Verified Personal/i).length,
-					).toBeGreaterThan(0);
+					expect(canvas.queryAllByText(/Non-Verified Personal/i).length).toBeGreaterThan(0);
 				},
 				{ timeout: 3000 },
 			);
@@ -294,8 +200,7 @@ export const SelectSharer: Story = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -303,16 +208,7 @@ export const SelectSharer: Story = {
 						},
 					},
 				},
-				{
-					request: {
-						query: SelectAccountTypeContainerAccountPlansDocument,
-					},
-					result: {
-						data: {
-							accountPlans: mockAccountPlans,
-						},
-					},
-				},
+				AccountPlansMockRequest,
 				{
 					request: {
 						query: SelectAccountTypePersonalUserUpdateDocument,
@@ -348,9 +244,7 @@ export const SelectSharer: Story = {
 		try {
 			await waitFor(
 				() => {
-					expect(
-						canvas.queryAllByText(/Verified Personal$/i).length,
-					).toBeGreaterThan(0);
+					expect(canvas.queryAllByText(/Verified Personal$/i).length).toBeGreaterThan(0);
 				},
 				{ timeout: 3000 },
 			);
@@ -377,8 +271,7 @@ export const SelectPlusAndSave: Story = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -386,16 +279,7 @@ export const SelectPlusAndSave: Story = {
 						},
 					},
 				},
-				{
-					request: {
-						query: SelectAccountTypeContainerAccountPlansDocument,
-					},
-					result: {
-						data: {
-							accountPlans: mockAccountPlans,
-						},
-					},
-				},
+				AccountPlansMockRequest,
 				{
 					request: {
 						query: SelectAccountTypePersonalUserUpdateDocument,
@@ -431,9 +315,7 @@ export const SelectPlusAndSave: Story = {
 		try {
 			await waitFor(
 				() => {
-					expect(
-						canvas.queryAllByText(/Verified Personal Plus/i).length,
-					).toBeGreaterThan(0);
+					expect(canvas.queryAllByText(/Verified Personal Plus/i).length).toBeGreaterThan(0);
 				},
 				{ timeout: 3000 },
 			);
@@ -460,8 +342,7 @@ export const WithError: Story = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					error: new Error('Failed to fetch user'),
 				},
@@ -472,9 +353,7 @@ export const WithError: Story = {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
-				const errorContainer =
-					canvas.queryByRole('alert') ??
-					canvas.queryByText(/an error occurred/i);
+				const errorContainer = canvas.queryByRole('alert') ?? canvas.queryByText(/an error occurred/i);
 				expect(errorContainer ?? canvasElement).toBeTruthy();
 			},
 			{ timeout: 3000 },
@@ -488,8 +367,7 @@ export const UpdateError: Story = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -497,16 +375,7 @@ export const UpdateError: Story = {
 						},
 					},
 				},
-				{
-					request: {
-						query: SelectAccountTypeContainerAccountPlansDocument,
-					},
-					result: {
-						data: {
-							accountPlans: mockAccountPlans,
-						},
-					},
-				},
+				AccountPlansMockRequest,
 				{
 					request: {
 						query: SelectAccountTypePersonalUserUpdateDocument,
@@ -523,9 +392,7 @@ export const UpdateError: Story = {
 		try {
 			await waitFor(
 				() => {
-					expect(
-						canvas.queryAllByText(/Non-Verified Personal/i).length,
-					).toBeGreaterThan(0);
+					expect(canvas.queryAllByText(/Non-Verified Personal/i).length).toBeGreaterThan(0);
 				},
 				{ timeout: 3000 },
 			);
@@ -554,8 +421,7 @@ export const AccountPlansError: Story = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -576,9 +442,7 @@ export const AccountPlansError: Story = {
 		const canvas = within(canvasElement);
 		await waitFor(
 			() => {
-				const errorContainer =
-					canvas.queryByRole('alert') ??
-					canvas.queryByText(/an error occurred/i);
+				const errorContainer = canvas.queryByRole('alert') ?? canvas.queryByText(/an error occurred/i);
 				expect(errorContainer ?? canvasElement).toBeTruthy();
 			},
 			{ timeout: 3000 },
@@ -592,8 +456,7 @@ export const UpdateFailureResponse: Story = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -601,16 +464,7 @@ export const UpdateFailureResponse: Story = {
 						},
 					},
 				},
-				{
-					request: {
-						query: SelectAccountTypeContainerAccountPlansDocument,
-					},
-					result: {
-						data: {
-							accountPlans: mockAccountPlans,
-						},
-					},
-				},
+				AccountPlansMockRequest,
 				{
 					request: {
 						query: SelectAccountTypePersonalUserUpdateDocument,
@@ -639,9 +493,7 @@ export const UpdateFailureResponse: Story = {
 		try {
 			await waitFor(
 				() => {
-					expect(
-						canvas.queryAllByText(/Non-Verified Personal/i).length,
-					).toBeGreaterThan(0);
+					expect(canvas.queryAllByText(/Non-Verified Personal/i).length).toBeGreaterThan(0);
 				},
 				{ timeout: 3000 },
 			);
@@ -670,8 +522,7 @@ export const MissingUserId: Story = {
 			mocks: [
 				{
 					request: {
-						query:
-							SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
+						query: SelectAccountTypeCurrentPersonalUserAndCreateIfNotExistsDocument,
 					},
 					result: {
 						data: {
@@ -679,20 +530,11 @@ export const MissingUserId: Story = {
 						},
 					},
 				},
-				{
-					request: {
-						query: SelectAccountTypeContainerAccountPlansDocument,
-					},
-					result: {
-						data: {
-							accountPlans: mockAccountPlans,
-						},
-					},
-				},
+				AccountPlansMockRequest,
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		// Component should handle null user gracefully
 		expect(canvasElement).toBeTruthy();
 	},

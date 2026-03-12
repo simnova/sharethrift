@@ -50,6 +50,7 @@ const mockUsers = [
 
 const meta: Meta<typeof AdminUsersTableContainer> = {
 	title: 'Containers/AdminUsersTableContainer',
+  tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	component: AdminUsersTableContainer,
 	args: {
 		currentPage: 1,
@@ -126,7 +127,7 @@ export default meta;
 type Story = StoryObj<typeof AdminUsersTableContainer>;
 
 export const Default: Story = {
-	play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvasElement).toBeTruthy();
 		const johnDoe = canvas.queryByText(/john_doe/i);
@@ -161,7 +162,7 @@ export const Empty: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -181,7 +182,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -238,7 +239,7 @@ export const WithBlockedUser: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		expect(canvasElement).toBeTruthy();
 		const blockedText = canvas.queryByText(/Blocked/i);
@@ -281,7 +282,7 @@ export const BlockUserError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -327,7 +328,7 @@ export const ManyUsers: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -365,7 +366,7 @@ export const UnblockUserError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -385,7 +386,7 @@ export const WithError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -1153,7 +1154,7 @@ export const BlockUserMutationNetworkError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -1191,7 +1192,7 @@ export const UnblockUserMutationNetworkError: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -1226,7 +1227,7 @@ export const SortingWithArrayField: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -1261,7 +1262,7 @@ export const SortingWithNullField: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -1296,7 +1297,7 @@ export const SearchWithPageReset: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -1331,7 +1332,7 @@ export const StatusFilterWithPageReset: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -1366,7 +1367,7 @@ export const TableChangeWithSorter: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -2077,7 +2078,7 @@ export const StatusFilterActive: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 		// Status filter interaction would be tested here
 	},
@@ -2113,7 +2114,7 @@ export const StatusFilterBlocked: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 		// Status filter interaction would be tested here
 	},
@@ -2404,7 +2405,7 @@ export const HandleStatusFilterFunction: Story = {
 	args: {
 		onPageChange: fn(),
 	},
-	play: async ({ canvasElement, args }) => {
+	play: ({ canvasElement, args }) => {
 		expect(canvasElement).toBeTruthy();
 		// Verify handleStatusFilter function is called and resets page
 		// Note: The actual function call happens during component interaction

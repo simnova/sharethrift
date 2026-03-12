@@ -11,7 +11,7 @@
 		"build": "tsc --build"
 	},
 	"dependencies": {
-		"@storybook/addon-vitest": "^10.1.11",
+		"@storybook/addon-vitest": "catalog:",
 		"@vitest/browser-playwright": "catalog:",
 		"vitest": "catalog:"
 	},

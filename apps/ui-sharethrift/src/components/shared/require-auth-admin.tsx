@@ -33,15 +33,7 @@ export const RequireAuthAdmin: React.FC<RequireAuthAdminProps> = (props) => {
 
 			auth.signinRedirect();
 		}
-	}, [
-		auth.isAuthenticated,
-		auth.activeNavigator,
-		auth.isLoading,
-		auth.signinRedirect,
-		auth.error,
-		props.forceLogin,
-		redirectPath,
-	]);
+	}, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect, auth.error, props.forceLogin, auth]);
 
 	// automatically refresh token
 	useEffect(() => {
@@ -50,7 +42,7 @@ export const RequireAuthAdmin: React.FC<RequireAuthAdminProps> = (props) => {
 				redirect_uri: VITE_B2C_REDIRECT_URI ?? '',
 			});
 		});
-	}, [auth.events, auth.signinSilent]);
+	}, [auth, auth.events, auth.signinSilent]);
 
 	// Check authentication first
 	if (!auth.isAuthenticated) {

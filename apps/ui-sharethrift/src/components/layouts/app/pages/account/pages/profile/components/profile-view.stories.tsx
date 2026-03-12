@@ -73,9 +73,9 @@ export const Default: Story = {
 		listings: [],
 		isOwnProfile: true,
 		onEditSettings: () => console.log('Edit settings clicked'),
-		onListingClick: (_id: string) => console.log('Listing clicked'),
+		onListingClick: () => console.log('Listing clicked'),
 	},
-	play: async ({ canvasElement }) => {
+	play:  ({ canvasElement }) => {
 		expect(canvasElement).toBeTruthy();
 	},
 };
@@ -134,7 +134,7 @@ export const EmptyListingsOwnProfile: Story = {
 		onEditSettings: fn(),
 		onListingClick: fn(),
 	},
-	play: async ({ canvasElement }) => {
+	play: async  ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		await expect(canvas.getByText('No listings yet')).toBeInTheDocument();
 		await expect(canvas.getByRole('button', { name: /Create Your First Listing/i })).toBeInTheDocument();

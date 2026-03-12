@@ -43,6 +43,7 @@ const mockCurrentUser = {
 const meta: Meta<typeof ViewListingContainer> = {
 	title: 'Containers/ViewListingContainer',
 	component: ViewListingContainer,
+	tags: ['!dev'], // functional testing story, not rendered in sidebar - https://storybook.js.org/docs/writing-stories/tags
 	parameters: {
 		layout: 'fullscreen',
 		a11y: { disable: true },
@@ -163,7 +164,7 @@ export const Loading: Story = {
 			],
 		},
 	},
-	play: async ({ canvasElement }) => {
+	play: ({ canvasElement }) => {
 		const canvas = within(canvasElement);
 		const loadingSpinner =
 			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
@@ -193,9 +194,12 @@ export const ListingNotFound: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -248,9 +252,12 @@ export const WithActiveReservation: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -289,9 +296,12 @@ export const UserIsSharer: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -313,9 +323,12 @@ export const GraphQLError: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -354,9 +367,12 @@ export const DraftListing: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -395,9 +411,12 @@ export const InactiveListing: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -451,9 +470,12 @@ export const WithMultipleImages: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -473,7 +495,10 @@ export const LongDescription: Story = {
 						data: {
 							itemListing: {
 								...mockListing,
-								description: 'This is a very long description that should wrap properly and display all content. '.repeat(20),
+								description:
+									'This is a very long description that should wrap properly and display all content. '.repeat(
+										20,
+									),
 							},
 						},
 					},
@@ -503,9 +528,12 @@ export const LongDescription: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -555,9 +583,12 @@ export const ComputeTimeAgoRecentHours: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -577,7 +608,9 @@ export const ComputeTimeAgoDays: Story = {
 						data: {
 							itemListing: {
 								...mockListing,
-								createdAt: new Date(Date.now() - 3 * 24 * 3600000).toISOString(), // 3 days ago
+								createdAt: new Date(
+									Date.now() - 3 * 24 * 3600000,
+								).toISOString(), // 3 days ago
 							},
 						},
 					},
@@ -607,9 +640,12 @@ export const ComputeTimeAgoDays: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -659,9 +695,12 @@ export const ComputeTimeAgoInvalidDate: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -711,9 +750,12 @@ export const NoCreatedAtDate: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -749,9 +791,12 @@ export const SkipReservationQueryNoListingId: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -787,9 +832,12 @@ export const SkipReservationQueryNoReserverId: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -837,9 +885,12 @@ export const CacheFirstFetchPolicy: Story = {
 		},
 	},
 	play: async ({ canvasElement }) => {
-		await waitFor(() => {
-			expect(canvasElement).toBeTruthy();
-		}, { timeout: 3000 });
+		await waitFor(
+			() => {
+				expect(canvasElement).toBeTruthy();
+			},
+			{ timeout: 3000 },
+		);
 	},
 };
 
@@ -872,7 +923,8 @@ export const CurrentUserLoadingState: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const loadingSpinner = canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
 		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
@@ -917,8 +969,8 @@ export const ReservationQueryLoadingState: Story = {
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);
-		const loadingSpinner = canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
+		const loadingSpinner =
+			canvas.queryByRole('progressbar') ?? canvas.queryByText(/loading/i);
 		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
-

@@ -7,7 +7,7 @@ const usStates = countriesMockData.find(c => c.countryCode === 'US')?.states || 
 const caStates = countriesMockData.find(c => c.countryCode === 'CA')?.states || [];
 
 const meta: Meta<typeof StateProvinceFormItem> = {
-	title: 'Shared/Payment/StateProvinceFormItem',
+	title: 'Components/Shared/Payment/StateProvinceFormItem',
 	component: StateProvinceFormItem,
 	parameters: {
 		layout: 'padded',

@@ -1,41 +1,26 @@
-import type { Meta, StoryFn } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react";
+import { expect, within } from 'storybook/test';
 import { AppRoutes } from "./index.tsx";
-import { ListingsPageContainerGetListingsDocument, UseUserIsAdminDocument } from "../../../generated.tsx";
-import { withMockApolloClient, withMockRouter } from "../../../test-utils/storybook-decorators.tsx";
-import { expect } from 'storybook/test';
+import { withMockApolloClient,withMockRouter } from "../../../test-utils/storybook-decorators.tsx";
+import { ListingsPageContainerGetListingsDocument } from "../../../generated.tsx";
 
 const meta: Meta<typeof AppRoutes> = {
-	title: "Layouts/App Routes",
+	title: "Pages/Home - Authenticated",
 	component: AppRoutes,
 	decorators: [
 		withMockApolloClient,
-		withMockRouter("/"),
+		withMockRouter("/", true),
 	],
 };
 
 export default meta;
+type Story = StoryObj<typeof meta>;
 
-const Template: StoryFn<typeof AppRoutes> = () => <AppRoutes />;
 
-export const DefaultView: StoryFn<typeof AppRoutes> = Template.bind({});
-
+export const DefaultView: Story = {};
 DefaultView.play = async ({ canvasElement }) => {
-	// Component renders with lazy-loaded routes
-	expect(canvasElement).toBeTruthy();
-};
-
-/**
- * Tests that routes render correctly with lazy loading and Suspense.
- * Verifies the lazy() import mechanism and Suspense wrapper are working for all route components.
- */
-export const LazyLoadedRoutes: StoryFn<typeof AppRoutes> = Template.bind({});
-LazyLoadedRoutes.play = async ({ canvasElement }) => {
-	// Component should render (Suspense wrapper is present)
-	expect(canvasElement).toBeTruthy();
-	
-	// Verify the component has rendered content
-	const textContent = canvasElement.textContent || '';
-	expect(textContent.length).toBeGreaterThan(0);
+	const canvas = within(canvasElement);
+	await expect(canvas.getByRole('main')).toBeInTheDocument();
 };
 
 DefaultView.parameters = {
@@ -148,7 +133,58 @@ DefaultView.parameters = {
       },
       {
         request: {
-          query: UseUserIsAdminDocument,
+          query: {
+            kind: "Document",
+            definitions: [
+              {
+                kind: "OperationDefinition",
+                operation: "query",
+                name: { kind: "Name", value: "useUserIsAdmin" },
+                selectionSet: {
+                  kind: "SelectionSet",
+                  selections: [
+                    {
+                      kind: "Field",
+                      name: { kind: "Name", value: "currentUser" },
+                      selectionSet: {
+                        kind: "SelectionSet",
+                        selections: [
+                          {
+                            kind: "InlineFragment",
+                            typeCondition: {
+                              kind: "NamedType",
+                              name: { kind: "Name", value: "PersonalUser" },
+                            },
+                            selectionSet: {
+                              kind: "SelectionSet",
+                              selections: [
+                                { kind: "Field", name: { kind: "Name", value: "id" } },
+                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
+                              ],
+                            },
+                          },
+                          {
+                            kind: "InlineFragment",
+                            typeCondition: {
+                              kind: "NamedType",
+                              name: { kind: "Name", value: "AdminUser" },
+                            },
+                            selectionSet: {
+                              kind: "SelectionSet",
+                              selections: [
+                                { kind: "Field", name: { kind: "Name", value: "id" } },
+                                { kind: "Field", name: { kind: "Name", value: "userIsAdmin" } },
+                              ],
+                            },
+                          },
+                        ],
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
         },
         result: {
           data: {
