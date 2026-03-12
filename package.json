@@ -113,7 +113,7 @@
         "rollup": "4.59.0",
         "snyk": "^1.1301.0",
         "tsx": "^4.20.3",
-        "turbo": "^2.5.8",
+        "turbo": "^2.8.16",
         "typescript": "^5.8.3",
         "vite": "catalog:",
         "vitest": "catalog:"
