@@ -64,6 +64,26 @@ ignore:
         expires: '2026-03-13T00:00:00.000Z'
         created: '2026-02-13T00:00:00.000Z'
 
+  'SNYK-JS-YAUZL-15467445':
+    - '* > yauzl@3.2.0':
+        reason: 'Off-by-one Error in yauzl; no upgrade path available without major mongodb-memory-server version change. Only used in acceptance tests for MongoDB in-memory server testing, not production code.'
+        expires: '2026-06-12T00:00:00.000Z'
+        created: '2026-03-12T00:00:00.000Z'
+
+  'SNYK-JS-SVGO-15423912':
+    - '@docusaurus/preset-classic@3.9.2 > * > svgo@3.3.2':
+        reason: 'XML Entity Expansion in svgo; transitive dependency in Docusaurus documentation package (dev-only). SVG files processed by Docusaurus are from trusted sources during build time, not user input. Snyk reports no direct upgrade path due to pinned versions in @svgr/plugin-svgo.'
+        expires: '2026-09-12T00:00:00.000Z'
+        created: '2026-03-12T00:00:00.000Z'
+    - '@docusaurus/plugin-svgr@3.9.2 > * > svgo@3.3.2':
+        reason: 'XML Entity Expansion in svgo; transitive dependency in Docusaurus documentation package (dev-only). SVG files processed by Docusaurus are from trusted sources during build time, not user input. Snyk reports no direct upgrade path due to pinned versions in @svgr/plugin-svgo.'
+        expires: '2026-09-12T00:00:00.000Z'
+        created: '2026-03-12T00:00:00.000Z'
+    - '* > svgo@3.3.2':
+        reason: 'XML Entity Expansion in svgo; transitive dependency in Docusaurus documentation package (dev-only). SVG files processed by Docusaurus are from trusted sources during build time, not user input. Snyk reports no direct upgrade path due to pinned versions in @svgr/plugin-svgo.'
+        expires: '2026-09-12T00:00:00.000Z'
+        created: '2026-03-12T00:00:00.000Z'
+
 # Snyk Code exclusions for local development tooling
 exclude:
   code:

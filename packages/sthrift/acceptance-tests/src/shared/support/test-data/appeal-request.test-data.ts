@@ -28,25 +28,10 @@ export function createMockUserAppeal(): Domain.Contexts.AppealRequest.UserAppeal
 	return appeal;
 }
 
-export function getMockListingAppealById(id: string): Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference | null {
-	return listingAppeals.get(id) ?? null;
-}
-
-export function getMockUserAppealById(id: string): Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequestEntityReference | null {
-	return userAppeals.get(id) ?? null;
-}
-
 export function getAllMockListingAppeals(): Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference[] {
 	return Array.from(listingAppeals.values());
 }
 
 export function getAllMockUserAppeals(): Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequestEntityReference[] {
 	return Array.from(userAppeals.values());
-}
-
-export function clearMockAppeals(): void {
-	listingAppeals.clear();
-	userAppeals.clear();
-	listingAppealCounter = 1;
-	userAppealCounter = 1;
 }

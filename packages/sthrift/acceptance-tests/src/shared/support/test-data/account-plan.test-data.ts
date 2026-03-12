@@ -2,7 +2,7 @@ import type { Domain } from '@sthrift/domain';
 
 let accountPlanCounter = 1;
 
-export const accountPlans = new Map<string, Domain.Contexts.AccountPlan.AccountPlan.AccountPlanEntityReference>([
+const accountPlans = new Map<string, Domain.Contexts.AccountPlan.AccountPlan.AccountPlanEntityReference>([
 	[
 		'607f1f77bcf86cd799439001',
 		{
@@ -60,15 +60,6 @@ export function createMockAccountPlan(): Domain.Contexts.AccountPlan.AccountPlan
 	return plan;
 }
 
-export function getMockAccountPlanById(id: string): Domain.Contexts.AccountPlan.AccountPlan.AccountPlanEntityReference | null {
-	return accountPlans.get(id) ?? null;
-}
-
 export function getAllMockAccountPlans(): Domain.Contexts.AccountPlan.AccountPlan.AccountPlanEntityReference[] {
 	return Array.from(accountPlans.values());
-}
-
-export function clearMockAccountPlans(): void {
-	accountPlans.clear();
-	accountPlanCounter = 1;
 }

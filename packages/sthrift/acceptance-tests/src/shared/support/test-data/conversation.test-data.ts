@@ -27,25 +27,6 @@ export function createMockMessage(): Domain.Contexts.Conversation.Conversation.M
 	return message;
 }
 
-export function getMockConversationById(id: string): Domain.Contexts.Conversation.Conversation.ConversationEntityReference | null {
-	return conversations.get(id) ?? null;
-}
-
-export function getMockMessageById(id: string): Domain.Contexts.Conversation.Conversation.MessageEntityReference | null {
-	return messages.get(id) ?? null;
-}
-
 export function getAllMockConversations(): Domain.Contexts.Conversation.Conversation.ConversationEntityReference[] {
 	return Array.from(conversations.values());
-}
-
-export function getAllMockMessages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
-	return Array.from(messages.values());
-}
-
-export function clearMockConversations(): void {
-	conversations.clear();
-	messages.clear();
-	conversationCounter = 1;
-	messageCounter = 1;
 }

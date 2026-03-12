@@ -62,10 +62,6 @@ export function getMockReservationRequestById(id: string): ReservationRequestEnt
 	return reservationRequests.get(id) ?? null;
 }
 
-export function getAllMockReservationRequests(): ReservationRequestEntityReference[] {
-	return Array.from(reservationRequests.values());
-}
-
 export function getMockActiveByListingId(listingId: string): ReservationRequestEntityReference[] {
 	return Array.from(reservationRequests.values()).filter((r) => r.listing.id === listingId);
 }

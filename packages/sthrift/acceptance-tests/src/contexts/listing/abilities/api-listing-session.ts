@@ -1,4 +1,4 @@
-import { GraphqlSession } from '../../../shared/abilities/graphql-session.ts';
+import { ApiSession } from '../../../shared/abilities/api-session.ts';
 import type { CreateItemListingInput, ItemListingResponse } from './listing-types.ts';
 
 
@@ -7,7 +7,7 @@ export interface ListingSessionConfig {
 	includeIsDraft?: boolean;
 }
 
-export abstract class ApiListingSession extends GraphqlSession {
+export abstract class ApiListingSession extends ApiSession {
 	context = 'listing';
 	protected config: ListingSessionConfig = {};
 

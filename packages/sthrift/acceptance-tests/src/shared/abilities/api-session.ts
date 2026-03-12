@@ -1,27 +1,27 @@
 import { Ability } from '@serenity-js/core';
 import type { Session, OperationInput, OperationResult } from './session.ts';
 
-export type GraphQLOperationHandler = (input: OperationInput) => Promise<OperationResult>;
+export type ApiOperationHandler = (input: OperationInput) => Promise<OperationResult>;
 
-export interface GraphQLResponseData {
+export interface ApiResponseData {
 	data: Record<string, unknown>;
 	errors?: Array<{ message: string }>;
 }
 
-export class GraphqlSession extends Ability implements Session {
-	private operationHandlers = new Map<string, GraphQLOperationHandler>();
+export class ApiSession extends Ability implements Session {
+	private operationHandlers = new Map<string, ApiOperationHandler>();
 
 	constructor(private readonly apiUrl: string) {
 		super();
 	}
 
-	static at(apiUrl: string): GraphqlSession {
-		return new GraphqlSession(apiUrl);
+	static at(apiUrl: string): ApiSession {
+		return new ApiSession(apiUrl);
 	}
 
 	registerOperation(
 		operationName: string,
-		handler: GraphQLOperationHandler,
+		handler: ApiOperationHandler,
 	): void {
 		this.operationHandlers.set(operationName, handler);
 	}
@@ -42,7 +42,7 @@ export class GraphqlSession extends Ability implements Session {
 	async executeGraphQL(
 		query: string,
 		variables: Record<string, unknown>,
-	): Promise<GraphQLResponseData> {
+	): Promise<ApiResponseData> {
 		const response = await fetch(this.apiUrl, {
 			method: 'POST',
 			headers: {
@@ -51,7 +51,7 @@ export class GraphqlSession extends Ability implements Session {
 			body: JSON.stringify({ query, variables }),
 		});
 
-		const result = (await response.json()) as GraphQLResponseData;
+		const result = (await response.json()) as ApiResponseData;
 
 		// Handle GraphQL errors (these come with 200 OK or 400 Bad Request)
 		if (result.errors && Array.isArray(result.errors)) {

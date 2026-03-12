@@ -9,6 +9,10 @@
 import { register } from 'node:module';
 import { Window } from 'happy-dom';
 import React from 'react';
+// Import stub files to ensure they're tracked as used
+import './stubs/antd.js';
+import './stubs/antd-icons.js';
+import './stubs/react-router-dom.js';
 
 const window = new Window();
 

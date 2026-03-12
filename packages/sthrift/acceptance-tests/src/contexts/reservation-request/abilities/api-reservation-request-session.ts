@@ -1,7 +1,7 @@
-import { GraphqlSession } from '../../../shared/abilities/graphql-session.ts';
+import { ApiSession } from '../../../shared/abilities/api-session.ts';
 import type { CreateReservationRequestInput, ReservationRequestResponse } from './reservation-request-types.ts';
 
-export abstract class ApiReservationRequestSession extends GraphqlSession {
+export abstract class ApiReservationRequestSession extends ApiSession {
 	context = 'reservation';
 
 	constructor(apiUrl: string) {

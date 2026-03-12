@@ -48,8 +48,8 @@
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.{ts,tsx}"]
 		},
-		"packages/acceptance-tests": {
-			"entry": ["src/step-definitions/**/*.ts"],
+		"packages/sthrift/acceptance-tests": {
+			"entry": ["src/world.ts", "src/step-definitions/**/*.ts"],
 			"project": ["src/**/*.{ts,mjs,js}"]
 		}
 	},
@@ -86,8 +86,8 @@
 		"**/vitest.config.ts",
 		"**/vite.config.ts",
 		"packages/cellix/server-payment-seedwork/src/copy-assets.ts",
-		"packages/acceptance-tests/src/shared/support/**",
-		"packages/acceptance-tests/src/context/**/tasks/**/*.ts"
+		"packages/sthrift/acceptance-tests/src/shared/support/css-loader.mjs",
+		"packages/sthrift/acceptance-tests/src/shared/support/stubs/**"
 	],
 	"ignoreDependencies": [
 		"@cucumber/node",

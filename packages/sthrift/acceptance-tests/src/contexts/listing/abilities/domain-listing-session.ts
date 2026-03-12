@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import { Domain } from '@sthrift/domain';
 import { DomainSession } from '../../../shared/abilities/domain-session.ts';
 import type { CreateItemListingInput } from './listing-types.ts';
@@ -33,7 +34,8 @@ export class DomainListingSession extends DomainSession {
 	private handleCreateListing(input: CreateItemListingInput): Promise<ItemListingEntityReference> {
 		const passport = makeTestPassport();
 		const sharer = makeSharerUser();
-		const props = makeItemListingProps({ id: `listing-${Date.now()}-${Math.random().toString(36).slice(2, 7)}` });
+		const randomSuffix = randomBytes(4).toString('hex').slice(0, 6);
+		const props = makeItemListingProps({ id: `listing-${Date.now()}-${randomSuffix}` });
 
 		const aggregate = ItemListingAggregate.getNewInstance<ItemListingProps>(
 			props,

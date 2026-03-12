@@ -6,24 +6,16 @@ import type {
 import type { Domain } from '@sthrift/domain';
 import {
 	users,
-	clearUsers,
 	getVerifiedUserFromMock,
 } from '../test-data/user.test-data.ts';
 
 type PersonalUserEntityReference = Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
-import { clearMockListings } from '../test-data/listing.test-data.ts';
-import { clearMockReservationRequests } from '../test-data/reservation-request.test-data.ts';
-import { clearMockAppeals } from '../test-data/appeal-request.test-data.ts';
-import { clearMockConversations } from '../test-data/conversation.test-data.ts';
-import { clearMockAccountPlans } from '../test-data/account-plan.test-data.ts';
-import {
-	createMockUserService,
-	createMockListingService,
-	createMockReservationRequestService,
-	createMockConversationService,
-	createMockAccountPlanService,
-	createMockAppealRequestService,
-} from './test-app-services/index.ts';
+import { createMockUserService } from './test-app-services/user.test-app-services.ts';
+import { createMockListingService } from './test-app-services/listing.test-app-services.ts';
+import { createMockReservationRequestService } from './test-app-services/reservation-request.test-app-services.ts';
+import { createMockConversationService } from './test-app-services/conversation.test-app-services.ts';
+import { createMockAccountPlanService } from './test-app-services/account-plan.test-app-services.ts';
+import { createMockAppealRequestService } from './test-app-services/appeal-request.test-app-services.ts';
 
 export function createTestApplicationServicesFactory(): ApplicationServicesFactory {
 	const allUsers = Array.from(users.values());
@@ -45,13 +37,4 @@ export function createTestApplicationServicesFactory(): ApplicationServicesFacto
 			} as ApplicationServices);
 		},
 	};
-}
-
-export function clearAllTestData(): void {
-	clearUsers();
-	clearMockListings();
-	clearMockReservationRequests();
-	clearMockAppeals();
-	clearMockConversations();
-	clearMockAccountPlans();
 }

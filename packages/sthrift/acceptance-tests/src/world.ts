@@ -1,5 +1,7 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
 import { configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
+import './shared/support/hooks.ts';
+import './shared/support/register-css.mjs';
 import { RenderComponents } from './shared/abilities/render-components.ts';
 import { listingAbilities } from './contexts/listing/abilities/index.ts';
 import { DomainListingSession } from './contexts/listing/abilities/domain-listing-session.ts';
