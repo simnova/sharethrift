@@ -1,23 +1,24 @@
-import dotenv from 'dotenv';
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
 import {
 	startMockOAuth2Server,
 	type OAuth2Config,
 } from '@cellix/server-oauth2-seedwork';
 
-// Setup environment variables
-const setupEnvironment = () => {
-	console.log('Setting up environment variables');
-	dotenv.config();
-	dotenv.config({ path: `.env.local`, override: true });
-	console.log('Environment variables set up');
-};
+import { setupEnvironment } from './setup-environment.js';
 
+// Setup environment variables before using them
 setupEnvironment();
 
 // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 const port = Number(process.env['PORT'] ?? 4000);
 
 const BASE_URL = process.env['BASE_URL'] ?? 'https://mock-auth.sharethrift.localhost:1355';
+
+// Extract host from BASE_URL
+const baseUrlHost = new URL(BASE_URL).hostname;
 
 const allowedRedirectUris = new Set([
 	'http://localhost:3000/auth-redirect-user',
@@ -37,12 +38,22 @@ const redirectUriToAudience = new Map([
 	['https://sharethrift.localhost:1355/auth-redirect-admin', 'admin-portal'],
 ]);
 
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const USERS_FILE = path.join(__dirname, '../../mock-users.json');
+
+const mockUsersData = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
+
 const config: OAuth2Config = {
 	port,
 	baseUrl: BASE_URL,
+	host: baseUrlHost,
 	allowedRedirectUris,
 	allowedRedirectUri,
 	redirectUriToAudience,
+	mockUsers: mockUsersData,
 	getUserProfile: (isAdminPortal) => {
 		const email = isAdminPortal
 			? process.env['ADMIN_EMAIL'] || process.env['EMAIL'] || ''
