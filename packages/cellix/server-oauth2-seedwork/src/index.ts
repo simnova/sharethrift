@@ -8,10 +8,6 @@ import {
 	type JWK,
 	SignJWT,
 } from 'jose';
-import { setupEnvironment } from './setup-environment.js';
-
-setupEnvironment();
-
 const app = express();
 app.disable('x-powered-by');
 
@@ -19,6 +15,10 @@ export type OAuth2Config = {
     port: number;
     baseUrl: string;
     host?: string;
+    mockUsers?: {
+        users: Record<string, TokenProfile>;
+        refreshTokens: Record<string, string>;
+    };
     allowedRedirectUris: Set<string>;
     allowedRedirectUri: string;
     redirectUriToAudience: Map<string, string>;
@@ -38,7 +38,7 @@ function normalizeUrl(urlString: string): string {
 		params.sort();
 		const search = params.toString() ? `?${params.toString()}` : '';
 		return `${url.origin}${pathname}${search}`;
-	} catch {
+	} catch (_e) {
 		return urlString;
 	}
 }
@@ -167,10 +167,38 @@ async function main(config: OAuth2Config) {
 		next();
 	});
 
-	// Simulate sign up endpoint
+	// Token endpoint - handles both authorization code and refresh token grants
 	app.post('/token', async (req, res) => {
-		const { tid, code } = req.body;
+		const { grant_type, refresh_token, tid, code } = req.body;
 
+		// Handle refresh token grant
+		if (grant_type === 'refresh_token') {
+			if (!refresh_token || !config.mockUsers) {
+				return res.status(400).json({ error: 'invalid_grant' });
+			}
+
+			const sub = config.mockUsers.refreshTokens[refresh_token];
+			if (!sub) {
+				return res.status(400).json({ error: 'invalid_grant' });
+			}
+
+			const profile = config.mockUsers.users[sub];
+			if (!profile) {
+				return res.status(400).json({ error: 'invalid_grant' });
+			}
+
+			// Issue new tokens, keep the same refresh_token
+			const tokenResponse = await buildTokenResponse(
+				profile,
+				keyObject,
+				publicJwk,
+				config.baseUrl,
+				refresh_token,
+			);
+			return res.json(tokenResponse);
+		}
+
+		// Handle authorization code grant (original flow)
 		if (typeof code !== 'string') {
 			res.status(400).json({
 				error: 'invalid_request',
@@ -216,7 +244,7 @@ async function main(config: OAuth2Config) {
 			publicJwk,
 			config.baseUrl,
 		);
-		res.json(tokenResponse);
+		return res.json(tokenResponse);
 	});
 
 	app.get('/.well-known/openid-configuration', (_req, res) => {
@@ -277,8 +305,44 @@ async function main(config: OAuth2Config) {
 		return;
 	});
 
+	// UserInfo endpoint - returns current user profile from ID token
+	app.get('/userinfo', (req, res) => {
+		const authHeader = req.headers.authorization as string | undefined;
+		if (!authHeader?.startsWith('Bearer ')) {
+			return res.status(401).json({ error: 'unauthorized' });
+		}
+
+		try {
+			// Extract token and decode (simplified - in production would validate signature)
+			const token = authHeader.substring(7);
+			const parts = token.split('.');
+			if (parts.length !== 3 || !parts[1]) {
+				return res.status(401).json({ error: 'invalid_token' });
+			}
+
+			const payload = JSON.parse(
+				Buffer.from(parts[1], 'base64').toString('utf-8'),
+			);
+
+			// Derive username from email (part before @)
+			const username = payload.email ? payload.email.split('@')[0] : '';
+
+			// Return user info from token claims
+			return res.json({
+				sub: payload.sub,
+				email: payload.email,
+				given_name: payload.given_name,
+				family_name: payload.family_name,
+				name: `${payload.given_name} ${payload.family_name}`,
+				username,
+			});
+		} catch (_e) {
+			return res.status(401).json({ error: 'invalid_token' });
+		}
+	});
+
 	// HTTP server — portless handles TLS/proxy at the subdomain level
-	app.listen(config.port, () => {
+	app.listen(config.port, config.host || 'localhost', () => {
 		console.log(`Mock OAuth2 server running on ${config.baseUrl}`);
 		console.log(`JWKS endpoint running on ${config.baseUrl}/.well-known/jwks.json`);
 	});
