@@ -96,7 +96,7 @@ function parseDefinitions(content: string): ParsedDefinition[] {
 function parseMutationFields(body: string): Array<{ name: string; returnType: string }> {
 	const fields: Array<{ name: string; returnType: string }> = [];
 	// Match: fieldName(...): ReturnType or fieldName(...): ReturnType!
-	const fieldRegex = /(\w+)\s*\([^)]*\)\s*:\s*([^\n!]+!?)/g;
+	const fieldRegex = /(\w+)\s*\([^)]*\)\s*:\s*([^\n!]+?)!?/g;
 	let match = fieldRegex.exec(body);
 	while (match !== null) {
 		fields.push({ name: match[1] as string, returnType: (match[2] as string).trim() });
