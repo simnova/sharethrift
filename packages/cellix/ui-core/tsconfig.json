@@ -8,7 +8,6 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "exactOptionalPropertyTypes": false,
     "skipLibCheck": true
   },

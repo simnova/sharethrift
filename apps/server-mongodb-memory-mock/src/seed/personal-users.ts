@@ -146,4 +146,24 @@ export const personalUsers: Models.User.PersonalUser[] = [
 		createdAt: new Date('2023-01-03T12:00:00Z'),
 		updatedAt: new Date('2023-01-03T12:00:00Z'),
 	},
+	{
+		_id: '507f1f77bcf86cd799439015',
+		userType: 'personal-user',
+		isBlocked: false,
+		hasCompletedOnboarding: false,
+		account: {
+			accountType: 'non-verified-personal',
+			email: 'nkduy2011@gmail.com',
+			username: 'nkduy2011',
+			profile: {
+				firstName: 'Duy',
+				lastName: 'Nguyen',
+				location: addressPineRdPA,
+			} as Models.User.PersonalUserAccountProfile,
+		} as Models.User.PersonalUserAccount,
+		schemaVersion: '1.0.0',
+		version: 1,
+		createdAt: new Date('2026-03-13T19:29:17.243Z'),
+		updatedAt: new Date('2026-03-13T19:29:17.243Z'),
+	},
 ] as unknown as Models.User.PersonalUser[];

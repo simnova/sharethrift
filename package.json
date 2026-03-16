@@ -81,11 +81,9 @@
             "lodash": "^4.17.23",
             "minimatch": ">=10.2.3",
             "qs": ">=6.14.2",
-            "serialize-javascript": ">=7.0.3"
+            "serialize-javascript": ">=7.0.3",
+            "undici": ">=6.24.0"
         }
-    },
-    "catalog": {
-        "@azure/functions": "4.8.0"
     },
     "devDependencies": {
         "@amiceli/vitest-cucumber": "^6.1.0",
@@ -113,7 +111,7 @@
         "rollup": "4.59.0",
         "snyk": "^1.1301.0",
         "tsx": "^4.20.3",
-        "turbo": "^2.5.8",
+        "turbo": "^2.8.16",
         "typescript": "^5.8.3",
         "vite": "catalog:",
         "vitest": "catalog:"
