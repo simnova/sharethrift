@@ -42,7 +42,7 @@ So that I can view, filter, and create listings through the GraphQL API
 		And valid pagination arguments (page, pageSize)
 		When the myListingsAll query is executed
 		Then it should call Listing.ItemListing.queryPaged with sharerId, page, and pageSize
-        And it should transform each listing into ListingAll shape
+        And it should transform each listing into ItemListingAll shape
 		And it should map state values like "Active" to "Active" and "Draft" to "Draft"
 		And it should return items, total, page, and pageSize in the response
     
@@ -66,7 +66,7 @@ So that I can view, filter, and create listings through the GraphQL API
 
 	Scenario: Creating an item listing successfully
 		Given a user with a verifiedJwt containing email
-		And a valid CreateItemListingInput with title, description, category, location, sharing period, and images
+		And a valid ItemListingCreateInput with title, description, category, location, sharing period, and images
 		When the createItemListing mutation is executed
 		Then it should call User.PersonalUser.queryByEmail with the user's email
 		And call Listing.ItemListing.create with the constructed command
@@ -85,7 +85,7 @@ So that I can view, filter, and create listings through the GraphQL API
     Scenario: Error while creating an item listing
 		Given Listing.ItemListing.create throws an error
 		When the createItemListing mutation is executed
-		Then it should propagate the error message
+		Then it should return a failure result with the error message
     
 	Scenario: Mapping item listing fields for myListingsAll
 		Given a valid result from queryPaged
@@ -104,7 +104,7 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given a valid listing ID to unblock
 		When the unblockListing mutation is executed
 		Then it should call Listing.ItemListing.unblock with the ID
-		And it should return true
+		And it should return success status
 
 	Scenario: Canceling an item listing successfully
 		Given a valid listing ID to cancel

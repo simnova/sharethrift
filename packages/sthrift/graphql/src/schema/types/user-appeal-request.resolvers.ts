@@ -58,9 +58,21 @@ const userAppealRequestResolvers: Resolvers = {
 			// TODO: SECURITY - Add authentication check
 			// TODO: SECURITY - Verify the authenticated user matches userId
 			// TODO: SECURITY - Verify the user is actually blocked by blockerId
-			return await context.applicationServices.AppealRequest.UserAppealRequest.create(
-				args.input,
-			);
+			try {
+				const userAppealRequest =
+					await context.applicationServices.AppealRequest.UserAppealRequest.create(
+						args.input,
+					);
+				return {
+					status: { success: true },
+					userAppealRequest,
+				};
+			} catch (error) {
+				const { message } = error as Error;
+				return {
+					status: { success: false, errorMessage: message },
+				};
+			}
 		},
 		updateUserAppealRequestState: async (
 			_parent: unknown,
@@ -70,16 +82,28 @@ const userAppealRequestResolvers: Resolvers = {
 		) => {
 			// TODO: SECURITY - Add admin permission check
 			// Only admins should be able to update appeal request state
-			const state = args.input.state.toLowerCase() as
-				| 'requested'
-				| 'denied'
-				| 'accepted';
-			return await context.applicationServices.AppealRequest.UserAppealRequest.updateState(
-				{
-					id: args.input.id,
-					state,
-				},
-			);
+			try {
+				const state = args.input.state.toLowerCase() as
+					| 'requested'
+					| 'denied'
+					| 'accepted';
+				const userAppealRequest =
+					await context.applicationServices.AppealRequest.UserAppealRequest.updateState(
+						{
+							id: args.input.id,
+							state,
+						},
+					);
+				return {
+					status: { success: true },
+					userAppealRequest,
+				};
+			} catch (error) {
+				const { message } = error as Error;
+				return {
+					status: { success: false, errorMessage: message },
+				};
+			}
 		},
 	},
 };

@@ -268,12 +268,12 @@ export async function checkGraphqlResolverContent(config: GraphqlResolverConvent
 /**
  * Check that GraphQL types directory maintains a flat structure (no nested subdirectories for resolver types)
  */
-export function checkGraphqlFlatStructure(config: GraphqlFlatStructureConfig): string[] {
+export async function checkGraphqlFlatStructure(config: GraphqlFlatStructureConfig): Promise<string[]> {
   const violations: string[] = [];
   const resolvedPath = path.join(process.cwd(), config.typesDirectoryPath);
   const allowedSubs = new Set(config.allowedSubdirectories ?? []);
 
-  const subdirs = getDirectories(resolvedPath);
+  const subdirs = await getDirectories(resolvedPath);
   for (const dir of subdirs) {
     if (!allowedSubs.has(dir)) {
       violations.push(

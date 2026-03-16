@@ -42,14 +42,26 @@ fragment AdminUsersTableContainerAccountFields on PersonalUserAccount {
 
 mutation BlockUser($userId: ObjectID!) {
 	blockUser(userId: $userId) {
-		id
-		isBlocked
+		status {
+			success
+			errorMessage
+		}
+		personalUser {
+			id
+			isBlocked
+		}
 	}
 }
 
 mutation UnblockUser($userId: ObjectID!) {
 	unblockUser(userId: $userId) {
-		id
-		isBlocked
+		status {
+			success
+			errorMessage
+		}
+		personalUser {
+			id
+			isBlocked
+		}
 	}
 }

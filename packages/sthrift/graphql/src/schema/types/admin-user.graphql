@@ -78,6 +78,11 @@ input AdminUserAccountProfileLocationUpdateInput {
 	zipCode: String
 }
 
+type AdminUserMutationResult implements MutationResult {
+	status: MutationStatus!
+	adminUser: AdminUser
+}
+
 extend type Query {
 	# Admin User queries
 	adminUserById(id: ObjectID!): AdminUser
@@ -97,10 +102,10 @@ extend type Query {
 
 extend type Mutation {
 	# Admin User mutations
-	createAdminUser(input: AdminUserCreateInput!): AdminUser!
-	adminUserUpdate(input: AdminUserUpdateInput!): AdminUser!
+	createAdminUser(input: AdminUserCreateInput!): AdminUserMutationResult!
+	adminUserUpdate(input: AdminUserUpdateInput!): AdminUserMutationResult!
 
 	# # Uncomment when admin blocking is needed
-	# blockAdminUser(userId: ObjectID!): AdminUser!
-	# unblockAdminUser(userId: ObjectID!): AdminUser!
+	# blockAdminUser(userId: ObjectID!): AdminUserMutationResult!
+	# unblockAdminUser(userId: ObjectID!): AdminUserMutationResult!
 }

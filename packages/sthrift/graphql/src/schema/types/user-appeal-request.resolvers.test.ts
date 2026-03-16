@@ -240,7 +240,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 
 			Then('it should create and return the new user appeal request', () => {
-				expect(result).toEqual(mockUserAppealRequest);
+				const mutationResult = result as { status: { success: boolean }; userAppealRequest: typeof mockUserAppealRequest };
+				expect(mutationResult.status.success).toBe(true);
+				expect(mutationResult.userAppealRequest).toEqual(mockUserAppealRequest);
 				expect(
 					mockContext.applicationServices.AppealRequest.UserAppealRequest.create,
 				).toHaveBeenCalledWith(input);
@@ -271,7 +273,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 
 			Then('it should update the request state successfully', () => {
-				expect(result).toEqual(mockUserAppealRequest);
+				const mutationResult = result as { status: { success: boolean }; userAppealRequest: typeof mockUserAppealRequest };
+				expect(mutationResult.status.success).toBe(true);
+				expect(mutationResult.userAppealRequest).toEqual(mockUserAppealRequest);
 				expect(
 					mockContext.applicationServices.AppealRequest.UserAppealRequest.updateState,
 				).toHaveBeenCalledWith({

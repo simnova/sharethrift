@@ -18,22 +18,22 @@ type ItemListing implements MongoBase {
 	version: Int
 }
 
-type ListingAllPage {
-	items: [ListingAll!]!
+type ItemListingAllPage {
+	items: [ItemListingAll!]!
 	total: Int!
 	page: Int!
 	pageSize: Int!
 }
 
-type ListingRequestPage {
-	items: [ListingRequest!]!
+type ItemListingRequestPage {
+	items: [ItemListingRequest!]!
 	total: Int!
 	page: Int!
 	pageSize: Int!
 }
 
 # Listing types for dashboard
-type ListingAll {
+type ItemListingAll {
 	id: ObjectID!
 	title: String!
 	images: [String!]
@@ -43,7 +43,7 @@ type ListingAll {
 	state: String
 }
 
-type ListingRequest {
+type ItemListingRequest {
 	id: ObjectID!
 	title: String!
 	image: String
@@ -53,12 +53,7 @@ type ListingRequest {
 	status: String!
 }
 
-input SorterInput {
-	field: String!
-	order: String!
-}
-
-input CreateItemListingInput {
+input ItemListingCreateInput {
 	title: String!
 	description: String!
 	category: String!
@@ -70,15 +65,8 @@ input CreateItemListingInput {
 }
 
 type ItemListingMutationResult implements MutationResult {
-  status: MutationStatus!
-  listing: ItemListing
-}
-
-extend type Mutation {
-	createItemListing(input: CreateItemListingInput!): ItemListing!
-	cancelItemListing(id: ObjectID!): ItemListingMutationResult!
-	deleteItemListing(id: ObjectID!): ItemListingMutationResult!
-	unblockListing(id: ObjectID!): Boolean!
+	status: MutationStatus!
+	listing: ItemListing
 }
 
 extend type Query {
@@ -90,12 +78,19 @@ extend type Query {
 		searchText: String
 		statusFilters: [String!]
 		sorter: SorterInput
-	): ListingAllPage!
+	): ItemListingAllPage!
 	adminListings(
 		page: Int!
 		pageSize: Int!
 		searchText: String
 		statusFilters: [String!]
 		sorter: SorterInput
-	): ListingAllPage!
+	): ItemListingAllPage!
+}
+
+extend type Mutation {
+	createItemListing(input: ItemListingCreateInput!): ItemListingMutationResult!
+	cancelItemListing(id: ObjectID!): ItemListingMutationResult!
+	deleteItemListing(id: ObjectID!): ItemListingMutationResult!
+	unblockListing(id: ObjectID!): ItemListingMutationResult!
 }

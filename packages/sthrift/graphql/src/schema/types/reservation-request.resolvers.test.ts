@@ -739,7 +739,9 @@ test.for(feature, ({ Scenario }) => {
 				},
 			);
 			And('it should return the created reservation request', () => {
-				expect(result).toBeDefined();
+				const mutationResult = result as { status: { success: boolean }; reservationRequest: unknown };
+				expect(mutationResult.status.success).toBe(true);
+				expect(mutationResult.reservationRequest).toBeDefined();
 			});
 		},
 	);
@@ -805,23 +807,20 @@ test.for(feature, ({ Scenario }) => {
 				).mockRejectedValue(new Error('Creation failed'));
 			});
 			When('the createReservationRequest mutation is executed', async () => {
-				try {
-					const resolver = reservationRequestResolvers.Mutation
-						?.createReservationRequest as TestResolver<{
-						input: {
-							listingId: string;
-							reservationPeriodStart: string;
-							reservationPeriodEnd: string;
-						};
-					}>;
-					await resolver({}, { input }, context, {} as never);
-				} catch (e) {
-					error = e as Error;
-				}
+				const resolver = reservationRequestResolvers.Mutation
+					?.createReservationRequest as TestResolver<{
+					input: {
+						listingId: string;
+						reservationPeriodStart: string;
+						reservationPeriodEnd: string;
+					};
+				}>;
+				result = await resolver({}, { input }, context, {} as never);
 			});
-			Then('it should propagate the error message', () => {
-				expect(error).toBeDefined();
-				expect(error?.message).toContain('Creation failed');
+			Then('it should return failure result with error message', () => {
+				const mutationResult = result as { status: { success: boolean; errorMessage: string } };
+				expect(mutationResult.status.success).toBe(false);
+				expect(mutationResult.status.errorMessage).toContain('Creation failed');
 			});
 		},
 	);
@@ -959,23 +958,20 @@ test.for(feature, ({ Scenario }) => {
 				},
 			);
 			When('the createReservationRequest mutation is executed', async () => {
-				try {
-					const resolver = reservationRequestResolvers.Mutation
-						?.createReservationRequest as TestResolver<{
-						input: {
-							listingId: string;
-							reservationPeriodStart: string;
-							reservationPeriodEnd: string;
-						};
-					}>;
-					await resolver({}, { input }, context, {} as never);
-				} catch (e) {
-					error = e as Error;
-				}
+				const resolver = reservationRequestResolvers.Mutation
+					?.createReservationRequest as TestResolver<{
+					input: {
+						listingId: string;
+						reservationPeriodStart: string;
+						reservationPeriodEnd: string;
+					};
+				}>;
+				result = await resolver({}, { input }, context, {} as never);
 			});
 			Then('it should throw a validation or business rule error', () => {
-				expect(error).toBeDefined();
-				expect(error?.message).toContain('start date must be before end date');
+				const mutationResult = result as { status: { success: boolean; errorMessage: string } };
+				expect(mutationResult.status.success).toBe(false);
+				expect(mutationResult.status.errorMessage).toContain('start date must be before end date');
 			});
 		},
 	);

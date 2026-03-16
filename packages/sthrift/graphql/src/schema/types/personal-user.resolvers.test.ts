@@ -348,7 +348,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		);
 		And('the user should be marked as blocked', () => {
 			expect(result).toBeDefined();
-			expect((result as { isBlocked: boolean }).isBlocked).toBe(true);
+			const mutationResult = result as { status: { success: boolean }; personalUser: { isBlocked: boolean } };
+			expect(mutationResult.status.success).toBe(true);
+			expect(mutationResult.personalUser.isBlocked).toBe(true);
 		});
 	});
 
@@ -388,7 +390,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		);
 		And('the user should be unblocked successfully', () => {
 			expect(result).toBeDefined();
-			expect((result as { isBlocked: boolean }).isBlocked).toBe(false);
+			const mutationResult = result as { status: { success: boolean }; personalUser: { isBlocked: boolean } };
+			expect(mutationResult.status.success).toBe(true);
+			expect(mutationResult.personalUser.isBlocked).toBe(false);
 		});
 	});
 
@@ -451,8 +455,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				'return a PaymentResponse with status "SUCCEEDED" and success true',
 				() => {
 					expect(result).toBeDefined();
-					expect((result as { status: string }).status).toBe('SUCCEEDED');
-					expect((result as { success: boolean }).success).toBe(true);
+					const mutationResult = result as { status: { success: boolean }; paymentResponse: { status: string; success: boolean } };
+					expect(mutationResult.status.success).toBe(true);
+					expect(mutationResult.paymentResponse.status).toBe('SUCCEEDED');
+					expect(mutationResult.paymentResponse.success).toBe(true);
 				},
 			);
 		},
@@ -498,17 +504,14 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				}
 			});
 			Then('it should return a PaymentResponse with status "FAILED"', () => {
-				expect((result as { status: string }).status).toBe('FAILED');
-				expect((result as { success: boolean }).success).toBe(false);
+				const mutationResult = result as { status: { success: boolean; errorMessage: string } };
+				expect(mutationResult.status.success).toBe(false);
+				expect(mutationResult.status.errorMessage).toBe('Payment failed');
 			});
 			And('include errorInformation with reason "PROCESSING_ERROR"', () => {
-				expect(
-					(result as { errorInformation: { reason: string } }).errorInformation,
-				).toBeDefined();
-				expect(
-					(result as { errorInformation: { reason: string } }).errorInformation
-						.reason,
-				).toBe('PROCESSING_ERROR');
+				// Error details are now in status.errorMessage, not in a nested errorInformation
+				const mutationResult = result as { status: { errorMessage: string } };
+				expect(mutationResult.status.errorMessage).toBeDefined();
 			});
 		},
 	);

@@ -103,7 +103,7 @@ const mockConversationDetail = {
 	},
 	messages: [
 		{
-			__typename: 'Message',
+			__typename: 'ConversationMessage',
 			id: 'msg-1',
 			messagingMessageId: 'SM001',
 			content: 'Hi, is this still available?',
@@ -262,7 +262,7 @@ const sendMessageSuccessResult = {
 		errorMessage: null,
 	},
 	message: {
-		__typename: 'Message' as const,
+		__typename: 'ConversationMessage' as const,
 		id: 'msg-new',
 		messagingMessageId: 'SM002',
 		authorId: 'user-1',
@@ -285,7 +285,7 @@ const multipleMessagesConversation = {
 	...mockConversationDetail,
 	messages: [
 		{
-			__typename: 'Message' as const,
+			__typename: 'ConversationMessage' as const,
 			id: 'msg-1',
 			messagingMessageId: 'SM001',
 			content: 'Hi, is this still available?',
@@ -293,7 +293,7 @@ const multipleMessagesConversation = {
 			authorId: 'user-2',
 		},
 		{
-			__typename: 'Message' as const,
+			__typename: 'ConversationMessage' as const,
 			id: 'msg-2',
 			messagingMessageId: 'SM002',
 			content: 'Yes it is! When would you like to pick it up?',
@@ -301,7 +301,7 @@ const multipleMessagesConversation = {
 			authorId: 'user-1',
 		},
 		{
-			__typename: 'Message' as const,
+			__typename: 'ConversationMessage' as const,
 			id: 'msg-3',
 			messagingMessageId: 'SM003',
 			content: 'How about tomorrow at 3pm?',
@@ -309,7 +309,7 @@ const multipleMessagesConversation = {
 			authorId: 'user-2',
 		},
 		{
-			__typename: 'Message' as const,
+			__typename: 'ConversationMessage' as const,
 			id: 'msg-4',
 			messagingMessageId: 'SM004',
 			content: 'That works for me! See you then.',

@@ -11,7 +11,7 @@ const createMockListing = (
 	sharingPeriodStart?: string,
 	sharingPeriodEnd?: string,
 ) => ({
-	__typename: 'ListingAll' as const,
+	__typename: 'ItemListingAll' as const,
 	id,
 	title,
 	state,
@@ -249,7 +249,7 @@ export const ExpiredListing: Story = {
 export const ListingWithoutDates: Story = {
 	args: {
 		data: [{
-			__typename: 'ListingAll' as const,
+			__typename: 'ItemListingAll' as const,
 			id: '1',
 			title: 'No Dates Item',
 			state: 'Draft',

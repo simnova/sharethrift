@@ -48,7 +48,7 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 		HomeCreateListingContainerCreateItemListingDocument,
 		{
 			onCompleted: (data) => {
-				const isDraft = data.createItemListing.state === 'Draft';
+				const isDraft = data.createItemListing.listing?.state === 'Draft';
 				message.success(
 					isDraft
 						? 'Listing saved as draft!'

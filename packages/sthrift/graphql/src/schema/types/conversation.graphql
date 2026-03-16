@@ -3,19 +3,40 @@ type Conversation implements MongoBase {
 	reserver: User!
 	listing: ItemListing!
 	messagingConversationId: String!
-	messages: [Message!]!
+	messages: [ConversationMessage!]!
 	id: ObjectID!
 	schemaVersion: String!
 	createdAt: DateTime!
 	updatedAt: DateTime!
 }
 
-type Message {
+type ConversationMessage {
 	id: ObjectID!
 	messagingMessageId: String!
 	authorId: ObjectID!
 	content: String!
 	createdAt: DateTime!
+}
+
+input ConversationCreateInput {
+	sharerId: ObjectID!
+	reserverId: ObjectID!
+	listingId: ObjectID!
+}
+
+input ConversationSendMessageInput {
+	conversationId: ObjectID!
+	content: String!
+}
+
+type ConversationMutationResult implements MutationResult {
+	status: MutationStatus!
+	conversation: Conversation
+}
+
+type ConversationSendMessageMutationResult implements MutationResult {
+	status: MutationStatus!
+	message: ConversationMessage
 }
 
 extend type Query {
@@ -27,26 +48,7 @@ extend type Mutation {
 	createConversation(
 		input: ConversationCreateInput!
 	): ConversationMutationResult!
-	sendMessage(input: SendMessageInput!): SendMessageMutationResult!
-}
-
-input ConversationCreateInput {
-	sharerId: ObjectID!
-	reserverId: ObjectID!
-	listingId: ObjectID!
-}
-
-input SendMessageInput {
-	conversationId: ObjectID!
-	content: String!
-}
-
-type ConversationMutationResult implements MutationResult {
-	status: MutationStatus!
-	conversation: Conversation
-}
-
-type SendMessageMutationResult implements MutationResult {
-	status: MutationStatus!
-	message: Message
+	sendMessage(
+		input: ConversationSendMessageInput!
+	): ConversationSendMessageMutationResult!
 }

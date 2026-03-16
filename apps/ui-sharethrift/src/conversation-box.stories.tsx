@@ -48,7 +48,7 @@ const mockConversation = {
 	},
 	messages: [
 		{
-			__typename: 'Message',
+			__typename: 'ConversationMessage',
 			id: 'msg-1',
 			messagingMessageId: 'SM001',
 			content: 'Hi, is this still available?',
@@ -90,7 +90,7 @@ export const WithMultipleMessages: Story = {
 			...mockConversation,
 			messages: [
 				{
-					__typename: 'Message',
+					__typename: 'ConversationMessage',
 					id: 'msg-1',
 					messagingMessageId: 'SM001',
 					content: 'Hi, is this still available?',
@@ -98,7 +98,7 @@ export const WithMultipleMessages: Story = {
 					authorId: 'user-2',
 				},
 				{
-					__typename: 'Message',
+					__typename: 'ConversationMessage',
 					id: 'msg-2',
 					messagingMessageId: 'SM002',
 					content: 'Yes it is! When would you like to pick it up?',

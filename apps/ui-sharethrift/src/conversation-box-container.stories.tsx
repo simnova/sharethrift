@@ -57,7 +57,7 @@ const createConversationMock = (
 		},
 		messages: [
 			{
-				__typename: 'Message',
+				__typename: 'ConversationMessage',
 				id: 'msg-1',
 				messagingMessageId: 'SM001',
 				content: 'Hi, is this still available?',
@@ -96,7 +96,7 @@ const createSendMessageMock = (
 		message:
 			mode === 'success'
 				? {
-						__typename: 'Message' as const,
+						__typename: 'ConversationMessage' as const,
 						id: 'msg-new',
 						messagingMessageId: 'SM999',
 						content,

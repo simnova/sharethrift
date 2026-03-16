@@ -17,34 +17,41 @@ type UserAppealRequestPageResult {
 	pageSize: Int!
 }
 
-input CreateUserAppealRequestInput {
+input UserAppealRequestCreateInput {
 	userId: ObjectID!
 	reason: String!
 	blockerId: ObjectID!
 }
 
-input UpdateUserAppealRequestStateInput {
+input UserAppealRequestUpdateStateInput {
 	id: ObjectID!
 	state: AppealRequestState!
 }
 
-input GetAllUserAppealRequestsInput {
+input UserAppealRequestGetAllInput {
 	page: Int!
 	pageSize: Int!
 	stateFilters: [String!]
 	sorter: SorterInput
 }
 
+type UserAppealRequestMutationResult implements MutationResult {
+	status: MutationStatus!
+	userAppealRequest: UserAppealRequest
+}
+
 extend type Query {
 	getUserAppealRequest(id: ObjectID!): UserAppealRequest
 	getAllUserAppealRequests(
-		input: GetAllUserAppealRequestsInput!
+		input: UserAppealRequestGetAllInput!
 	): UserAppealRequestPageResult!
 }
 
 extend type Mutation {
-	createUserAppealRequest(input: CreateUserAppealRequestInput!): UserAppealRequest!
+	createUserAppealRequest(
+		input: UserAppealRequestCreateInput!
+	): UserAppealRequestMutationResult!
 	updateUserAppealRequestState(
-		input: UpdateUserAppealRequestStateInput!
-	): UserAppealRequest!
+		input: UserAppealRequestUpdateStateInput!
+	): UserAppealRequestMutationResult!
 }

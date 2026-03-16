@@ -1,51 +1,66 @@
-import * as fs from 'node:fs';
-import * as path from 'node:path';
+import { projectFiles, type FileInfo } from 'archunit';
 
 /**
- * Recursively get all files in a directory
+ * Recursively get all files matching a glob pattern
  */
-export function getAllFiles(
-	dirPath: string,
-	arrayOfFiles: string[] = [],
-): string[] {
-	if (!fs.existsSync(dirPath)) return arrayOfFiles;
+export async function getAllFiles(globPattern: string): Promise<string[]> {
+	const files: string[] = [];
+	await projectFiles()
+		.inPath(globPattern)
+		.should()
+		.adhereTo((file: FileInfo) => {
+			files.push(file.path);
+			return true;
+		}, 'collect files')
+		.check();
+	return files;
+}
 
-	const files = fs.readdirSync(dirPath);
+/**
+ * Get immediate subdirectories using archunit
+ */
+export async function getDirectories(globPattern: string): Promise<string[]> {
+	const dirs = new Set<string>();
+	await projectFiles()
+		.inPath(globPattern)
+		.should()
+		.adhereTo((file: FileInfo) => {
+			const parts = file.path.split('/');
+			const dirName = parts.at(-2);
+			if (dirName) {
+				dirs.add(dirName);
+			}
+			return true;
+		}, 'collect directories')
+		.check();
+	return Array.from(dirs);
+}
 
-	for (const file of files) {
-		const fullPath = path.join(dirPath, file);
-		if (fs.statSync(fullPath).isDirectory()) {
-			arrayOfFiles = getAllFiles(fullPath, arrayOfFiles);
-		} else {
-			arrayOfFiles.push(fullPath);
-		}
+/**
+ * Check if a file exists using archunit
+ */
+export async function fileExists(globPattern: string): Promise<boolean> {
+	let found = false;
+	try {
+		await projectFiles()
+			.inPath(globPattern)
+			.should()
+			.adhereTo(() => {
+				found = true;
+				return true;
+			}, 'check file exists')
+			.check();
+	} catch {
+		// File doesn't exist
 	}
-
-	return arrayOfFiles;
+	return found;
 }
 
 /**
- * Get immediate subdirectories of a path
+ * Check if a directory exists using archunit
  */
-export function getDirectories(dirPath: string): string[] {
-	if (!fs.existsSync(dirPath)) return [];
-	return fs
-		.readdirSync(dirPath)
-		.filter((file) => fs.statSync(path.join(dirPath, file)).isDirectory());
-}
-
-/**
- * Check if a directory exists at the given path
- */
-export function directoryExists(dirPath: string): boolean {
-	return fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory();
-}
-
-/**
- * Check if a file exists at the given path
- */
-export function fileExists(filePath: string): boolean {
-	return fs.existsSync(filePath) && fs.statSync(filePath).isFile();
+export async function directoryExists(globPattern: string): Promise<boolean> {
+	return await fileExists(globPattern);
 }
 
 /**

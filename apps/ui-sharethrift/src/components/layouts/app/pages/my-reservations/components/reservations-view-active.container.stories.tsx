@@ -102,7 +102,7 @@ const meta: Meta = {
 					},
 					result: {
 						data: {
-							cancelReservation: { __typename: 'ReservationRequest', id: '1' },
+							cancelReservation: { __typename: 'ReservationRequestMutationResult', status: { success: true, errorMessage: null }, reservationRequest: { __typename: 'ReservationRequest', id: '1' } },
 						},
 					},
 				},
@@ -114,7 +114,7 @@ const meta: Meta = {
 					},
 					result: {
 						data: {
-							closeReservation: { __typename: 'ReservationRequest', id: '1' },
+							closeReservation: { __typename: 'ReservationRequestMutationResult', status: { success: true, errorMessage: null }, reservationRequest: { __typename: 'ReservationRequest', id: '1' } },
 						},
 					},
 				},
@@ -334,7 +334,7 @@ export const CancelSuccess: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							cancelReservation: { __typename: 'ReservationRequest', id: '1' },
+							cancelReservation: { __typename: 'ReservationRequestMutationResult', status: { success: true, errorMessage: null }, reservationRequest: { __typename: 'ReservationRequest', id: '1' } },
 						},
 					},
 				},
@@ -450,7 +450,7 @@ export const CloseSuccess: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							closeReservation: { __typename: 'ReservationRequest', id: '1' },
+							closeReservation: { __typename: 'ReservationRequestMutationResult', status: { success: true, errorMessage: null }, reservationRequest: { __typename: 'ReservationRequest', id: '1' } },
 						},
 					},
 				},

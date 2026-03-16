@@ -11,6 +11,13 @@ type ReservationRequest {
 	closeRequestedByReserver: Boolean
 }
 
+type ReservationRequestPage {
+	items: [ReservationRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
 enum ReservationRequestState {
 	Requested
 	Accepted
@@ -19,11 +26,23 @@ enum ReservationRequestState {
 	Cancelled
 }
 
-type ReservationRequestPage {
-	items: [ReservationRequest!]!
-	total: Int!
-	page: Int!
-	pageSize: Int!
+input ReservationRequestCreateInput {
+	listingId: ObjectID!
+	reservationPeriodStart: DateTime!
+	reservationPeriodEnd: DateTime!
+}
+
+input ReservationRequestCancelInput {
+	id: ObjectID!
+}
+
+input ReservationRequestCloseInput {
+	id: ObjectID!
+}
+
+type ReservationRequestMutationResult implements MutationResult {
+	status: MutationStatus!
+	reservationRequest: ReservationRequest
 }
 
 extend type Query {
@@ -51,27 +70,12 @@ extend type Query {
 
 extend type Mutation {
 	createReservationRequest(
-		input: CreateReservationRequestInput!
-	): ReservationRequest!
-	cancelReservation(input: CancelReservationInput!): ReservationRequest!
-	closeReservation(input: CloseReservationInput!): ReservationRequest!
-}
-
-type ReservationRequestMutationResult implements MutationResult {
-	status: MutationStatus!
-	reservationRequest: ReservationRequest
-}
-
-input CreateReservationRequestInput {
-	listingId: ObjectID!
-	reservationPeriodStart: DateTime!
-	reservationPeriodEnd: DateTime!
-}
-
-input CancelReservationInput {
-	id: ObjectID!
-}
-
-input CloseReservationInput {
-	id: ObjectID!
+		input: ReservationRequestCreateInput!
+	): ReservationRequestMutationResult!
+	cancelReservation(
+		input: ReservationRequestCancelInput!
+	): ReservationRequestMutationResult!
+	closeReservation(
+		input: ReservationRequestCloseInput!
+	): ReservationRequestMutationResult!
 }

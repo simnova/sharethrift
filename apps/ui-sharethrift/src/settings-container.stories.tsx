@@ -166,8 +166,12 @@ export const AdminUser: Story = {
 					result: {
 						data: {
 							adminUserUpdate: {
-								__typename: "AdminUser",
-								id: mockAdminUser.id,
+								__typename: 'AdminUserMutationResult',
+								status: { success: true, errorMessage: null },
+								adminUser: {
+									__typename: 'AdminUser',
+									id: mockAdminUser.id,
+								},
 							},
 						},
 					},

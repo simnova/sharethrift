@@ -20,6 +20,16 @@ export {
   checkGraphqlFlatStructure,
 } from './checks/graphql-resolver-conventions.js';
 
+// GraphQL schema conventions
+export {
+  checkGraphqlSchemaFileNaming,
+  checkGraphqlSchemaTypePrefixing,
+  checkGraphqlSchemaMutationResults,
+  checkGraphqlSchemaInputNaming,
+  checkGraphqlSchemaOrdering,
+  checkGraphqlSchemaConventions,
+} from './checks/graphql-schema-conventions.js';
+
 // Frontend architecture
 export { checkFrontendArchitecture } from './checks/frontend-architecture.js';
 
@@ -40,6 +50,7 @@ export { getAllFiles, getDirectories, directoryExists, fileExists, isKebabCase }
 export { describeDependencyRulesTests } from './test-suites/dependency-rules.js';
 export { describeDomainConventionTests } from './test-suites/domain-conventions.js';
 export { describeGraphqlResolverConventionsTests, type GraphqlFlatStructureTestsConfig } from './test-suites/graphql-resolver-conventions.js';
+export { describeGraphqlSchemaConventionsTests } from './test-suites/graphql-schema-conventions.js';
 export { describeMemberOrderingTests } from './test-suites/member-ordering.js';
 export { describeFrontendArchitectureTests } from './test-suites/frontend-architecture.js';
 export { describeNamingConventionTests } from './test-suites/naming-conventions.js';

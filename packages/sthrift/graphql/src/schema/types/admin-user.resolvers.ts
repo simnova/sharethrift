@@ -161,15 +161,27 @@ const adminUserResolvers: Resolvers = {
 				'createAdminUser resolver called with email:',
 				args.input.email,
 			);
-			return await context.applicationServices.User.AdminUser.createIfNotExists(
-				{
-					email: args.input.email,
-					username: args.input.username,
-					firstName: args.input.firstName,
-					lastName: args.input.lastName,
-					roleId: args.input.roleId,
-				},
-			);
+			try {
+				const adminUser =
+					await context.applicationServices.User.AdminUser.createIfNotExists(
+						{
+							email: args.input.email,
+							username: args.input.username,
+							firstName: args.input.firstName,
+							lastName: args.input.lastName,
+							roleId: args.input.roleId,
+						},
+					);
+				return {
+					status: { success: true },
+					adminUser,
+				};
+			} catch (error) {
+				const { message } = error as Error;
+				return {
+					status: { success: false, errorMessage: message },
+				};
+			}
 		},
 		adminUserUpdate: async (
 			_parent: unknown,
@@ -185,9 +197,21 @@ const adminUserResolvers: Resolvers = {
 			// - isEditingOwnAccount and canEditUsers checked by entity setters
 			// - canManageUserRoles checked by role setter
 			console.log('adminUserUpdate resolver called with id:', args.input.id);
-			return await context.applicationServices.User.AdminUser.update(
-				args.input as AdminUserUpdateCommand,
-			);
+			try {
+				const adminUser =
+					await context.applicationServices.User.AdminUser.update(
+						args.input as AdminUserUpdateCommand,
+					);
+				return {
+					status: { success: true },
+					adminUser,
+				};
+			} catch (error) {
+				const { message } = error as Error;
+				return {
+					status: { success: false, errorMessage: message },
+				};
+			}
 		},
 	},
 };

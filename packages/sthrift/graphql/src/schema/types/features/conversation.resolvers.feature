@@ -46,13 +46,13 @@ So that I can retrieve and create conversations through the GraphQL API
 		Then it should return a ConversationMutationResult with success false and the error message
 
 	Scenario: Sending a message in a conversation
-		Given a valid SendMessageInput with conversationId and content
+		Given a valid ConversationSendMessageInput with conversationId and content
 		When the sendMessage mutation is executed with that input
 		Then it should call Conversation.Conversation.sendMessage with authorId derived from authenticated user
-		And it should return a SendMessageMutationResult with success true and the sent message
+		And it should return a ConversationSendMessageMutationResult with success true and the sent message
 
 	Scenario: Sending a message when Conversation.Conversation.sendMessage throws an error
-		Given a valid SendMessageInput
+		Given a valid ConversationSendMessageInput
 		And Conversation.Conversation.sendMessage throws an error
 		When the sendMessage mutation is executed
-		Then it should return a SendMessageMutationResult with success false and the error message
+		Then it should return a ConversationSendMessageMutationResult with success false and the error message

@@ -362,7 +362,7 @@ test.for(feature, ({ Scenario }) => {
 	Scenario(
 		'Sending a message in a conversation',
 		({ Given, When, Then, And }) => {
-			Given('a valid SendMessageInput with conversationId and content', () => {
+			Given('a valid ConversationSendMessageInput with conversationId and content', () => {
 				context = makeMockGraphContext();
 				// Mock user lookup - PersonalUser found
 				(
@@ -417,7 +417,7 @@ test.for(feature, ({ Scenario }) => {
 				},
 			);
 			And(
-				'it should return a SendMessageMutationResult with success true and the sent message',
+				'it should return a ConversationSendMessageMutationResult with success true and the sent message',
 				() => {
 					expect(result).toBeDefined();
 					expect(
@@ -432,7 +432,7 @@ test.for(feature, ({ Scenario }) => {
 	Scenario(
 		'Sending a message when Conversation.Conversation.sendMessage throws an error',
 		({ Given, And, When, Then }) => {
-			Given('a valid SendMessageInput', () => {
+			Given('a valid ConversationSendMessageInput', () => {
 				context = makeMockGraphContext();
 				// Mock user lookup - PersonalUser found
 				(
@@ -474,7 +474,7 @@ test.for(feature, ({ Scenario }) => {
 				);
 			});
 			Then(
-				'it should return a SendMessageMutationResult with success false and the error message',
+				'it should return a ConversationSendMessageMutationResult with success false and the error message',
 				() => {
 					expect(result).toBeDefined();
 					expect(

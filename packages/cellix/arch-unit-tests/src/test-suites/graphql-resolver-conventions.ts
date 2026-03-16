@@ -105,9 +105,9 @@ export function describeGraphqlResolverConventionsTests(
 
     if (flatStructureConfig) {
       describe('Flat Structure', () => {
-        it('types directory should not contain unexpected subdirectories', () => {
+        it('types directory should not contain unexpected subdirectories', async () => {
           const { typesDirectoryPath, allowedSubdirectories } = flatStructureConfig;
-          const violations = checkGraphqlFlatStructure({
+          const violations = await checkGraphqlFlatStructure({
             typesDirectoryPath,
             ...(allowedSubdirectories && { allowedSubdirectories }),
           });

@@ -14,9 +14,15 @@ fragment ItemListingFields on ItemListing {
 }
 
 mutation HomeCreateListingContainerCreateItemListing(
-	$input: CreateItemListingInput!
+	$input: ItemListingCreateInput!
 ) {
 	createItemListing(input: $input) {
-		...ItemListingFields
+		status {
+			success
+			errorMessage
+		}
+		listing {
+			...ItemListingFields
+		}
 	}
 }

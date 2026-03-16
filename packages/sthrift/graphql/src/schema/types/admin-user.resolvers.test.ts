@@ -549,8 +549,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				});
 			});
 			And('it should return the newly created AdminUser entity', () => {
-				expect(result).toBeDefined();
-				expect((result as { id: string }).id).toBe('new-admin-123');
+				const mutationResult = result as { status: { success: boolean }; adminUser: { id: string } };
+				expect(mutationResult.status.success).toBe(true);
+				expect(mutationResult.adminUser.id).toBe('new-admin-123');
 			});
 		},
 	);
@@ -650,8 +651,9 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			).toHaveBeenCalled();
 		});
 		And('it should return the updated AdminUser entity', () => {
-			expect(result).toBeDefined();
-			expect((result as { id: string }).id).toBe('admin-user-123');
+			const mutationResult = result as { status: { success: boolean }; adminUser: { id: string } };
+			expect(mutationResult.status.success).toBe(true);
+			expect(mutationResult.adminUser.id).toBe('admin-user-123');
 		});
 	});
 });

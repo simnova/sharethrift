@@ -18,7 +18,7 @@ type TestResolver<
 ) => Promise<Return>;
 
 // Shared input type for createItemListing across scenarios
-interface CreateItemListingInput {
+interface ItemListingCreateInput {
 	title: string;
 	description: string;
 	category: string;
@@ -346,7 +346,7 @@ test.for(feature, ({ Scenario }) => {
 					);
 				},
 			);
-			And('it should transform each listing into ListingAll shape', () => {
+			And('it should transform each listing into ItemListingAll shape', () => {
 				expect(result).toBeDefined();
 				const resultData = result as { items: ItemListingEntity[] };
 				resultData.items.forEach((listing) => {
@@ -512,12 +512,12 @@ test.for(feature, ({ Scenario }) => {
 	Scenario(
 		'Creating an item listing successfully',
 		({ Given, And, When, Then }) => {
-			let input: CreateItemListingInput;
+			let input: ItemListingCreateInput;
 			Given('a user with a verifiedJwt containing email', () => {
 				context = makeMockGraphContext();
 			});
 			And(
-				'a valid CreateItemListingInput with title, description, category, location, sharing period, and images',
+				'a valid ItemListingCreateInput with title, description, category, location, sharing period, and images',
 				() => {
 					input = {
 						title: 'New Listing',
@@ -540,7 +540,7 @@ test.for(feature, ({ Scenario }) => {
 			When('the createItemListing mutation is executed', async () => {
 				const resolver = itemListingResolvers.Mutation
 					?.createItemListing as TestResolver<{
-					input: CreateItemListingInput;
+					input: ItemListingCreateInput;
 				}>;
 				result = await resolver({}, { input }, context, {} as never);
 			});
@@ -564,8 +564,10 @@ test.for(feature, ({ Scenario }) => {
 			);
 			And('it should return the created listing', () => {
 				expect(result).toBeDefined();
-				expect(result).toHaveProperty('title');
-				expect((result as { title: string }).title).toBe('New Listing');
+				const mutationResult = result as { status: { success: boolean }; listing: { title: string } };
+				expect(mutationResult.status.success).toBe(true);
+				expect(mutationResult.listing).toHaveProperty('title');
+				expect(mutationResult.listing.title).toBe('New Listing');
 			});
 		},
 	);
@@ -585,7 +587,7 @@ test.for(feature, ({ Scenario }) => {
 				try {
 					const resolver = itemListingResolvers.Mutation
 						?.createItemListing as TestResolver<{
-						input: CreateItemListingInput;
+						input: ItemListingCreateInput;
 					}>;
 					await resolver(
 						{},
@@ -666,7 +668,7 @@ test.for(feature, ({ Scenario }) => {
 
 	Scenario('Error while creating an item listing', ({ Given, When, Then }) => {
 		let context: ReturnType<typeof makeMockGraphContext>;
-		let error: Error | undefined;
+		let result: unknown;
 
 		Given('Listing.ItemListing.create throws an error', () => {
 			context = makeMockGraphContext();
@@ -680,34 +682,31 @@ test.for(feature, ({ Scenario }) => {
 			).mockRejectedValue(new Error('Creation failed'));
 		});
 		When('the createItemListing mutation is executed', async () => {
-			try {
-				const resolver = itemListingResolvers.Mutation
-					?.createItemListing as TestResolver<{
-					input: CreateItemListingInput;
-				}>;
+			const resolver = itemListingResolvers.Mutation
+				?.createItemListing as TestResolver<{
+				input: ItemListingCreateInput;
+			}>;
 
-				await resolver(
-					{},
-					{
-						input: {
-							title: 'Test',
-							description: 'Test',
-							category: 'Test',
-							location: 'Test',
-							sharingPeriodStart: '2025-10-06',
-							sharingPeriodEnd: '2025-11-06',
-						},
+			result = await resolver(
+				{},
+				{
+					input: {
+						title: 'Test',
+						description: 'Test',
+						category: 'Test',
+						location: 'Test',
+						sharingPeriodStart: '2025-10-06',
+						sharingPeriodEnd: '2025-11-06',
 					},
-					context,
-					{} as never,
-				);
-			} catch (e) {
-				error = e as Error;
-			}
+				},
+				context,
+				{} as never,
+			);
 		});
-		Then('it should propagate the error message', () => {
-			expect(error).toBeDefined();
-			expect(error?.message).toBe('Creation failed');
+		Then('it should return a failure result with the error message', () => {
+			const mutationResult = result as { status: { success: boolean; errorMessage: string } };
+			expect(mutationResult.status.success).toBe(false);
+			expect(mutationResult.status.errorMessage).toBe('Creation failed');
 		});
 	});
 
@@ -1209,8 +1208,9 @@ test.for(feature, ({ Scenario }) => {
 				id: 'listing-1',
 			});
 		});
-		And('it should return true', () => {
-			expect(result).toBe(true);
+		And('it should return success status', () => {
+			const mutationResult = result as { status: { success: boolean } };
+			expect(mutationResult.status.success).toBe(true);
 		});
 	});
 

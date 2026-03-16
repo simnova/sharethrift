@@ -1,8 +1,8 @@
 import type { GraphContext } from '../../init/context.ts';
 import type {
 	ConversationCreateInput,
+	ConversationSendMessageInput,
 	Resolvers,
-	SendMessageInput,
 } from '../builder/generated.ts';
 import {
 	getUserByEmail,
@@ -11,7 +11,7 @@ import {
 } from '../resolver-helper.ts';
 
 const conversation: Resolvers = {
-	Message: {
+	ConversationMessage: {
 		id: (parent) => parent.id,
 		authorId: (parent) => parent.authorId.valueOf(),
 		content: (parent) => parent.contents.valueOf().join('\n\n'),
@@ -61,7 +61,7 @@ const conversation: Resolvers = {
 		},
 		sendMessage: async (
 			_parent,
-			_args: { input: SendMessageInput },
+			_args: { input: ConversationSendMessageInput },
 			context: GraphContext,
 		) => {
 			try {

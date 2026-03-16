@@ -287,7 +287,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 
 			Then('it should create and return the new listing appeal request', () => {
-				expect(result).toEqual(mockListingAppealRequest);
+				const mutationResult = result as { status: { success: boolean }; listingAppealRequest: typeof mockListingAppealRequest };
+				expect(mutationResult.status.success).toBe(true);
+				expect(mutationResult.listingAppealRequest).toEqual(mockListingAppealRequest);
 				expect(
 					mockContext.applicationServices.AppealRequest.ListingAppealRequest.create,
 				).toHaveBeenCalledWith(input);
@@ -318,7 +320,9 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 
 			Then('it should update the request state successfully', () => {
-				expect(result).toEqual(mockListingAppealRequest);
+				const mutationResult = result as { status: { success: boolean }; listingAppealRequest: typeof mockListingAppealRequest };
+				expect(mutationResult.status.success).toBe(true);
+				expect(mutationResult.listingAppealRequest).toEqual(mockListingAppealRequest);
 				expect(
 					mockContext.applicationServices.AppealRequest.ListingAppealRequest.updateState,
 				).toHaveBeenCalledWith({

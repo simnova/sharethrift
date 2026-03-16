@@ -41,25 +41,37 @@ query HomeMyReservationsReservationsViewActiveContainerActiveReservations(
 }
 
 mutation HomeMyReservationsReservationsViewActiveContainerCancelReservation(
-	$input: CancelReservationInput!
+	$input: ReservationRequestCancelInput!
 ) {
 	cancelReservation(input: $input) {
-		id
-		state
-		updatedAt
-		closeRequestedBySharer
-		closeRequestedByReserver
+		status {
+			success
+			errorMessage
+		}
+		reservationRequest {
+			id
+			state
+			updatedAt
+			closeRequestedBySharer
+			closeRequestedByReserver
+		}
 	}
 }
 
 mutation HomeMyReservationsReservationsViewActiveContainerCloseReservation(
-	$input: CloseReservationInput!
+	$input: ReservationRequestCloseInput!
 ) {
 	closeReservation(input: $input) {
-		id
-		state
-		updatedAt
-		closeRequestedBySharer
-		closeRequestedByReserver
+		status {
+			success
+			errorMessage
+		}
+		reservationRequest {
+			id
+			state
+			updatedAt
+			closeRequestedBySharer
+			closeRequestedByReserver
+		}
 	}
 }

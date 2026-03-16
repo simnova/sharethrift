@@ -33,7 +33,7 @@ const meta: Meta<typeof AdminViewListing> = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -207,7 +207,7 @@ export const BlockedListing: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-blocked',
 										title: 'Blocked Listing',
 										images: ['https://example.com/blocked.jpg'],
@@ -263,7 +263,7 @@ export const ActiveListing: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-active',
 										title: 'Active Listing',
 										images: ['https://example.com/active.jpg'],
@@ -320,7 +320,7 @@ export const ListingWithNoImages: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-no-images',
 										title: 'Listing Without Images',
 										images: [],
@@ -377,7 +377,7 @@ export const ListingWithNullDates: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-null-dates',
 										title: 'Listing With Null Dates',
 										images: ['https://example.com/item.jpg'],
@@ -434,7 +434,7 @@ export const ListingWithNullState: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-null-state',
 										title: 'Listing With Unknown State',
 										images: ['https://example.com/item.jpg'],
@@ -487,7 +487,7 @@ export const UnblockSuccess: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -563,7 +563,7 @@ export const UnblockError: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -625,7 +625,7 @@ export const DeleteSuccess: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -705,7 +705,7 @@ export const DeleteFailure: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -777,7 +777,7 @@ export const DeleteError: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -886,7 +886,7 @@ export const StatusTagColorsBlocked: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Purple Tag Test',
 										images: ['https://example.com/bike.jpg'],
@@ -943,7 +943,7 @@ export const StatusTagColorsActive: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-active',
 										title: 'Green Tag Test',
 										images: ['https://example.com/bike.jpg'],
@@ -1000,7 +1000,7 @@ export const DateFormattingPublishedAt: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Date Format Test',
 										images: ['https://example.com/bike.jpg'],
@@ -1057,7 +1057,7 @@ export const DateFormattingReservationPeriod: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Period Format Test',
 										images: ['https://example.com/bike.jpg'],
@@ -1336,7 +1336,7 @@ export const HandleUnblockFunction: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Unblock Test Listing',
 										images: ['https://example.com/bike.jpg'],
@@ -1406,7 +1406,7 @@ export const HandleDeleteFunction: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Delete Test Listing',
 										images: ['https://example.com/bike.jpg'],
@@ -1482,7 +1482,7 @@ export const GetStatusColorBlocked: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Blocked Color Test',
 										images: ['https://example.com/bike.jpg'],
@@ -1539,7 +1539,7 @@ export const GetStatusColorActive: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Active Color Test',
 										images: ['https://example.com/bike.jpg'],
@@ -1596,7 +1596,7 @@ export const GetStatusColorUnknown: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Unknown Color Test',
 										images: ['https://example.com/bike.jpg'],

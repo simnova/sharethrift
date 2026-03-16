@@ -1,5 +1,5 @@
 # Inline fragment (previously in admin-listings-table.fragment.graphql)
-fragment AdminListingFields on ListingAll {
+fragment AdminListingFields on ItemListingAll {
     id
     title
     state
@@ -42,5 +42,10 @@ mutation AdminListingsTableContainerDeleteListing($id: ObjectID!) {
 }
 
 mutation AdminListingsTableContainerUnblockListing($id: ObjectID!) {
-  unblockListing(id: $id)
+  unblockListing(id: $id) {
+    status {
+      success
+      errorMessage
+    }
+  }
 }

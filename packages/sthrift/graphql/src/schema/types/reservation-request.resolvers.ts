@@ -107,14 +107,26 @@ const reservationRequest: Resolvers = {
 				);
 			}
 
-			return await context.applicationServices.ReservationRequest.ReservationRequest.create(
-				{
-					listingId: args.input.listingId,
-					reservationPeriodStart: new Date(args.input.reservationPeriodStart),
-					reservationPeriodEnd: new Date(args.input.reservationPeriodEnd),
-					reserverEmail: verifiedJwt.email,
-				},
-			);
+			try {
+				const reservationRequest =
+					await context.applicationServices.ReservationRequest.ReservationRequest.create(
+						{
+							listingId: args.input.listingId,
+							reservationPeriodStart: new Date(args.input.reservationPeriodStart),
+							reservationPeriodEnd: new Date(args.input.reservationPeriodEnd),
+							reserverEmail: verifiedJwt.email,
+						},
+					);
+				return {
+					status: { success: true },
+					reservationRequest,
+				};
+			} catch (error) {
+				const { message } = error as Error;
+				return {
+					status: { success: false, errorMessage: message },
+				};
+			}
 		},
 	},
 };

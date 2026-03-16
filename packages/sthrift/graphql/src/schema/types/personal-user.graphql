@@ -63,6 +63,41 @@ type PersonalUserAccountProfileBillingTransaction {
 	errorMessage: String
 }
 
+type PersonalUserPaymentErrorInformation {
+	reason: String
+	message: String
+}
+
+type PersonalUserPaymentResponseAmountDetails {
+	totalAmount: String
+	currency: String
+}
+
+type PersonalUserPaymentResponseOrderInformation {
+	amountDetails: PersonalUserPaymentResponseAmountDetails
+}
+
+type PersonalUserPaymentResponse {
+	id: String
+	status: String!
+	success: Boolean
+	message: String
+	cybersourceCustomerId: String
+	cybersourceSubscriptionId: String
+	cybersourcePlanId: String
+	errorInformation: PersonalUserPaymentErrorInformation
+	orderInformation: PersonalUserPaymentResponseOrderInformation
+}
+
+type PersonalUserRefundResponse {
+	id: String
+	status: String!
+	success: Boolean
+	message: String
+	errorInformation: PersonalUserPaymentErrorInformation
+	orderInformation: PersonalUserPaymentResponseOrderInformation
+}
+
 input PersonalUserUpdateInput {
 	id: ObjectID!
 	isBlocked: Boolean
@@ -92,8 +127,7 @@ input PersonalUserAccountProfileLocationUpdateInput {
 	zipCode: String
 }
 
-# Payment related input/output types
-input ProcessPaymentPaymentInstrumentInput {
+input PersonalUserProcessPaymentPaymentInstrumentInput {
 	billingFirstName: String!
 	billingLastName: String!
 	billingEmail: String!
@@ -107,69 +141,44 @@ input ProcessPaymentPaymentInstrumentInput {
 	paymentToken: String!
 }
 
-input ProcessPaymentInput {
+input PersonalUserProcessPaymentInput {
 	userId: ObjectID!
 
 	paymentAmount: Float!
 	currency: String!
 
-	paymentInstrument: ProcessPaymentPaymentInstrumentInput!
+	paymentInstrument: PersonalUserProcessPaymentPaymentInstrumentInput!
 }
 
-type PaymentErrorInformation {
-	reason: String
-	message: String
-}
-
-type PaymentResponseAmountDetails {
-	totalAmount: String
-	currency: String
-}
-
-type PaymentResponseOrderInformation {
-	amountDetails: PaymentResponseAmountDetails
-}
-
-type PaymentResponse {
-	id: String
-	status: String!
-	success: Boolean
-	message: String
-	cybersourceCustomerId: String
-	cybersourceSubscriptionId: String
-	cybersourcePlanId: String
-	errorInformation: PaymentErrorInformation
-	orderInformation: PaymentResponseOrderInformation
-}
-
-input RefundRequestOrderInformationAmountDetailsInput {
+input PersonalUserRefundRequestOrderInformationAmountDetailsInput {
 	totalAmount: Float!
 	currency: String!
 }
 
-input RefundOrderInformationInput {
-	amountDetails: RefundRequestOrderInformationAmountDetailsInput!
+input PersonalUserRefundOrderInformationInput {
+	amountDetails: PersonalUserRefundRequestOrderInformationAmountDetailsInput!
 }
 
-input RefundRequestInput {
+input PersonalUserRefundRequestInput {
 	userId: ObjectID!
 	transactionId: String!
 	amount: Float
-	orderInformation: RefundOrderInformationInput!
-}
-
-type RefundResponse {
-	id: String
-	status: String!
-	success: Boolean
-	message: String
-	errorInformation: PaymentErrorInformation
-	orderInformation: PaymentResponseOrderInformation
+	orderInformation: PersonalUserRefundOrderInformationInput!
 }
 
 type PersonalUserMutationResult implements MutationResult {
 	status: MutationStatus!
 	personalUser: PersonalUser
+}
+
+type PersonalUserProcessPaymentMutationResult implements MutationResult {
+	status: MutationStatus!
+	paymentResponse: PersonalUserPaymentResponse
+}
+
+type PersonalUserRefundPaymentMutationResult implements MutationResult {
+	status: MutationStatus!
+	refundResponse: PersonalUserRefundResponse
 }
 
 extend type Query {
@@ -191,10 +200,14 @@ extend type Mutation {
 	personalUserUpdate(
 		input: PersonalUserUpdateInput!
 	): PersonalUserMutationResult!
-	blockUser(userId: ObjectID!): PersonalUser!
-	unblockUser(userId: ObjectID!): PersonalUser!
+	blockUser(userId: ObjectID!): PersonalUserMutationResult!
+	unblockUser(userId: ObjectID!): PersonalUserMutationResult!
 
 	# Payment mutations
-	processPayment(input: ProcessPaymentInput!): PaymentResponse!
-	refundPayment(request: RefundRequestInput!): RefundResponse!
+	processPayment(
+		input: PersonalUserProcessPaymentInput!
+	): PersonalUserProcessPaymentMutationResult!
+	refundPayment(
+		request: PersonalUserRefundRequestInput!
+	): PersonalUserRefundPaymentMutationResult!
 }

@@ -95,17 +95,29 @@ const itemListingResolvers: Resolvers = {
 				isDraft: args.input.isDraft ?? false,
 			};
 
-			return await context.applicationServices.Listing.ItemListing.create(
-				command,
-			);
+			try {
+				const listing =
+					await context.applicationServices.Listing.ItemListing.create(
+						command,
+					);
+				return { status: { success: true }, listing };
+			} catch (error) {
+				const { message } = error as Error;
+				return { status: { success: false, errorMessage: message } };
+			}
 		},
 
 		unblockListing: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			await context.applicationServices.Listing.ItemListing.unblock({
-				id: args.id,
-			});
-			return true;
+			try {
+				await context.applicationServices.Listing.ItemListing.unblock({
+					id: args.id,
+				});
+				return { status: { success: true } };
+			} catch (error) {
+				const { message } = error as Error;
+				return { status: { success: false, errorMessage: message } };
+			}
 		},
 		cancelItemListing: async (
 			_parent: unknown,

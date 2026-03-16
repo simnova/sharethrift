@@ -3,7 +3,7 @@ import type { GraphQLResolveInfo } from 'graphql';
 import type {
 	PersonalUser,
 	PersonalUserUpdateInput,
-	ProcessPaymentInput,
+	PersonalUserProcessPaymentInput,
 	Resolvers,
 	QueryAllUsersArgs,
 } from '../builder/generated.ts';
@@ -163,10 +163,12 @@ const personalUserResolvers: Resolvers = {
 			}
 
 			// Permission check is handled in the domain layer (isBlocked setter)
-			return await context.applicationServices.User.PersonalUser.update({
-				id: args.userId,
-				isBlocked: true,
-			});
+			return await PersonalUserMutationResolver(
+				context.applicationServices.User.PersonalUser.update({
+					id: args.userId,
+					isBlocked: true,
+				}),
+			);
 		},
 		unblockUser: async (
 			_parent: unknown,
@@ -179,45 +181,48 @@ const personalUserResolvers: Resolvers = {
 			}
 
 			// Permission check is handled in the domain layer (isBlocked setter)
-			return await context.applicationServices.User.PersonalUser.update({
-				id: args.userId,
-				isBlocked: false,
-			});
+			return await PersonalUserMutationResolver(
+				context.applicationServices.User.PersonalUser.update({
+					id: args.userId,
+					isBlocked: false,
+				}),
+			);
 		},
 		processPayment: async (
 			_parent,
-			args: { input: ProcessPaymentInput },
+			args: { input: PersonalUserProcessPaymentInput },
 			context,
 		) => {
 			console.log('Processing payment', args.input);
 
 			try {
-				return await context.applicationServices.User.PersonalUser.processPayment(
-					{
-						request: {
-							userId: args.input.userId,
-							paymentInstrument: {
-								...args.input.paymentInstrument,
-								billingAddressLine2:
-									args.input.paymentInstrument.billingAddressLine2 ?? '',
-								billingPhone: args.input.paymentInstrument.billingPhone ?? '',
-								billingEmail: args.input.paymentInstrument.billingEmail ?? '',
+				const paymentResponse =
+					await context.applicationServices.User.PersonalUser.processPayment(
+						{
+							request: {
+								userId: args.input.userId,
+								paymentInstrument: {
+									...args.input.paymentInstrument,
+									billingAddressLine2:
+										args.input.paymentInstrument.billingAddressLine2 ?? '',
+									billingPhone: args.input.paymentInstrument.billingPhone ?? '',
+									billingEmail: args.input.paymentInstrument.billingEmail ?? '',
+								},
+								paymentAmount: args.input.paymentAmount,
+								currency: args.input.currency,
 							},
-							paymentAmount: args.input.paymentAmount,
-							currency: args.input.currency,
 						},
-					},
-				);
+					);
+				return {
+					status: { success: true },
+					paymentResponse,
+				};
 			} catch (error) {
 				console.error('Payment processing error:', error);
 				return {
-					status: 'FAILED',
-					success: false,
-					message:
-						error instanceof Error ? error.message : 'Unknown error occurred',
-					errorInformation: {
-						reason: 'PROCESSING_ERROR',
-						message:
+					status: {
+						success: false,
+						errorMessage:
 							error instanceof Error ? error.message : 'Unknown error occurred',
 					},
 				};
@@ -226,22 +231,21 @@ const personalUserResolvers: Resolvers = {
 		refundPayment: async (_parent, { request }, context) => {
 			console.log('Refunding payment', request);
 			try {
-				const response =
+				const refundResponse =
 					await context.applicationServices.User.PersonalUser.refundPayment({
 						request,
 					} as RefundPaymentCommand);
 
-				return response;
+				return {
+					status: { success: true },
+					refundResponse,
+				};
 			} catch (error) {
 				console.error('Refund processing error:', error);
 				return {
-					status: 'FAILED',
-					success: false,
-					message:
-						error instanceof Error ? error.message : 'Unknown error occurred',
-					errorInformation: {
-						reason: 'PROCESSING_ERROR',
-						message:
+					status: {
+						success: false,
+						errorMessage:
 							error instanceof Error ? error.message : 'Unknown error occurred',
 					},
 				};

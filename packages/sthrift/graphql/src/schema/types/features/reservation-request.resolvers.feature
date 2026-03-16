@@ -124,7 +124,7 @@ So that I can view my reservations and make new ones through the GraphQL API
     Given a verified user
     And ReservationRequest.create throws an error
     When the createReservationRequest mutation is executed
-    Then it should propagate the error message
+    Then it should return failure result with error message
 
   Scenario: Paginating listing requests
     Given 25 listing requests and a pageSize of 10
