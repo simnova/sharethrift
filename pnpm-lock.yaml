@@ -33,6 +33,7 @@ overrides:
   minimatch: '>=10.2.3'
   qs: '>=6.14.2'
   serialize-javascript: '>=7.0.3'
+  undici: '>=6.24.0'
 
 importers:
 
@@ -937,7 +938,7 @@ importers:
         version: 1.13.5
       cybersource-rest-client:
         specifier: ^0.0.73
-        version: 0.0.73(undici@5.29.0)
+        version: 0.0.73
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -3620,10 +3621,6 @@ packages:
   '@eslint/plugin-kit@0.4.1':
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
-
-  '@fastify/busboy@2.1.1':
-    resolution: {integrity: sha512-vBZP4NlzfOlerQTnba4aqZoMhE/a9HY7HRqoOPaETQcSQuWEIyZMHGfVu6w9wGtGK5fED5qRs2DteVCjOH60sA==}
-    engines: {node: '>=14'}
 
   '@fastify/busboy@3.2.0':
     resolution: {integrity: sha512-m9FVDXU3GT2ITSe0UaMA5rU3QkfC/UXtCU8y0gSN/GugTqtVldOBWIB5V6V3sbmenVZUIpU6f+mPEO2+m5iTaA==}
@@ -8049,7 +8046,7 @@ packages:
     peerDependencies:
       deasync: ^0.1.26
       tough-cookie: ^4.0.0
-      undici: ^5.11.0
+      undici: '>=6.24.0'
     peerDependenciesMeta:
       deasync:
         optional: true
@@ -12058,10 +12055,6 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
-  undici@5.29.0:
-    resolution: {integrity: sha512-raqeBD6NQK4SkWhQzeYKd1KmIG6dllBOTt55Rmkt4HtI9mwdWtJljnrXjAFUBLTSN67HWrOIZ3EPF4kjUw80Bg==}
-    engines: {node: '>=14.0'}
-
   unicode-canonical-property-names-ecmascript@2.0.1:
     resolution: {integrity: sha512-dA8WbNeb2a6oQzAQ55YlT5vQAWGV9WXOsi3SskE3bcCdM0P4SDd+24zS/OCacdRq5BkdsRj9q3Pg6YyQoxIGqg==}
     engines: {node: '>=4'}
@@ -15637,9 +15630,6 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@fastify/busboy@2.1.1':
-    optional: true
-
   '@fastify/busboy@3.2.0': {}
 
   '@graphql-codegen/add@5.0.3(graphql@16.12.0)':
@@ -18689,10 +18679,10 @@ snapshots:
 
   axe-core@4.11.1: {}
 
-  axios-cookiejar-support@4.0.7(axios@1.13.5)(tough-cookie@4.1.3)(undici@5.29.0):
+  axios-cookiejar-support@4.0.7(axios@1.13.5)(tough-cookie@4.1.3):
     dependencies:
       axios: 1.13.5
-      http-cookie-agent: 5.0.4(tough-cookie@4.1.3)(undici@5.29.0)
+      http-cookie-agent: 5.0.4(tough-cookie@4.1.3)
       tough-cookie: 4.1.3
     transitivePeerDependencies:
       - deasync
@@ -19610,12 +19600,12 @@ snapshots:
 
   csstype@3.2.3: {}
 
-  cybersource-rest-client@0.0.73(undici@5.29.0):
+  cybersource-rest-client@0.0.73:
     dependencies:
       agentkeepalive: 4.6.0
       app-root-path: 3.1.0
       axios: 1.13.5
-      axios-cookiejar-support: 4.0.7(axios@1.13.5)(tough-cookie@4.1.3)(undici@5.29.0)
+      axios-cookiejar-support: 4.0.7(axios@1.13.5)(tough-cookie@4.1.3)
       chai: 4.5.0
       chai-as-promised: 7.1.2(chai@4.5.0)
       https-proxy-agent: 7.0.6
@@ -21152,12 +21142,10 @@ snapshots:
 
   http-cache-semantics@4.2.0: {}
 
-  http-cookie-agent@5.0.4(tough-cookie@4.1.3)(undici@5.29.0):
+  http-cookie-agent@5.0.4(tough-cookie@4.1.3):
     dependencies:
       agent-base: 7.1.4
       tough-cookie: 4.1.3
-    optionalDependencies:
-      undici: 5.29.0
 
   http-deceiver@1.2.7: {}
 
@@ -25870,11 +25858,6 @@ snapshots:
   unc-path-regex@0.1.2: {}
 
   undici-types@7.16.0: {}
-
-  undici@5.29.0:
-    dependencies:
-      '@fastify/busboy': 2.1.1
-    optional: true
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
