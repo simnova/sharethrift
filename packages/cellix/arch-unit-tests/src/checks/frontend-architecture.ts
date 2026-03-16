@@ -10,35 +10,28 @@ export interface FrontendArchitectureConfig {
  * Check frontend architecture conventions
  */
 export async function checkFrontendArchitecture(config: FrontendArchitectureConfig): Promise<string[]> {
-  const violations: string[] = [];
+  if (!config.uiSourcePath) {
+    throw new Error('checkFrontendArchitecture requires uiSourcePath to be set');
+  }
 
-  // Resolve the UI path relative to current working directory
+  const violations: string[] = [];
   const resolvedPath = path.resolve(process.cwd(), config.uiSourcePath);
 
-  // Check required directories using fs
-  const hasComponents = fs.existsSync(path.join(resolvedPath, 'components'));
-  const hasConfig = fs.existsSync(path.join(resolvedPath, 'config'));
-
-  if (!hasComponents) {
+  // Check required directories
+  if (!fs.existsSync(path.join(resolvedPath, 'components'))) {
     violations.push('Missing required directory: components');
   }
-  if (!hasConfig) {
+  if (!fs.existsSync(path.join(resolvedPath, 'config'))) {
     violations.push('Missing required directory: config');
   }
-
-  // Check layouts and shared directories
-  const hasLayouts = fs.existsSync(path.join(resolvedPath, 'components', 'layouts'));
-  const hasShared = fs.existsSync(path.join(resolvedPath, 'components', 'shared'));
-
-  if (!hasLayouts) {
+  if (!fs.existsSync(path.join(resolvedPath, 'components', 'layouts'))) {
     violations.push('components/layouts directory is required');
   }
-
-  if (!hasShared) {
+  if (!fs.existsSync(path.join(resolvedPath, 'components', 'shared'))) {
     violations.push('components/shared directory is required');
   }
 
-  // Get all files for further checks - use glob pattern relative to test location
+  // Get all files for further checks
   const allFiles = await getAllFiles(`${config.uiSourcePath}/**/*.tsx`);
 
   // Extract directory names from file paths and check kebab-case
@@ -91,15 +84,10 @@ export async function checkFrontendArchitecture(config: FrontendArchitectureConf
   }
 
   for (const layoutDir of layoutDirs) {
-    const sectionLayoutPath = path.join(resolvedPath, 'components', 'layouts', layoutDir, 'section-layout.tsx');
-    const sectionLayoutExists = fs.existsSync(sectionLayoutPath);
-    if (!sectionLayoutExists) {
+    if (!fs.existsSync(path.join(resolvedPath, 'components', 'layouts', layoutDir, 'section-layout.tsx'))) {
       violations.push(`Layout '${layoutDir}' must have section-layout.tsx`);
     }
-
-    const indexPath = path.join(resolvedPath, 'components', 'layouts', layoutDir, 'index.tsx');
-    const indexExists = fs.existsSync(indexPath);
-    if (!indexExists) {
+    if (!fs.existsSync(path.join(resolvedPath, 'components', 'layouts', layoutDir, 'index.tsx'))) {
       violations.push(`Layout '${layoutDir}' must have index.tsx`);
     }
   }

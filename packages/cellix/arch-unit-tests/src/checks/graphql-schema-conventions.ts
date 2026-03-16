@@ -113,6 +113,10 @@ function parseMutationFields(body: string): Array<{ name: string; returnType: st
  * Check that .graphql files in the types directory use lower-kebab-case naming
  */
 export async function checkGraphqlSchemaFileNaming(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
+	if (!config.graphqlGlob) {
+		throw new Error('checkGraphqlSchemaFileNaming requires graphqlGlob to be set');
+	}
+
 	const violations: string[] = [];
 	const excluded = new Set(config.excludeFiles ?? []);
 
@@ -139,6 +143,10 @@ export async function checkGraphqlSchemaFileNaming(config: GraphqlSchemaConventi
  * Check that type names in each .graphql file are properly prefixed with the top-level type name
  */
 export async function checkGraphqlSchemaTypePrefixing(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
+	if (!config.graphqlGlob) {
+		throw new Error('checkGraphqlSchemaTypePrefixing requires graphqlGlob to be set');
+	}
+
 	const violations: string[] = [];
 	const excluded = new Set(config.excludeFiles ?? []);
 
@@ -183,6 +191,10 @@ export async function checkGraphqlSchemaTypePrefixing(config: GraphqlSchemaConve
  * - Has a field for the top-level type
  */
 export async function checkGraphqlSchemaMutationResults(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
+	if (!config.graphqlGlob) {
+		throw new Error('checkGraphqlSchemaMutationResults requires graphqlGlob to be set');
+	}
+
 	const violations: string[] = [];
 	const excluded = new Set(config.excludeFiles ?? []);
 
@@ -253,6 +265,10 @@ export async function checkGraphqlSchemaMutationResults(config: GraphqlSchemaCon
  * - Must be prefixed with the top-level type name (or a mutation name derived from it)
  */
 export async function checkGraphqlSchemaInputNaming(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
+	if (!config.graphqlGlob) {
+		throw new Error('checkGraphqlSchemaInputNaming requires graphqlGlob to be set');
+	}
+
 	const violations: string[] = [];
 	const excluded = new Set(config.excludeFiles ?? []);
 
@@ -324,6 +340,10 @@ const orderCategoryNames = [
  * TopLevelType → SubTypes → Enums → Inputs → MutationResult → Query → Mutation
  */
 export async function checkGraphqlSchemaOrdering(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
+	if (!config.graphqlGlob) {
+		throw new Error('checkGraphqlSchemaOrdering requires graphqlGlob to be set');
+	}
+
 	const violations: string[] = [];
 	const excluded = new Set(config.excludeFiles ?? []);
 
@@ -372,6 +392,10 @@ export async function checkGraphqlSchemaOrdering(config: GraphqlSchemaConvention
  * Check all GraphQL schema conventions at once and return categorized violations
  */
 export async function checkGraphqlSchemaConventions(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
+	if (!config.graphqlGlob) {
+		throw new Error('checkGraphqlSchemaConventions requires graphqlGlob to be set');
+	}
+
 	return [
 		...(await checkGraphqlSchemaFileNaming(config)),
 		...(await checkGraphqlSchemaTypePrefixing(config)),

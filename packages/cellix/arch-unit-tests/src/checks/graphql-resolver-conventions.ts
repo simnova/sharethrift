@@ -139,6 +139,10 @@ export async function checkGraphqlResolverDependencies(config: GraphqlResolverCo
  * Check GraphQL resolver content and structure conventions
  */
 export async function checkGraphqlResolverContent(config: GraphqlResolverConventionsConfig): Promise<string[]> {
+  if (!config.resolversGlob) {
+    throw new Error('checkGraphqlResolverContent requires resolversGlob to be set');
+  }
+
   const allViolations: string[] = [];
 
   // Check: must have default export
@@ -269,6 +273,10 @@ export async function checkGraphqlResolverContent(config: GraphqlResolverConvent
  * Check that GraphQL types directory maintains a flat structure (no nested subdirectories for resolver types)
  */
 export async function checkGraphqlFlatStructure(config: GraphqlFlatStructureConfig): Promise<string[]> {
+  if (!config.typesDirectoryPath) {
+    throw new Error('checkGraphqlFlatStructure requires typesDirectoryPath to be set');
+  }
+
   const violations: string[] = [];
   const resolvedPath = path.join(process.cwd(), config.typesDirectoryPath);
   const allowedSubs = new Set(config.allowedSubdirectories ?? []);

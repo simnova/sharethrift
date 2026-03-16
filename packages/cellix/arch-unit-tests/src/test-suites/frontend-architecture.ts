@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { checkFrontendArchitecture } from '../checks/frontend-architecture.js';
 
-export function describeFrontendArchitectureTests(config: { uiSourcePath: string; testName?: string }): void {
+export interface FrontendArchitectureTestsConfig {
+  uiSourcePath: string;
+  testName?: string;
+}
+
+export function describeFrontendArchitectureTests(config: FrontendArchitectureTestsConfig): void {
   describe(`Frontend Architecture - ${config.testName || 'UI'}`, () => {
     describe('Directory Structure', () => {
       it('should have required top-level directories', async () => {

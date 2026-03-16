@@ -1,11 +1,9 @@
-import { describeDependencyRulesTests } from '@cellix/arch-unit-tests';
+import { describeDependencyRulesTests, type DependencyRulesTestsConfig } from '@cellix/arch-unit-tests';
 
-describeDependencyRulesTests({
-  // Circular Dependencies
+const config: DependencyRulesTestsConfig = {
   appsGlob: '../../apps/**',
   packagesGlob: '../**',
 
-  // Layered Architecture
   domainFolder: '../domain',
   persistenceFolder: '../persistence',
   applicationServicesFolder: '../application-services',
@@ -14,8 +12,9 @@ describeDependencyRulesTests({
   infrastructurePattern: '../../cellix/service-*/**',
   restInfrastructurePattern: '../service-*/**',
 
-  // UI Isolation
   uiCoreFolder: '../../cellix/ui-core',
   uiComponentsFolder: '../ui-components',
   appUiFolder: '../../apps/ui-sharethrift',
-});
+};
+
+describeDependencyRulesTests(config);

@@ -5,7 +5,7 @@ import {
   checkGraphqlFlatStructure,
 } from '../checks/graphql-resolver-conventions.js';
 
-export interface GraphqlResolverConventionsConfig {
+export interface GraphqlResolverConventionsTestsConfig {
   resolversGlob: string;
   entityFilesPattern: string;        // Required - prevents test false positives
   repositoryFilesPattern: string;    // Required - prevents test false positives
@@ -20,7 +20,7 @@ export interface GraphqlFlatStructureTestsConfig {
 }
 
 export function describeGraphqlResolverConventionsTests(
-  config: GraphqlResolverConventionsConfig,
+  config: GraphqlResolverConventionsTestsConfig,
   flatStructureConfig?: GraphqlFlatStructureTestsConfig,
 ): void {
   describe('GraphQL Resolver Conventions', () => {
