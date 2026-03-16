@@ -1,4 +1,6 @@
+import * as path from 'node:path';
 import { projectFiles } from 'archunit';
+import { getDirectories } from '../utils/frontend-helpers.js';
 
 export interface GraphqlResolverConventionsConfig {
   resolversGlob: string;                      // e.g. '../sthrift/graphql/src/schema/types/**'
@@ -7,6 +9,11 @@ export interface GraphqlResolverConventionsConfig {
   uowFilesPattern?: string;                   // e.g. '../sthrift/domain/src/domain/contexts/**/*.uow.ts'
   infrastructureServicesPattern?: string;     // e.g. '../cellix/service-*/**'
   persistenceFolder?: string;                 // e.g. '../sthrift/persistence/**'
+}
+
+export interface GraphqlFlatStructureConfig {
+  typesDirectoryPath: string;                 // e.g. '../sthrift/graphql/src/schema/types'
+  allowedSubdirectories?: string[];           // e.g. ['features'] — directories that are allowed
 }
 
 /**
@@ -256,4 +263,24 @@ export async function checkGraphqlResolverContent(config: GraphqlResolverConvent
     .check();
 
   return allViolations;
+}
+
+/**
+ * Check that GraphQL types directory maintains a flat structure (no nested subdirectories for resolver types)
+ */
+export function checkGraphqlFlatStructure(config: GraphqlFlatStructureConfig): string[] {
+  const violations: string[] = [];
+  const resolvedPath = path.join(process.cwd(), config.typesDirectoryPath);
+  const allowedSubs = new Set(config.allowedSubdirectories ?? []);
+
+  const subdirs = getDirectories(resolvedPath);
+  for (const dir of subdirs) {
+    if (!allowedSubs.has(dir)) {
+      violations.push(
+        `[${config.typesDirectoryPath}/${dir}] Unexpected subdirectory in types directory — resolver types must use a flat structure`,
+      );
+    }
+  }
+
+  return violations;
 }

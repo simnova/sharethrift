@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import type { Domain } from '@sthrift/domain';
 import { expect, vi } from 'vitest';
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../init/context.ts';
 import itemListingResolvers from './item-listing.resolvers.ts';
 
 // Generic GraphQL resolver type for tests (avoids banned 'Function' and non-null assertions)

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   checkGraphqlResolverDependencies,
   checkGraphqlResolverContent,
+  checkGraphqlFlatStructure,
 } from '../checks/graphql-resolver-conventions.js';
 
 export interface GraphqlResolverConventionsConfig {
@@ -13,8 +14,14 @@ export interface GraphqlResolverConventionsConfig {
   persistenceFolder?: string;
 }
 
+export interface GraphqlFlatStructureTestsConfig {
+  typesDirectoryPath: string;
+  allowedSubdirectories?: string[];
+}
+
 export function describeGraphqlResolverConventionsTests(
   config: GraphqlResolverConventionsConfig,
+  flatStructureConfig?: GraphqlFlatStructureTestsConfig,
 ): void {
   describe('GraphQL Resolver Conventions', () => {
     describe('Dependency Rules', () => {
@@ -95,5 +102,18 @@ export function describeGraphqlResolverConventionsTests(
         expect(violations.filter((v) => v.includes('async'))).toStrictEqual([]);
       }, 30000);
     });
+
+    if (flatStructureConfig) {
+      describe('Flat Structure', () => {
+        it('types directory should not contain unexpected subdirectories', () => {
+          const { typesDirectoryPath, allowedSubdirectories } = flatStructureConfig;
+          const violations = checkGraphqlFlatStructure({
+            typesDirectoryPath,
+            ...(allowedSubdirectories && { allowedSubdirectories }),
+          });
+          expect(violations).toStrictEqual([]);
+        });
+      });
+    }
   });
 }

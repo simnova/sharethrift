@@ -1,14 +1,14 @@
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../init/context.ts';
 import type {
 	ConversationCreateInput,
 	Resolvers,
 	SendMessageInput,
-} from '../../builder/generated.ts';
+} from '../builder/generated.ts';
 import {
 	getUserByEmail,
 	PopulateItemListingFromField,
 	PopulateUserFromField,
-} from '../../resolver-helper.ts';
+} from '../resolver-helper.ts';
 
 const conversation: Resolvers = {
 	Message: {

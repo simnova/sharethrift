@@ -1,14 +1,14 @@
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
 	Resolvers,
 	QueryAllSystemUsersArgs,
-} from '../../builder/generated.ts';
+} from '../builder/generated.ts';
 import {
 	getUserByEmail,
 	requireAuthentication,
 	extractUserProfileFromJwt,
-} from '../../resolver-helper.ts';
+} from '../resolver-helper.ts';
 
 const userUnionResolvers: Resolvers = {
 	Query: {

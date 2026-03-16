@@ -1,4 +1,4 @@
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
 	Resolvers,
@@ -6,11 +6,11 @@ import type {
 	QueryGetAllListingAppealRequestsArgs,
 	MutationCreateListingAppealRequestArgs,
 	MutationUpdateListingAppealRequestStateArgs,
-} from '../../builder/generated.ts';
+} from '../builder/generated.ts';
 import {
 	PopulateUserFromField,
 	PopulateItemListingFromField,
-} from '../../resolver-helper.ts';
+} from '../resolver-helper.ts';
 
 const listingAppealRequestResolvers: Resolvers = {
 	ListingAppealRequest: {

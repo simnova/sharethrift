@@ -1,6 +1,5 @@
-import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { getAllFiles, getDirectories, isKebabCase } from '../utils/frontend-helpers.js';
+import { getAllFiles, getDirectories, isKebabCase, directoryExists, fileExists } from '../utils/frontend-helpers.js';
 
 export interface FrontendArchitectureConfig {
   uiSourcePath: string;  // e.g. '../../apps/ui-sharethrift/src'
@@ -24,17 +23,17 @@ export function checkFrontendArchitecture(config: FrontendArchitectureConfig): s
 
   // Check layouts and shared directories
   const layoutsPath = path.join(uiPath, 'components/layouts');
-  if (!fs.existsSync(layoutsPath)) {
+  if (!directoryExists(layoutsPath)) {
     violations.push('components/layouts directory is required');
   }
 
   const sharedPath = path.join(uiPath, 'components/shared');
-  if (!fs.existsSync(sharedPath)) {
+  if (!directoryExists(sharedPath)) {
     violations.push('components/shared directory is required');
   }
 
   // Check kebab-case naming
-  if (fs.existsSync(layoutsPath)) {
+  if (directoryExists(layoutsPath)) {
     const layoutDirs: string[] = getDirectories(layoutsPath);
     for (const dir of layoutDirs) {
       if (!isKebabCase(dir)) {
@@ -46,7 +45,7 @@ export function checkFrontendArchitecture(config: FrontendArchitectureConfig): s
   // Check all directories use kebab-case
   const allDirs: string[] = [];
   function collectDirs(dirPath: string): void {
-    if (!fs.existsSync(dirPath)) return;
+    if (!directoryExists(dirPath)) return;
     const dirs: string[] = getDirectories(dirPath);
     for (const dir of dirs) {
       allDirs.push(dir);
@@ -87,16 +86,16 @@ export function checkFrontendArchitecture(config: FrontendArchitectureConfig): s
   }
 
   // Check layout requirements
-  if (fs.existsSync(layoutsPath)) {
+  if (directoryExists(layoutsPath)) {
     const layoutDirs = getDirectories(layoutsPath);
     for (const layoutDir of layoutDirs) {
       const sectionLayoutPath = path.join(layoutsPath, layoutDir, 'section-layout.tsx');
-      if (!fs.existsSync(sectionLayoutPath)) {
+      if (!fileExists(sectionLayoutPath)) {
         violations.push(`Layout '${layoutDir}' must have section-layout.tsx`);
       }
 
       const indexPath = path.join(layoutsPath, layoutDir, 'index.tsx');
-      if (!fs.existsSync(indexPath)) {
+      if (!fileExists(indexPath)) {
         violations.push(`Layout '${layoutDir}' must have index.tsx`);
       }
     }

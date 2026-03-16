@@ -1,4 +1,4 @@
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
 	AdminUser,
@@ -6,9 +6,9 @@ import type {
 	AdminUserUpdateInput,
 	Resolvers,
 	QueryAllAdminUsersArgs,
-} from '../../builder/generated.ts';
+} from '../builder/generated.ts';
 import type { AdminUserUpdateCommand } from '@sthrift/application-services';
-import { getUserByEmail, currentViewerIsAdmin } from '../../resolver-helper.ts';
+import { getUserByEmail, currentViewerIsAdmin } from '../resolver-helper.ts';
 
 const adminUserResolvers: Resolvers = {
 	AdminUser: {

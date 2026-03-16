@@ -1,4 +1,4 @@
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
 	Resolvers,
@@ -6,8 +6,8 @@ import type {
 	QueryGetAllUserAppealRequestsArgs,
 	MutationCreateUserAppealRequestArgs,
 	MutationUpdateUserAppealRequestStateArgs,
-} from '../../builder/generated.ts';
-import { PopulateUserFromField } from '../../resolver-helper.ts';
+} from '../builder/generated.ts';
+import { PopulateUserFromField } from '../resolver-helper.ts';
 
 const userAppealRequestResolvers: Resolvers = {
 	UserAppealRequest: {

@@ -35,6 +35,20 @@ export function getDirectories(dirPath: string): string[] {
 }
 
 /**
+ * Check if a directory exists at the given path
+ */
+export function directoryExists(dirPath: string): boolean {
+	return fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory();
+}
+
+/**
+ * Check if a file exists at the given path
+ */
+export function fileExists(filePath: string): boolean {
+	return fs.existsSync(filePath) && fs.statSync(filePath).isFile();
+}
+
+/**
  * Check if a string follows kebab-case naming convention
  */
 export function isKebabCase(str: string): boolean {

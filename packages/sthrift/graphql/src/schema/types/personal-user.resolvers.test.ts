@@ -4,7 +4,7 @@ import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import type { Domain } from '@sthrift/domain';
 import type { PaymentResponse } from '@sthrift/application-services';
 import { expect, vi } from 'vitest';
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../init/context.ts';
 import personalUserResolvers from './personal-user.resolvers.ts';
 
 // Define a type for the payment response based on the interface structure

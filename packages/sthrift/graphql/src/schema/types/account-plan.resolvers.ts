@@ -1,5 +1,5 @@
-import type { GraphContext } from '../../../init/context.ts';
-import type { Resolvers } from '../../builder/generated.ts';
+import type { GraphContext } from '../../init/context.ts';
+import type { Resolvers } from '../builder/generated.ts';
 import type { Domain } from '@sthrift/domain';
 
 const AccountPlanMutationResolver = async (

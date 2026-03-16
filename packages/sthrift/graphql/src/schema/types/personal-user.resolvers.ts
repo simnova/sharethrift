@@ -1,4 +1,4 @@
-import type { GraphContext } from '../../../init/context.ts';
+import type { GraphContext } from '../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type {
 	PersonalUser,
@@ -6,13 +6,13 @@ import type {
 	ProcessPaymentInput,
 	Resolvers,
 	QueryAllUsersArgs,
-} from '../../builder/generated.ts';
+} from '../builder/generated.ts';
 import type {
 	PersonalUserUpdateCommand,
 	RefundPaymentCommand,
 } from '@sthrift/application-services';
 import type { Domain } from '@sthrift/domain';
-import { getUserByEmail, currentViewerIsAdmin } from '../../resolver-helper.ts';
+import { getUserByEmail, currentViewerIsAdmin } from '../resolver-helper.ts';
 
 const PersonalUserMutationResolver = async (
 	getPersonalUser: Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference>,
