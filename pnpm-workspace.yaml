@@ -4,6 +4,7 @@ packages:
   - "packages/sthrift/*"
 
 catalog:
+  '@azure/functions': 4.8.0
   mongodb: 6.18.0
   mongoose: 8.17.0
   # Vitest 4.x and related testing dependencies

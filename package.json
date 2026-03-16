@@ -85,9 +85,6 @@
             "undici": ">=6.24.0"
         }
     },
-    "catalog": {
-        "@azure/functions": "4.11.0"
-    },
     "devDependencies": {
         "@amiceli/vitest-cucumber": "^6.1.0",
         "@biomejs/biome": "2.0.0",

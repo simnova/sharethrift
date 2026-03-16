@@ -23,7 +23,7 @@
 
 		"typescript": "^5.8.3",
 		"@sthrift/application-services": "workspace:*",
-		"@azure/functions": "4.11.0"
+		"@azure/functions": "catalog:"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

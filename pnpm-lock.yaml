@@ -6,6 +6,9 @@ settings:
 
 catalogs:
   default:
+    '@azure/functions':
+      specifier: 4.8.0
+      version: 4.8.0
     '@vitest/browser-playwright':
       specifier: ^4.0.18
       version: 4.0.18
@@ -130,8 +133,8 @@ importers:
   apps/api:
     dependencies:
       '@azure/functions':
-        specifier: 4.11.0
-        version: 4.11.0
+        specifier: 'catalog:'
+        version: 4.8.0
       '@cellix/api-services-spec':
         specifier: workspace:*
         version: link:../../packages/cellix/api-services-spec
@@ -938,7 +941,7 @@ importers:
         version: 1.13.5
       cybersource-rest-client:
         specifier: ^0.0.73
-        version: 0.0.73
+        version: 0.0.73(undici@7.24.4)
     devDependencies:
       '@cellix/typescript-config':
         specifier: workspace:*
@@ -1398,8 +1401,8 @@ importers:
         specifier: ^0.2.0
         version: 0.2.3(@apollo/server@5.4.0(graphql@16.12.0))
       '@azure/functions':
-        specifier: 4.11.0
-        version: 4.11.0
+        specifier: 'catalog:'
+        version: 4.8.0
       '@graphql-tools/json-file-loader':
         specifier: ^8.0.20
         version: 8.0.26(graphql@16.12.0)
@@ -1505,8 +1508,8 @@ importers:
   packages/sthrift/rest:
     dependencies:
       '@azure/functions':
-        specifier: 4.11.0
-        version: 4.11.0
+        specifier: 'catalog:'
+        version: 4.8.0
       '@sthrift/application-services':
         specifier: workspace:*
         version: link:../application-services
@@ -1907,10 +1910,6 @@ packages:
     resolution: {integrity: sha512-XPArKLzsvl0Hf0CaGyKHUyVgF7oDnhKoP85Xv6M4StF/1AhfORhZudHtOyf2s+FcbuQ9dPRAjB8J2KvRRMUK2A==}
     engines: {node: '>=20.0.0'}
 
-  '@azure/functions-extensions-base@0.2.0':
-    resolution: {integrity: sha512-ncCkHBNQYJa93dBIh+toH0v1iSgCzSo9tr94s6SMBe7DPWREkaWh8cq33A5P4rPSFX1g5W+3SPvIzDr/6/VOWQ==}
-    engines: {node: '>=18.0'}
-
   '@azure/functions-opentelemetry-instrumentation@0.1.0':
     resolution: {integrity: sha512-eRitTbOUDhlzc4o2Q9rjbXiMYa/ep06m2jIkN7HOuLP0aHnjPh3zHXtqji/NyeqT/GfHjCgJr+r8+49s7KER7w==}
     engines: {node: '>=18.0'}
@@ -1920,9 +1919,9 @@ packages:
   '@azure/functions@3.5.1':
     resolution: {integrity: sha512-6UltvJiuVpvHSwLcK/Zc6NfUwlkDLOFFx97BHCJzlWNsfiWwzwmTsxJXg4kE/LemKTHxPpfoPE+kOJ8hAdiKFQ==}
 
-  '@azure/functions@4.11.0':
-    resolution: {integrity: sha512-J0We2gav3YZFLO9pJlXDKUSOT0r/DzkUaJTaruhm8pwoSMbi4zjsS5N6fARrTel+IBCm77hlD0IgZSKSWvVpUw==}
-    engines: {node: '>=20.0'}
+  '@azure/functions@4.8.0':
+    resolution: {integrity: sha512-LNtl3xZNE40vE7+SIST+GYQX5cnnI1M65fXPi26l9XCdPakuQrz54lHv+qQQt1GG5JbqLfQk75iM7A6Y9O+2dQ==}
+    engines: {node: '>=18.0'}
 
   '@azure/identity@3.4.2':
     resolution: {integrity: sha512-0q5DL4uyR0EZ4RXQKD8MadGH6zTIcloUoS/RVbCpNpej4pwte0xpqYxk8K97Py2RiuUvI7F4GXpoT4046VfufA==}
@@ -12055,6 +12054,10 @@ packages:
   undici-types@7.16.0:
     resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
 
+  undici@7.24.4:
+    resolution: {integrity: sha512-BM/JzwwaRXxrLdElV2Uo6cTLEjhSb3WXboncJamZ15NgUURmvlXvxa6xkwIOILIjPNo9i8ku136ZvWV0Uly8+w==}
+    engines: {node: '>=20.18.1'}
+
   unicode-canonical-property-names-ecmascript@2.0.1:
     resolution: {integrity: sha512-dA8WbNeb2a6oQzAQ55YlT5vQAWGV9WXOsi3SskE3bcCdM0P4SDd+24zS/OCacdRq5BkdsRj9q3Pg6YyQoxIGqg==}
     engines: {node: '>=4'}
@@ -12986,7 +12989,7 @@ snapshots:
     dependencies:
       '@apollo/server': 5.4.0(graphql@16.12.0)
       '@azure/functions': 3.5.1
-      '@azure/functions-v4': '@azure/functions@4.11.0'
+      '@azure/functions-v4': '@azure/functions@4.8.0'
 
   '@asamuzakjp/css-color@3.2.0':
     dependencies:
@@ -13101,8 +13104,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/functions-extensions-base@0.2.0': {}
-
   '@azure/functions-opentelemetry-instrumentation@0.1.0(@opentelemetry/api@1.9.0)':
     dependencies:
       '@opentelemetry/api': 1.9.0
@@ -13116,11 +13117,11 @@ snapshots:
       long: 4.0.0
       uuid: 8.3.2
 
-  '@azure/functions@4.11.0':
+  '@azure/functions@4.8.0':
     dependencies:
-      '@azure/functions-extensions-base': 0.2.0
       cookie: 0.7.2
       long: 4.0.0
+      undici: 7.24.4
 
   '@azure/identity@3.4.2':
     dependencies:
@@ -18679,10 +18680,10 @@ snapshots:
 
   axe-core@4.11.1: {}
 
-  axios-cookiejar-support@4.0.7(axios@1.13.5)(tough-cookie@4.1.3):
+  axios-cookiejar-support@4.0.7(axios@1.13.5)(tough-cookie@4.1.3)(undici@7.24.4):
     dependencies:
       axios: 1.13.5
-      http-cookie-agent: 5.0.4(tough-cookie@4.1.3)
+      http-cookie-agent: 5.0.4(tough-cookie@4.1.3)(undici@7.24.4)
       tough-cookie: 4.1.3
     transitivePeerDependencies:
       - deasync
@@ -19600,12 +19601,12 @@ snapshots:
 
   csstype@3.2.3: {}
 
-  cybersource-rest-client@0.0.73:
+  cybersource-rest-client@0.0.73(undici@7.24.4):
     dependencies:
       agentkeepalive: 4.6.0
       app-root-path: 3.1.0
       axios: 1.13.5
-      axios-cookiejar-support: 4.0.7(axios@1.13.5)(tough-cookie@4.1.3)
+      axios-cookiejar-support: 4.0.7(axios@1.13.5)(tough-cookie@4.1.3)(undici@7.24.4)
       chai: 4.5.0
       chai-as-promised: 7.1.2(chai@4.5.0)
       https-proxy-agent: 7.0.6
@@ -21142,10 +21143,12 @@ snapshots:
 
   http-cache-semantics@4.2.0: {}
 
-  http-cookie-agent@5.0.4(tough-cookie@4.1.3):
+  http-cookie-agent@5.0.4(tough-cookie@4.1.3)(undici@7.24.4):
     dependencies:
       agent-base: 7.1.4
       tough-cookie: 4.1.3
+    optionalDependencies:
+      undici: 7.24.4
 
   http-deceiver@1.2.7: {}
 
@@ -25858,6 +25861,8 @@ snapshots:
   unc-path-regex@0.1.2: {}
 
   undici-types@7.16.0: {}
+
+  undici@7.24.4: {}
 
   unicode-canonical-property-names-ecmascript@2.0.1: {}
 
