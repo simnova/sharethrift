@@ -455,6 +455,7 @@ stages:
         JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         SONAR_SCANNER_JAVA_PATH: /usr/lib/jvm/java-17-openjdk-amd64/bin/java
         SONAR_SCANNER_SKIP_JRE_PROVISIONING: true
+        NODE_OPTIONS: --max_old_space_size=16384
         SONAR_TOKEN: $(SONAR_TOKEN)
 
         # SonarCloud: Break the build if it doesn't pass the Quality Gate
