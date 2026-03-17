@@ -4,7 +4,7 @@ import { message } from 'antd';
 import { HomeListingInformationCreateReservationRequestDocument,
 ViewListingActiveReservationRequestForListingDocument,
 ViewListingQueryActiveByListingIdDocument,
-type CreateReservationRequestInput,
+type ReservationRequestCreateInput,
 type ItemListing,
 type ViewListingActiveReservationRequestForListingQuery, 
 type ViewListingQueryActiveByListingIdQuery,
@@ -85,7 +85,7 @@ export const ListingInformationContainer: React.FC<
 						listingId: listing.id,
 						reservationPeriodStart: reservationDates.startDate.toISOString(),
 						reservationPeriodEnd: reservationDates.endDate.toISOString(),
-					} as CreateReservationRequestInput,
+					} as ReservationRequestCreateInput,
 				},
 			});
 		} catch (error) {

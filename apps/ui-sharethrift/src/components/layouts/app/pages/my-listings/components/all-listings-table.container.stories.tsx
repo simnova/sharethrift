@@ -13,7 +13,7 @@ import {
 
 const mockListings = [
 	{
-		__typename: 'ListingAll',
+		__typename: 'ItemListingAll',
 		id: '1',
 		title: 'Cordless Drill',
 		images: ['/assets/item-images/projector.png'],
@@ -23,7 +23,7 @@ const mockListings = [
 		state: 'Active',
 	},
 	{
-		__typename: 'ListingAll',
+		__typename: 'ItemListingAll',
 		id: '2',
 		title: 'Electric Guitar',
 		images: ['/assets/item-images/projector.png'],
@@ -389,7 +389,7 @@ export const ManyListings: Story = {
 							myListingsAll: {
 								__typename: 'MyListingsAllResult',
 								items: Array.from({ length: 6 }, (_, i) => ({
-									__typename: 'ListingAll',
+									__typename: 'ItemListingAll',
 									id: `${i + 1}`,
 									title: `Item ${i + 1}`,
 									images: ['/assets/item-images/projector.png'],

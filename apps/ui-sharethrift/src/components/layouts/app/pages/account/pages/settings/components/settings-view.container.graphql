@@ -46,9 +46,15 @@ mutation HomeAccountSettingsViewContainerUpdateAdminUser(
 	$input: AdminUserUpdateInput!
 ) {
 	adminUserUpdate(input: $input) {
-		id
-		account {
-			...AdminUserAccountFields
+		status {
+			success
+			errorMessage
+		}
+		adminUser {
+			id
+			account {
+				...AdminUserAccountFields
+			}
 		}
 	}
 }

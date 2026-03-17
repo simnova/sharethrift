@@ -9,6 +9,10 @@ export interface MemberOrderingConfig {
  * Check that class members follow proper ordering convention
  */
 export async function checkMemberOrdering(config: MemberOrderingConfig): Promise<string[]> {
+  if (!config.sourceGlobs || config.sourceGlobs.length === 0) {
+    throw new Error('checkMemberOrdering requires at least one sourceGlob to be set');
+  }
+
   const allViolations: string[] = [];
 
   // Use archunit to find all matching files and check them

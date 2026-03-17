@@ -24,10 +24,14 @@ const meta: Meta<typeof CreateListing> = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Active',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Active',
+								},
 							},
 						},
 					},

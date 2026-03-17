@@ -16,7 +16,7 @@
     "build": "tsc --build",
     "watch": "tsc --watch",
     "test": "vitest run",
-    "test:coverage:arch": "vitest run",
+    "test:arch": "vitest run",
     "test:watch": "vitest",
     "clean": "rimraf dist"
   },

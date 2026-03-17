@@ -4,7 +4,7 @@ import { PaymentForm } from '../../../shared/payment/payment-form';
 import type { Country } from '../../../shared/payment/country-type';
 import type {
 	PaymentContainerAccountPlansFieldsFragment,
-	ProcessPaymentInput,
+	PersonalUserProcessPaymentInput,
 } from '../../../../generated';
 
 const { Title, Text } = Typography;
@@ -12,7 +12,7 @@ const { Title, Text } = Typography;
 interface PaymentProps {
 	cyberSourcePublicKey: string;
 	countries: Country[];
-	onSubmitPayment: (paymentDetails: ProcessPaymentInput) => void;
+	onSubmitPayment: (paymentDetails: PersonalUserProcessPaymentInput) => void;
 	selectedAccountPlan: PaymentContainerAccountPlansFieldsFragment;
 }
 export const Payment: FC<PaymentProps> = (props) => {

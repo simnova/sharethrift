@@ -1,6 +1,8 @@
-import { describeFrontendArchitectureTests } from '@cellix/arch-unit-tests';
+import { describeFrontendArchitectureTests, type FrontendArchitectureTestsConfig } from '@cellix/arch-unit-tests';
 
-describeFrontendArchitectureTests({
+const config: FrontendArchitectureTestsConfig = {
   uiSourcePath: '../../../apps/ui-sharethrift/src',
   testName: 'UI ShareThrift',
-});
+};
+
+describeFrontendArchitectureTests(config);

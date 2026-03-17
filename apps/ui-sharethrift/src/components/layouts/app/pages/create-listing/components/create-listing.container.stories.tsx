@@ -34,10 +34,14 @@ const meta: Meta<typeof CreateListingContainer> = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Active',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Active',
+								},
 							},
 						},
 					},
@@ -95,10 +99,14 @@ export const WithDraftSuccess: Story = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Draft',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Draft',
+								},
 							},
 						},
 					},
@@ -146,10 +154,14 @@ export const WithPublishSuccess: Story = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Active',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Active',
+								},
 							},
 						},
 					},
@@ -279,10 +291,14 @@ export const ImageHandling: Story = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Published',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Published',
+								},
 							},
 						},
 					},
@@ -322,10 +338,14 @@ export const CancelAction: Story = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Published',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Published',
+								},
 							},
 						},
 					},
@@ -365,10 +385,14 @@ export const ViewListingAction: Story = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Active',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Active',
+								},
 							},
 						},
 					},
@@ -426,10 +450,14 @@ export const ViewDraftAction: Story = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Draft',
-								state: 'Draft',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Draft',
+									state: 'Draft',
+								},
 							},
 						},
 					},
@@ -487,10 +515,14 @@ export const ModalCloseAction: Story = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Published',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Published',
+								},
 							},
 						},
 					},
@@ -548,10 +580,14 @@ export const CategorySelection: Story = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Published',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Published',
+								},
 							},
 						},
 					},
@@ -591,10 +627,14 @@ export const UnauthenticatedSubmit: Story = {
 					result: {
 						data: {
 							createItemListing: {
-								__typename: 'ItemListing',
-								id: '1',
-								title: 'Test Listing',
-								state: 'Published',
+								__typename: 'ItemListingMutationResult',
+								status: { success: true, errorMessage: null },
+								listing: {
+									__typename: 'ItemListing',
+									id: '1',
+									title: 'Test Listing',
+									state: 'Published',
+								},
 							},
 						},
 					},

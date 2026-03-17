@@ -217,6 +217,22 @@ stages:
         System_PullRequest_TargetBranch: $(System.PullRequest.TargetBranch)
         Build_SourceBranch: $(Build.SourceBranch)
 
+    # Run architectural fitness tests before regular tests to fail fast on structural violations
+    - task: Bash@3
+      displayName: 'Turbo: Run architectural fitness tests'
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          export NODE_OPTIONS=--max_old_space_size=16384
+
+          echo "Running architectural fitness tests (system-wide validation)..."
+          pnpm run test:arch
+        workingDirectory: ''
+      env:
+        TURBO_CACHE_HIT: $(TURBO_CACHE_HIT)
+        TURBO_TELEMETRY_DISABLED: 1
+
     # Build and run tests on affected packages using Turbo's --affected flag
     - task: Bash@3
       displayName: 'Turbo: Build and test affected packages'
@@ -439,6 +455,7 @@ stages:
         JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         SONAR_SCANNER_JAVA_PATH: /usr/lib/jvm/java-17-openjdk-amd64/bin/java
         SONAR_SCANNER_SKIP_JRE_PROVISIONING: true
+        NODE_OPTIONS: --max_old_space_size=16384
         SONAR_TOKEN: $(SONAR_TOKEN)
 
         # SonarCloud: Break the build if it doesn't pass the Quality Gate

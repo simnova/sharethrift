@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import { checkMemberOrdering } from '../checks/member-ordering.js';
 
-export function describeMemberOrderingTests(config: { domainSourcePath: string; persistenceSourcePath: string; graphqlSourcePath: string; fixturesSourcePath?: string }): void {
+export interface MemberOrderingTestsConfig {
+  domainSourcePath: string;
+  persistenceSourcePath: string;
+  graphqlSourcePath: string;
+  fixturesSourcePath?: string;
+}
+
+export function describeMemberOrderingTests(config: MemberOrderingTestsConfig): void {
   describe('Member Ordering Conventions', () => {
     describe('Domain Layer Classes', () => {
       it('domain classes should follow member ordering convention', async () => {
@@ -63,7 +70,7 @@ export function describeMemberOrderingTests(config: { domainSourcePath: string; 
       it('still enforces grouping of static vs instance members', async () => {
         const violations = await checkMemberOrdering({
           sourceGlobs: [
-            '../../cellix/arch-unit-tests/src/fixtures/member-ordering/static-instance-misordered.ts',
+            '../../cellix/arch-unit-tests/src/fixtures/static-instance-misordered.ts',
           ],
         });
 

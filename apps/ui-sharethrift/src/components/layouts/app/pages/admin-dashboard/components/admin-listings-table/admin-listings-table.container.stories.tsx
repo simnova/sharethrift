@@ -31,7 +31,7 @@ const meta: Meta<typeof AdminListings> = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -161,7 +161,7 @@ export const WithSorting: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -267,7 +267,7 @@ export const DeleteSuccess: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -341,7 +341,7 @@ export const DeleteFailure: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -414,7 +414,7 @@ export const DeleteError: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -476,7 +476,7 @@ export const UnblockSuccess: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -542,7 +542,7 @@ export const UnblockFailure: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -608,7 +608,7 @@ export const ViewListingAction: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -659,7 +659,7 @@ export const DataTransformationWithNullValues: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-null',
 										title: null,
 										images: null,
@@ -707,7 +707,7 @@ export const DataTransformationWithPartialData: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-partial',
 										title: 'Partial Listing',
 										images: [],
@@ -790,7 +790,7 @@ export const MultipleListingsWithDifferentStates: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Blocked Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -800,7 +800,7 @@ export const MultipleListingsWithDifferentStates: Story = {
 										sharingPeriodEnd: '2024-12-15',
 									},
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-2',
 										title: 'Active Camera',
 										images: ['https://example.com/camera.jpg'],
@@ -847,7 +847,7 @@ export const StatusFilterFunctionality: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Filtered Listing',
 										images: ['https://example.com/item.jpg'],
@@ -937,7 +937,7 @@ export const SortingWithDifferentFields: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Zebra Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -947,7 +947,7 @@ export const SortingWithDifferentFields: Story = {
 										sharingPeriodEnd: '2024-12-15',
 									},
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-2',
 										title: 'Apple Camera',
 										images: ['https://example.com/camera.jpg'],
@@ -999,7 +999,7 @@ export const UnblockMutationNetworkError: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Mountain Bike',
 										images: ['https://example.com/bike.jpg'],
@@ -1056,7 +1056,7 @@ export const PaginationFunctionality: Story = {
 							adminListings: {
 								__typename: 'AdminListingSearchResults',
 								items: Array.from({ length: 6 }, (_, i) => ({
-									__typename: 'ListingAll',
+									__typename: 'ItemListingAll',
 									id: `listing-${i + 1}`,
 									title: `Listing ${i + 1}`,
 									images: ['https://example.com/image.jpg'],
@@ -1145,7 +1145,7 @@ export const OnStatusFilterFunction: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Filtered Listing',
 										images: ['https://example.com/item.jpg'],
@@ -1194,7 +1194,7 @@ export const OnTableChangeFunction: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Sortable Listing',
 										images: ['https://example.com/item.jpg'],
@@ -1246,7 +1246,7 @@ export const OnActionViewFunction: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Viewable Listing',
 										images: ['https://example.com/item.jpg'],
@@ -1299,7 +1299,7 @@ export const OnActionUnblockFunction: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Unblockable Listing',
 										images: ['https://example.com/item.jpg'],
@@ -1364,7 +1364,7 @@ export const OnActionDeleteFunction: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Deletable Listing',
 										images: ['https://example.com/item.jpg'],
@@ -1436,7 +1436,7 @@ export const OnActionRemoveFunction: Story = {
 								__typename: 'AdminListingSearchResults',
 								items: [
 									{
-										__typename: 'ListingAll',
+										__typename: 'ItemListingAll',
 										id: 'listing-1',
 										title: 'Removable Listing',
 										images: ['https://example.com/item.jpg'],

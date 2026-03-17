@@ -180,8 +180,11 @@ function SettingsViewLoader() {
 				],
 			});
 
-			if (!result.data?.adminUserUpdate) {
-				throw new Error('Admin user update failed');
+			if (!result.data?.adminUserUpdate?.status?.success) {
+				throw new Error(
+					result.data?.adminUserUpdate?.status?.errorMessage ??
+						'Admin user update failed',
+				);
 			}
 
 			message.success('Updated successfully');

@@ -2,9 +2,10 @@ import { describe, expect, it } from 'vitest';
 import {
   checkGraphqlResolverDependencies,
   checkGraphqlResolverContent,
+  checkGraphqlFlatStructure,
 } from '../checks/graphql-resolver-conventions.js';
 
-export interface GraphqlResolverConventionsConfig {
+export interface GraphqlResolverConventionsTestsConfig {
   resolversGlob: string;
   entityFilesPattern: string;        // Required - prevents test false positives
   repositoryFilesPattern: string;    // Required - prevents test false positives
@@ -13,8 +14,14 @@ export interface GraphqlResolverConventionsConfig {
   persistenceFolder?: string;
 }
 
+export interface GraphqlFlatStructureTestsConfig {
+  typesDirectoryPath: string;
+  allowedSubdirectories?: string[];
+}
+
 export function describeGraphqlResolverConventionsTests(
-  config: GraphqlResolverConventionsConfig,
+  config: GraphqlResolverConventionsTestsConfig,
+  flatStructureConfig?: GraphqlFlatStructureTestsConfig,
 ): void {
   describe('GraphQL Resolver Conventions', () => {
     describe('Dependency Rules', () => {
@@ -95,5 +102,18 @@ export function describeGraphqlResolverConventionsTests(
         expect(violations.filter((v) => v.includes('async'))).toStrictEqual([]);
       }, 30000);
     });
+
+    if (flatStructureConfig) {
+      describe('Flat Structure', () => {
+        it('types directory should not contain unexpected subdirectories', async () => {
+          const { typesDirectoryPath, allowedSubdirectories } = flatStructureConfig;
+          const violations = await checkGraphqlFlatStructure({
+            typesDirectoryPath,
+            ...(allowedSubdirectories && { allowedSubdirectories }),
+          });
+          expect(violations).toStrictEqual([]);
+        });
+      });
+    }
   });
 }

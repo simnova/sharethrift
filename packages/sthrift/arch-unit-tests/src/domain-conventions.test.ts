@@ -1,5 +1,7 @@
-import { describeDomainConventionTests } from '@cellix/arch-unit-tests';
+import { describeDomainConventionTests, type DomainConventionTestsConfig } from '@cellix/arch-unit-tests';
 
-describeDomainConventionTests({
+const config: DomainConventionTestsConfig = {
   domainContextsGlob: '../domain/src/domain/contexts/**',
-});
+};
+
+describeDomainConventionTests(config);

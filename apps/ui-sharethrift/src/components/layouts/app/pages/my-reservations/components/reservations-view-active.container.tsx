@@ -48,7 +48,7 @@ export const ReservationsViewActiveContainer: React.FC<
 		HomeMyReservationsReservationsViewActiveContainerCancelReservationDocument,
 		{
 			update(cache, { data }) {
-				const id = data?.cancelReservation?.id;
+				const id = data?.cancelReservation?.reservationRequest?.id;
 				if (id) {
 					const cacheId = cache.identify({
 						__typename: RESERVATION_REQUEST_TYPENAME,
@@ -67,7 +67,7 @@ export const ReservationsViewActiveContainer: React.FC<
 		HomeMyReservationsReservationsViewActiveContainerCloseReservationDocument,
 		{
 			update(cache, { data }) {
-				const id = data?.closeReservation?.id;
+				const id = data?.closeReservation?.reservationRequest?.id;
 				if (id) {
 					const cacheId = cache.identify({
 						__typename: RESERVATION_REQUEST_TYPENAME,

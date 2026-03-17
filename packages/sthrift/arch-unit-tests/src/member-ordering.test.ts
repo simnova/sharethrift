@@ -1,7 +1,9 @@
-import { describeMemberOrderingTests } from '@cellix/arch-unit-tests';
+import { describeMemberOrderingTests, type MemberOrderingTestsConfig } from '@cellix/arch-unit-tests';
 
-describeMemberOrderingTests({
+const config: MemberOrderingTestsConfig = {
   domainSourcePath: '../domain/src',
   persistenceSourcePath: '../persistence/src',
   graphqlSourcePath: '../graphql/src/schema/types',
-});
+};
+
+describeMemberOrderingTests(config);

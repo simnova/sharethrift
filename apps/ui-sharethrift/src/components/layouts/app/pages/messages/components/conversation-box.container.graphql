@@ -4,7 +4,7 @@ query ConversationBoxContainerConversation($conversationId: ObjectID!) {
 	}
 }
 
-mutation ConversationBoxContainerSendMessage($input: SendMessageInput!) {
+mutation ConversationBoxContainerSendMessage($input: ConversationSendMessageInput!) {
 	sendMessage(input: $input) {
 		status {
 			success
