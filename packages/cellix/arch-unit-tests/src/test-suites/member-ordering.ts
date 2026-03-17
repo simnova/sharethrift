@@ -70,7 +70,7 @@ export function describeMemberOrderingTests(config: MemberOrderingTestsConfig): 
       it('still enforces grouping of static vs instance members', async () => {
         const violations = await checkMemberOrdering({
           sourceGlobs: [
-            '../../cellix/arch-unit-tests/src/fixtures/member-ordering/static-instance-misordered.ts',
+            '../../cellix/arch-unit-tests/src/fixtures/static-instance-misordered.ts',
           ],
         });
 

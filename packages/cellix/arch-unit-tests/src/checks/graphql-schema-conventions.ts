@@ -3,20 +3,11 @@ import { projectFiles } from 'archunit';
 
 import { isKebabCase } from '../utils/frontend-helpers.js';
 
-// ────────────────────────────────────────────────────────────────
-// Configuration
-// ────────────────────────────────────────────────────────────────
-
 export interface GraphqlSchemaConventionsConfig {
 	graphqlGlob: string;
 	excludeFiles?: string[];
 }
 
-// ────────────────────────────────────────────────────────────────
-// Internal helpers — lightweight GraphQL SDL parsing
-// ────────────────────────────────────────────────────────────────
-
-/** Strip comments and blank lines */
 function stripComments(content: string): string {
 	return content
 		.replace(/#[^\n]*/g, '')
@@ -95,23 +86,41 @@ function parseDefinitions(content: string): ParsedDefinition[] {
 /** Extract mutation field names and their return types from a Mutation extend block body */
 function parseMutationFields(body: string): Array<{ name: string; returnType: string }> {
 	const fields: Array<{ name: string; returnType: string }> = [];
-	// Match: fieldName(...): ReturnType or fieldName(...): ReturnType!
-	const fieldRegex = /(\w+)\s*\([^)]*\)\s*:\s*([^\n!]+?)!?/g;
-	let match = fieldRegex.exec(body);
-	while (match !== null) {
-		fields.push({ name: match[1] as string, returnType: (match[2] as string).trim() });
-		match = fieldRegex.exec(body);
+	let pos = 0;
+
+	while (pos < body.length) {
+		// Find field name: word characters at current position
+		const nameRegex = /^\s*(\w+)\s*\(/;
+		const nameMatch = nameRegex.exec(body.slice(pos));
+		if (!nameMatch) break;
+
+		const name = nameMatch[1] as string;
+		pos += nameMatch[0].length - 1; // Position at opening paren
+
+		// Find matching closing paren
+		let parenDepth = 1;
+		let parenEnd = pos + 1;
+		while (parenEnd < body.length && parenDepth > 0) {
+			if (body[parenEnd] === '(') parenDepth++;
+			if (body[parenEnd] === ')') parenDepth--;
+			parenEnd++;
+		}
+
+		// Find return type after colon
+		const afterParens = body.slice(parenEnd);
+		const typeRegex = /^\s*:\s*([A-Za-z_]\w*(?:\[!?\])*!?)/;
+		const typeMatch = typeRegex.exec(afterParens);
+		if (!typeMatch) break;
+
+		const returnType = typeMatch[1] as string;
+		fields.push({ name, returnType });
+
+		pos = parenEnd + typeMatch[0].length;
 	}
+
 	return fields;
 }
 
-// ────────────────────────────────────────────────────────────────
-// Check functions
-// ────────────────────────────────────────────────────────────────
-
-/**
- * Check that .graphql files in the types directory use lower-kebab-case naming
- */
 export async function checkGraphqlSchemaFileNaming(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
 	if (!config.graphqlGlob) {
 		throw new Error('checkGraphqlSchemaFileNaming requires graphqlGlob to be set');
@@ -139,9 +148,6 @@ export async function checkGraphqlSchemaFileNaming(config: GraphqlSchemaConventi
 	return violations;
 }
 
-/**
- * Check that type names in each .graphql file are properly prefixed with the top-level type name
- */
 export async function checkGraphqlSchemaTypePrefixing(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
 	if (!config.graphqlGlob) {
 		throw new Error('checkGraphqlSchemaTypePrefixing requires graphqlGlob to be set');
@@ -183,13 +189,6 @@ export async function checkGraphqlSchemaTypePrefixing(config: GraphqlSchemaConve
 	return violations;
 }
 
-/**
- * Check that MutationResult types follow conventions:
- * - Named <<TopLevelType>>MutationResult
- * - Implements MutationResult interface
- * - Has status: MutationStatus! field
- * - Has a field for the top-level type
- */
 export async function checkGraphqlSchemaMutationResults(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
 	if (!config.graphqlGlob) {
 		throw new Error('checkGraphqlSchemaMutationResults requires graphqlGlob to be set');
@@ -259,11 +258,6 @@ export async function checkGraphqlSchemaMutationResults(config: GraphqlSchemaCon
 	return violations;
 }
 
-/**
- * Check that input types follow naming conventions:
- * - Must end with "Input"
- * - Must be prefixed with the top-level type name (or a mutation name derived from it)
- */
 export async function checkGraphqlSchemaInputNaming(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
 	if (!config.graphqlGlob) {
 		throw new Error('checkGraphqlSchemaInputNaming requires graphqlGlob to be set');
@@ -335,10 +329,6 @@ const orderCategoryNames = [
 	'extend type Mutation',
 ];
 
-/**
- * Check that definitions within each .graphql file follow the expected ordering:
- * TopLevelType → SubTypes → Enums → Inputs → MutationResult → Query → Mutation
- */
 export async function checkGraphqlSchemaOrdering(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
 	if (!config.graphqlGlob) {
 		throw new Error('checkGraphqlSchemaOrdering requires graphqlGlob to be set');
@@ -388,9 +378,6 @@ export async function checkGraphqlSchemaOrdering(config: GraphqlSchemaConvention
 	return violations;
 }
 
-/**
- * Check all GraphQL schema conventions at once and return categorized violations
- */
 export async function checkGraphqlSchemaConventions(config: GraphqlSchemaConventionsConfig): Promise<string[]> {
 	if (!config.graphqlGlob) {
 		throw new Error('checkGraphqlSchemaConventions requires graphqlGlob to be set');
