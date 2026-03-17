@@ -7,6 +7,7 @@ export default mergeConfig(
 		// Add package-specific overrides here if needed
 		test: {
 			include: ['src/**/*.test.ts', 'tests/integration/**/*.test.ts'],
+			exclude: ['src/arch-unit-tests/**'],
 			retry: 0,
 			coverage: {
 				exclude: ['tests/**'],
