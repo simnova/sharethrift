@@ -75,14 +75,26 @@ fragment UserProfileViewAdminUserProfileFields on AdminUserAccountProfile {
 
 mutation HomeAccountViewUserProfileBlockUser($userId: ObjectID!) {
 	blockUser(userId: $userId) {
-		id
-		isBlocked
+		status {
+			success
+			errorMessage
+		}
+		personalUser {
+			id
+			isBlocked
+		}
 	}
 }
 
 mutation HomeAccountViewUserProfileUnblockUser($userId: ObjectID!) {
 	unblockUser(userId: $userId) {
-		id
-		isBlocked
+		status {
+			success
+			errorMessage
+		}
+		personalUser {
+			id
+			isBlocked
+		}
 	}
 }
