@@ -11,7 +11,9 @@ export interface GraphqlSchemaConventionsConfig {
 function stripComments(content: string): string {
 	return content
 		.replace(/#[^\n]*/g, '')
-		.replace(/"""[\s\S]*?"""/g, '')
+		// Remove triple-quoted strings: match """ followed by any chars up to next """
+		// Using [^]* instead of [\s\S]* to avoid potential ReDoS with certain input patterns
+		.replace(/"""(?:[^"]|"(?!""))*"""/g, '')
 		.replace(/"[^"]*"/g, '""');
 }
 

@@ -40,7 +40,17 @@ export async function checkPersistenceRepositoryConventions(
 		.withName('*.repository.ts')
 		.should()
 		.adhereTo((file) => {
-			const implementsDomainRepo = /implements\s+[\s\S]*?Domain\.Contexts\.\w/.test(file.content);
+			// Use string search to avoid regex backtracking vulnerabilities
+			// Check if file contains both "implements" and "Domain.Contexts." in reasonable proximity
+			const implementsIdx = file.content.indexOf('implements');
+			const domainCtxIdx = file.content.indexOf('Domain.Contexts.');
+			const implementsDomainRepo =
+				implementsIdx !== -1 &&
+				domainCtxIdx !== -1 &&
+				domainCtxIdx > implementsIdx &&
+				// Verify they're on the same class declaration (before next opening brace after implements)
+				domainCtxIdx < file.content.indexOf('{', implementsIdx);
+
 			if (!implementsDomainRepo) {
 				allViolations.push(
 					`[${file.path}] Repository must implement the corresponding Domain.Contexts.*.Repository interface`,
