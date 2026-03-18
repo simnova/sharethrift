@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import type { Domain } from '@sthrift/domain';
-import type { PaymentService } from '@cellix/payment-service';
+import type { PaymentService } from '@cellix/service-payment-base';
 import { PaymentPersonalUserContext } from './index.ts';
 
 function makePassport(): Domain.Passport {

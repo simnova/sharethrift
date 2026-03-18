@@ -1,0 +1,77 @@
+query HomeMyReservationsReservationsViewActiveContainerActiveReservations(
+	$userId: ObjectID!
+) {
+	myActiveReservations(userId: $userId) {
+		id
+		state
+		reservationPeriodStart
+		reservationPeriodEnd
+		createdAt
+		updatedAt
+		listing {
+			id
+			title
+			images
+		}
+		reserver {
+			... on PersonalUser {
+				id
+				account {
+					username
+					profile {
+						firstName
+						lastName
+					}
+				}
+			}
+			... on AdminUser {
+				id
+				account {
+					username
+					profile {
+						firstName
+						lastName
+					}
+				}
+			}
+		}
+		closeRequestedBySharer
+		closeRequestedByReserver
+	}
+}
+
+mutation HomeMyReservationsReservationsViewActiveContainerCancelReservation(
+	$input: ReservationRequestCancelInput!
+) {
+	cancelReservation(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		reservationRequest {
+			id
+			state
+			updatedAt
+			closeRequestedBySharer
+			closeRequestedByReserver
+		}
+	}
+}
+
+mutation HomeMyReservationsReservationsViewActiveContainerCloseReservation(
+	$input: ReservationRequestCloseInput!
+) {
+	closeReservation(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		reservationRequest {
+			id
+			state
+			updatedAt
+			closeRequestedBySharer
+			closeRequestedByReserver
+		}
+	}
+}

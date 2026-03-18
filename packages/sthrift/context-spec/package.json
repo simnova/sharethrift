@@ -21,9 +21,9 @@
 	},
 	"dependencies": {
 		"@sthrift/persistence": "workspace:*",
-		"@cellix/payment-service": "workspace:*",
-		"@sthrift/service-token-validation": "workspace:*",
-		"@cellix/messaging-service": "workspace:*"
+		"@cellix/service-payment-base": "workspace:*",
+		"@cellix/service-token-validation": "workspace:*",
+		"@cellix/service-messaging-base": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

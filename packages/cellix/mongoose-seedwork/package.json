@@ -17,7 +17,7 @@
 		"build": "tsc --build",
 		"watch": "tsc --watch",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
+		"test:coverage:node": "vitest run --coverage",
 		"test:integration": "vitest run integration.test.ts",
 		"test:unit": "vitest run --exclude tests/integration/**/*.test.ts",
 		"test:watch": "vitest",

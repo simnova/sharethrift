@@ -57,15 +57,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario(
-		'Admin can close request with moderation permission',
+		'Admin can edit request with moderation permission',
 		({ Given, When, Then }) => {
 			Given('the admin has canModerateListings permission', () => {
 				admin = makeAdminUser(true);
 				visa = new AdminUserReservationRequestVisa(requestRoot, admin);
 			});
 
-			When('I check if admin can close request', () => {
-				result = visa.determineIf((p) => p.canCloseRequest);
+			When('I check if admin can edit request', () => {
+				result = visa.determineIf((p) => p.canEditReservationRequest);
 			});
 
 			Then('the permission should be granted', () => {
@@ -75,69 +75,15 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Admin can cancel request with moderation permission',
-		({ Given, When, Then }) => {
-			Given('the admin has canModerateListings permission', () => {
-				admin = makeAdminUser(true);
-				visa = new AdminUserReservationRequestVisa(requestRoot, admin);
-			});
-
-			When('I check if admin can cancel request', () => {
-				result = visa.determineIf((p) => p.canCancelRequest);
-			});
-
-			Then('the permission should be granted', () => {
-				expect(result).toBe(true);
-			});
-		},
-	);
-
-	Scenario(
-		'Admin can accept request with moderation permission',
-		({ Given, When, Then }) => {
-			Given('the admin has canModerateListings permission', () => {
-				admin = makeAdminUser(true);
-				visa = new AdminUserReservationRequestVisa(requestRoot, admin);
-			});
-
-			When('I check if admin can accept request', () => {
-				result = visa.determineIf((p) => p.canAcceptRequest);
-			});
-
-			Then('the permission should be granted', () => {
-				expect(result).toBe(true);
-			});
-		},
-	);
-
-	Scenario(
-		'Admin can reject request with moderation permission',
-		({ Given, When, Then }) => {
-			Given('the admin has canModerateListings permission', () => {
-				admin = makeAdminUser(true);
-				visa = new AdminUserReservationRequestVisa(requestRoot, admin);
-			});
-
-			When('I check if admin can reject request', () => {
-				result = visa.determineIf((p) => p.canRejectRequest);
-			});
-
-			Then('the permission should be granted', () => {
-				expect(result).toBe(true);
-			});
-		},
-	);
-
-	Scenario(
-		'Admin cannot manage requests without moderation permission',
+		'Admin cannot edit requests without moderation permission',
 		({ Given, When, Then }) => {
 			Given('the admin does not have canModerateListings permission', () => {
 				admin = makeAdminUser(false);
 				visa = new AdminUserReservationRequestVisa(requestRoot, admin);
 			});
 
-			When('I check if admin can close request', () => {
-				result = visa.determineIf((p) => p.canCloseRequest);
+			When('I check if admin can edit request', () => {
+				result = visa.determineIf((p) => p.canEditReservationRequest);
 			});
 
 			Then('the permission should be denied', () => {

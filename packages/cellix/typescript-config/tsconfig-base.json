@@ -21,7 +21,7 @@
     "erasableSyntaxOnly": true,
     "esModuleInterop": true,
     "verbatimModuleSyntax": true,
-    "lib": ["ES2023"],
+    "lib": ["ES2023", "DOM"],
     "target": "ES2022",
     "composite": true,
     "incremental": true,

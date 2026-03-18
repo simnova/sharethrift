@@ -1,0 +1,57 @@
+type UserAppealRequest implements MongoBase {
+	id: ObjectID!
+	user: PersonalUser!
+	reason: String!
+	state: AppealRequestState!
+	type: AppealRequestType!
+	blocker: PersonalUser!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type UserAppealRequestPageResult {
+	items: [UserAppealRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+input UserAppealRequestCreateInput {
+	userId: ObjectID!
+	reason: String!
+	blockerId: ObjectID!
+}
+
+input UserAppealRequestUpdateStateInput {
+	id: ObjectID!
+	state: AppealRequestState!
+}
+
+input UserAppealRequestGetAllInput {
+	page: Int!
+	pageSize: Int!
+	stateFilters: [String!]
+	sorter: SorterInput
+}
+
+type UserAppealRequestMutationResult implements MutationResult {
+	status: MutationStatus!
+	userAppealRequest: UserAppealRequest
+}
+
+extend type Query {
+	getUserAppealRequest(id: ObjectID!): UserAppealRequest
+	getAllUserAppealRequests(
+		input: UserAppealRequestGetAllInput!
+	): UserAppealRequestPageResult!
+}
+
+extend type Mutation {
+	createUserAppealRequest(
+		input: UserAppealRequestCreateInput!
+	): UserAppealRequestMutationResult!
+	updateUserAppealRequestState(
+		input: UserAppealRequestUpdateStateInput!
+	): UserAppealRequestMutationResult!
+}

@@ -11,6 +11,7 @@ export interface ItemListingCreateCommand {
 	sharingPeriodEnd: Date;
 	images?: string[];
 	isDraft?: boolean;
+	expiresAt?: Date;
 }
 
 export const create = (dataSources: DataSources) => {
@@ -31,6 +32,7 @@ export const create = (dataSources: DataSources) => {
 					sharingPeriodEnd: Date;
 					images?: string[];
 					isDraft?: boolean;
+					expiresAt?: Date;
 				} = {
 					title: command.title,
 					description: command.description,
@@ -44,6 +46,9 @@ export const create = (dataSources: DataSources) => {
 				}
 				if (command.isDraft !== undefined) {
 					fields.isDraft = command.isDraft;
+				}
+				if (command.expiresAt !== undefined) {
+					fields.expiresAt = command.expiresAt;
 				}
 				const newItemListing = await repo.getNewInstance(
 					command.sharer,

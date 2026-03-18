@@ -35,18 +35,25 @@ export class ItemListingRepository<
 			sharingPeriodEnd: Date;
 			images?: string[];
 			isDraft?: boolean;
+			expiresAt?: Date;
 		},
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
 		const adapter = this.typeConverter.toAdapter(new this.model());
 		return Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
-				adapter,
-				this.passport,
-				sharer,
-				fields,
-			);
-	}
-
-	async getActiveItemListings() {
+			adapter,
+			this.passport,
+			sharer,
+			fields.title,
+			fields.description,
+			fields.category,
+			fields.location,
+			fields.sharingPeriodStart,
+			fields.sharingPeriodEnd,
+			fields.images,
+			fields.isDraft,
+			fields.expiresAt,
+		);
+	}	async getActiveItemListings() {
 		const mongoItems = await this.model.find({ state: 'Active' }).exec();
 		return mongoItems.map((item) =>
 			this.typeConverter.toDomain(item, this.passport),

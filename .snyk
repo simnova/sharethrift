@@ -28,8 +28,69 @@ ignore:
         reason: 'Transitive dependency in Docusaurus; not exploitable in current usage.'
         expires: '2026-03-16T00:00:00.000Z'
         created: '2025-12-05T00:00:00.000Z'
+  'SNYK-JS-PNPMNPMCONF-14897556':
+    - '* > @pnpm/npm-conf@2.3.1':
+        reason: 'Transitive dependency in Docusaurus; not exploitable in static site serving context'
+        expires: '2026-06-01T00:00:00.000Z'
+        created: '2026-01-20T00:00:00.000Z'
+  'SNYK-JS-UNDICI-14943963':
+    - '* > undici@5.29.0':
+        reason: 'Transitive dependency in Azure Functions and payment services; upgrade blocked by upstream compatibility'
+        expires: '2026-06-01T00:00:00.000Z'
+        created: '2026-01-20T00:00:00.000Z'
   'SNYK-JS-QS-14724253':
+    - '* > qs@6.13.0':
+        reason: 'Transitive dependency in various packages (azurite, express); not exploitable in current usage context'
+        expires: '2026-06-01T00:00:00.000Z'
+        created: '2026-01-21T00:00:00.000Z'
+
     - '* > qs':
         reason: 'Transitive dependency in express, @docusaurus/core, @apollo/server, apollo-link-rest; not exploitable in current usage.'
         expires: '2026-01-19T00:00:00.000Z'
         created: '2026-01-05T09:39:00.000Z'
+  'SNYK-JS-AJV-15274295':
+    - '* > ajv@8.17.1':
+        reason: 'Transitive dependency in Docusaurus; ReDoS vulnerability not exploitable in static site generation context'
+        expires: '2026-08-13T00:00:00.000Z'
+        created: '2026-02-13T00:00:00.000Z'
+    - '* > ajv@6.12.6':
+        reason: 'Transitive dependency in Docusaurus; ReDoS vulnerability not exploitable in static site generation context'
+        expires: '2026-08-13T00:00:00.000Z'
+        created: '2026-02-13T00:00:00.000Z'
+        
+  'SNYK-JS-MINIMATCH-15309438':
+    - '* > minimatch@3.1.2':
+        reason: 'Transitive dependency in Docusaurus; not exploitable in current usage context'
+        expires: '2026-03-13T00:00:00.000Z'
+        created: '2026-02-13T00:00:00.000Z'
+
+  'SNYK-JS-YAUZL-15467445':
+    - '* > yauzl@3.2.0':
+        reason: 'Off-by-one Error in yauzl; no upgrade path available without major mongodb-memory-server version change. Only used in acceptance tests for MongoDB in-memory server testing, not production code.'
+        expires: '2026-06-12T00:00:00.000Z'
+        created: '2026-03-12T00:00:00.000Z'
+
+  'SNYK-JS-SVGO-15423912':
+    - '@docusaurus/preset-classic@3.9.2 > * > svgo@3.3.2':
+        reason: 'XML Entity Expansion in svgo; transitive dependency in Docusaurus documentation package (dev-only). SVG files processed by Docusaurus are from trusted sources during build time, not user input. Snyk reports no direct upgrade path due to pinned versions in @svgr/plugin-svgo.'
+        expires: '2026-09-12T00:00:00.000Z'
+        created: '2026-03-12T00:00:00.000Z'
+    - '@docusaurus/plugin-svgr@3.9.2 > * > svgo@3.3.2':
+        reason: 'XML Entity Expansion in svgo; transitive dependency in Docusaurus documentation package (dev-only). SVG files processed by Docusaurus are from trusted sources during build time, not user input. Snyk reports no direct upgrade path due to pinned versions in @svgr/plugin-svgo.'
+        expires: '2026-09-12T00:00:00.000Z'
+        created: '2026-03-12T00:00:00.000Z'
+    - '* > svgo@3.3.2':
+        reason: 'XML Entity Expansion in svgo; transitive dependency in Docusaurus documentation package (dev-only). SVG files processed by Docusaurus are from trusted sources during build time, not user input. Snyk reports no direct upgrade path due to pinned versions in @svgr/plugin-svgo.'
+        expires: '2026-09-12T00:00:00.000Z'
+        created: '2026-03-12T00:00:00.000Z'
+
+# Snyk Code exclusions for local development tooling
+exclude:
+  code:
+    - local-https-proxy.js  # HTTPS->HTTP proxy for local Azure Functions (intentional HTTP usage)
+    - apps/server-messaging-mock/src/index.ts  # HTTP fallback for local development
+    - apps/server-oauth2-mock/src/index.ts  # HTTP fallback for local development
+    - apps/server-payment-mock/src/index.ts  # HTTP fallback for local development
+    - packages/cellix/server-messaging-seedwork/src/index.ts  # HTTP fallback for local development
+    - packages/cellix/server-oauth2-seedwork/src/index.ts  # HTTP fallback for local development
+    - packages/cellix/server-payment-seedwork/src/index.ts  # HTTP fallback for local development

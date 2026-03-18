@@ -1,0 +1,48 @@
+query HomeRequestsTableContainerMyListingsRequests(
+  $page: Int!
+  $pageSize: Int!
+  $searchText: String!
+  $statusFilters: [String!]!
+  $sorter: SorterInput!
+  $sharerId: ObjectID!
+) {
+  myListingsRequests(
+    page: $page
+    pageSize: $pageSize
+    searchText: $searchText
+    statusFilters: $statusFilters
+    sorter: $sorter
+    sharerId: $sharerId
+  ) {
+    items {
+      ...HomeRequestsTableContainerRequestFields
+    }
+    total
+    page
+    pageSize
+  }
+}
+
+fragment HomeRequestsTableContainerRequestFields on ReservationRequest {
+  id
+  listing {
+    title
+    images
+  }
+  reserver {
+    ... on PersonalUser {
+      account {
+        username
+      }
+    }
+    ... on AdminUser {
+      account {
+        username
+      }
+    }
+  }
+  createdAt
+  reservationPeriodStart
+  reservationPeriodEnd
+  state
+}

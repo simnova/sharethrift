@@ -1,0 +1,81 @@
+type ReservationRequest {
+	id: ObjectID!
+	state: ReservationRequestState
+	reservationPeriodStart: DateTime
+	reservationPeriodEnd: DateTime
+	createdAt: DateTime
+	updatedAt: DateTime
+	listing: ItemListing
+	reserver: User
+	closeRequestedBySharer: Boolean
+	closeRequestedByReserver: Boolean
+}
+
+type ReservationRequestPage {
+	items: [ReservationRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+enum ReservationRequestState {
+	Requested
+	Accepted
+	Rejected
+	Closed
+	Cancelled
+}
+
+input ReservationRequestCreateInput {
+	listingId: ObjectID!
+	reservationPeriodStart: DateTime!
+	reservationPeriodEnd: DateTime!
+}
+
+input ReservationRequestCancelInput {
+	id: ObjectID!
+}
+
+input ReservationRequestCloseInput {
+	id: ObjectID!
+}
+
+type ReservationRequestMutationResult implements MutationResult {
+	status: MutationStatus!
+	reservationRequest: ReservationRequest
+}
+
+extend type Query {
+	myActiveReservations(userId: ObjectID!): [ReservationRequest!]!
+	myPastReservations(userId: ObjectID!): [ReservationRequest!]!
+	myListingsRequests(
+		page: Int!
+		pageSize: Int!
+		searchText: String!
+		statusFilters: [String!]!
+		sorter: SorterInput!
+		sharerId: ObjectID!
+	): ReservationRequestPage!
+	myActiveReservationForListing(
+		listingId: ObjectID!
+		userId: ObjectID!
+	): ReservationRequest
+	overlapActiveReservationRequestsForListing(
+		listingId: ObjectID!
+		reservationPeriodStart: DateTime!
+		reservationPeriodEnd: DateTime!
+	): [ReservationRequest!]!
+	queryActiveByListingId(listingId: ObjectID!): [ReservationRequest]!
+}
+
+extend type Mutation {
+	createReservationRequest(
+		input: ReservationRequestCreateInput!
+	): ReservationRequestMutationResult!
+	cancelReservation(
+		input: ReservationRequestCancelInput!
+	): ReservationRequestMutationResult!
+	closeReservation(
+		input: ReservationRequestCloseInput!
+	): ReservationRequestMutationResult!
+}

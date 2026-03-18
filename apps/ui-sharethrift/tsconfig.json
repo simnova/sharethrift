@@ -4,7 +4,6 @@
 		"outDir": "dist",
 		"rootDir": ".",
 		"jsx": "react-jsx",
-		"lib": ["ES2023", "DOM", "DOM.Iterable"],
 		"exactOptionalPropertyTypes": false,
 		"skipLibCheck": true,
 		"module": "ESNext",
