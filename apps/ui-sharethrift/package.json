@@ -3,7 +3,6 @@
 	"private": true,
 	"version": "0.0.0",
 	"type": "module",
-	"tags": ["arch-tests"],
 	"scripts": {
 		"start": "vite",
 		"dev": "portless sharethrift.localhost vite",
