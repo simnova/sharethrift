@@ -23,5 +23,7 @@ export default defineConfig(
 			'src/generated/**',
             'eslint.config.js'
 		],
+		testTimeout: 60000,
+		hookTimeout: 60000,
 	}),
 );

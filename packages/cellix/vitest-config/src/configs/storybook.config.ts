@@ -28,6 +28,10 @@ export function createStorybookVitestConfig(
 		resolve: {
 			conditions: ['vitest', 'development', 'import', 'default'],
 		},
+		// Pre-bundle dependencies to avoid dynamic import issues in tests
+		optimizeDeps: {
+			include: ['react', 'react-dom', 'react-router-dom'],
+		},
 		// Explicitly tell Vite's file watcher to ignore dist and coverage directories
 		// This prevents Vite from opening files in these directories during scan/watch
 		server: {
@@ -42,7 +46,7 @@ export function createStorybookVitestConfig(
 			globals: true,
 			// Retry tests on failure to handle flaky browser tests due to race conditions
 			// in @storybook/addon-vitest + Playwright browser provider
-			retry: isCI ? 3 : 1,
+			retry: isCI ? 2 : 1,
 			testTimeout: isCI ? 30000 : 10000,
 			// Serialize file execution in CI to avoid "Vitest failed to find the runner" race condition
 			// when using Storybook + Vitest browser mode with Playwright
@@ -69,6 +73,8 @@ export function createStorybookVitestConfig(
 				},
 			],
 			coverage: {
+				// Reduce coverage reporting overhead in CI to save memory
+				reporter: isCI ? ['text-summary', 'lcov'] : ['text', 'lcov'],
 				exclude: [
 					'**/*.config.ts',
 					'**/tsconfig.json',

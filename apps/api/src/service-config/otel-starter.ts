@@ -1,4 +1,4 @@
-import { ServiceOtel } from '@sthrift/service-otel';
+import { ServiceOtel } from '@cellix/service-otel';
 
 const Otel = new ServiceOtel({
     //biome-ignore lint:useLiteralKeys

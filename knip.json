@@ -16,7 +16,7 @@
 		},
 		"packages/cellix/*": {
 			"project": ["src/**/*.ts"],
-			"ignore": ["**/graphql-tools-scalars.ts"]
+			"ignore": ["**/graphql-tools-scalars.ts", "**/fixtures/**/*.ts"]
 		},
 		"packages/cellix/ui-core/*": {
 			"entry": ["src/index.ts"],
@@ -46,11 +46,11 @@
 		},
 		"packages/sthrift/*": {
 			"entry": ["src/index.ts"],
-			"project": ["src/**/*.ts"]
-		},
-		"packages/sthrift/ui-components": {
-			"entry": ["src/index.ts"],
 			"project": ["src/**/*.{ts,tsx}"]
+		},
+		"packages/sthrift/acceptance-tests": {
+			"entry": ["src/world.ts", "src/step-definitions/**/*.ts"],
+			"project": ["src/**/*.{ts,mjs,js}"]
 		}
 	},
 	"ignoreWorkspaces": [
@@ -58,16 +58,23 @@
 		"packages/cellix/domain-seedwork",
 		"packages/cellix/event-bus-seedwork-node",
 		"packages/cellix/mongoose-seedwork",
-		"packages/cellix/mock-payment-server",
 		"packages/cellix/api-services-spec",
-		"packages/cellix/mock-mongodb-memory-server-seedwork",
-		"packages/cellix/mock-oauth2-server",
 		"packages/cellix/vitest-config",
-		"packages/sthrift/payment-service-cybersource",
-		"packages/sthrift/mock-messaging-server"
+		"packages/cellix/server-messaging-seedwork",
+		"packages/cellix/server-mongodb-memory-seedwork",
+		"packages/cellix/server-oauth2-seedwork",
+		"packages/cellix/server-payment-seedwork",
+		"packages/cellix/arch-unit-tests",
+		"packages/sthrift/arch-unit-tests",
+		"packages/sthrift/ui-components",
+		"apps/server-messaging-mock",
+		"apps/server-mongodb-memory-mock",
+		"apps/server-oauth2-mock",
+		"apps/server-payment-mock"
 	],
 	"ignore": [
 		"build-pipeline/scripts/**",
+		"local-https-proxy.js",
 		"**/*.test.ts",
 		"**/*.spec.ts",
 		"**/*.stories.tsx",
@@ -75,10 +82,14 @@
 		"**/coverage/**",
 		"**/__tests__/**",
 		"**/tests/**",
-		"vitest.shims.d.ts"
+		"vitest.shims.d.ts",
+		"**/vitest.config.ts",
+		"**/vite.config.ts",
+		"packages/cellix/server-payment-seedwork/src/copy-assets.ts",
+		"packages/sthrift/acceptance-tests/src/shared/support/css-loader.mjs",
+		"packages/sthrift/acceptance-tests/src/shared/support/stubs/**"
 	],
 	"ignoreDependencies": [
-		"@types/*",
 		"@cucumber/node",
 		"@cucumber/pretty-formatter",
 		"@serenity-js/assertions",
@@ -92,8 +103,12 @@
 		"@graphql-tools/json-file-loader",
 		"@graphql-tools/load",
 		"rollup",
-		"tsx",
-		"vite"
+		"vite",
+		"axios",
+		"@ant-design/icons",
+		"antd",
+		"react-router-dom",
+		"tsx"
 	],
-	"ignoreBinaries": ["func"]
+	"ignoreBinaries": ["func", "open", "concurrently", "container", "portless"]
 }

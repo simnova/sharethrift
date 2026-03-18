@@ -5,8 +5,8 @@ import { expect } from 'vitest';
 import { DataSourcesFactoryImpl } from './index.ts';
 import type { ModelsContext } from '../models-context.ts';
 import type { Domain } from '@sthrift/domain';
-import type { MessagingService } from '@cellix/messaging-service';
-import type { PaymentService } from '@cellix/payment-service';
+import type { MessagingService } from '@cellix/service-messaging-base';
+import type { PaymentService } from '@cellix/service-payment-base';
 import { vi } from 'vitest';
 
 const test = { for: describeFeature };

@@ -1,4 +1,4 @@
-import type { MessagingService } from '@cellix/messaging-service';
+import type { MessagingService } from '@cellix/service-messaging-base';
 import { Domain } from '@sthrift/domain';
 import { toDomainMessage } from './messaging-conversation.domain-adapter.ts';
 

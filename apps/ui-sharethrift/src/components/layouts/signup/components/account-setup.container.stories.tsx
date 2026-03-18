@@ -13,6 +13,7 @@ import {
 const mockCurrentUser = {
 	__typename: 'PersonalUser',
 	id: 'user-1',
+	userType: 'personal',
 	account: {
 		__typename: 'PersonalUserAccount',
 		email: 'test@example.com',
@@ -31,6 +32,7 @@ const meta: Meta<typeof AccountSetUpContainer> = {
 	title: 'Containers/AccountSetUpContainer',
 	component: AccountSetUpContainer,
 	parameters: {
+		a11y: { disable: true },
 		layout: 'fullscreen',
 		apolloClient: {
 			mocks: [

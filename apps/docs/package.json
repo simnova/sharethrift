@@ -1,10 +1,11 @@
 {
-	"name": "@sthrift/docs",
+	"name": "@apps/docs",
 	"version": "0.0.0",
 	"private": true,
 	"scripts": {
 		"docusaurus": "docusaurus",
-		"start": "docusaurus start --port 3002 --no-open",
+		"start": "docusaurus start --port 3002 --host docs.sharethrift.localhost --no-open",
+		"dev": "portless docs.sharethrift.localhost node start-dev.mjs",
 		"build": "docusaurus build",
 		"swizzle": "docusaurus swizzle",
 		"deploy": "docusaurus deploy",

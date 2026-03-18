@@ -57,7 +57,7 @@ stages:
     - task: NodeTool@0
       displayName: 'Install: Node.js - LTS'
       inputs:
-        versionSpec: '22.x'
+        versionSpec: '22.20.0'
 
     # Cache Azure Functions Core Tools
     - task: Cache@2
@@ -217,6 +217,22 @@ stages:
         System_PullRequest_TargetBranch: $(System.PullRequest.TargetBranch)
         Build_SourceBranch: $(Build.SourceBranch)
 
+    # Run architectural fitness tests before regular tests to fail fast on structural violations
+    - task: Bash@3
+      displayName: 'Turbo: Run architectural fitness tests'
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          export NODE_OPTIONS=--max_old_space_size=16384
+
+          echo "Running architectural fitness tests (system-wide validation)..."
+          pnpm run test:arch
+        workingDirectory: ''
+      env:
+        TURBO_CACHE_HIT: $(TURBO_CACHE_HIT)
+        TURBO_TELEMETRY_DISABLED: 1
+
     # Build and run tests on affected packages using Turbo's --affected flag
     - task: Bash@3
       displayName: 'Turbo: Build and test affected packages'
@@ -235,8 +251,10 @@ stages:
           fi
 
           # Audit pnpm packages for vulnerabilities
-          echo "Running pnpm audit for vulnerabilities..."
-          pnpm audit --audit-level=high --prod
+          # echo "Running pnpm audit for vulnerabilities..."
+          # pnpm run audit
+          echo "Skipping pnpm audit vulnerabities until registry issues are resolved"
+          # https://github.com/pnpm/pnpm/issues/10649
 
           # Use Turbo's built-in --affected flag for accurate change detection
           # Split coverage collection: Node tests first, then Storybook tests separately
@@ -265,6 +283,19 @@ stages:
         ${{ each pair in parameters.buildEnvSettings }}:
           ${{ pair.key }}: ${{ pair.value }}
 
+    # Generate Serenity BDD HTML reports from test results
+    - task: Bash@3
+      displayName: 'Generate Serenity BDD reports'
+      condition: eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true')
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          echo "Generating Serenity BDD HTML reports..."
+          pnpm run test:serenity:report
+        workingDirectory: '$(Build.SourcesDirectory)'
+
+
     # Audit unused dependencies with knip (after packages are built)
     - task: Bash@3
       displayName: 'Audit unused dependencies with knip'
@@ -279,7 +310,7 @@ stages:
 
     # Analyze dependencies with pnpm analyze
     - task: Bash@3
-      displayName: 'Analyze dependencies with pnpm analyze'
+      displayName: 'e18e: Code Quality Analysis'
       inputs:
         targetType: 'inline'
         script: |
@@ -319,6 +350,7 @@ stages:
         workingDirectory: ''
       env:
         SNYK_TOKEN: $(SNYK_TOKEN)
+          
           
     # Cache Java JRE
     - task: Cache@2
@@ -423,15 +455,48 @@ stages:
         JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
         SONAR_SCANNER_JAVA_PATH: /usr/lib/jvm/java-17-openjdk-amd64/bin/java
         SONAR_SCANNER_SKIP_JRE_PROVISIONING: true
+        NODE_OPTIONS: --max_old_space_size=16384
         SONAR_TOKEN: $(SONAR_TOKEN)
 
-    # SonarCloud: Break the build if it doesn't pass the Quality Gate
+        # SonarCloud: Break the build if it doesn't pass the Quality Gate
     - task: sonarcloud-buildbreaker@2
       displayName: 'SonarCloud: Break the build if it does not pass the Quality'
       condition: and(succeeded(), eq(${{parameters.disableSonarCloudTasks}}, False))
       inputs:
         SonarCloud: ${{parameters.SonarCloud}}
         organization: ${{parameters.SonarCloud_organization}}
+
+    # Copy Serenity reports to Docusaurus static folder for deployment
+    - task: Bash@3
+      displayName: 'Artifact: Prepare Serenity Reports'
+      condition: and(succeeded(), eq(variables['BuildJob.HAS_SOURCE_CHANGES'], 'true'), ne(variables['Build.Reason'], 'PullRequest'))
+      inputs:
+        targetType: 'inline'
+        script: |
+          set -euo pipefail
+          echo "Copying Serenity reports to Docusaurus static folder..."
+          
+          SERENITY_SOURCE="packages/sthrift/domain/target/site/serenity"
+          DOCS_STATIC_TARGET="apps/docs/static/serenity-reports"
+          
+          # Check if Serenity reports exist
+          if [ ! -d "$SERENITY_SOURCE" ]; then
+            echo "Warning: Serenity reports not found at $SERENITY_SOURCE"
+            echo "Skipping report copy step"
+            exit 0
+          fi
+          
+          # Create target directory and copy reports
+          mkdir -p "$DOCS_STATIC_TARGET"
+          cp -r "$SERENITY_SOURCE"/* "$DOCS_STATIC_TARGET/"
+          
+          echo "✓ Serenity reports copied successfully"
+          echo "  Source: $SERENITY_SOURCE"
+          echo "  Target: $DOCS_STATIC_TARGET"
+          echo ""
+          echo "Copied files:"
+          ls -lah "$DOCS_STATIC_TARGET"
+        workingDirectory: '$(Build.SourcesDirectory)'
 
     # Deploy API package with production dependencies
     - task: Bash@3
@@ -445,7 +510,7 @@ stages:
           DEPLOY_DIR="$(Build.SourcesDirectory)/apps/api-deploy"
           rm -rf "$DEPLOY_DIR"
           
-          echo "Creating production deployment for @sthrift/api..."
+          echo "Creating production deployment for @app/api..."
 
           # Use pnpm deploy to resolve workspace dependencies while preserving pnpm symlinks
           # This copies everything including dist/, host.json, and installs production deps
@@ -457,7 +522,7 @@ stages:
           #   - Workspace dependencies are symlinked as in pnpm v9
           #   - The node_modules structure matches what our runtime expects
           # @CellixJs/tech-sme: Please reassess the need for --legacy when upgrading pnpm or changing deployment logic.
-          pnpm --filter @sthrift/api --prod deploy --legacy "$DEPLOY_DIR"
+          pnpm --filter @app/api --prod deploy --legacy "$DEPLOY_DIR"
           
           # Remove unnecessary files that pnpm deploy copied
           rm -rf "$DEPLOY_DIR"/{.turbo,coverage,tests,.vscode,.github,.gitignore,README.md,src}

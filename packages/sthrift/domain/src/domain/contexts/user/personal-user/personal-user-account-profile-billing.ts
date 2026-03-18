@@ -1,6 +1,6 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { UserVisa } from '../user.visa.ts';
-import type { PersonalUserAggregateRoot } from './personal-user.ts';
+import type { PersonalUserAggregateRoot } from './personal-user.aggregate.ts';
 import type {
 	PersonalUserAccountProfileBillingEntityReference,
 	PersonalUserAccountProfileBillingProps,
@@ -24,6 +24,18 @@ export class PersonalUserAccountProfileBilling
 		this.visa = visa;
 		this.root = root;
 	}
+
+	private validateVisa(): void {
+		if (
+			!this.root.isNew &&
+			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
+		) {
+			throw new DomainSeedwork.PermissionError(
+				'Unauthorized to set billing info',
+			);
+		}
+	}
+
 	get cybersourceCustomerId(): string | null {
 		return this.props.cybersourceCustomerId;
 	}
@@ -43,17 +55,6 @@ export class PersonalUserAccountProfileBilling
 					this.root,
 				),
 		);
-	}
-
-	private validateVisa(): void {
-		if (
-			!this.root.isNew &&
-			!this.visa.determineIf((permissions) => permissions.isEditingOwnAccount)
-		) {
-			throw new DomainSeedwork.PermissionError(
-				'Unauthorized to set billing info',
-			);
-		}
 	}
 
 	set cybersourceCustomerId(value: string | null) {

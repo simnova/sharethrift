@@ -20,6 +20,11 @@
 			"inputs": ["src/**", "tests/**", "vitest*.config.*"],
 			"outputs": ["coverage/lcov.info"]
 		},
+		"test:arch": {
+			"dependsOn": ["build", "^build", "@cellix/arch-unit-tests#build", "@cellix/vitest-config#build"],
+			"inputs": ["src/**", "vitest*.config.*"],
+			"outputs": ["coverage/lcov.info"]
+		},
 		"test:watch": {
 			"dependsOn": ["^build"],
 			"cache": false,
@@ -35,12 +40,39 @@
 			"inputs": ["src/**", "tests/**", "vitest*.config.*"],
 			"outputs": ["coverage/**"]
 		},
+		"test:serenity": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "features/**", "cucumber.js"],
+			"outputs": ["reports/**", "target/**"]
+		},
+		"test:serenity:report": {
+			"dependsOn": ["test:serenity"],
+			"inputs": ["reports/cucumber-report*.json"],
+			"outputs": ["target/**"]
+		},
+		"server:oauth": {
+			"cache": false,
+			"persistent": true
+		},
+		"server:mongodb": {
+			"cache": false,
+			"persistent": true
+		},
+		"server:api": {
+			"cache": false,
+			"persistent": true,
+			"env": ["DB_CONNECTION_STRING"]
+		},
 		"storybook": {
 			"dependsOn": ["^build", "//#gen"],
 			"cache": false,
 			"persistent": true
 		},
 		"start": {
+			"cache": false,
+			"persistent": true
+		},
+		"dev": {
 			"cache": false,
 			"persistent": true
 		},
@@ -66,6 +98,10 @@
 			]
 		},
 		"//#gen:watch": {
+			"cache": false,
+			"persistent": true
+		},
+		"//#proxy:start": {
 			"cache": false,
 			"persistent": true
 		}

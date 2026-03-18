@@ -1,4 +1,4 @@
-export { ReservationRequest } from './reservation-request.ts';
+export { ReservationRequest } from './reservation-request.aggregate.ts';
 export type {
 	ReservationRequestProps,
 	ReservationRequestEntityReference,

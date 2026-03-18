@@ -1,5 +1,5 @@
 import type { AdminUserProps } from './admin-user.entity.ts';
-import type { AdminUser } from './admin-user.ts';
+import type { AdminUser } from './admin-user.aggregate.ts';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 
 export interface AdminUserRepository<props extends AdminUserProps>

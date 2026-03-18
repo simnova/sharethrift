@@ -92,7 +92,7 @@ function makeListingDoc(id: string): Models.Listing.ItemListing {
 	} as unknown as Models.Listing.ItemListing;
 }
 
-function makeReservationRequestDoc(id = 'reservation-1', state = 'PENDING'): Models.ReservationRequest.ReservationRequest {
+function makeReservationRequestDoc(id = 'reservation-1', state = 'Pending'): Models.ReservationRequest.ReservationRequest {
 	return {
 		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
 		id: id,
@@ -139,7 +139,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	let result: unknown;
 
 	BeforeEachScenario(() => {
-		mockDoc = makeReservationRequestDoc('reservation-1', 'PENDING');
+		mockDoc = makeReservationRequestDoc('reservation-1', 'Pending');
 		repository = setupReservationRequestRepo(mockDoc);
 		result = undefined;
 	});
@@ -163,7 +163,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting a reservation request by ID',
 		({ Given, When, Then, And }) => {
 			Given(
-				'a ReservationRequest document with id "reservation-1", state "PENDING", and a populated reserver',
+				'a ReservationRequest document with id "reservation-1", state "Pending", and a populated reserver',
 				() => {
 					// Already set up in BeforeEachScenario
 				},
@@ -176,12 +176,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest,
 				);
 			});
-			And('the domain object\'s state should be "PENDING"', () => {
+			And('the domain object\'s state should be "Pending"', () => {
 				const reservationRequest =
 					result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<
 						Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
 					>;
-				expect(reservationRequest.state).toBe('PENDING');
+				expect(reservationRequest.state).toBe('Pending');
 			});
 			And('the domain object\'s reserver should be a PersonalUser domain object with correct user data', () => {
 				const reservationRequest =
@@ -269,7 +269,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
             And('reservation period from "2025-10-20" to "2025-10-25"', () => {
                 // Dates are provided in the When step
             });
-            When('I call getNewInstance with state "PENDING", the listing, the reserver, and the reservation period', async () => {
+            When('I call getNewInstance with state "Pending", the listing, the reserver, and the reservation period', async () => {
                 // Use future dates that will always be valid
                 const tomorrow = new Date();
                 tomorrow.setDate(tomorrow.getDate() + 1);
@@ -284,7 +284,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
                 // Mock the model constructor to return a document with required properties
                 const mockNewDoc = {
                     id: { toString: () => 'new-reservation-id' },
-                    state: 'PENDING',
+                    state: 'Pending',
                     reserver: userDocWithMatchingId,
                     listing: makeListingDoc('listing-1'),
                     reservationPeriodStart: tomorrow,
@@ -303,7 +303,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				});
                 
                 result = await repository.getNewInstance(
-                    'PENDING',
+                    'Pending',
                     listing,
                     reserver,
                     tomorrow,
@@ -315,12 +315,12 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
                     Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest,
                 );
             });
-            And('the domain object\'s state should be "PENDING"', () => {
+            And('the domain object\'s state should be "Pending"', () => {
                 const reservationRequest =
                     result as Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequest<
                         Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps
                     >;
-                expect(reservationRequest.state).toBe('PENDING');
+                expect(reservationRequest.state).toBe('Pending');
             });
             And('the reservation period should be from "2025-10-20" to "2025-10-25"', () => {
                 const reservationRequest =
@@ -346,7 +346,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting reservation requests by reserver ID',
 		({ Given, When, Then, And }) => {
 			Given('a reserver with id "user-123"', () => {
-				mockDoc = makeReservationRequestDoc('reservation-1', 'PENDING');
+				mockDoc = makeReservationRequestDoc('reservation-1', 'Pending');
 				mockDoc.reserver = makeUserDoc('user-123');
 				repository = setupReservationRequestRepo(mockDoc);
 			});
@@ -373,7 +373,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting reservation requests by listing ID',
 		({ Given, When, Then, And }) => {
 			Given('a listing with id "listing-456"', () => {
-				mockDoc = makeReservationRequestDoc('reservation-1', 'PENDING');
+				mockDoc = makeReservationRequestDoc('reservation-1', 'Pending');
 				mockDoc.listing = makeListingDoc('listing-456');
 				repository = setupReservationRequestRepo(mockDoc);
 			});
@@ -402,18 +402,16 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			let invalidReserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 			let listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 
-			Given('an invalid reserver reference', () => {
-				// biome-ignore lint/suspicious/noExplicitAny: test requires any for invalid type simulation
-				invalidReserver = null as any;
-			});
-			When('I call getNewInstance with state "PENDING", a valid listing, and the invalid reserver', async () => {
-				listing = vi.mocked({
-					id: createValidObjectId('listing-1'),
-				} as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);
-
-				try {
+            Given('an invalid reserver reference', () => {
+                // biome-ignore lint/suspicious/noExplicitAny: test requires any for invalid type simulation
+                invalidReserver = null as any;
+            });
+            When('I call getNewInstance with state "Pending", a valid listing, and the invalid reserver', async () => {
+                listing = vi.mocked({
+                    id: createValidObjectId('listing-1'),
+                } as unknown as Domain.Contexts.Listing.ItemListing.ItemListingEntityReference);				try {
 					result = await repository.getNewInstance(
-						'PENDING',
+						'Pending',
 						listing,
 						invalidReserver,
 						new Date('2025-10-20'),

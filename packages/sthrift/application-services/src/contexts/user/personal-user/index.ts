@@ -16,7 +16,7 @@ import {
 } from './get-all-users.ts';
 import { update, type PersonalUserUpdateCommand } from './update.ts';
 import { generatePublicKey } from './generate-public-key.ts';
-import type {RefundResponse} from '@cellix/payment-service';
+import type {RefundResponse} from '@cellix/service-payment-base';
 import {
 	type PaymentResponse,
 	type ProcessPaymentCommand,

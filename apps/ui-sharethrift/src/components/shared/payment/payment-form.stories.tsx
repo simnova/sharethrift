@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { PaymentForm } from './payment-form.tsx';
 import { countriesMockData } from '../../layouts/signup/components/countries-mock-data.ts';
-import type { ProcessPaymentInput } from '../../../generated.tsx';
+import type { PersonalUserProcessPaymentInput } from '../../../generated.tsx';
 import { Typography } from 'antd';
 import { useState } from 'react';
 import { expect, within, userEvent, waitFor } from 'storybook/test';
@@ -25,7 +25,7 @@ const meta: Meta<typeof PaymentForm> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const mockOnSubmitPayment = (paymentDetails: ProcessPaymentInput) => {
+const mockOnSubmitPayment = (paymentDetails: PersonalUserProcessPaymentInput) => {
 	console.log('Payment submitted:', paymentDetails);
 	alert('Payment submitted! Check console for details.');
 };
@@ -134,7 +134,7 @@ export const WithEmptyKey: Story = {
 export const FormValidationErrors: Story = {
 	render: () => {
 		const [submitCalled, setSubmitCalled] = useState(false);
-		const handleSubmit = (paymentDetails: ProcessPaymentInput) => {
+		const handleSubmit = (paymentDetails: PersonalUserProcessPaymentInput) => {
 			setSubmitCalled(true);
 			console.log('Payment submitted:', paymentDetails);
 		};
@@ -225,7 +225,7 @@ export const TokenCreationError: Story = {
 
 export const ValidationWithErrors: Story = {
 	render: () => {
-		const handleSubmit = (paymentDetails: ProcessPaymentInput) => {
+		const handleSubmit = (paymentDetails: PersonalUserProcessPaymentInput) => {
 			console.log('Payment submitted:', paymentDetails);
 		};
 

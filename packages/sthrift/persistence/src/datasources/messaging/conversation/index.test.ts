@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import { describeFeature, loadFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import * as MessagingConversationIndex from './index.ts';
-import type { MessagingService } from '@cellix/messaging-service';
+import type { MessagingService } from '@cellix/service-messaging-base';
 import type { Domain } from '@sthrift/domain';
 
 const test = { for: describeFeature };

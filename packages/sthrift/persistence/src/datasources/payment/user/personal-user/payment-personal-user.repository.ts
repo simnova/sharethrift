@@ -9,7 +9,7 @@ import type {
 	SubscriptionResponse,
 	TransactionReceipt,
 	RefundPaymentRequest,
-} from '@cellix/payment-service';
+} from '@cellix/service-payment-base';
 
 export interface PaymentPersonalUserRepository {
 	processPayment: (

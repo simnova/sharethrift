@@ -27,15 +27,21 @@ fragment PaymentContainerAccountPlansFields on AccountPlan {
   id
 }
 
-mutation SignUpPaymentContainerPersonalUserProcessPayment($input: ProcessPaymentInput!) {
+mutation SignUpPaymentContainerPersonalUserProcessPayment($input: PersonalUserProcessPaymentInput!) {
   processPayment(input: $input) {
-    success
-    cybersourceCustomerId
-    cybersourceSubscriptionId
-    cybersourcePlanId
-    errorInformation {
-      reason
-      message
+    status {
+      success
+      errorMessage
+    }
+    paymentResponse {
+      success
+      cybersourceCustomerId
+      cybersourceSubscriptionId
+      cybersourcePlanId
+      errorInformation {
+        reason
+        message
+      }
     }
   }
 }
