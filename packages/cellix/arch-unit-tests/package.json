@@ -4,6 +4,7 @@
   "description": "Generic architectural fitness test functions for the CellixJS framework",
   "private": true,
   "type": "module",
+  "tags": ["arch-tests"],
   "files": ["dist"],
   "exports": {
     ".": {

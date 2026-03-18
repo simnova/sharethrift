@@ -1,5 +1,5 @@
-import { nodeConfig } from '@cellix/vitest-config';
 import { defineConfig, mergeConfig } from 'vitest/config';
+import { nodeConfig } from '@cellix/vitest-config';
 
 export default mergeConfig(
 	nodeConfig,
@@ -10,7 +10,7 @@ export default mergeConfig(
 			exclude: ['src/arch-unit-tests/**'],
 			retry: 0,
 			coverage: {
-				exclude: ['tests/**'],
+				exclude: ['tests/**', 'src/arch-unit-tests/**'],
 			},
 		},
 	}),

@@ -4,6 +4,7 @@
   "description": "Architectural fitness tests for ShareThrift application",
   "private": true,
   "type": "module",
+  "tags": ["arch-tests"],
   "scripts": {
     "test": "vitest run",
     "test:arch": "vitest run",

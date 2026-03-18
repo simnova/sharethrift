@@ -41,7 +41,7 @@
         "test:coverage": "turbo run test:coverage:ui && turbo run test:coverage:node && turbo run test:arch",
         "test:coverage:node": "turbo run test:coverage:node",
         "test:coverage:ui": "turbo run test:coverage:ui",
-        "test:arch": "turbo run test:arch --filter='@cellix/arch-unit-tests' --filter='@sthrift/arch-unit-tests' --filter='@sthrift/graphql' --filter='@sthrift/domain' --filter='@sthrift/persistence' --filter='@sthrift/application-services' --filter='@sthrift/data-sources-mongoose-models' --filter='@apps/ui-sharethrift'",
+        "test:arch": "turbo run test:arch --filter='#arch-tests'",
         "test:coverage:merge": "pnpm run test:coverage && pnpm run merge-lcov-reports",
         "merge-lcov-reports": "node build-pipeline/scripts/merge-coverage.js",
         "test:integration": "turbo run test:integration",

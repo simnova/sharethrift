@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, beforeAll } from 'vitest';
 import {
 	checkPersistenceRepositoryConventions,
 	checkPersistenceDomainAdapterConventions,
@@ -12,63 +12,78 @@ export interface PersistenceConventionTestsConfig {
 	persistenceDomainGlob: string;
 	persistenceReadonlyGlob: string;
 	persistenceAllGlob: string;
+	persistenceFixtureGlob?: string;
 }
 
 export function describePersistenceConventionTests(config: PersistenceConventionTestsConfig): void {
 	describe('Persistence Layer Conventions', () => {
 		describe('Domain Repository Files', () => {
-			it('repository classes must extend MongooseSeedwork.MongoRepositoryBase', async () => {
-				const violations = await checkPersistenceRepositoryConventions({
+			let repositoryViolations: string[];
+
+			beforeAll(async () => {
+				repositoryViolations = await checkPersistenceRepositoryConventions({
 					persistenceDomainGlob: config.persistenceDomainGlob,
 				});
-				expect(violations.filter((v) => v.includes('MongoRepositoryBase'))).toStrictEqual([]);
 			}, 30000);
 
-			it('repository classes must implement domain repository interfaces', async () => {
-				const violations = await checkPersistenceRepositoryConventions({
-					persistenceDomainGlob: config.persistenceDomainGlob,
+			it('repository classes must extend MongooseSeedwork.MongoRepositoryBase', () => {
+				expect(repositoryViolations.filter((v) => v.includes('MongoRepositoryBase'))).toStrictEqual([]);
+			});
+
+			it('repository classes must implement domain repository interfaces', () => {
+				expect(repositoryViolations.filter((v) => v.includes('Domain.Contexts'))).toStrictEqual([]);
+			});
+
+			it('detects repository convention violations in fixture files', async () => {
+				if (!config.persistenceFixtureGlob) {
+					console.log('⊘ Fixture glob not provided, skipping violation detection test');
+					return;
+				}
+				const fixtureViolations = await checkPersistenceRepositoryConventions({
+					persistenceDomainGlob: config.persistenceFixtureGlob,
 				});
-				expect(violations.filter((v) => v.includes('Domain.Contexts'))).toStrictEqual([]);
+				expect(fixtureViolations.length).toBeGreaterThan(0);
 			}, 30000);
 		});
 
 		describe('Domain Adapter Files', () => {
-			it('domain adapters must extend MongooseSeedwork.MongooseDomainAdapter', async () => {
-				const violations = await checkPersistenceDomainAdapterConventions({
+			let adapterViolations: string[];
+
+			beforeAll(async () => {
+				adapterViolations = await checkPersistenceDomainAdapterConventions({
 					persistenceDomainGlob: config.persistenceDomainGlob,
 				});
-				expect(violations.filter((v) => v.includes('MongooseDomainAdapter'))).toStrictEqual([]);
 			}, 30000);
 
-			it('domain adapter files must contain a MongoTypeConverter', async () => {
-				const violations = await checkPersistenceDomainAdapterConventions({
-					persistenceDomainGlob: config.persistenceDomainGlob,
-				});
-				expect(violations.filter((v) => v.includes('MongoTypeConverter'))).toStrictEqual([]);
-			}, 30000);
+			it('domain adapters must extend MongooseSeedwork.MongooseDomainAdapter', () => {
+				expect(adapterViolations.filter((v) => v.includes('MongooseDomainAdapter'))).toStrictEqual([]);
+			});
+
+			it('domain adapter files must contain a MongoTypeConverter', () => {
+				expect(adapterViolations.filter((v) => v.includes('MongoTypeConverter'))).toStrictEqual([]);
+			});
 		});
 
 		describe('Unit of Work Files', () => {
-			it('UoW files must use MongooseSeedwork.MongoUnitOfWork', async () => {
-				const violations = await checkPersistenceUnitOfWorkConventions({
+			let uowViolations: string[];
+
+			beforeAll(async () => {
+				uowViolations = await checkPersistenceUnitOfWorkConventions({
 					persistenceDomainGlob: config.persistenceDomainGlob,
 				});
-				expect(violations.filter((v) => v.includes('MongoUnitOfWork'))).toStrictEqual([]);
 			}, 30000);
 
-			it('UoW files must wire both InProcEventBusInstance and NodeEventBusInstance', async () => {
-				const violations = await checkPersistenceUnitOfWorkConventions({
-					persistenceDomainGlob: config.persistenceDomainGlob,
-				});
-				expect(violations.filter((v) => v.includes('EventBus'))).toStrictEqual([]);
-			}, 30000);
+			it('UoW files must use MongooseSeedwork.MongoUnitOfWork', () => {
+				expect(uowViolations.filter((v) => v.includes('MongoUnitOfWork'))).toStrictEqual([]);
+			});
 
-			it('UoW files must export a factory function named get*UnitOfWork', async () => {
-				const violations = await checkPersistenceUnitOfWorkConventions({
-					persistenceDomainGlob: config.persistenceDomainGlob,
-				});
-				expect(violations.filter((v) => v.includes('factory'))).toStrictEqual([]);
-			}, 30000);
+			it('UoW files must wire both InProcEventBusInstance and NodeEventBusInstance', () => {
+				expect(uowViolations.filter((v) => v.includes('EventBus'))).toStrictEqual([]);
+			});
+
+			it('UoW files must export a factory function named get*UnitOfWork', () => {
+				expect(uowViolations.filter((v) => v.includes('factory'))).toStrictEqual([]);
+			});
 		});
 
 		describe('Readonly Data Source Files', () => {
@@ -81,35 +96,39 @@ export function describePersistenceConventionTests(config: PersistenceConvention
 		});
 
 		describe('Dependency Boundaries', () => {
-			it('persistence must not import from @sthrift/application-services', async () => {
-				const violations = await checkPersistenceDependencyBoundaries({
+			let boundaryViolations: string[];
+
+			beforeAll(async () => {
+				boundaryViolations = await checkPersistenceDependencyBoundaries({
 					persistenceAllGlob: config.persistenceAllGlob,
 				});
-				expect(violations.filter((v) => v.includes('application-services'))).toStrictEqual([]);
 			}, 30000);
 
-			it('persistence must not import from @sthrift/graphql', async () => {
-				const violations = await checkPersistenceDependencyBoundaries({
-					persistenceAllGlob: config.persistenceAllGlob,
-				});
-				expect(violations.filter((v) => v.includes('graphql'))).toStrictEqual([]);
-			}, 30000);
+			it('persistence must not import from @sthrift/application-services', () => {
+				expect(boundaryViolations.filter((v) => v.includes('application-services'))).toStrictEqual([]);
+			});
+
+			it('persistence must not import from @sthrift/graphql', () => {
+				expect(boundaryViolations.filter((v) => v.includes('graphql'))).toStrictEqual([]);
+			});
 		});
 
 		describe('Abstraction Dependencies', () => {
-			it('messaging persistence must depend on @cellix/service-messaging-base, not concrete implementations', async () => {
-				const violations = await checkPersistenceAbstractionDependencies({
+			let abstractionViolations: string[];
+
+			beforeAll(async () => {
+				abstractionViolations = await checkPersistenceAbstractionDependencies({
 					persistenceAllGlob: config.persistenceAllGlob,
 				});
-				expect(violations.filter((v) => v.includes('messaging'))).toStrictEqual([]);
 			}, 30000);
 
-			it('payment persistence must depend on @cellix/service-payment-base, not concrete implementations', async () => {
-				const violations = await checkPersistenceAbstractionDependencies({
-					persistenceAllGlob: config.persistenceAllGlob,
-				});
-				expect(violations.filter((v) => v.includes('payment'))).toStrictEqual([]);
-			}, 30000);
+			it('messaging persistence must depend on @cellix/service-messaging-base, not concrete implementations', () => {
+				expect(abstractionViolations.filter((v) => v.includes('messaging'))).toStrictEqual([]);
+			});
+
+			it('payment persistence must depend on @cellix/service-payment-base, not concrete implementations', () => {
+				expect(abstractionViolations.filter((v) => v.includes('payment'))).toStrictEqual([]);
+			});
 		});
 	});
 }

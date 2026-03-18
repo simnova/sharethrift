@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest';
+import { beforeAll, describe, expect, it } from 'vitest';
 import {
 	checkModelFileConventions,
 	checkModelDependencyBoundaries,
@@ -9,6 +9,7 @@ import {
 export interface DataSourcesMongooseModelsConventionTestsConfig {
 	modelsGlob: string;
 	allGlob: string;
+	modelsFixtureGlob?: string;
 }
 
 export function describeDataSourcesMongooseModelsConventionTests(
@@ -16,41 +17,68 @@ export function describeDataSourcesMongooseModelsConventionTests(
 ): void {
 	describe('Data Sources Mongoose Models Conventions', () => {
 		describe('Model File Conventions', () => {
-			it('model files must export a *ModelFactory', async () => {
-				const violations = await checkModelFileConventions({ modelsGlob: config.modelsGlob });
-				expect(violations.filter((v) => v.includes('ModelFactory'))).toStrictEqual([]);
+			let fileViolations: string[];
+
+			beforeAll(async () => {
+				fileViolations = await checkModelFileConventions({ modelsGlob: config.modelsGlob });
 			}, 30000);
 
-			it('model files must export a *ModelType type alias', async () => {
-				const violations = await checkModelFileConventions({ modelsGlob: config.modelsGlob });
-				expect(violations.filter((v) => v.includes('ModelType'))).toStrictEqual([]);
-			}, 30000);
+			it('model files must export a *ModelFactory', () => {
+				expect(fileViolations.filter((v) => v.includes('ModelFactory'))).toStrictEqual([]);
+			});
 
-			it('model files must export a *ModelName constant', async () => {
-				const violations = await checkModelFileConventions({ modelsGlob: config.modelsGlob });
-				expect(violations.filter((v) => v.includes('ModelName'))).toStrictEqual([]);
+			it('model files must export a *ModelType type alias', () => {
+				expect(fileViolations.filter((v) => v.includes('ModelType'))).toStrictEqual([]);
+			});
+
+			it('model files must export a *ModelName constant', () => {
+				expect(fileViolations.filter((v) => v.includes('ModelName'))).toStrictEqual([]);
+			});
+
+			it('detects model file convention violations in fixture files', async () => {
+				if (!config.modelsFixtureGlob) {
+					console.log('⊘ Fixture glob not provided, skipping violation detection test');
+					return;
+				}
+				const fixtureViolations = await checkModelFileConventions({ modelsGlob: config.modelsFixtureGlob });
+				expect(fixtureViolations.length).toBeGreaterThan(0);
 			}, 30000);
 		});
 
 		describe('Dependency Boundaries', () => {
-			it('must not import from domain, persistence, application-services, or graphql', async () => {
-				const violations = await checkModelDependencyBoundaries({ allGlob: config.allGlob });
-				expect(violations).toStrictEqual([]);
+			let boundaryViolations: string[];
+
+			beforeAll(async () => {
+				boundaryViolations = await checkModelDependencyBoundaries({ allGlob: config.allGlob });
 			}, 30000);
+
+			it('must not import from domain, persistence, application-services, or graphql', () => {
+				expect(boundaryViolations).toStrictEqual([]);
+			});
 		});
 
 		describe('Model Directory Structure', () => {
-			it('model files must live in named subdirectories under models/', async () => {
-				const violations = await checkModelBarrelFiles({ modelsGlob: config.modelsGlob });
-				expect(violations).toStrictEqual([]);
+			let barrelViolations: string[];
+
+			beforeAll(async () => {
+				barrelViolations = await checkModelBarrelFiles({ modelsGlob: config.modelsGlob });
 			}, 30000);
+
+			it('model files must live in named subdirectories under models/', () => {
+				expect(barrelViolations).toStrictEqual([]);
+			});
 		});
 
 		describe('Standalone Model Conventions', () => {
-			it('standalone models using modelFactory must extend MongooseSeedwork.Base', async () => {
-				const violations = await checkStandaloneModelConventions({ modelsGlob: config.modelsGlob });
-				expect(violations).toStrictEqual([]);
+			let standaloneViolations: string[];
+
+			beforeAll(async () => {
+				standaloneViolations = await checkStandaloneModelConventions({ modelsGlob: config.modelsGlob });
 			}, 30000);
+
+			it('standalone models using modelFactory must extend MongooseSeedwork.Base', () => {
+				expect(standaloneViolations).toStrictEqual([]);
+			});
 		});
 	});
 }
