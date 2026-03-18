@@ -1,6 +1,6 @@
-# Apollo Client Setup with React Router Framework Mode
+# Apollo Client Integration with React Router Framework Mode
 
-This guide covers setting up Apollo Client in a React Router 7 application with support for modern streaming SSR.
+This guide covers integrating Apollo Client in a React Router 7 application with support for modern streaming SSR.
 
 ## Installation
 
@@ -10,6 +10,8 @@ Install Apollo Client and the React Router integration package:
 npm install @apollo/client-integration-react-router @apollo/client graphql rxjs
 ```
 
+> **TypeScript users:** For type-safe GraphQL operations, see the [TypeScript Code Generation guide](typescript-codegen.md).
+
 ## Setup
 
 ### Step 1: Create Apollo Configuration
@@ -18,10 +20,7 @@ Create an `app/apollo.ts` file that exports a `makeClient` function and an `apol
 
 ```typescript
 import { HttpLink, InMemoryCache } from "@apollo/client";
-import {
-  createApolloLoaderHandler,
-  ApolloClient,
-} from "@apollo/client-integration-react-router";
+import { createApolloLoaderHandler, ApolloClient } from "@apollo/client-integration-react-router";
 
 // `request` will be available on the server during SSR or in loaders, but not in the browser
 export const makeClient = (request?: Request) => {
@@ -153,6 +152,7 @@ import { useReadQuery } from "@apollo/client/react";
 import { useLoaderData } from "react-router";
 import type { Route } from "./+types/my-route";
 import type { TypedDocumentNode } from "@apollo/client";
+import { apolloLoader } from "./apollo";
 
 // TypedDocumentNode definition with types
 const GET_USER: TypedDocumentNode<
@@ -202,6 +202,7 @@ import { gql } from "@apollo/client";
 import { useReadQuery } from "@apollo/client/react";
 import { useLoaderData } from "react-router";
 import type { Route } from "./+types/my-route";
+import { apolloLoader } from "./apollo";
 
 // TypedDocumentNode definitions omitted for brevity
 

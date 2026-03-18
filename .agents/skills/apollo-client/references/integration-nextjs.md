@@ -1,6 +1,6 @@
-# Apollo Client Setup with Next.js App Router
+# Apollo Client Integration with Next.js App Router
 
-This guide covers setting up Apollo Client in a Next.js application using the App Router architecture with support for both React Server Components (RSC) and Client Components.
+This guide covers integrating Apollo Client in a Next.js application using the App Router architecture with support for both React Server Components (RSC) and Client Components.
 
 ## What is supported?
 
@@ -20,6 +20,8 @@ Install Apollo Client and the Next.js integration package:
 npm install @apollo/client@latest @apollo/client-integration-nextjs graphql rxjs
 ```
 
+> **TypeScript users:** For type-safe GraphQL operations, see the [TypeScript Code Generation guide](typescript-codegen.md).
+
 ## Setup for React Server Components (RSC)
 
 ### Step 1: Create Apollo Client Configuration
@@ -28,11 +30,7 @@ Create an `ApolloClient.ts` file in your app directory:
 
 ```typescript
 import { HttpLink } from "@apollo/client";
-import {
-  registerApolloClient,
-  ApolloClient,
-  InMemoryCache,
-} from "@apollo/client-integration-nextjs";
+import { registerApolloClient, ApolloClient, InMemoryCache } from "@apollo/client-integration-nextjs";
 
 export const { getClient, query, PreloadQuery } = registerApolloClient(() => {
   return new ApolloClient({
@@ -85,7 +83,7 @@ const { data } = await getClient().query({
 
 ### Step 1: Create Apollo Wrapper Component
 
-Create `app/ApolloWrapper.jsx`:
+Create `app/ApolloWrapper.tsx`:
 
 ```typescript
 "use client";
@@ -222,11 +220,7 @@ In your Client Component:
 ```tsx
 "use client";
 
-import {
-  useQueryRefHandlers,
-  useReadQuery,
-  QueryRef,
-} from "@apollo/client/react";
+import { useQueryRefHandlers, useReadQuery, QueryRef } from "@apollo/client/react";
 
 export function ClientChild({ queryRef }: { queryRef: QueryRef<TQueryData> }) {
   const { refetch } = useQueryRefHandlers(queryRef);
@@ -304,7 +298,7 @@ afterEach(resetApolloClientSingletons);
 
 ## Debugging
 
-Enable verbose logging in your `app/ApolloWrapper.ts`:
+Enable verbose logging in your `app/ApolloWrapper.tsx`:
 
 ```typescript
 import { setLogVerbosity } from "@apollo/client";

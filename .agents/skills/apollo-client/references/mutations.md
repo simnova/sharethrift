@@ -17,7 +17,8 @@ The `useMutation` hook is used to execute GraphQL mutations.
 ### Basic Usage
 
 ```tsx
-import { useMutation, gql } from '@apollo/client';
+import { gql } from "@apollo/client";
+import { useMutation } from "@apollo/client/react";
 
 const ADD_TODO = gql`
   mutation AddTodo($text: String!) {
@@ -37,13 +38,15 @@ function AddTodo() {
       onSubmit={(e) => {
         e.preventDefault();
         const form = e.currentTarget;
-        const text = new FormData(form).get('text') as string;
+        const text = new FormData(form).get("text") as string;
         addTodo({ variables: { text } });
         form.reset();
       }}
     >
       <input name="text" placeholder="Add todo" />
-      <button type="submit" disabled={loading}>Add</button>
+      <button type="submit" disabled={loading}>
+        Add
+      </button>
       {error && <p>Error: {error.message}</p>}
     </form>
   );
@@ -56,12 +59,12 @@ function AddTodo() {
 const [
   mutateFunction, // Function to call to execute mutation
   {
-    data,         // Mutation result data
-    loading,      // True while mutation is in flight
-    error,        // ApolloError if mutation failed
-    called,       // True if mutation has been called
-    reset,        // Reset mutation state
-    client,       // Apollo Client instance
+    data, // Mutation result data
+    loading, // True while mutation is in flight
+    error, // ApolloError if mutation failed
+    called, // True if mutation has been called
+    reset, // Reset mutation state
+    client, // Apollo Client instance
   },
 ] = useMutation(MUTATION);
 ```
@@ -74,8 +77,8 @@ const [
 const [createUser] = useMutation(CREATE_USER, {
   variables: {
     input: {
-      name: 'Default User',
-      email: 'default@example.com',
+      name: "Default User",
+      email: "default@example.com",
     },
   },
 });
@@ -87,8 +90,8 @@ await createUser();
 await createUser({
   variables: {
     input: {
-      name: 'Custom User',
-      email: 'custom@example.com',
+      name: "Custom User",
+      email: "custom@example.com",
     },
   },
 });
@@ -99,7 +102,7 @@ await createUser({
 Use `TypedDocumentNode` instead of generic type parameters:
 
 ```typescript
-import { gql, TypedDocumentNode } from '@apollo/client';
+import { gql, TypedDocumentNode } from "@apollo/client";
 
 interface CreateUserData {
   createUser: {
@@ -126,11 +129,11 @@ const CREATE_USER: TypedDocumentNode<CreateUserData, CreateUserVariables> = gql`
   }
 `;
 
-const [createUser, {data, loading}] = useMutation(CREATE_USER);
+const [createUser, { data, loading }] = useMutation(CREATE_USER);
 
 const { data } = await createUser({
   variables: {
-    input: { name: 'John', email: 'john@example.com' },
+    input: { name: "John", email: "john@example.com" },
   },
 });
 
@@ -159,7 +162,7 @@ function CreatePost() {
       <input name="title" disabled={loading} />
       <textarea name="content" disabled={loading} />
       <button type="submit" disabled={loading}>
-        {loading ? 'Creating...' : 'Create Post'}
+        {loading ? "Creating..." : "Create Post"}
       </button>
       {error && (
         <div className="error">
@@ -177,30 +180,39 @@ function CreatePost() {
 If you only need the promise without using the hook's loading/data state, use `client.mutate` instead:
 
 ```tsx
-import { useApolloClient } from '@apollo/client';
+import { useApolloClient } from "@apollo/client/react";
 
 function CreatePost() {
   const client = useApolloClient();
-  
+
   async function handleSubmit(formData: FormData) {
     try {
       const { data } = await client.mutate({
         mutation: CREATE_POST,
         variables: {
           input: {
-            title: formData.get('title'),
-            content: formData.get('content'),
+            title: formData.get("title"),
+            content: formData.get("content"),
           },
         },
       });
-      console.log('Created:', data.createPost);
+      console.log("Created:", data.createPost);
       router.push(`/posts/${data.createPost.id}`);
     } catch (error) {
-      console.error('Failed to create post:', error);
+      console.error("Failed to create post:", error);
     }
   }
-  
-  return <form onSubmit={(e) => { e.preventDefault(); handleSubmit(new FormData(e.currentTarget)); }}>...</form>;
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(new FormData(e.currentTarget));
+      }}
+    >
+      ...
+    </form>
+  );
 }
 ```
 
@@ -215,22 +227,27 @@ function CreatePost() {
       const { data } = await createPost({
         variables: {
           input: {
-            title: formData.get('title'),
-            content: formData.get('content'),
+            title: formData.get("title"),
+            content: formData.get("content"),
           },
         },
       });
-      console.log('Created:', data.createPost);
+      console.log("Created:", data.createPost);
       router.push(`/posts/${data.createPost.id}`);
     } catch (error) {
-      console.error('Failed to create post:', error);
+      console.error("Failed to create post:", error);
     }
   }
-  
+
   return (
-    <form onSubmit={(e) => { e.preventDefault(); handleSubmit(new FormData(e.currentTarget)); }}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        handleSubmit(new FormData(e.currentTarget));
+      }}
+    >
       <button type="submit" disabled={loading}>
-        {loading ? 'Creating...' : 'Create Post'}
+        {loading ? "Creating..." : "Create Post"}
       </button>
     </form>
   );
@@ -249,9 +266,9 @@ Optimistic UI immediately reflects the expected result of a mutation before the 
 const [addTodo] = useMutation(ADD_TODO, {
   optimisticResponse: {
     addTodo: {
-      __typename: 'Todo',
-      id: 'temp-id',
-      text: 'New todo',
+      __typename: "Todo",
+      id: "temp-id",
+      text: "New todo",
       completed: false,
     },
   },
@@ -269,7 +286,7 @@ function TodoList() {
       variables: { text },
       optimisticResponse: {
         addTodo: {
-          __typename: 'Todo',
+          __typename: "Todo",
           id: `temp-${Date.now()}`,
           text,
           completed: false,
@@ -288,7 +305,7 @@ function TodoList() {
 const [toggleTodo] = useMutation(TOGGLE_TODO, {
   optimisticResponse: ({ id }) => ({
     toggleTodo: {
-      __typename: 'Todo',
+      __typename: "Todo",
       id,
       completed: true, // Assume success
     },
@@ -336,9 +353,7 @@ const [deleteTodo] = useMutation(DELETE_TODO, {
     cache.modify({
       fields: {
         todos: (existingTodos: Reference[], { readField }) => {
-          return existingTodos.filter(
-            (todoRef) => readField('id', todoRef) !== data.deleteTodo.id
-          );
+          return existingTodos.filter((todoRef) => readField("id", todoRef) !== data.deleteTodo.id);
         },
       },
     });
@@ -366,23 +381,17 @@ const [createPost] = useMutation(CREATE_POST, {
   update: (cache, { data }) => {
     // Update author's post count
     cache.modify({
-      id: cache.identify({ __typename: 'User', id: data.createPost.authorId }),
+      id: cache.identify({ __typename: "User", id: data.createPost.authorId }),
       fields: {
         postCount: (existing) => existing + 1,
-        posts: (existing, { toReference }) => [
-          ...existing,
-          toReference(data.createPost),
-        ],
+        posts: (existing, { toReference }) => [...existing, toReference(data.createPost)],
       },
     });
 
     // Add to feed
     cache.modify({
       fields: {
-        feed: (existing, { toReference }) => [
-          toReference(data.createPost),
-          ...existing,
-        ],
+        feed: (existing, { toReference }) => [toReference(data.createPost), ...existing],
       },
     });
   },
@@ -402,16 +411,13 @@ There are three refetch notations:
 ```tsx
 const [addTodo] = useMutation(ADD_TODO, {
   // Refetch all active GET_TODOS queries
-  refetchQueries: ['getTodos'],
+  refetchQueries: ["getTodos"],
   // Or: refetchQueries: [GET_TODOS],
 });
 
 // Fetch specific query with variables (even if not active)
 const [addTodo] = useMutation(ADD_TODO, {
-  refetchQueries: [
-    { query: GET_TODOS },
-    { query: GET_TODO_COUNT },
-  ],
+  refetchQueries: [{ query: GET_TODOS }, { query: GET_TODO_COUNT }],
 });
 ```
 
@@ -420,7 +426,7 @@ const [addTodo] = useMutation(ADD_TODO, {
 ```tsx
 const [addTodo] = useMutation(ADD_TODO, {
   refetchQueries: (result) => {
-    if (result.data?.addTodo.priority === 'HIGH') {
+    if (result.data?.addTodo.priority === "HIGH") {
       return [{ query: GET_HIGH_PRIORITY_TODOS }];
     }
     return [{ query: GET_TODOS }];
@@ -432,7 +438,7 @@ const [addTodo] = useMutation(ADD_TODO, {
 
 ```tsx
 const [addTodo] = useMutation(ADD_TODO, {
-  refetchQueries: 'active', // Refetch all active queries
+  refetchQueries: "active", // Refetch all active queries
   // Or: 'all' to refetch all queries (including inactive)
 });
 ```
@@ -470,7 +476,7 @@ const [addTodo] = useMutation(ADD_TODO, {
 
 ```tsx
 const [createUser, { loading }] = useMutation(CREATE_USER, {
-  errorPolicy: 'all', // Return both data and errors
+  errorPolicy: "all", // Return both data and errors
 });
 
 const { data, errors } = await createUser({
@@ -479,10 +485,10 @@ const { data, errors } = await createUser({
 
 // Handle partial success
 if (data?.createUser) {
-  console.log('User created:', data.createUser);
+  console.log("User created:", data.createUser);
 }
 if (errors) {
-  console.warn('Some errors occurred:', errors);
+  console.warn("Some errors occurred:", errors);
 }
 ```
 
@@ -507,7 +513,7 @@ const [createUser] = useMutation(CREATE_USER, {
 
 ```tsx
 const [createUser] = useMutation(CREATE_USER, {
-  errorPolicy: 'all',
+  errorPolicy: "all",
 });
 
 const handleSubmit = async (input: CreateUserInput) => {
@@ -516,13 +522,16 @@ const handleSubmit = async (input: CreateUserInput) => {
   });
 
   // Handle GraphQL validation errors
-  const fieldErrors = errors?.reduce((acc, error) => {
-    const field = error.extensions?.field as string;
-    if (field) {
-      acc[field] = error.message;
-    }
-    return acc;
-  }, {} as Record<string, string>);
+  const fieldErrors = errors?.reduce(
+    (acc, error) => {
+      const field = error.extensions?.field as string;
+      if (field) {
+        acc[field] = error.message;
+      }
+      return acc;
+    },
+    {} as Record<string, string>,
+  );
 
   if (fieldErrors?.email) {
     setEmailError(fieldErrors.email);
