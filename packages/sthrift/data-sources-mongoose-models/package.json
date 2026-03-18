@@ -17,6 +17,7 @@
 		"build": "tsc --build",
 		"watch": "tsc --watch",
 		"lint": "biome lint",
+		"test:arch": "vitest run --config vitest.arch.config.ts",
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
@@ -24,9 +25,12 @@
 		"@cellix/mongoose-seedwork": "workspace:*"
 	},
 	"devDependencies": {
+		"@cellix/arch-unit-tests": "workspace:*",
 		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
 		"typescript": "^5.8.3",
-		"rimraf": "^6.0.1"
+		"rimraf": "^6.0.1",
+		"vitest": "catalog:"
 	},
 	"license": "MIT"
 }

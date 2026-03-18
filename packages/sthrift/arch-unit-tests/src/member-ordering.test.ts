@@ -1,4 +1,4 @@
-import { describeMemberOrderingTests, type MemberOrderingTestsConfig } from '@cellix/arch-unit-tests';
+import { describeMemberOrderingTests, type MemberOrderingTestsConfig } from '@cellix/arch-unit-tests/general';
 
 const config: MemberOrderingTestsConfig = {
   domainSourcePath: '../domain/src',

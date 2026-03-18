@@ -18,6 +18,7 @@
 		"build": "tsc --build",
 		"watch": "tsc --build --watch",
 		"test": "vitest run",
+		"test:arch": "vitest run --config vitest.arch.config.ts",
 		"test:coverage:node": "vitest run --coverage",
 		"test:watch": "vitest",
 		"lint": "biome lint",
@@ -43,6 +44,7 @@
 		"mongoose": "catalog:"
 	},
 	"devDependencies": {
+		"@cellix/arch-unit-tests": "workspace:*",
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
 		"@types/graphql-depth-limit": "^1.1.6",
