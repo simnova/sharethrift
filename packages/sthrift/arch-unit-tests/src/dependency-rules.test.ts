@@ -1,4 +1,4 @@
-import { describeDependencyRulesTests, type DependencyRulesTestsConfig } from '@cellix/arch-unit-tests';
+import { describeDependencyRulesTests, type DependencyRulesTestsConfig } from '@cellix/arch-unit-tests/general';
 
 const config: DependencyRulesTestsConfig = {
   appsGlob: '../../apps/**',

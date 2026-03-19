@@ -9,9 +9,11 @@ const dirname =
 		: __dirname;
 
 // Storybook+Vitest config for ui-sharethrift app
+// Arch-unit-tests are run via vitest.arch.config.ts (test:arch script)
 export default defineConfig(
 	createStorybookVitestConfig(dirname, {
 		additionalCoverageExclude: [
+			'src/arch-unit-tests/**',
 			'**/index.ts',
 			'**/index.tsx',
             '**/Index.tsx',

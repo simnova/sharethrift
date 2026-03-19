@@ -10,6 +10,7 @@
 - [Transport](#transport)
 - [Headers](#headers)
 - [Introspection](#introspection)
+- [Overrides](#overrides)
 - [GraphOS Integration](#graphos-integration)
 - [Advanced Settings](#advanced-settings)
 - [Environment Variables](#environment-variables)
@@ -19,11 +20,10 @@
 
 ## Configuration File
 
-Apollo MCP Server uses YAML configuration. Default location: `mcp.yaml`
+Apollo MCP Server uses YAML configuration. Pass the config file path as an argument:
 
 ```bash
-# Specify custom config path
-npx @apollo/mcp-server --config ./path/to/config.yaml
+apollo-mcp-server ./path/to/config.yaml
 ```
 
 ---
@@ -32,66 +32,52 @@ npx @apollo/mcp-server --config ./path/to/config.yaml
 
 ### endpoint
 
-The GraphQL API endpoint URL.
+The GraphQL API endpoint URL. Defaults to `http://localhost:4000/`.
 
 ```yaml
 endpoint: https://api.example.com/graphql
 ```
 
-**Environment variable override:**
-```yaml
-endpoint: ${GRAPHQL_ENDPOINT}
-```
-
 ### schema
 
-Schema source configuration. Four options available:
+Schema source configuration. Two options available:
 
 #### Local File
 
 ```yaml
 schema:
-  type: local
+  source: local
   path: ./schema.graphql
 ```
 
-#### Multiple Files
+#### GraphOS Uplink (Default)
+
+`uplink` is the default schema source. When using uplink, you can omit the `schema` section entirely if `graphos` credentials are configured.
 
 ```yaml
 schema:
-  type: local
-  paths:
-    - ./schemas/*.graphql
-    - ./types/**/*.graphql
-```
-
-#### GraphOS Uplink
-
-```yaml
-schema:
-  type: uplink
+  source: uplink
 graphos:
-  key: ${APOLLO_KEY}
-  graph_ref: my-graph@production
-```
-
-#### Introspection
-
-```yaml
-schema:
-  type: introspect
-  # Uses the endpoint to fetch schema
+  apollo_key: ${env.APOLLO_KEY}
+  apollo_graph_ref: my-graph@production
 ```
 
 ### operations
 
-Define which GraphQL operations become MCP tools.
+Define which GraphQL operations become MCP tools. Defaults to `infer` (auto-discovers from schema).
+
+#### Infer (Default)
+
+```yaml
+operations:
+  source: infer
+```
 
 #### Local Files
 
 ```yaml
 operations:
-  type: local
+  source: local
   paths:
     - ./operations/**/*.graphql
 ```
@@ -100,7 +86,7 @@ operations:
 
 ```yaml
 operations:
-  type: collection
+  source: collection
   id: abc123-collection-id
 ```
 
@@ -108,7 +94,7 @@ operations:
 
 ```yaml
 operations:
-  type: manifest
+  source: manifest
   path: ./persisted-query-manifest.json
 ```
 
@@ -116,16 +102,7 @@ operations:
 
 ```yaml
 operations:
-  type: uplink
-  # Fetches from GraphOS automatically
-```
-
-#### Introspection Only
-
-```yaml
-operations:
-  type: introspect
-  # No custom operations, only introspection tools
+  source: uplink
 ```
 
 ---
@@ -134,25 +111,65 @@ operations:
 
 Configure how the MCP server communicates.
 
+### Streamable HTTP
+
+HTTP server for network access and multi-client deployments:
+
+```yaml
+transport:
+  type: streamable_http
+```
+
+Defaults: `address: 127.0.0.1`, `port: 8000`. The MCP endpoint is served at `http://127.0.0.1:8000/mcp`.
+
+| Option | Default | Description |
+|--------|---------|-------------|
+| `address` | `127.0.0.1` | Bind address |
+| `port` | `8000` | Listen port |
+| `stateful_mode` | - | Session handling mode |
+
+#### Host Validation
+
+Controls which `Host` header values are accepted (streamable_http only):
+
+```yaml
+transport:
+  type: streamable_http
+  host_validation:
+    enabled: true
+    allowed_hosts:
+      - "example.com"
+      - "*.example.com"
+```
+
+#### Auth
+
+OAuth-based authentication for streamable_http transport:
+
+```yaml
+transport:
+  type: streamable_http
+  auth:
+    servers:
+      - https://auth.example.com/.well-known/openid-configuration
+    audiences:
+      - https://api.example.com
+    scopes:
+      - read
+      - write
+    scope_mode: any  # any | all
+```
+
 ### Stdio (Default)
 
-Standard input/output for CLI integration:
+Standard input/output for direct CLI integration. This is the default transport when no `transport` section is specified:
 
 ```yaml
 transport:
   type: stdio
 ```
 
-### Streamable HTTP
-
-HTTP server for network access:
-
-```yaml
-transport:
-  type: streamable_http
-  port: 3000
-  host: localhost
-```
+> **Note:** SSE transport was removed in v1.5.0. Use `streamable_http` instead.
 
 ---
 
@@ -164,70 +181,68 @@ Configure HTTP headers for GraphQL requests.
 
 ```yaml
 headers:
-  Authorization: "Bearer ${API_TOKEN}"
-  X-API-Key: ${API_KEY}
-  Content-Type: application/json
+  Authorization: "Bearer ${env.API_TOKEN}"
+  X-API-Key: ${env.API_KEY}
 ```
 
-### Dynamic Header Passthrough
+### Dynamic Header Forwarding
 
-Forward headers from MCP client requests:
+Forward headers from MCP client requests to the upstream GraphQL API:
 
 ```yaml
-headers:
-  X-User-Token:
-    from: x-forwarded-user-token
-  X-Request-ID:
-    from: x-request-id
+forward_headers:
+  - x-forwarded-user-token
+  - x-request-id
 ```
 
 ### Combined
 
 ```yaml
 headers:
-  # Static
-  Authorization: "Bearer ${API_TOKEN}"
-  # Dynamic
-  X-User-Context:
-    from: x-user-context
+  Authorization: "Bearer ${env.API_TOKEN}"
+forward_headers:
+  - x-user-context
+  - x-request-id
 ```
 
 ---
 
 ## Introspection
 
-Control built-in introspection tools.
+Control built-in introspection tools. All tools are disabled by default.
 
 ```yaml
 introspection:
-  enabled: true              # Enable introspection tools
-  minify: false              # Use compact notation
-  mutationMode: prompt       # allowed | prompt | disabled
+  introspect:
+    enabled: true
+    minify: true
+  search:
+    enabled: true
+    minify: true
+  validate:
+    enabled: true
+  execute:
+    enabled: true
+```
 
-  # Individual tool control
-  tools:
-    introspect: true
-    search: true
-    validate: true
-    execute: true
+---
+
+## Overrides
+
+Control mutation behavior and other global settings.
+
+```yaml
+overrides:
+  mutation_mode: explicit  # all | explicit | none
 ```
 
 ### Mutation Modes
 
 | Mode | Description |
 |------|-------------|
-| `allowed` | Execute mutations directly |
-| `prompt` | Require user confirmation (default) |
-| `disabled` | Block all mutations |
-
-### Disable Specific Tools
-
-```yaml
-introspection:
-  enabled: true
-  tools:
-    execute: false  # Disable ad-hoc execution
-```
+| `all` | Execute mutations directly |
+| `explicit` | Require user confirmation |
+| `none` | Block all mutations (default) |
 
 ---
 
@@ -237,25 +252,16 @@ Connect to Apollo GraphOS for managed schemas and operations.
 
 ```yaml
 graphos:
-  key: ${APOLLO_KEY}
-  graph_ref: my-graph@production
-```
-
-### Environment Variables
-
-```bash
-export APOLLO_KEY=service:my-graph:xxxxx
-export APOLLO_GRAPH_REF=my-graph@production
+  apollo_key: ${env.APOLLO_KEY}
+  apollo_graph_ref: my-graph@production
 ```
 
 ### With Uplink Schema
 
 ```yaml
-schema:
-  type: uplink
 graphos:
-  key: ${APOLLO_KEY}
-  graph_ref: ${APOLLO_GRAPH_REF}
+  apollo_key: ${env.APOLLO_KEY}
+  apollo_graph_ref: ${env.APOLLO_GRAPH_REF}
 ```
 
 ---
@@ -264,78 +270,128 @@ graphos:
 
 ### Custom Scalars
 
-Define how custom scalars are handled:
+Define how custom scalars are described to AI agents via an external JSON file:
 
 ```yaml
-scalars:
-  DateTime:
-    description: ISO 8601 date-time string
-    example: "2024-01-15T10:30:00Z"
-  JSON:
-    description: Arbitrary JSON object
-    example: '{"key": "value"}'
-  UUID:
-    description: UUID v4 string
-    example: "550e8400-e29b-41d4-a716-446655440000"
+custom_scalars: ./scalars.json
 ```
 
-### CORS (HTTP Transport)
+```json
+// scalars.json
+{
+  "DateTime": "ISO 8601 date-time string (e.g. 2024-01-15T10:30:00Z)",
+  "JSON": "Arbitrary JSON object",
+  "UUID": "UUID v4 string (e.g. 550e8400-e29b-41d4-a716-446655440000)"
+}
+```
+
+### CORS (Streamable HTTP Transport)
 
 ```yaml
 cors:
+  enabled: true
   origins:
     - http://localhost:3000
     - https://app.example.com
-  methods:
+  # OR use match_origins for regex pattern matching:
+  # match_origins:
+  #   - "^https://([a-z0-9]+[.])*example.com$"
+  # OR allow all origins (cannot be used with allow_credentials):
+  # allow_any_origin: true
+  allow_credentials: true
+  allow_methods:
     - GET
     - POST
-  headers:
-    - Content-Type
-    - Authorization
+  allow_headers:
+    - accept
+    - content-type
+    - mcp-protocol-version
+    - mcp-session-id
+  expose_headers:
+    - mcp-session-id
+  max_age: 7200
 ```
 
 ### Health Check
 
+Health check is disabled by default. Applies to streamable_http transport only.
+
 ```yaml
 health_check:
   enabled: true
-  path: /health
+  path: /health  # default
 ```
 
+| Option | Default | Description |
+|--------|---------|-------------|
+| `enabled` | `false` | Enable health endpoint |
+| `path` | `/health` | Health check path |
+
 Endpoints:
-- `/health` - Overall health
-- `/health?live` - Liveness probe
-- `/health?ready` - Readiness probe
+- `GET /health` - Overall health: `{"status": "UP"}`
+- `GET /health?live` - Liveness probe
+- `GET /health?ready` - Readiness probe
+
+### Logging
+
+```yaml
+logging:
+  level: info  # debug | info | warn | error
+  path: ./logs/mcp-server.log
+  rotation: daily
+```
 
 ### Telemetry
 
 ```yaml
 telemetry:
-  enabled: true
+  exporters:
+    metrics:
+      otlp:
+        endpoint: http://localhost:4317
+    tracing:
+      otlp:
+        endpoint: http://localhost:4317
   service_name: graphql-mcp-server
-  otlp_endpoint: http://localhost:4317
 ```
 
 ---
 
 ## Environment Variables
 
-All settings support environment variable substitution with `${VAR_NAME}`.
+### Config File Expansion
 
-### Apollo MCP Specific Variables
+Use `${env.VAR_NAME}` syntax inside YAML config files to reference environment variables:
 
-| Variable | Description |
-|----------|-------------|
-| `APOLLO_MCP_CONFIG` | Config file path |
-| `APOLLO_MCP_ENDPOINT` | GraphQL endpoint |
-| `APOLLO_MCP_LOG_LEVEL` | Logging level (debug, info, warn, error) |
+```yaml
+endpoint: ${env.GRAPHQL_ENDPOINT}
+headers:
+  Authorization: "Bearer ${env.API_TOKEN}"
+graphos:
+  apollo_key: ${env.APOLLO_KEY}
+```
+
+### Environment Variable Overrides
+
+Any config option can be overridden via environment variables using the `APOLLO_MCP_` prefix with `__` (double underscore) as the nesting separator:
+
+```bash
+# Override transport type
+export APOLLO_MCP_TRANSPORT__TYPE=streamable_http
+
+# Override transport port
+export APOLLO_MCP_TRANSPORT__PORT=9000
+
+# Override logging level
+export APOLLO_MCP_LOGGING__LEVEL=debug
+```
 
 ### GraphOS Variables
 
 | Variable | Description |
 |----------|-------------|
 | `APOLLO_KEY` | GraphOS API key |
-| `APOLLO_GRAPH_REF` | Graph reference (graph-id@variant) |
+| `APOLLO_GRAPH_REF` | Graph reference (graph@variant) |
 
 ---
 
@@ -344,33 +400,36 @@ All settings support environment variable substitution with `${VAR_NAME}`.
 ### Minimal Local Development
 
 ```yaml
-endpoint: http://localhost:4000/graphql
 schema:
-  type: introspect
+  source: local
+  path: ./schema.graphql
 introspection:
-  enabled: true
-  mutationMode: allowed
+  introspect:
+    enabled: true
+  search:
+    enabled: true
+  validate:
+    enabled: true
+  execute:
+    enabled: true
+overrides:
+  mutation_mode: all
 ```
 
 ### Production with GraphOS
 
 ```yaml
-endpoint: ${GRAPHQL_ENDPOINT}
-schema:
-  type: uplink
-operations:
-  type: manifest
-  path: ./persisted-query-manifest.json
-graphos:
-  key: ${APOLLO_KEY}
-  graph_ref: ${APOLLO_GRAPH_REF}
-headers:
-  Authorization: "Bearer ${API_TOKEN}"
-introspection:
-  enabled: false
 transport:
   type: streamable_http
-  port: ${PORT:-3000}
+endpoint: ${env.GRAPHQL_ENDPOINT}
+operations:
+  source: manifest
+  path: ./persisted-query-manifest.json
+graphos:
+  apollo_key: ${env.APOLLO_KEY}
+  apollo_graph_ref: ${env.APOLLO_GRAPH_REF}
+headers:
+  Authorization: "Bearer ${env.API_TOKEN}"
 health_check:
   enabled: true
 ```
@@ -378,20 +437,31 @@ health_check:
 ### Team Development
 
 ```yaml
+transport:
+  type: streamable_http
 endpoint: https://dev-api.example.com/graphql
 schema:
-  type: local
+  source: local
   path: ./schema.graphql
 operations:
-  type: local
+  source: local
   paths:
     - ./operations/**/*.graphql
 headers:
-  Authorization: "Bearer ${DEV_API_TOKEN}"
+  Authorization: "Bearer ${env.DEV_API_TOKEN}"
 introspection:
-  enabled: true
-  mutationMode: prompt
-  minify: true
+  introspect:
+    enabled: true
+    minify: true
+  search:
+    enabled: true
+    minify: true
+  validate:
+    enabled: true
+  execute:
+    enabled: true
+overrides:
+  mutation_mode: explicit
 ```
 
 ### Read-Only Analytics
@@ -399,33 +469,17 @@ introspection:
 ```yaml
 endpoint: https://analytics.example.com/graphql
 schema:
-  type: local
+  source: local
   path: ./analytics-schema.graphql
 operations:
-  type: local
+  source: local
   paths:
-    - ./queries/**/*.graphql  # Only queries, no mutations
+    - ./queries/**/*.graphql
 introspection:
-  enabled: true
-  mutationMode: disabled
-  tools:
-    execute: false
-```
-
-### Multi-Environment
-
-```yaml
-endpoint: ${GRAPHQL_ENDPOINT}
-schema:
-  type: ${SCHEMA_SOURCE:-local}
-  path: ${SCHEMA_PATH:-./schema.graphql}
-operations:
-  type: local
-  paths:
-    - ./operations/**/*.graphql
-headers:
-  Authorization: "Bearer ${API_TOKEN}"
-introspection:
-  enabled: ${INTROSPECTION_ENABLED:-false}
-  mutationMode: ${MUTATION_MODE:-prompt}
+  introspect:
+    enabled: true
+  search:
+    enabled: true
+  validate:
+    enabled: true
 ```

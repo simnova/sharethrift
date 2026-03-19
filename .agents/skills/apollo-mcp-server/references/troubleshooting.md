@@ -18,14 +18,19 @@ MCP Inspector provides visual debugging for MCP servers.
 ### Installation
 
 ```bash
-npx @anthropic/mcp-inspector
+npx @modelcontextprotocol/inspector
 ```
 
 ### Usage
 
 ```bash
-# Start inspector with your MCP server
-npx @anthropic/mcp-inspector npx @apollo/mcp-server --config ./mcp.yaml
+# Start inspector with your MCP server using the Streamable HTTP transport
+npx @modelcontextprotocol/inspector --transport http --server-url http://localhost:8000/mcp
+```
+
+```bash
+# Start inspector with your MCP server using the STDIO transport
+npx @modelcontextprotocol/inspector apollo-mcp-server ./config.yaml
 ```
 
 ### Inspector Features
@@ -48,17 +53,12 @@ npx @anthropic/mcp-inspector npx @apollo/mcp-server --config ./mcp.yaml
 1. Check config file syntax:
 ```bash
 # Validate YAML
-npx yaml-lint mcp.yaml
+npx yaml-lint config.yaml
 ```
 
-2. Verify endpoint is reachable:
+2. Enable debug logging:
 ```bash
-curl -I https://api.example.com/graphql
-```
-
-3. Enable debug logging:
-```bash
-APOLLO_MCP_LOG_LEVEL=debug npx @apollo/mcp-server --config ./mcp.yaml
+APOLLO_MCP_LOGGING__LEVEL=debug apollo-mcp-server ./config.yaml
 ```
 
 ### Client Can't Connect
@@ -67,27 +67,43 @@ APOLLO_MCP_LOG_LEVEL=debug npx @apollo/mcp-server --config ./mcp.yaml
 
 **Solutions:**
 
-1. Verify command path in client config:
+**Streamable HTTP (recommended for remote/multi-client):**
+
+Configure your client to connect via `npx mcp-remote`:
+
 ```json
 {
   "mcpServers": {
     "graphql": {
       "command": "npx",
-      "args": ["@apollo/mcp-server", "--config", "/absolute/path/to/mcp.yaml"]
+      "args": ["mcp-remote", "http://127.0.0.1:8000/mcp"]
     }
   }
 }
 ```
 
-2. Test server manually:
+**Stdio (client launches the server process):**
+
+```json
+{
+  "mcpServers": {
+    "graphql": {
+      "command": "./apollo-mcp-server",
+      "args": ["/absolute/path/to/config.yaml"]
+    }
+  }
+}
+```
+
+Test server manually:
 ```bash
-npx @apollo/mcp-server --config ./mcp.yaml
+apollo-mcp-server ./config.yaml
 # Should output JSON-RPC initialization
 ```
 
-3. Check Node.js version:
+Check binary is installed:
 ```bash
-node --version  # Requires v18+
+which apollo-mcp-server
 ```
 
 ---
@@ -108,12 +124,13 @@ echo $API_TOKEN  # Should not be empty
 2. Check header configuration:
 ```yaml
 headers:
-  Authorization: "Bearer ${API_TOKEN}"  # Note: Bearer prefix required
+  Authorization: "Bearer ${env.API_TOKEN}"
 ```
 
-3. Test token directly:
-```bash
-curl -H "Authorization: Bearer $API_TOKEN" https://api.example.com/graphql
+3. For dynamic token forwarding:
+```yaml
+forward_headers:
+  - x-forwarded-authorization
 ```
 
 ### Token Security Best Practices
@@ -123,14 +140,27 @@ curl -H "Authorization: Bearer $API_TOKEN" https://api.example.com/graphql
 - Rotate tokens regularly
 - Use minimum required permissions
 
-### OAuth Token Forwarding
+### OAuth Authentication
 
-For user-specific tokens:
+For streamable_http transport, use `transport.auth` for OAuth:
 
 ```yaml
-headers:
-  Authorization:
-    from: x-forwarded-authorization
+transport:
+  type: streamable_http
+  auth:
+    servers:
+      - https://auth.example.com/.well-known/openid-configuration
+    audiences:
+      - https://api.example.com
+    scopes:
+      - read
+```
+
+For forwarding user tokens to the upstream GraphQL API:
+
+```yaml
+forward_headers:
+  - authorization
 ```
 
 **Security Warning:** Forwarding OAuth tokens exposes them to the MCP server. Ensure:
@@ -151,33 +181,13 @@ headers:
 1. Check file path (use absolute paths):
 ```yaml
 schema:
-  type: local
+  source: local
   path: /absolute/path/to/schema.graphql
 ```
 
 2. Verify file exists:
 ```bash
 ls -la ./schema.graphql
-```
-
-### Schema Introspection Failed
-
-**Symptoms:** Can't fetch schema from endpoint
-
-**Solutions:**
-
-1. Check if introspection is enabled on server:
-```bash
-curl -X POST https://api.example.com/graphql \
-  -H "Content-Type: application/json" \
-  -d '{"query": "{ __schema { types { name } } }"}'
-```
-
-2. Use local schema file instead:
-```yaml
-schema:
-  type: local
-  path: ./schema.graphql
 ```
 
 ### GraphOS Uplink Errors
@@ -195,7 +205,7 @@ echo $APOLLO_GRAPH_REF
 2. Check graph reference format:
 ```yaml
 graphos:
-  graph_ref: my-graph@production  # Format: graph-id@variant
+  apollo_graph_ref: my-graph@production  # Format: graph@variant
 ```
 
 ---
@@ -222,8 +232,8 @@ validate(operation: "query { user { id name } }")
 
 Check mutation mode in config:
 ```yaml
-introspection:
-  mutationMode: allowed  # Or 'prompt' for confirmation
+overrides:
+  mutation_mode: all  # Or 'explicit' for confirmation
 ```
 
 ### Variable Type Mismatch
@@ -245,7 +255,7 @@ execute(variables: { id: "123" })  # String coerced to ID
 
 ## Health Check
 
-For HTTP transport, health endpoints help diagnose issues.
+For streamable_http transport, health endpoints help diagnose issues.
 
 ### Endpoints
 
@@ -265,11 +275,11 @@ For HTTP transport, health endpoints help diagnose issues.
 ### Example Check
 
 ```bash
-curl http://localhost:3000/health
-# {"status": "healthy", "checks": {"schema": "ok", "endpoint": "ok"}}
+curl http://localhost:8000/health
+# {"status": "UP"}
 
-curl http://localhost:3000/health?ready
-# {"status": "ready"}
+curl http://localhost:8000/health?ready
+# {"status": "UP"}
 ```
 
 ### Common Health Issues
@@ -291,7 +301,7 @@ If issues persist:
 
 1. Enable debug logging:
 ```bash
-APOLLO_MCP_LOG_LEVEL=debug npx @apollo/mcp-server --config ./mcp.yaml
+APOLLO_MCP_LOGGING__LEVEL=debug apollo-mcp-server ./config.yaml
 ```
 
 2. Check Apollo documentation: https://apollographql.com/docs

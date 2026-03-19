@@ -13,6 +13,7 @@
 		"storybook": "portless storybook.sharethrift.localhost sh -c 'storybook dev -p $PORT --host 127.0.0.1 --no-open'",
 		"build-storybook": "storybook build",
 		"test": "echo 'UI Storybook tests disabled (memory constraints)'",
+		"test:arch": "vitest run --config vitest.arch.config.ts",
 		"test:coverage:ui": "echo 'UI Storybook tests disabled (memory constraints)'",
 		"test:watch": "vitest"
 	},
@@ -33,6 +34,7 @@
 		"rxjs": "^7.8.2"
 	},
 	"devDependencies": {
+		"@cellix/arch-unit-tests": "workspace:*",
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
 		"@chromatic-com/storybook": "^4.1.3",
