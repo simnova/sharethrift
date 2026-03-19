@@ -1,4 +1,7 @@
-import { Row, Col, Input, Form } from 'antd';
+import Row from 'antd/es/row';
+import Col from 'antd/es/col';
+import Input from 'antd/es/input';
+import Form from 'antd/es/form';
 import { handleCountryChange } from './country-change-utils.ts';
 import { useState, type FC } from 'react';
 import type { Country } from './country-type.ts';

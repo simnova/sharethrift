@@ -9,6 +9,7 @@ import type mongoose from 'mongoose';
 import { expect, vi } from 'vitest';
 import { AccountPlanConverter } from './account-plan.domain-adapter.ts';
 import { AccountPlanRepository } from './account-plan.repository.ts';
+import { makeNewableMock } from '@cellix/test-utils';
 
 const test = { for: describeFeature };
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -44,6 +45,8 @@ function makeEventBus(): DomainSeedwork.EventBus {
 	} as DomainSeedwork.EventBus);
 }
 
+// use shared makeNewableMock from test-utils
+
 function makeAccountPlanDoc(
 	id = 'plan-1',
 	name = 'Basic Plan',
@@ -75,10 +78,9 @@ function makeAccountPlanDoc(
 }
 
 function createChainableQuery<T>(result: T) {
-	const query = {
-		exec: vi.fn().mockResolvedValue(result),
-	};
-	return query;
+	return {
+ 		exec: vi.fn().mockResolvedValue(result),
+ 	};
 }
 
 function setupAccountPlanRepo(
@@ -278,9 +280,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 				};
 
 				repository = setupAccountPlanRepo(mockDoc, {
-					modelCtor: vi.fn(
-						() => mockNewDoc,
-					) as unknown as Models.AccountPlan.AccountPlanModelType,
+					modelCtor: makeNewableMock(() => mockNewDoc) as unknown as Models.AccountPlan.AccountPlanModelType,
 				});
 
 				result = await repository.getNewInstance(planInfo);

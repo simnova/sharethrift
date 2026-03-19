@@ -4,7 +4,7 @@ import { loadFeature, describeFeature } from '@amiceli/vitest-cucumber';
 import { expect } from 'vitest';
 import { MessagingDataSourceImplementation } from './index.ts';
 import type { Domain } from '@sthrift/domain';
-import type { MessagingService } from '@cellix/messaging-service';
+import type { MessagingService } from '@cellix/service-messaging-base';
 import { vi } from 'vitest';
 
 const test = { for: describeFeature };

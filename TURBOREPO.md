@@ -24,7 +24,7 @@ All packages except frontend and excluded packages (see below).
 These packages are not included in standard build/test pipelines:
 - `service-mongodb-memory-server` - Test MongoDB server
 - `service-oauth2-mock-server` - Test OAuth2 server
-- `mock-messaging-server` - Mock messaging server for local development
+- `@app/mock-messaging-server` - Mock messaging server for local development
 
 ## Local Development
 
@@ -69,7 +69,7 @@ Turborepo automatically caches task outputs locally in the `.turbo` directory:
 The pipeline automatically detects changes and categorizes them based on tags specified in turbo.json:
 
 - **Frontend changes**: Any changes to `ui-*` packages
-- **Backend changes**: Changes to packages used by `@sthrift/api` (excluding mock servers)
+- **Backend changes**: Changes to packages used by `@app/api` (excluding mock servers)
 - **Docs changes**: Changes affecting documentation
 
 ### Selective Builds

@@ -2,7 +2,7 @@ import { type FC, useMemo, useEffect } from 'react';
 import {
 	type PaymentContainerAccountPlansFieldsFragment,
 	PaymentContainerPersonalUserCybersourcePublicKeyIdDocument,
-	type ProcessPaymentInput,
+	type PersonalUserProcessPaymentInput,
 	AppContainerCurrentUserDocument,
 	PaymentContainerAccountPlansDocument,
 	PaymentContainerCurrentPersonalUserAndCreateIfNotExistsDocument,
@@ -45,18 +45,19 @@ export const PaymentContainer: FC = () => {
 		SignUpPaymentContainerPersonalUserProcessPaymentDocument,
 	);
 
-	const handleSubmitPayment = async (paymentData: ProcessPaymentInput) => {
+	const handleSubmitPayment = async (paymentData: PersonalUserProcessPaymentInput) => {
 		console.log('Payment data submitted:', paymentData);
 		const result = await processPayment({ variables: { input: paymentData } });
-		if (result.data?.processPayment.success) {
+		if (result.data?.processPayment.paymentResponse?.success) {
 			await refetchCurrentUserData();
 			message.success('Payment processed successfully');
 			// navigate to home
 			navigate('/');
 			message.success('Welcome to ShareThrift! Your account has been created.');
 		} else {
+			const errorMsg = result.data?.processPayment.paymentResponse?.errorInformation?.message;
 			message.error(
-				`Payment failed: ${result.data?.processPayment || 'Unknown error'}`,
+				`Payment failed: ${errorMsg || 'Unknown error'}`,
 			);
 		}
 	};

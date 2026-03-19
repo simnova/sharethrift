@@ -8,7 +8,7 @@ import {
 import { BillingAddressFormItems } from './billing-address-form-items.tsx';
 import type { Country } from './country-type.ts';
 import utc from 'dayjs/plugin/utc.js';
-import type { ProcessPaymentInput } from '../../../generated.tsx';
+import type { PersonalUserProcessPaymentInput } from '../../../generated.tsx';
 import { useUserId } from '../user-context.tsx';
 
 const { Title } = Typography;
@@ -17,7 +17,7 @@ dayjs.extend(utc);
 interface PaymentFormProps {
 	cyberSourcePublicKey: string;
 	countries: Country[];
-	onSubmitPayment: (paymentDetails: ProcessPaymentInput) => void;
+	onSubmitPayment: (paymentDetails: PersonalUserProcessPaymentInput) => void;
 	additionalContent?: React.JSX.Element;
 	paymentAmount: number;
   currency: string;
@@ -75,7 +75,7 @@ export const PaymentForm: FC<PaymentFormProps> = (props) => {
 				}
 				const values = form.getFieldsValue();
 				console.log('Form values on submit:', values);
-				const processPaymentDetails: ProcessPaymentInput = {
+				const processPaymentDetails: PersonalUserProcessPaymentInput = {
 					userId: userId,
 					paymentAmount: props.paymentAmount,
 					currency: props.currency,

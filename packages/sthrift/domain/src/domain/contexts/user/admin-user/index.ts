@@ -1,4 +1,4 @@
-export { AdminUser } from './admin-user.ts';
+export { AdminUser } from './admin-user.aggregate.ts';
 export type {
 	AdminUserProps,
 	AdminUserEntityReference,

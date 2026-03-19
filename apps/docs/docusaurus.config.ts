@@ -4,6 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 // This runs in Node.js - Don't use client-side code here (browser APIs, JSX...)
 
+
 const config: Config = {
 	title: 'Sharethrift Docs',
 	tagline: 'Domain-Driven Design for Modern Azure Applications',
@@ -28,6 +29,10 @@ const config: Config = {
 	onBrokenLinks: 'throw',
 	onBrokenMarkdownLinks: 'warn',
 
+	// Ignore Serenity reports in broken link checker (they're static files copied during build)
+	onBrokenAnchors: 'warn',
+	staticDirectories: ['static'],
+
 	// Even if you don't use internationalization, you can use this field to set
 	// useful metadata like html lang. For example, if your site is Chinese, you
 	// may want to replace "en" with "zh-Hans".
@@ -35,6 +40,9 @@ const config: Config = {
 		defaultLocale: 'en',
 		locales: ['en'],
 	},
+
+	// Removed swc-loader webpack config (swc-loader not installed)
+	// Docusaurus uses its own default loader (esbuild or babel)
 
 	presets: [
 		[
@@ -86,6 +94,11 @@ const config: Config = {
 					label: 'Doc',
 				},
 				{ to: '/blog', label: 'Blog', position: 'left' },
+				{
+					type: 'html',
+					value: '<a href="/serenity-reports/cucumber-report.html" target="_blank" rel="noopener noreferrer" class="navbar__link">Test Reports</a>',
+					position: 'left',
+				},
 				{
 					href: 'https://github.com/simnova/sharethrift',
 					label: 'GitHub',

@@ -1,5 +1,5 @@
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
-import type { ItemListing } from './item-listing.ts';
+import type { ItemListing } from './item-listing.aggregate.ts';
 import type { ItemListingProps } from './item-listing.entity.ts';
 import type { UserEntityReference } from '../../user/index.ts';
 
@@ -28,6 +28,7 @@ export interface ItemListingRepository<props extends ItemListingProps>
 			sharingPeriodEnd: Date;
 			images?: string[];
 			isDraft?: boolean;
+			expiresAt?: Date;
 		},
 	): Promise<ItemListing<props>>;
 }

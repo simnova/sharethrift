@@ -17,7 +17,8 @@
 		"build": "tsc --build",
 		"watch": "tsc --watch",
 		"test": "vitest run",
-		"test:coverage": "vitest run --coverage",
+		"test:arch": "vitest run --config vitest.arch.config.ts",
+		"test:coverage:node": "vitest run --coverage",
 		"test:watch": "vitest",
 		"lint": "biome lint",
 		"clean": "rimraf dist"
@@ -26,9 +27,10 @@
 		"@sthrift/context-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
-		"@cellix/payment-service": "workspace:*"
+		"@cellix/service-payment-base": "workspace:*"
 	},
 	"devDependencies": {
+		"@cellix/arch-unit-tests": "workspace:*",
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
 		"rimraf": "^6.0.1",

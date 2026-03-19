@@ -1,5 +1,5 @@
 import type { Domain } from '@sthrift/domain';
-import type { PaymentService } from '@cellix/payment-service';
+import type { PaymentService } from '@cellix/service-payment-base';
 import { getPaymentPersonalUserRepository } from './payment-personal-user.repository.ts';
 export type { PaymentPersonalUserRepository } from './payment-personal-user.repository.ts';
 

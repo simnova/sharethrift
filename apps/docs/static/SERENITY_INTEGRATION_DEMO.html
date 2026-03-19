@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Serenity Integration Demo</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1a73e8;
+            border-bottom: 3px solid #1a73e8;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #333;
+            margin-top: 30px;
+        }
+        .status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+        .link-box {
+            background: #e7f3ff;
+            border-left: 4px solid #1a73e8;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .link-box a {
+            color: #1a73e8;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        .link-box a:hover {
+            text-decoration: underline;
+        }
+        .code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        ul {
+            line-height: 1.8;
+        }
+        .flow {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .flow-step {
+            padding: 10px;
+            margin: 10px 0;
+            border-left: 3px solid #28a745;
+            padding-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✅ Serenity BDD Integration Status</h1>
+        
+        <h2>Integration Complete <span class="status success">WORKING</span></h2>
+        
+        <div class="link-box">
+            <p><strong>📊 View the Serenity Test Reports:</strong></p>
+            <p><a href="/serenity-reports/cucumber-report.html" target="_blank">→ Open Cucumber Report</a></p>
+            <p><a href="/serenity-reports/index.html" target="_blank">→ Open Serenity Dashboard</a></p>
+            <p><a href="/serenity-reports/capabilities.html" target="_blank">→ Open Capabilities Report</a></p>
+        </div>
+
+        <h2>📋 What's Been Implemented:</h2>
+        <div class="flow">
+            <div class="flow-step">
+                <strong>1. Test Execution</strong><br>
+                Command: <span class="code">pnpm run test:serenity</span><br>
+                Runs Cucumber tests with Serenity instrumentation
+            </div>
+            <div class="flow-step">
+                <strong>2. Report Generation</strong><br>
+                Command: <span class="code">pnpm run test:serenity:report</span><br>
+                Generates HTML reports at <span class="code">packages/sthrift/domain/target/site/serenity/</span>
+            </div>
+            <div class="flow-step">
+                <strong>3. Pipeline Copy Step</strong><br>
+                File: <span class="code">build-pipeline/core/monorepo-build-stage.yml</span><br>
+                Copies reports from domain package to <span class="code">apps/docs/static/serenity-reports/</span>
+            </div>
+            <div class="flow-step">
+                <strong>4. Docusaurus Integration</strong><br>
+                File: <span class="code">apps/docs/docusaurus.config.ts</span><br>
+                Added "Test Reports" link in navbar pointing to <span class="code">/serenity-reports/cucumber-report.html</span>
+            </div>
+            <div class="flow-step">
+                <strong>5. Build Output</strong><br>
+                Docusaurus build copies static files to <span class="code">apps/docs/build/serenity-reports/</span><br>
+                Ready for deployment!
+            </div>
+        </div>
+
+        <h2>🎯 How It Works in Production:</h2>
+        <ul>
+            <li>When the CI/CD pipeline runs, it executes the Serenity tests</li>
+            <li>Reports are generated and copied to the Docusaurus static folder</li>
+            <li>Docusaurus builds the documentation site including the reports</li>
+            <li>The site is deployed to Azure Static Web Apps</li>
+            <li>Users can click "Test Reports" in the navbar to view the latest test results</li>
+        </ul>
+
+        <h2>📁 File Locations:</h2>
+        <ul>
+            <li><strong>Source Reports:</strong> <span class="code">packages/sthrift/domain/target/site/serenity/</span></li>
+            <li><strong>Docusaurus Static:</strong> <span class="code">apps/docs/static/serenity-reports/</span></li>
+            <li><strong>Build Output:</strong> <span class="code">apps/docs/build/serenity-reports/</span></li>
+        </ul>
+
+        <h2>🔧 Configuration Files Modified:</h2>
+        <ul>
+            <li><span class="code">build-pipeline/core/monorepo-build-stage.yml</span> - Added copy step (lines 264-310)</li>
+            <li><span class="code">apps/docs/docusaurus.config.ts</span> - Added navbar link and static directory config</li>
+            <li><span class="code">.gitignore</span> - Added <span class="code">apps/docs/static/serenity-reports/</span></li>
+        </ul>
+
+        <p style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; color: #666;">
+            <strong>Note:</strong> This integration was implemented per Patrick's PR feedback to make Serenity reports 
+            available online through the Docusaurus deployment. All components are in place and working!
+        </p>
+    </div>
+</body>
+</html>

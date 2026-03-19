@@ -5,7 +5,7 @@ import { expect, vi } from 'vitest';
 import { AdminUserProfile } from './admin-user-account-profile.ts';
 import type { AdminUserProfileProps } from './admin-user-account-profile.entity.ts';
 import type { UserVisa } from '../user.visa.ts';
-import type { AdminUserAggregateRoot } from './admin-user.ts';
+import type { AdminUserAggregateRoot } from './admin-user.aggregate.ts';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 
 const test = { for: describeFeature };

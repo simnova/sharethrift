@@ -22,6 +22,9 @@ export class ConversationDomainAdapter
 	extends MongooseSeedwork.MongooseDomainAdapter<Models.Conversation.Conversation>
 	implements Domain.Contexts.Conversation.Conversation.ConversationProps
 {
+	private _messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[] =
+		[];
+
 	get sharer():
 		| Domain.Contexts.User.PersonalUser.PersonalUserEntityReference
 		| Domain.Contexts.User.AdminUser.AdminUserEntityReference {
@@ -206,17 +209,10 @@ export class ConversationDomainAdapter
 		this.doc.messagingConversationId = value;
 	}
 
-	private _messages: Domain.Contexts.Conversation.Conversation.MessageEntityReference[] =
-		[];
-
 	get messages(): Domain.Contexts.Conversation.Conversation.MessageEntityReference[] {
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection
 		return this._messages;
-	}
-
-	set messages(value: Domain.Contexts.Conversation.Conversation.MessageEntityReference[]) {
-		this._messages = value;
 	}
 
 	loadMessages(): Promise<
@@ -225,5 +221,9 @@ export class ConversationDomainAdapter
 		// For now, return empty array since messages are not stored as subdocuments
 		// TODO: Implement proper message loading from separate collection or populate from subdocuments
 		return Promise.resolve(this._messages);
+	}
+
+	set messages(value: Domain.Contexts.Conversation.Conversation.MessageEntityReference[]) {
+		this._messages = value;
 	}
 }

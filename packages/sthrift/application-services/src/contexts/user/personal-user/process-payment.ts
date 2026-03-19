@@ -1,5 +1,5 @@
 import type { DataSources } from '@sthrift/persistence';
-import type { ProcessPaymentRequest } from '@cellix/payment-service';
+import type { ProcessPaymentRequest } from '@cellix/service-payment-base';
 
 export interface ProcessPaymentCommand {
 	request: ProcessPaymentRequest;
