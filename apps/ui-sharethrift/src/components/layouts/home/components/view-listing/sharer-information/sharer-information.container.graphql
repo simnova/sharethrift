@@ -17,3 +17,16 @@ query ViewListingSharerInformationContainerPersonalUserById($sharerId: ObjectID!
     }
   }
 }
+
+mutation CreateConversation($input: ConversationCreateInput!) {
+  createConversation(input: $input) {
+    status {
+      success
+      errorMessage
+    }
+    conversation {
+      id
+      messagingConversationId
+    }
+  }
+}

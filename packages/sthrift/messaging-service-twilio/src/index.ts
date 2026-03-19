@@ -29,25 +29,19 @@ export class ServiceMessagingTwilio implements MessagingService {
 		}
 	}
 
-	public async startUp(): Promise<Exclude<ServiceMessagingTwilio, ServiceBase>> {
+	public startUp(): Promise<Exclude<ServiceMessagingTwilio, ServiceBase>> {
 		if (this.client) {
 			throw new Error('ServiceMessagingTwilio is already started');
 		}
 		if (process.env['NODE_ENV'] === 'development') {
-			console.log('ServiceMessagingTwilio: Skipping Twilio SDK initialization in development mode.');
-			return this as Exclude<ServiceMessagingTwilio, ServiceBase>;
+			this.client = new Twilio.Twilio(this.accountSid, this.authToken);
 		}
-		this.client = new Twilio.Twilio(this.accountSid, this.authToken);
-		console.log('ServiceMessagingTwilio started with real Twilio client');
 		return this as Exclude<ServiceMessagingTwilio, ServiceBase>;
 	}
 
-	public async shutDown(): Promise<void> {
-		if (!this.client) {
-			throw new Error('ServiceMessagingTwilio is not started - shutdown cannot proceed');
-		}
+	public shutDown(): Promise<void> {
 		this.client = undefined;
-		console.log('ServiceMessagingTwilio stopped');
+		return Promise.resolve();
 	}
 
 	public get service(): TwilioClient {

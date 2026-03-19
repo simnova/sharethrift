@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react";
 import { Button } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
+import { useLocation } from "react-router-dom";
 import { ConversationListContainer } from "./conversation-list.container.tsx";
 import { ConversationBoxContainer } from "./conversation-box.container.tsx";
 
 export const Messages: React.FC = () => {
+  const location = useLocation();
+  const preselectedConversationId =
+  typeof location.state === "object" && location.state !== null && "selectedConversationId" in location.state
+    ? (location.state as { selectedConversationId?: string }).selectedConversationId
+    : undefined;
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
-  >(null);
+  >(preselectedConversationId || null);
   const [isMobile, setIsMobile] = useState(false);
-  const [showListOnMobile, setShowListOnMobile] = useState(true);
+  const [showListOnMobile, setShowListOnMobile] = useState(!preselectedConversationId);
 
   // Detect mobile screen
   useEffect(() => {

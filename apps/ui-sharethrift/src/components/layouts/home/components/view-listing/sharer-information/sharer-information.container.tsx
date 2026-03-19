@@ -9,11 +9,12 @@ interface SharerInformationContainerProps {
 	sharedTimeAgo?: string;
 	className?: string;
 	showIconOnly?: boolean;
+	currentUserId?: string | null;
 }
 
 export const SharerInformationContainer: React.FC<
 	SharerInformationContainerProps
-> = ({ sharerId, listingId, isOwner, sharedTimeAgo, className }) => {
+> = ({ sharerId, listingId, isOwner, sharedTimeAgo, className, currentUserId }) => {
 	const { data, loading, error } = useQuery(
 		ViewListingSharerInformationContainerPersonalUserByIdDocument,
 		{
@@ -39,6 +40,7 @@ export const SharerInformationContainer: React.FC<
 				isOwner={isOwner}
 				sharedTimeAgo={sharedTimeAgo}
 				className={className}
+				currentUserId={currentUserId}
 			/>
 		);
 	}
@@ -59,6 +61,7 @@ export const SharerInformationContainer: React.FC<
 			isOwner={isOwner}
 			sharedTimeAgo={sharedTimeAgo}
 			className={className}
+			currentUserId={currentUserId}
 		/>
 	);
 };

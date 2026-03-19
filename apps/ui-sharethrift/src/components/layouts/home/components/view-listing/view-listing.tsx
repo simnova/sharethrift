@@ -12,6 +12,7 @@ export interface ViewListingProps {
 	listing: ItemListing;
 	userIsSharer: boolean;
 	isAuthenticated: boolean;
+	currentUserId?: string | null;
 	userReservationRequest:
 		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
 		| null;
@@ -22,16 +23,13 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 	listing,
 	userIsSharer,
 	isAuthenticated,
+	currentUserId,
 	userReservationRequest,
 	sharedTimeAgo,
 }) => {
 	// Mock sharer info (since ItemListing.sharer is just an ID)
 	const sharer = listing.sharer;
-	// Get userId from localStorage if available
-	const userId =
-		typeof window !== 'undefined'
-			? window.localStorage.getItem('userId')
-			: undefined;
+
 	const handleBack = () => {
 		window.location.href = '/';
 	};
@@ -105,24 +103,14 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 				</Col>
 				<Col span={24} style={{ marginBottom: 0, paddingBottom: 0 }}>
 					{/* Sharer Info at top, clickable to profile */}
-					<a
-						href={`/account/profile`}
-						style={{
-							textDecoration: 'none',
-							color: 'inherit',
-							cursor: 'pointer',
-							display: 'block',
-						}}
-						aria-label="View sharer profile"
-					>
-						<SharerInformationContainer
-							sharerId={sharer?.id}
-							listingId={listing.id}
-							isOwner={sharer?.id === userId}
-							className="sharer-info-responsive"
-							sharedTimeAgo={sharedTimeAgo}
-						/>
-					</a>
+					<SharerInformationContainer
+						sharerId={sharer?.id}
+						listingId={listing.id}
+						isOwner={sharer?.id === currentUserId}
+						className="sharer-info-responsive"
+						sharedTimeAgo={sharedTimeAgo}
+						currentUserId={currentUserId}
+					/>
 				</Col>
 				<Col span={24} style={{ marginTop: 0, paddingTop: 0 }}>
 					{/* Main content: 2 columns on desktop, stacked on mobile */}
@@ -149,16 +137,16 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 								className="listing-gallery-responsive"
 							/>
 						</Col>
-						{/* Right: Info/Form */}
-						<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
-							<ListingInformationContainer
-								listing={listing}
-								userIsSharer={userIsSharer}
-								isAuthenticated={isAuthenticated}
-								userReservationRequest={userReservationRequest}
-								className="listing-info-responsive"
-							/>
-						</Col>
+					{/* Right: Info/Form */}
+					<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
+						<ListingInformationContainer
+							listing={listing}
+							userIsSharer={userIsSharer}
+							isAuthenticated={isAuthenticated}
+							userReservationRequest={userReservationRequest}
+							className="listing-info-responsive"
+						/>
+					</Col>
 					</Row>
 				</Col>
 			</Row>
