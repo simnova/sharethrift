@@ -43,7 +43,6 @@ test.for(
     let testToken: string;
 
     BeforeEachScenario(() => {
-      // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
       openIdConfigs = new Map([
         [
           'portal1',

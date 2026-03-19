@@ -159,8 +159,6 @@ test.for(feature, ({ Scenario }) => {
 			// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 			process.env['TEST_OIDC_ISSUER'] = 'https://example.com';
 			instance = new ServiceTokenValidation(portalTokens);
-			// biome-ignore lint/correctness/noUnusedVariables: Intentional unused variable for test
-			// biome-ignore lint/suspicious/noExplicitAny: result is intentionally unused for test
 			await instance.verifyJwt('invalid-token');
 			// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 			delete process.env['TEST_OIDC_ENDPOINT'];

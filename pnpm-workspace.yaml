@@ -7,10 +7,10 @@ catalog:
   '@azure/functions': 4.8.0
   mongodb: 6.18.0
   mongoose: 8.17.0
-  # Vitest 4.x and related testing dependencies
-  vitest: ^4.0.18
-  '@vitest/coverage-v8': ^4.0.18
-  '@vitest/browser-playwright': ^4.0.18
+  # Vitest 4.x and related testing dependencies - pinned to 4.0.18 to avoid type compatibility issues with 4.1.0
+  vitest: 4.0.18
+  '@vitest/coverage-v8': 4.0.18
+  '@vitest/browser-playwright': 4.0.18
   vite: ^7.3.0
 
 overrides:

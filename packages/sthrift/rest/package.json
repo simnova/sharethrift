@@ -20,8 +20,6 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-
-		"typescript": "^5.8.3",
 		"@sthrift/application-services": "workspace:*",
 		"@azure/functions": "catalog:"
 	},

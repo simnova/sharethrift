@@ -1,7 +1,7 @@
 import { Ability } from '@serenity-js/core';
 import type { OperationInput, OperationResult } from './session.ts';
 
-export type DomainOperationHandler = (input: OperationInput) => Promise<OperationResult>;
+type DomainOperationHandler = (input: OperationInput) => Promise<OperationResult>;
 
 export abstract class DomainSession extends Ability {
 	protected operations: Map<string, DomainOperationHandler> = new Map();

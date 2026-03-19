@@ -1,15 +1,15 @@
 import { Ability } from '@serenity-js/core';
 import type { Session, OperationInput, OperationResult } from './session.ts';
 
-export type ApiOperationHandler = (input: OperationInput) => Promise<OperationResult>;
+type ApiOperationHandler = (input: OperationInput) => Promise<OperationResult>;
 
-export interface ApiResponseData {
+interface ApiResponseData {
 	data: Record<string, unknown>;
 	errors?: Array<{ message: string }>;
 }
 
 export class ApiSession extends Ability implements Session {
-	private operationHandlers = new Map<string, ApiOperationHandler>();
+	private readonly operationHandlers = new Map<string, ApiOperationHandler>();
 
 	constructor(private readonly apiUrl: string) {
 		super();
