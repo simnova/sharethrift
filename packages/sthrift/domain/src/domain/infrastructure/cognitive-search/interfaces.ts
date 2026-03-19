@@ -5,27 +5,18 @@
  * in the ShareThrift application.
  */
 
-import type {
-	CognitiveSearchBase,
-	CognitiveSearchLifecycle,
-} from '@cellix/mock-cognitive-search';
+import type { SearchService } from '@cellix/search-service';
 
 /**
  * Domain interface for cognitive search
- * Extends the base interface with domain-specific methods
+ * Uses the generic SearchService interface
  */
-export interface CognitiveSearchDomain extends CognitiveSearchBase {}
+export interface CognitiveSearchDomain extends SearchService {}
 
 /**
- * Lifecycle interface for cognitive search services
+ * Search index document interface for Listings
  */
-export interface CognitiveSearchDomainInitializeable
-	extends CognitiveSearchLifecycle {}
-
-/**
- * Search index document interface for Item Listings
- */
-export interface ItemListingSearchDocument {
+export interface ListingSearchDocument {
 	id: string;
 	title: string;
 	description: string;
@@ -42,43 +33,55 @@ export interface ItemListingSearchDocument {
 }
 
 /**
- * Search result interface for Item Listings
+ * Search facet value
  */
-export interface ItemListingSearchResult {
-	items: ItemListingSearchDocument[];
+export interface SearchFacet {
+	value: string;
 	count: number;
-	facets: Record<
-		string,
-		Array<{
-			value: string | number | boolean;
-			count: number;
-		}>
-	>;
 }
 
 /**
- * Search input interface for Item Listings
+ * Search facets grouped by field
  */
-export interface ItemListingSearchInput {
-	searchString?: string;
+export interface SearchFacets {
+	category?: SearchFacet[];
+	state?: SearchFacet[];
+	sharerId?: SearchFacet[];
+	createdAt?: SearchFacet[];
+}
+
+/**
+ * Search result interface for Listings
+ */
+export interface ListingSearchResult {
+	items: ListingSearchDocument[];
+	count: number;
+	facets?: SearchFacets;
+}
+
+/**
+ * Search input interface for Listings
+ */
+export interface ListingSearchInput {
+	searchString?: string | null;
 	options?: {
-		filter?: ItemListingSearchFilter;
-		top?: number;
-		skip?: number;
-		orderBy?: string[];
-	};
+		filter?: ListingSearchFilter | null;
+		top?: number | null;
+		skip?: number | null;
+		orderBy?: readonly string[] | null;
+	} | null;
 }
 
 /**
- * Search filter interface for Item Listings
+ * Search filter interface for Listings
  */
-export interface ItemListingSearchFilter {
-	category?: string[];
-	state?: string[];
-	sharerId?: string[];
-	location?: string;
+export interface ListingSearchFilter {
+	category?: readonly string[] | null;
+	state?: readonly string[] | null;
+	sharerId?: readonly string[] | null;
+	location?: string | null;
 	dateRange?: {
-		start?: string;
-		end?: string;
-	};
+		start?: string | null;
+		end?: string | null;
+	} | null;
 }

@@ -9,6 +9,7 @@
 	"exclude": ["node_modules", "dist", "src/**/*.test.ts", "tests/**/*.test.ts"],
 	"references": [
 		{ "path": "../../cellix/domain-seedwork" },
-		{ "path": "../../cellix/event-bus-seedwork-node" }
+		{ "path": "../../cellix/event-bus-seedwork-node" },
+		{ "path": "../../cellix/search-service" }
 	]
 }

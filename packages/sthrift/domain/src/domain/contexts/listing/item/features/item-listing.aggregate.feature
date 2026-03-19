@@ -247,3 +247,28 @@ Feature: <AggregateRoot>ItemListing
     Given an ItemListing aggregate with permission to update item listing
     When I convert it to an entity reference
     Then it should return the props as ItemListingEntityReference
+
+  Scenario: Raising integration event when listing is modified
+    Given an ItemListing aggregate that has been modified
+    When the onSave method is called with isModified true
+    Then an ItemListingUpdatedEvent should be raised
+    And the event should contain the listing id
+    And the event should contain the updatedAt timestamp
+
+  Scenario: Not raising update event when listing is not modified
+    Given an ItemListing aggregate that has not been modified
+    When the onSave method is called with isModified false
+    Then no integration events should be raised
+
+  Scenario: Raising integration event when listing is deleted
+    Given an ItemListing aggregate marked as deleted
+    When the onSave method is called
+    Then an ItemListingDeletedEvent should be raised
+    And the event should contain the listing id
+    And the event should contain the deletedAt timestamp
+
+  Scenario: Prioritizing delete event over update event
+    Given an ItemListing aggregate that is both modified and deleted
+    When the onSave method is called with isModified true
+    Then only an ItemListingDeletedEvent should be raised
+    And no ItemListingUpdatedEvent should be raised

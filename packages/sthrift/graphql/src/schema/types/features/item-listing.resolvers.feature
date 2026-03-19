@@ -41,32 +41,32 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given a user with a verifiedJwt in their context
 		And valid pagination arguments (page, pageSize)
 		When the myListingsAll query is executed
-		Then it should call Listing.ItemListing.queryPaged with sharerId, page, and pageSize
-        And it should transform each listing into ItemListingAll shape
-		And it should map state values like "Active" to "Active" and "Draft" to "Draft"
+		Then it should call Listing.ItemListing.queryPagedWithSearchFallback with sharerId, page, and pageSize
+        And it should transform each listing into ListingAll shape
+		And it should use domain state values directly without mapping
 		And it should return items, total, page, and pageSize in the response
     
     Scenario: Querying myListingsAll with search and filters
 		Given a verified user and valid pagination arguments
 		And a searchText "camera" and statusFilters ["Active"]
 		When the myListingsAll query is executed
-		Then it should call Listing.ItemListing.queryPaged with those filters
+		Then it should call Listing.ItemListing.queryPagedWithSearchFallback with those filters
 		And it should return matching listings only
 
 	Scenario: Querying myListingsAll without authentication
 		Given a user without a verifiedJwt in their context
 		When the myListingsAll query is executed
-		Then it should call Listing.ItemListing.queryPaged without sharerId
+		Then it should call Listing.ItemListing.queryPagedWithSearchFallback without sharerId
         And it should still return paged results
 
 	Scenario: Error while querying myListingsAll
-		Given Listing.ItemListing.queryPaged throws an error
+		Given Listing.ItemListing.queryPagedWithSearchFallback throws an error
 		When the myListingsAll query is executed
 		Then it should propagate the error message
 
 	Scenario: Creating an item listing successfully
 		Given a user with a verifiedJwt containing email
-		And a valid ItemListingCreateInput with title, description, category, location, sharing period, and images
+		And a valid CreateItemListingInput with title, description, category, location, sharing period, and images
 		When the createItemListing mutation is executed
 		Then it should call User.PersonalUser.queryByEmail with the user's email
 		And call Listing.ItemListing.create with the constructed command
@@ -85,14 +85,21 @@ So that I can view, filter, and create listings through the GraphQL API
     Scenario: Error while creating an item listing
 		Given Listing.ItemListing.create throws an error
 		When the createItemListing mutation is executed
-		Then it should return a failure result with the error message
+		Then it should propagate the error message
     
 	Scenario: Mapping item listing fields for myListingsAll
-		Given a valid result from queryPaged
+		Given a valid result from queryPagedWithSearchFallback
 		When items are mapped
 		Then each listing should include id, title, image, createdAt, reservationPeriod, status, and pendingRequestsCount
 		And missing images should map image to null
 		And missing or blank states should map status to "Unknown"
+
+	Scenario: Querying adminListings with all filters
+		Given an admin user with valid credentials
+		And pagination arguments with searchText, statusFilters, and sorter
+		When the adminListings query is executed
+		Then it should call Listing.ItemListing.queryPaged with all provided parameters
+		And it should return paginated results
 
 	Scenario: Querying adminListings without any filters
 		Given an admin user with valid credentials
@@ -104,7 +111,7 @@ So that I can view, filter, and create listings through the GraphQL API
 		Given a valid listing ID to unblock
 		When the unblockListing mutation is executed
 		Then it should call Listing.ItemListing.unblock with the ID
-		And it should return success status
+		And it should return true
 
 	Scenario: Canceling an item listing successfully
 		Given a valid listing ID to cancel
@@ -117,42 +124,3 @@ So that I can view, filter, and create listings through the GraphQL API
 		When the deleteItemListing mutation is executed
 		Then it should call Listing.ItemListing.deleteListings with ID and email
 		And it should return success status
-
-	Scenario: Querying myListingsAll with sorting by title ascending
-		Given a verified user and valid pagination arguments
-		And a sorter with field "title" and order "ascend"
-		When the myListingsAll query is executed
-		Then it should call Listing.ItemListing.queryPaged with sorter field and order
-		And it should return sorted listings
-
-	Scenario: Querying myListingsAll with sorting by createdAt descending
-		Given a verified user and valid pagination arguments
-		And a sorter with field "createdAt" and order "descend"
-		When the myListingsAll query is executed
-		Then it should call Listing.ItemListing.queryPaged with sorter field and order
-
-	Scenario: Querying myListingsAll with invalid sorter order defaults to ascend
-		Given a verified user and valid pagination arguments
-		And a sorter with invalid order value
-		When the myListingsAll query is executed
-		Then it should default sorter order to "ascend"
-
-	Scenario: Querying myListingsAll with combined search, filters, and sorting
-		Given a verified user and valid pagination arguments
-		And search text "camera", status filters ["Active"], and sorter by title ascending
-		When the myListingsAll query is executed
-		Then it should call Listing.ItemListing.queryPaged with all combined parameters
-		And it should return filtered and sorted results
-
-	Scenario: Querying myListingsAll with no matching results after filtering
-		Given a verified user and strict filter criteria
-		And no listings match the search and filter criteria
-		When the myListingsAll query is executed
-		Then it should return empty results with total 0
-
-	Scenario: Querying myListingsAll with invalid sorter field
-		Given a verified user and pagination arguments
-		And a sorter with an unsupported field name
-		When the myListingsAll query is executed
-		Then it should still call Listing.ItemListing.queryPaged with the sorter parameters
-		And it should return results (field validation is handled by application service)

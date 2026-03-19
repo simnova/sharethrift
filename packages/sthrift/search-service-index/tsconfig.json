@@ -1,0 +1,14 @@
+{
+	"extends": "@cellix/typescript-config/node.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": "."
+	},
+	"include": ["src/**/*.ts"],
+	"exclude": ["node_modules", "dist", "**/*.test.ts"],
+	"references": [
+		{ "path": "../../cellix/search-service" },
+		{ "path": "../domain" },
+		{ "path": "../search-service-mock" }
+	]
+}

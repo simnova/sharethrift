@@ -1,0 +1,51 @@
+{
+	"name": "@sthrift/search-service-index",
+	"version": "1.0.0",
+	"type": "module",
+	"description": "Application-specific search service for ShareThrift with index definitions",
+	"main": "dist/src/index.js",
+	"types": "dist/src/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"test": "vitest",
+		"test:coverage": "vitest run --coverage",
+		"lint": "biome check src/",
+		"format": "biome format --write src/"
+	},
+	"keywords": [
+		"search",
+		"search-index",
+		"sharethrift"
+	],
+	"author": "ShareThrift Team",
+	"license": "MIT",
+	"dependencies": {
+		"@cellix/search-service": "workspace:*",
+		"@sthrift/domain": "workspace:*",
+		"@sthrift/search-service-mock": "workspace:*"
+	},
+	"devDependencies": {
+		"@cellix/typescript-config": "workspace:*",
+		"@vitest/coverage-v8": "^3.2.4",
+		"typescript": "^5.3.0",
+		"vitest": "^3.2.4"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"files": [
+		"dist/**/*",
+		"README.md"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"import": "./dist/src/index.js",
+			"require": "./dist/src/index.js"
+		}
+	},
+	"publishConfig": {
+		"access": "restricted"
+	}
+}
