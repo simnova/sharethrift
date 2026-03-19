@@ -81,23 +81,35 @@ export class LiQEFilterEngine {
 		results: SearchResult[],
 		filterString: string,
 	): SearchResult[] {
-		// Parse basic OData-style filters (e.g., "field eq 'value'")
-		// Each branch is unambiguous to prevent ReDoS via catastrophic backtracking:
-		//   '([^']*)' - single-quoted value  (delimiter excluded from character class)
-		//   "([^"]*)" - double-quoted value  (delimiter excluded from character class)
-		//   ([^'"\s]+) - unquoted value      (stops at whitespace or quote, no backtracking)
-		const filterRegex = /(\w+)\s+eq\s+(?:'([^']*)'|"([^"]*)"|([^'"\s]+))/g;
+		// Parse basic OData-style filters (e.g., "field eq 'value'") using plain
+		// string operations — no regex applied to user-controlled input, which
+		// eliminates any risk of ReDoS.
 		const filters: Array<{ field: string; value: string }> = [];
 
-		let match: RegExpExecArray | null = filterRegex.exec(filterString);
-		while (match !== null) {
-			const field = match[1];
-			// Groups: 2 = single-quoted, 3 = double-quoted, 4 = unquoted
-			const value = match[2] ?? match[3] ?? match[4];
-			if (field && value !== undefined) {
-				filters.push({ field, value });
+		// Split on ' and ' (case-insensitive) to handle multiple conditions.
+		// /\s+and\s+/i is safe: \s and 'and' are disjoint, no overlapping quantifiers.
+		const conditions = filterString.split(/\s+and\s+/i);
+
+		for (const condition of conditions) {
+			const eqIdx = condition.indexOf(' eq ');
+			if (eqIdx === -1) continue;
+
+			const field = condition.slice(0, eqIdx).trim();
+			let rawValue = condition.slice(eqIdx + 4).trim();
+
+			// Strip surrounding single or double quotes using direct character checks
+			if (rawValue.length >= 2) {
+				const first = rawValue[0];
+				const last = rawValue[rawValue.length - 1];
+				if ((first === "'" && last === "'") || (first === '"' && last === '"')) {
+					rawValue = rawValue.slice(1, -1);
+				}
 			}
-			match = filterRegex.exec(filterString);
+
+			// Validate field name: anchored /^\w+$/ is linear with no backtracking
+			if (field && /^\w+$/.test(field) && rawValue !== '') {
+				filters.push({ field, value: rawValue });
+			}
 		}
 
 		return results.filter((result) => {
