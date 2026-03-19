@@ -4,6 +4,7 @@
  */
 
 // VIOLATION: Importing mongoose directly
+// biome-ignore lint/correctness/noUnusedImports: intentional violation for testing
 import mongoose from 'mongoose';
 
 // VIOLATION: Importing concrete implementation instead of abstraction

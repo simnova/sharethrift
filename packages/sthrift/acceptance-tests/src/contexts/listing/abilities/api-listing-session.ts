@@ -2,7 +2,7 @@ import { ApiSession } from '../../../shared/abilities/api-session.ts';
 import type { CreateItemListingInput, ItemListingResponse } from './listing-types.ts';
 
 
-export interface ListingSessionConfig {
+interface ListingSessionConfig {
 	/** Whether to include isDraft parameter in serialization (MongoDB only) */
 	includeIsDraft?: boolean;
 }
