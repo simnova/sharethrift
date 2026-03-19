@@ -10,7 +10,7 @@ interface ListingsPageProps {
 	isAuthenticated: boolean;
 	searchQuery: string;
 	onSearchChange: (query: string) => void;
-	onSearch: (query: string) => void;
+	onSearch: () => void;
 	selectedCategory: string;
 	onCategoryChange: (category: string) => void;
 	listings: ItemListing[];
