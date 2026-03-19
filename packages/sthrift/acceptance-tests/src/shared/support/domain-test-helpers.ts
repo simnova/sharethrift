@@ -25,7 +25,7 @@ export function makeTestPassport(): Passport {
 	} as unknown as Passport;
 }
 
-export interface TestUserData {
+interface TestUserData {
 	id: string;
 	email: string;
 	firstName: string;

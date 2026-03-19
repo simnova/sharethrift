@@ -12,10 +12,7 @@
 		"test:dom:graphql": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"dom\",\"session\":\"graphql\"}' --require-module tsx/esm --import './src/world.ts' --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-dom-graphql.json",
         "test:dom:mongodb": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"dom\",\"session\":\"mongodb\"}' --require-module tsx/esm --import './src/world.ts' --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-dom-mongodb.json",
 		"test:fast": "pnpm run test:domain && pnpm run test:session:graphql",
-		"test:ui": "pnpm run test:dom:domain && pnpm run test:dom:graphql",
 		"test:all": "pnpm run test:domain && pnpm run test:session:graphql && pnpm run test:session:mongodb && pnpm run test:dom:domain && pnpm run test:dom:graphql && pnpm run test:dom:mongodb",
-		"test:serenity": "pnpm run test:all && pnpm run test:serenity:report",
-		"test:serenity:report": "serenity-bdd run --features ./reports",
 		"clean": "rimraf dist reports target"
 	},
 	"dependencies": {

@@ -177,7 +177,7 @@ export default function AdminViewListing(): ReactElement {
 								<Tag color={statusColor}>{statusLabel}</Tag>
 							</Descriptions.Item>
 							<Descriptions.Item label="Pending Requests">
-								{/* Field not present on ListingAll; show placeholder */}
+								{/* Field not present on ItemListingAll; show placeholder */}
 								{'-'}
 							</Descriptions.Item>
 						</Descriptions>

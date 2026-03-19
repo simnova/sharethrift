@@ -31,14 +31,20 @@ query ViewListingQueryActiveByListingId($listingId: ObjectID!) {
 }
 
 mutation HomeListingInformationCreateReservationRequest(
-	$input: CreateReservationRequestInput!
+	$input: ReservationRequestCreateInput!
 ) {
 	createReservationRequest(input: $input) {
-		id
-		state
-		reservationPeriodStart
-		reservationPeriodEnd
-		createdAt
-		updatedAt
+		status {
+			success
+			errorMessage
+		}
+		reservationRequest {
+			id
+			state
+			reservationPeriodStart
+			reservationPeriodEnd
+			createdAt
+			updatedAt
+		}
 	}
 }

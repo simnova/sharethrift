@@ -14,7 +14,7 @@ const mockListings = {
 	__typename: 'MyListingsAllResult',
 	items: [
 		{
-			__typename: 'ListingAll',
+			__typename: 'ItemListingAll',
 			id: '1',
 			title: 'Cordless Drill',
 			images: ['/assets/item-images/projector.png'],
@@ -24,7 +24,7 @@ const mockListings = {
 			state: 'Active',
 		},
 		{
-			__typename: 'ListingAll',
+			__typename: 'ItemListingAll',
 			id: '2',
 			title: 'Electric Guitar',
 			images: ['/assets/item-images/projector.png'],

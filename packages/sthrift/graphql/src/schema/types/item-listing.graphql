@@ -1,0 +1,96 @@
+type ItemListing implements MongoBase {
+	sharer: User
+	title: String!
+	description: String!
+	category: String!
+	location: String!
+	sharingPeriodStart: DateTime!
+	sharingPeriodEnd: DateTime!
+	state: String
+	sharingHistory: [String!]
+	reports: Int
+	images: [String!] # Array of image URLs
+	listingType: String!
+	id: ObjectID!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+	version: Int
+}
+
+type ItemListingAllPage {
+	items: [ItemListingAll!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+type ItemListingRequestPage {
+	items: [ItemListingRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+# Listing types for dashboard
+type ItemListingAll {
+	id: ObjectID!
+	title: String!
+	images: [String!]
+	createdAt: DateTime
+	sharingPeriodStart: DateTime
+	sharingPeriodEnd: DateTime
+	state: String
+}
+
+type ItemListingRequest {
+	id: ObjectID!
+	title: String!
+	image: String
+	requestedBy: String!
+	requestedOn: String!
+	reservationPeriod: String!
+	status: String!
+}
+
+input ItemListingCreateInput {
+	title: String!
+	description: String!
+	category: String!
+	location: String!
+	sharingPeriodStart: DateTime!
+	sharingPeriodEnd: DateTime!
+	images: [String!]
+	isDraft: Boolean
+}
+
+type ItemListingMutationResult implements MutationResult {
+	status: MutationStatus!
+	listing: ItemListing
+}
+
+extend type Query {
+	itemListings: [ItemListing!]!
+	itemListing(id: ObjectID!): ItemListing
+	myListingsAll(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		statusFilters: [String!]
+		sorter: SorterInput
+	): ItemListingAllPage!
+	adminListings(
+		page: Int!
+		pageSize: Int!
+		searchText: String
+		statusFilters: [String!]
+		sorter: SorterInput
+	): ItemListingAllPage!
+}
+
+extend type Mutation {
+	createItemListing(input: ItemListingCreateInput!): ItemListingMutationResult!
+	cancelItemListing(id: ObjectID!): ItemListingMutationResult!
+	deleteItemListing(id: ObjectID!): ItemListingMutationResult!
+	unblockListing(id: ObjectID!): ItemListingMutationResult!
+}

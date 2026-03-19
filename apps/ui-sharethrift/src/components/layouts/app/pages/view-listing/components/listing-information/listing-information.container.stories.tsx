@@ -70,8 +70,12 @@ const meta: Meta<typeof ListingInformationContainer> = {
 					result: {
 						data: {
 							createReservationRequest: {
-								__typename: 'ReservationRequest',
-								id: 'res-1',
+								__typename: 'ReservationRequestMutationResult',
+								status: { success: true, errorMessage: null },
+								reservationRequest: {
+									__typename: 'ReservationRequest',
+									id: 'res-1',
+								},
 							},
 						},
 					},
@@ -536,8 +540,12 @@ export const SuccessfulReservation: Story = {
 					result: {
 						data: {
 							createReservationRequest: {
-								__typename: 'ReservationRequest',
-								id: 'res-1',
+								__typename: 'ReservationRequestMutationResult',
+								status: { success: true, errorMessage: null },
+								reservationRequest: {
+									__typename: 'ReservationRequest',
+									id: 'res-1',
+								},
 							},
 						},
 					},
@@ -867,8 +875,12 @@ export const RefetchQueriesAfterSuccess: Story = {
 					result: {
 						data: {
 							createReservationRequest: {
-								__typename: 'ReservationRequest',
-								id: 'new-res-1',
+								__typename: 'ReservationRequestMutationResult',
+								status: { success: true, errorMessage: null },
+								reservationRequest: {
+									__typename: 'ReservationRequest',
+									id: 'new-res-1',
+								},
 							},
 						},
 					},
@@ -961,8 +973,12 @@ export const ResetDatesAfterSuccess: Story = {
 					result: {
 						data: {
 							createReservationRequest: {
-								__typename: 'ReservationRequest',
-								id: 'res-new',
+								__typename: 'ReservationRequestMutationResult',
+								status: { success: true, errorMessage: null },
+								reservationRequest: {
+									__typename: 'ReservationRequest',
+									id: 'res-new',
+								},
 							},
 						},
 					},
@@ -1549,9 +1565,13 @@ export const ResetDatesAfterMutationSuccess: Story = {
 					result: {
 						data: {
 							createReservationRequest: {
-								__typename: 'ReservationRequest',
-								id: 'new-res-1',
-								state: 'Requested',
+								__typename: 'ReservationRequestMutationResult',
+								status: { success: true, errorMessage: null },
+								reservationRequest: {
+									__typename: 'ReservationRequest',
+									id: 'new-res-1',
+									state: 'Requested',
+								},
 							},
 						},
 					},
@@ -1620,9 +1640,13 @@ export const RefetchQueriesOnMutationSuccess: Story = {
 					result: {
 						data: {
 							createReservationRequest: {
-								__typename: 'ReservationRequest',
-								id: 'new-res-2',
-								state: 'Requested',
+								__typename: 'ReservationRequestMutationResult',
+								status: { success: true, errorMessage: null },
+								reservationRequest: {
+									__typename: 'ReservationRequest',
+									id: 'new-res-2',
+									state: 'Requested',
+								},
 							},
 						},
 					},
@@ -1909,8 +1933,12 @@ export const OnCompletedCallback: Story = {
 					result: {
 						data: {
 							createReservationRequest: {
-								__typename: 'ReservationRequest',
-								id: 'completed-res',
+								__typename: 'ReservationRequestMutationResult',
+								status: { success: true, errorMessage: null },
+								reservationRequest: {
+									__typename: 'ReservationRequest',
+									id: 'completed-res',
+								},
 							},
 						},
 					},

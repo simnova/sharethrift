@@ -1,27 +1,32 @@
 import { describe, expect, it } from 'vitest';
 import { checkFrontendArchitecture } from '../checks/frontend-architecture.js';
 
-export function describeFrontendArchitectureTests(config: { uiSourcePath: string; testName?: string }): void {
+export interface FrontendArchitectureTestsConfig {
+  uiSourcePath: string;
+  testName?: string;
+}
+
+export function describeFrontendArchitectureTests(config: FrontendArchitectureTestsConfig): void {
   describe(`Frontend Architecture - ${config.testName || 'UI'}`, () => {
     describe('Directory Structure', () => {
-      it('should have required top-level directories', () => {
-        const violations = checkFrontendArchitecture({
+      it('should have required top-level directories', async () => {
+        const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
         const dirViolations = violations.filter((v) => v.includes('directory'));
         expect(dirViolations).toStrictEqual([]);
       });
 
-      it('should have components/layouts directory', () => {
-        const violations = checkFrontendArchitecture({
+      it('should have components/layouts directory', async () => {
+        const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
         const layoutViolations = violations.filter((v) => v.includes('layouts'));
         expect(layoutViolations).toStrictEqual([]);
       });
 
-      it('should have components/shared directory', () => {
-        const violations = checkFrontendArchitecture({
+      it('should have components/shared directory', async () => {
+        const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
         const sharedViolations = violations.filter((v) => v.includes('shared'));
@@ -30,8 +35,8 @@ export function describeFrontendArchitectureTests(config: { uiSourcePath: string
     });
 
     describe('Naming Conventions', () => {
-      it('all directories should use kebab-case naming', () => {
-        const violations = checkFrontendArchitecture({
+      it('all directories should use kebab-case naming', async () => {
+        const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
         const namingViolations = violations.filter((v) =>
@@ -40,16 +45,16 @@ export function describeFrontendArchitectureTests(config: { uiSourcePath: string
         expect(namingViolations).toStrictEqual([]);
       });
 
-      it('container files should use kebab-case naming', () => {
-        const violations = checkFrontendArchitecture({
+      it('container files should use kebab-case naming', async () => {
+        const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
         const containerViolations = violations.filter((v) => v.includes('Container'));
         expect(containerViolations).toStrictEqual([]);
       });
 
-      it('story files should use kebab-case naming', () => {
-        const violations = checkFrontendArchitecture({
+      it('story files should use kebab-case naming', async () => {
+        const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
         const storyViolations = violations.filter((v) => v.includes('Story'));
@@ -58,8 +63,8 @@ export function describeFrontendArchitectureTests(config: { uiSourcePath: string
     });
 
     describe('Layout Requirements', () => {
-      it('each layout directory should have section-layout.tsx', () => {
-        const violations = checkFrontendArchitecture({
+      it('each layout directory should have section-layout.tsx', async () => {
+        const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
         const layoutFileViolations = violations.filter((v) =>
@@ -68,8 +73,8 @@ export function describeFrontendArchitectureTests(config: { uiSourcePath: string
         expect(layoutFileViolations).toStrictEqual([]);
       });
 
-      it('each layout directory should have index.tsx', () => {
-        const violations = checkFrontendArchitecture({
+      it('each layout directory should have index.tsx', async () => {
+        const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
         const indexViolations = violations.filter((v) => v.includes('index.tsx'));
@@ -78,8 +83,8 @@ export function describeFrontendArchitectureTests(config: { uiSourcePath: string
     });
 
     describe('Overall Compliance', () => {
-      it('should pass all frontend architecture checks', () => {
-        const violations = checkFrontendArchitecture({
+      it('should pass all frontend architecture checks', async () => {
+        const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
         expect(violations).toStrictEqual([]);

@@ -8,6 +8,10 @@ export interface DomainConventionsConfig {
  * Check that repository files extend DomainSeedwork.Repository
  */
 export async function checkRepositoryConventions(config: DomainConventionsConfig): Promise<string[]> {
+  if (!config.domainContextsGlob) {
+    throw new Error('checkRepositoryConventions requires domainContextsGlob to be set');
+  }
+
   const allViolations: string[] = [];
 
   await projectFiles()
@@ -50,6 +54,10 @@ export async function checkRepositoryConventions(config: DomainConventionsConfig
  * Check that unit of work files follow conventions
  */
 export async function checkUnitOfWorkConventions(config: DomainConventionsConfig): Promise<string[]> {
+  if (!config.domainContextsGlob) {
+    throw new Error('checkUnitOfWorkConventions requires domainContextsGlob to be set');
+  }
+
   const allViolations: string[] = [];
 
   // Check extends both UnitOfWork and InitializedUnitOfWork
@@ -115,6 +123,10 @@ export async function checkUnitOfWorkConventions(config: DomainConventionsConfig
  * Check that aggregate root files follow conventions
  */
 export async function checkAggregateRootConventions(config: DomainConventionsConfig): Promise<string[]> {
+  if (!config.domainContextsGlob) {
+    throw new Error('checkAggregateRootConventions requires domainContextsGlob to be set');
+  }
+
   const allViolations: string[] = [];
 
   // Check naming convention
@@ -221,6 +233,10 @@ export async function checkAggregateRootConventions(config: DomainConventionsCon
  * Check that visa files follow conventions
  */
 export async function checkVisaConventions(config: DomainConventionsConfig): Promise<string[]> {
+  if (!config.domainContextsGlob) {
+    throw new Error('checkVisaConventions requires domainContextsGlob to be set');
+  }
+
   const allViolations: string[] = [];
 
   // Check extends PassportSeedwork.Visa

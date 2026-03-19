@@ -20,7 +20,7 @@
 			"inputs": ["src/**", "tests/**", "vitest*.config.*"],
 			"outputs": ["coverage/lcov.info"]
 		},
-		"test:coverage:arch": {
+		"test:arch": {
 			"dependsOn": ["build", "^build", "@cellix/arch-unit-tests#build", "@cellix/vitest-config#build"],
 			"inputs": ["src/**", "vitest*.config.*"],
 			"outputs": ["coverage/lcov.info"]

@@ -9,6 +9,34 @@
     ".": {
       "types": "./dist/src/index.d.ts",
       "default": "./dist/src/index.js"
+    },
+    "./graphql": {
+      "types": "./dist/src/graphql.d.ts",
+      "default": "./dist/src/graphql.js"
+    },
+    "./domain": {
+      "types": "./dist/src/domain.d.ts",
+      "default": "./dist/src/domain.js"
+    },
+    "./persistence": {
+      "types": "./dist/src/persistence.d.ts",
+      "default": "./dist/src/persistence.js"
+    },
+    "./application-services": {
+      "types": "./dist/src/application-services.d.ts",
+      "default": "./dist/src/application-services.js"
+    },
+    "./frontend": {
+      "types": "./dist/src/frontend.d.ts",
+      "default": "./dist/src/frontend.js"
+    },
+    "./data-sources-mongoose-models": {
+      "types": "./dist/src/data-sources-mongoose-models.d.ts",
+      "default": "./dist/src/data-sources-mongoose-models.js"
+    },
+    "./general": {
+      "types": "./dist/src/general.d.ts",
+      "default": "./dist/src/general.js"
     }
   },
   "scripts": {
@@ -16,7 +44,7 @@
     "build": "tsc --build",
     "watch": "tsc --watch",
     "test": "vitest run",
-    "test:coverage:arch": "vitest run",
+    "test:arch": "vitest run",
     "test:watch": "vitest",
     "clean": "rimraf dist"
   },

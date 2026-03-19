@@ -1,6 +1,6 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { getAllFiles, getDirectories, isKebabCase } from '../utils/frontend-helpers.js';
+import { getAllFiles, isKebabCase } from '../utils/frontend-helpers.js';
 
 export interface FrontendArchitectureConfig {
   uiSourcePath: string;  // e.g. '../../apps/ui-sharethrift/src'
@@ -9,64 +9,51 @@ export interface FrontendArchitectureConfig {
 /**
  * Check frontend architecture conventions
  */
-export function checkFrontendArchitecture(config: FrontendArchitectureConfig): string[] {
-  const violations: string[] = [];
-  const uiPath = path.join(process.cwd(), config.uiSourcePath);
-
-  // Check required top-level directories
-  const requiredDirs = ['components', 'config'];
-  const existingDirs = getDirectories(uiPath);
-  for (const dir of requiredDirs) {
-    if (!existingDirs.includes(dir)) {
-      violations.push(`Missing required directory: ${dir}`);
-    }
+export async function checkFrontendArchitecture(config: FrontendArchitectureConfig): Promise<string[]> {
+  if (!config.uiSourcePath) {
+    throw new Error('checkFrontendArchitecture requires uiSourcePath to be set');
   }
 
-  // Check layouts and shared directories
-  const layoutsPath = path.join(uiPath, 'components/layouts');
-  if (!fs.existsSync(layoutsPath)) {
+  const violations: string[] = [];
+  const resolvedPath = path.resolve(process.cwd(), config.uiSourcePath);
+
+  // Check required directories
+  if (!fs.existsSync(path.join(resolvedPath, 'components'))) {
+    violations.push('Missing required directory: components');
+  }
+  if (!fs.existsSync(path.join(resolvedPath, 'config'))) {
+    violations.push('Missing required directory: config');
+  }
+  if (!fs.existsSync(path.join(resolvedPath, 'components', 'layouts'))) {
     violations.push('components/layouts directory is required');
   }
-
-  const sharedPath = path.join(uiPath, 'components/shared');
-  if (!fs.existsSync(sharedPath)) {
+  if (!fs.existsSync(path.join(resolvedPath, 'components', 'shared'))) {
     violations.push('components/shared directory is required');
   }
 
-  // Check kebab-case naming
-  if (fs.existsSync(layoutsPath)) {
-    const layoutDirs: string[] = getDirectories(layoutsPath);
-    for (const dir of layoutDirs) {
-      if (!isKebabCase(dir)) {
-        violations.push(`Layout directory '${dir}' must use kebab-case`);
+  // Get all files for further checks
+  const allFiles = await getAllFiles(`${config.uiSourcePath}/**/*.tsx`);
+
+  // Extract directory names from file paths and check kebab-case
+  const allDirNames = new Set<string>();
+  for (const file of allFiles) {
+    const dir = path.dirname(file);
+    const parts = dir.split(path.sep);
+    for (const part of parts) {
+      if (part && !part.startsWith('.') && part !== 'node_modules' && part !== 'coverage' && part !== 'build') {
+        allDirNames.add(part);
       }
     }
   }
 
-  // Check all directories use kebab-case
-  const allDirs: string[] = [];
-  function collectDirs(dirPath: string): void {
-    if (!fs.existsSync(dirPath)) return;
-    const dirs: string[] = getDirectories(dirPath);
-    for (const dir of dirs) {
-      allDirs.push(dir);
-      collectDirs(path.join(dirPath, dir));
-    }
-  }
-  collectDirs(uiPath);
-
-  const filteredDirs = allDirs.filter(
-    (dir) => !dir.startsWith('.') && dir !== 'node_modules' && dir !== 'coverage' && dir !== 'build',
-  );
-
-  for (const dir of filteredDirs) {
+  for (const dir of allDirNames) {
     if (!isKebabCase(dir)) {
       violations.push(`Directory '${dir}' must use kebab-case naming`);
     }
   }
 
   // Check container files use kebab-case
-  const containerFiles = getAllFiles(uiPath).filter((file) => file.endsWith('.container.tsx'));
+  const containerFiles = allFiles.filter((f) => f.endsWith('.container.tsx'));
   for (const file of containerFiles) {
     const fileName = path.basename(file, '.container.tsx');
     if (!isKebabCase(fileName)) {
@@ -75,7 +62,7 @@ export function checkFrontendArchitecture(config: FrontendArchitectureConfig): s
   }
 
   // Check story files use kebab-case
-  const storyFiles = getAllFiles(uiPath).filter((file) => file.endsWith('.stories.tsx'));
+  const storyFiles = allFiles.filter((f) => f.endsWith('.stories.tsx'));
   for (const file of storyFiles) {
     let fileName = path.basename(file, '.stories.tsx');
     if (fileName.endsWith('.container')) {
@@ -86,23 +73,24 @@ export function checkFrontendArchitecture(config: FrontendArchitectureConfig): s
     }
   }
 
-  // Check layout requirements
-  if (fs.existsSync(layoutsPath)) {
-    const layoutDirs = getDirectories(layoutsPath);
-    for (const layoutDir of layoutDirs) {
-      const sectionLayoutPath = path.join(layoutsPath, layoutDir, 'section-layout.tsx');
-      if (!fs.existsSync(sectionLayoutPath)) {
-        violations.push(`Layout '${layoutDir}' must have section-layout.tsx`);
-      }
-
-      const indexPath = path.join(layoutsPath, layoutDir, 'index.tsx');
-      if (!fs.existsSync(indexPath)) {
-        violations.push(`Layout '${layoutDir}' must have index.tsx`);
-      }
+  // Check layout requirements: each layout directory should have section-layout.tsx and index.tsx
+  const layoutFiles = allFiles.filter((f) => f.includes('/components/layouts/'));
+  const layoutDirs = new Set<string>();
+  for (const file of layoutFiles) {
+    const match = file.match(/\/components\/layouts\/([^/]+)\//);
+    if (match?.[1]) {
+      layoutDirs.add(match[1]);
     }
   }
 
-  // Component-story pairing is checked implicitly by the system
+  for (const layoutDir of layoutDirs) {
+    if (!fs.existsSync(path.join(resolvedPath, 'components', 'layouts', layoutDir, 'section-layout.tsx'))) {
+      violations.push(`Layout '${layoutDir}' must have section-layout.tsx`);
+    }
+    if (!fs.existsSync(path.join(resolvedPath, 'components', 'layouts', layoutDir, 'index.tsx'))) {
+      violations.push(`Layout '${layoutDir}' must have index.tsx`);
+    }
+  }
 
   return violations;
 }

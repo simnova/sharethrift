@@ -1,4 +1,4 @@
-fragment HomeAllListingsTableContainerListingFields on ListingAll {
+fragment HomeAllListingsTableContainerListingFields on ItemListingAll {
   id
   title
   state

@@ -185,7 +185,7 @@ DefaultView.parameters = {
 							},
 							messages: [
 								{
-									__typename: 'Message',
+									__typename: 'ConversationMessage',
 									id: '64f7a9c2d1e5b97f3c9d0c09',
 									messagingMessageId: 'SM001',
 									authorId: '507f1f77bcf86cd799439011',
@@ -193,7 +193,7 @@ DefaultView.parameters = {
 									createdAt: '2025-08-08T10:05:00Z',
 								},
 								{
-									__typename: 'Message',
+									__typename: 'ConversationMessage',
 									id: '64f7a9c2d1e5b97f3c9d0c10',
 									messagingMessageId: 'SM002',
 									authorId: '507f1f77bcf86cd799439099',

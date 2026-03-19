@@ -90,9 +90,9 @@ const meta: Meta<typeof AdminUsersTableContainer> = {
 					result: {
 						data: {
 							blockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -106,9 +106,9 @@ const meta: Meta<typeof AdminUsersTableContainer> = {
 					result: {
 						data: {
 							unblockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -228,9 +228,9 @@ export const WithBlockedUser: Story = {
 					result: {
 						data: {
 							unblockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -633,9 +633,9 @@ export const BlockUserAction: Story = {
 					result: {
 						data: {
 							blockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -696,9 +696,9 @@ export const BlockUserAction: Story = {
 					result: {
 						data: {
 							unblockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -761,9 +761,9 @@ export const BlockUserSuccess: Story = {
 					result: {
 						data: {
 							blockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -853,9 +853,9 @@ export const UnblockUserSuccess: Story = {
 					result: {
 						data: {
 							unblockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -1437,9 +1437,9 @@ export const BlockUserRefetchesData: Story = {
 					result: {
 						data: {
 							blockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -1488,9 +1488,9 @@ export const UnblockUserRefetchesData: Story = {
 					result: {
 						data: {
 							unblockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -2253,9 +2253,9 @@ export const BlockUserWithConfirmation: Story = {
 					result: {
 						data: {
 							blockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -2313,9 +2313,9 @@ export const UnblockUserWithConfirmation: Story = {
 					result: {
 						data: {
 							unblockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
@@ -2699,9 +2699,9 @@ export const RefetchAfterMutation: Story = {
 					result: {
 						data: {
 							blockUser: {
-								__typename: 'MutationStatus',
-								success: true,
-								errorMessage: null,
+								__typename: 'PersonalUserMutationResult',
+								status: { success: true, errorMessage: null },
+								personalUser: null,
 							},
 						},
 					},
