@@ -82,13 +82,19 @@ export class LiQEFilterEngine {
 		filterString: string,
 	): SearchResult[] {
 		// Parse basic OData-style filters (e.g., "field eq 'value'")
-		const filterRegex = /(\w+)\s+eq\s+['"]?([^'"]+)['"]?/g;
+		// Each branch is unambiguous to prevent ReDoS via catastrophic backtracking:
+		//   '([^']*)' - single-quoted value  (delimiter excluded from character class)
+		//   "([^"]*)" - double-quoted value  (delimiter excluded from character class)
+		//   ([^'"\s]+) - unquoted value      (stops at whitespace or quote, no backtracking)
+		const filterRegex = /(\w+)\s+eq\s+(?:'([^']*)'|"([^"]*)"|([^'"\s]+))/g;
 		const filters: Array<{ field: string; value: string }> = [];
 
 		let match: RegExpExecArray | null = filterRegex.exec(filterString);
 		while (match !== null) {
-			const [, field, value] = match;
-			if (field && value) {
+			const field = match[1];
+			// Groups: 2 = single-quoted, 3 = double-quoted, 4 = unquoted
+			const value = match[2] ?? match[3] ?? match[4];
+			if (field && value !== undefined) {
 				filters.push({ field, value });
 			}
 			match = filterRegex.exec(filterString);
@@ -165,14 +171,16 @@ export class LiQEFilterEngine {
 		// field le value -> field:<=value
 		liqeQuery = liqeQuery.replace(/(\w+)\s+le\s+(\d+)/g, '$1:<=$2');
 
-		// field eq 'value' -> field:value
-		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+['"]?([^'"]+)['"]?/g, '$1:$2');
+		// field eq 'value' / "value" / value -> field:value
+		// Three unambiguous branches prevent ReDoS backtracking
+		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+'([^']*)'/g, '$1:$2');
+		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+"([^"]*)"/g, '$1:$2');
+		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+([^'"\s]+)/g, '$1:$2');
 
-		// field ne 'value' -> NOT field:value
-		liqeQuery = liqeQuery.replace(
-			/(\w+)\s+ne\s+['"]?([^'"]+)['"]?/g,
-			'NOT $1:$2',
-		);
+		// field ne 'value' / "value" / value -> NOT field:value
+		liqeQuery = liqeQuery.replace(/(\w+)\s+ne\s+'([^']*)'/g, 'NOT $1:$2');
+		liqeQuery = liqeQuery.replace(/(\w+)\s+ne\s+"([^"]*)"/g, 'NOT $1:$2');
+		liqeQuery = liqeQuery.replace(/(\w+)\s+ne\s+([^'"\s]+)/g, 'NOT $1:$2');
 
 		// Handle boolean values
 		liqeQuery = liqeQuery.replace(/(\w+)\s+eq\s+true/g, '$1:true');
