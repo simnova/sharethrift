@@ -4,14 +4,14 @@
  */
 
 // VIOLATION: Importing mongoose directly
-// biome-ignore lint/correctness/noUnusedImports: intentional violation for testing
+// NOSONAR: intentional unused import demonstrating dependency boundary violation
 import mongoose from 'mongoose';
 
 // VIOLATION: Importing concrete implementation instead of abstraction
 import { ServicePaymentStripe } from '@cellix/service-payment-stripe';
 
 // VIOLATION: Importing persistence layer
-// biome-ignore lint/correctness/noUnusedImports: intentional violation for testing
+// NOSONAR: intentional unused import demonstrating dependency boundary violation
 import { MongoRepositoryBase } from '@cellix/mongoose-seedwork';
 
 // biome-ignore lint/correctness/noUnusedImports: intentional violation for testing

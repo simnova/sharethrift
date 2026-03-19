@@ -9,7 +9,7 @@ interface ApiResponseData {
 }
 
 export class ApiSession extends Ability implements Session {
-	private operationHandlers = new Map<string, ApiOperationHandler>();
+	private readonly operationHandlers = new Map<string, ApiOperationHandler>();
 
 	constructor(private readonly apiUrl: string) {
 		super();

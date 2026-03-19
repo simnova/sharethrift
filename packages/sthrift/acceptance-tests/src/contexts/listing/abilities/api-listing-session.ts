@@ -94,6 +94,12 @@ export abstract class ApiListingSession extends ApiSession {
 		return serialized;
 	}
 
+	private toDate(value: unknown): Date {
+		if (!value) return new Date();
+		const dateStr = typeof value === 'string' ? value : String(value);
+		return new Date(dateStr);
+	}
+
 	protected deserializeItemListing(data: Record<string, unknown>): ItemListingResponse {
 		return {
 			id: String(data['id']),
@@ -102,8 +108,8 @@ export abstract class ApiListingSession extends ApiSession {
 			category: String(data['category']),
 			location: String(data['location']),
 			state: String(data['state']) as 'draft' | 'published',
-			sharingPeriodStart: data['sharingPeriodStart'] ? new Date(String(data['sharingPeriodStart'])) : new Date(),
-			sharingPeriodEnd: data['sharingPeriodEnd'] ? new Date(String(data['sharingPeriodEnd'])) : new Date(),
+			sharingPeriodStart: this.toDate(data['sharingPeriodStart']),
+			sharingPeriodEnd: this.toDate(data['sharingPeriodEnd']),
 			images: Array.isArray(data['images']) ? data['images'] : [],
 		};
 	}
