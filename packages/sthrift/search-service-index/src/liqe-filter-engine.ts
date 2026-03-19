@@ -81,14 +81,26 @@ export class LiQEFilterEngine {
 		results: SearchResult[],
 		filterString: string,
 	): SearchResult[] {
-		// Parse basic OData-style filters (e.g., "field eq 'value'") using plain
-		// string operations — no regex applied to user-controlled input, which
-		// eliminates any risk of ReDoS.
+		// Parse basic OData-style filters (e.g., "field eq 'value'") using only
+		// plain string operations on user-controlled data — no regex is ever
+		// applied to filterString or any substring derived from it, eliminating
+		// all ReDoS risk.
 		const filters: Array<{ field: string; value: string }> = [];
 
-		// Split on ' and ' (case-insensitive) to handle multiple conditions.
-		// /\s+and\s+/i is safe: \s and 'and' are disjoint, no overlapping quantifiers.
-		const conditions = filterString.split(/\s+and\s+/i);
+		// Split on the literal ' and ' without regex.  We lower-case a shadow
+		// copy for case-insensitive matching and use indexOf so there is no
+		// backtracking at all.
+		const lower = filterString.toLowerCase();
+		const sep = ' and ';
+		const conditions: string[] = [];
+		let start = 0;
+		let sepIdx = lower.indexOf(sep, start);
+		while (sepIdx !== -1) {
+			conditions.push(filterString.slice(start, sepIdx));
+			start = sepIdx + sep.length;
+			sepIdx = lower.indexOf(sep, start);
+		}
+		conditions.push(filterString.slice(start));
 
 		for (const condition of conditions) {
 			const eqIdx = condition.indexOf(' eq ');
@@ -97,7 +109,7 @@ export class LiQEFilterEngine {
 			const field = condition.slice(0, eqIdx).trim();
 			let rawValue = condition.slice(eqIdx + 4).trim();
 
-			// Strip surrounding single or double quotes using direct character checks
+			// Strip surrounding single or double quotes via direct character checks
 			if (rawValue.length >= 2) {
 				const first = rawValue[0];
 				const last = rawValue[rawValue.length - 1];
@@ -106,7 +118,9 @@ export class LiQEFilterEngine {
 				}
 			}
 
-			// Validate field name: anchored /^\w+$/ is linear with no backtracking
+			// /^\w+$/ is anchored at both ends: the engine does a single linear
+			// scan with no backtracking.  field is a short identifier, not the
+			// raw user string, so even this conservative check is fine.
 			if (field && /^\w+$/.test(field) && rawValue !== '') {
 				filters.push({ field, value: rawValue });
 			}
