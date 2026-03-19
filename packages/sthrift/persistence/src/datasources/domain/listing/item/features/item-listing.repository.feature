@@ -18,7 +18,7 @@ And a valid ItemListing document exists in the database
 		And a set of valid listing fields without isDraft set to true
 		When I call getNewInstance with the sharer and listing fields
 		Then I should receive a new ItemListing domain object
-		And the object's state should be "Published"
+		And the object's state should be "Active"
 		And createdAt and updatedAt should be set to the current date
 
 	Scenario: Create a new draft item listing
@@ -26,12 +26,12 @@ And a valid ItemListing document exists in the database
 		And a set of valid listing fields with isDraft set to true
 		When I call getNewInstance with the sharer and listing fields
 		Then I should receive a new ItemListing domain object
-		And the object's state should be "Drafted"
+		And the object's state should be "Draft"
 
 	Scenario: Retrieve all active (published) item listings
 		When I call getActiveItemListings
 		Then I should receive a list of ItemListing domain objects
-		And each object should have a state of "Published"
+		And each object should have a state of "Active"
 
 	Scenario: Retrieve item listings by sharer ID
 		Given a valid sharer ID
@@ -47,3 +47,10 @@ And a valid ItemListing document exists in the database
 		Then I should receive a paginated result containing items, total, page, and pageSize
 		And the returned items should match the applied filters and sorting order
 		And each item should include a reservationPeriod field representing the sharing period
+
+	Scenario: Retrieve item listings with default sorting when no sorter provided
+		Given a valid sharer ID
+		And pagination options without a sorter
+		When I call getBySharerIDWithPagination with the sharer ID and options without sorter
+		Then I should receive a paginated result sorted by createdAt descending
+		And the model sort method should be called with default sort

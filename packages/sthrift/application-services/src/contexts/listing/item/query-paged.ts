@@ -1,7 +1,7 @@
 import type { Domain } from '@sthrift/domain';
 import type { DataSources } from '@sthrift/persistence';
 
-export interface ItemListingQueryPagedCommand {
+interface ItemListingQueryPagedCommand {
 	page: number;
 	pageSize: number;
 	searchText?: string;
@@ -42,7 +42,7 @@ export const queryPaged = (dataSources: DataSources) => {
 			args.statusFilters = command.statusFilters;
 		} else if (!command.sharerId) {
 			// Admin query without explicit filters: default to showing items needing attention
-			args.statusFilters = ['Appeal Requested', 'Blocked'];
+			args.statusFilters = ['Blocked'];
 		}
 		
 		if (command.sharerId) {

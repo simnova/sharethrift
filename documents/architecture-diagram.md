@@ -11,30 +11,30 @@ graph TD
   %% Infrastructure Services (split for clarity, spaced for linearity)
 
   subgraph Payment Infra
-    sthrft-service-cybersource["@sthrift/payment-service-cybersource"]
-    sthrft-service-mock-cybersource["@sthrift/payment-service-mock"]
+    cellix-service-cybersource["@cellix/service-payment-cybersource<br/>(Production)"]
+    cellix-service-mock-cybersource["@cellix/service-payment-mock<br/>(Development)"]
   end
 
   %% vertical space
 
   subgraph Messaging Infra
-    sthrft-service-twilio["@sthrift/messaging-service-twilio"]
-    sthrft-mock-service-twilio["@sthrift/messaging-service-mock"]
+    sthrft-service-twilio["@cellix/service-messaging-twilio<br/>(Production)"]
+    sthrft-mock-service-twilio["@cellix/service-messaging-mock<br/>(Development)"]
   end
 
   %% vertical space
 
   subgraph Mailing Infra
-    sthrft-service-sendgrid["@sthrift/mail-service-sendgrid"]
-    sthrft-mock-service-sendgrid["@sthrift/mail-service-mock"]
+    cellix-service-sendgrid["@cellix/service-mail-sendgrid<br/>(Production)"]
+    sthrft-mock-service-sendgrid["@cellix/service-mail-mock<br/>(Development)"]
   end
 
   %% extra vertical space
 
-  subgraph FacadeServices["Facade Services"]
-    cellix-payment["@cellix/payment-service"]
-    cellix-messaging["@cellix/messaging-service"]
-    cellix-mailing["@cellix/mail-service"]
+  subgraph FacadeServices["Service Base Interfaces"]
+    cellix-payment["@cellix/service-payment-base<br/>(Interface)"]
+    cellix-messaging["@cellix/service-messaging-base<br/>(Interface)"]
+    cellix-mailing["@cellix/service-mail-base<br/>(Interface)"]
   end
 
   %% Domain Layer
@@ -42,7 +42,7 @@ graph TD
 
   %% Blob Infra above Persistence
   subgraph Blob Infra
-    sthrft-service-blob["@sthrift/service-blob-storage"]
+    cellix-service-blob["@cellix/service-blob"]
   end
 
   %% extra vertical space
@@ -59,13 +59,13 @@ graph TD
   %% API Services (below app)
   subgraph Api Services
     sthrft-graphql["@sthrift/graphql"]
-    sthrft-service-otel["@sthrift/service-otel"]
+    cellix-service-otel["@cellix/service-otel"]
     sthrft-rest["@sthrift/rest"]
-    sthrft-service-mongoose["@sthrift/service-mongoose"]
+    cellix-service-mongoose["@cellix/service-mongoose"]
   end
 
   %% API Entrypoint (bottom)
-  sthrft-api["@sthrift/api"]
+  sthrft-api["@apps/api"]
 
   %% Connections
   cellix-domain-seedwork --> cellix-event-bus-seedwork-node
@@ -115,5 +115,5 @@ graph TD
   sthrft-rest --> sthrft-api
 
   %% API entrypoint
-  sthrft-api["@sthrift/api"]
+  sthrft-api["@apps/api"]
 ```

@@ -1,31 +1,32 @@
 {
-    "name": "@cellix/domain-seedwork",
-    "version": "1.0.0",
-    "private": true,
-    "type": "module",
-    "files": [
-        "dist"
-    ],
-    "exports": {
-        ".": {
-            "types": "./dist/src/index.d.ts",
-            "default": "./dist/src/index.js"
-        }
-    },
-    "scripts": {
-        "prebuild": "biome lint",
-        "build": "tsc --build",
-        "watch": "tsc --watch",
-        "test": "vitest run",
-        "test:coverage": "vitest run --coverage",
-        "test:watch": "vitest",
-        "lint": "biome lint",
-        "clean": "rimraf dist"
-    },
-    "devDependencies": {
-        "rimraf": "^6.0.1",
-        "typescript": "^5.8.3",
-        "@cellix/typescript-config": "workspace:*",
-        "@cellix/vitest-config": "workspace:*"
-    }
+	"name": "@cellix/domain-seedwork",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"files": [
+		"dist"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/src/index.d.ts",
+			"default": "./dist/src/index.js"
+		}
+	},
+	"scripts": {
+		"prebuild": "biome lint",
+		"build": "tsc --build",
+		"watch": "tsc --watch",
+		"test": "vitest run",
+		"test:coverage:node": "vitest run --coverage",
+		"test:watch": "vitest",
+		"lint": "biome lint",
+		"clean": "rimraf dist"
+	},
+	"devDependencies": {
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3",
+		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*"
+	},
+	"license": "MIT"
 }

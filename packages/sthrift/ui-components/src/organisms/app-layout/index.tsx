@@ -5,7 +5,7 @@ import { Navigation } from '../../molecules/navigation/index.js';
 import { Footer } from '../../molecules/footer/index.js';
 import styles from './index.module.css';
 
-export interface AppLayoutProps {
+interface AppLayoutProps {
 	isAuthenticated: boolean;
 	onLogin?: () => void;
 	onLogout?: () => void;

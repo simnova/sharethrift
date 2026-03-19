@@ -1,6 +1,6 @@
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import type { Models } from '@sthrift/data-sources-mongoose-models';
-import type { Domain } from '@sthrift/domain';
+import { Domain } from '@sthrift/domain';
 
 export class ItemListingRepository<
 		PropType extends Domain.Contexts.Listing.ItemListing.ItemListingProps,
@@ -25,7 +25,7 @@ export class ItemListingRepository<
 
 	// biome-ignore lint:noRequireAwait
 	async getNewInstance(
-		sharer: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+		sharer: Domain.Contexts.User.UserEntityReference,
 		fields: {
 			title: string;
 			description: string;
@@ -35,32 +35,26 @@ export class ItemListingRepository<
 			sharingPeriodEnd: Date;
 			images?: string[];
 			isDraft?: boolean;
+			expiresAt?: Date;
 		},
 	): Promise<Domain.Contexts.Listing.ItemListing.ItemListing<PropType>> {
-		// Create a new Mongoose document
-		const newDoc = new this.model({
-			sharer: sharer.id,
-			title: fields.title,
-			description: fields.description,
-			category: fields.category,
-			location: fields.location,
-			sharingPeriodStart: fields.sharingPeriodStart,
-			sharingPeriodEnd: fields.sharingPeriodEnd,
-			images: fields.images ?? [],
-			state: fields.isDraft ? 'Drafted' : 'Published',
-			createdAt: new Date(),
-			updatedAt: new Date(),
-			schemaVersion: 1,
-			reports: 0,
-			sharingHistory: [],
-		});
-
-		// Use the type converter to create the domain entity from the document
-		return this.typeConverter.toDomain(newDoc, this.passport);
-	}
-
-	async getActiveItemListings() {
-		const mongoItems = await this.model.find({ state: 'Published' }).exec();
+		const adapter = this.typeConverter.toAdapter(new this.model());
+		return Domain.Contexts.Listing.ItemListing.ItemListing.getNewInstance(
+			adapter,
+			this.passport,
+			sharer,
+			fields.title,
+			fields.description,
+			fields.category,
+			fields.location,
+			fields.sharingPeriodStart,
+			fields.sharingPeriodEnd,
+			fields.images,
+			fields.isDraft,
+			fields.expiresAt,
+		);
+	}	async getActiveItemListings() {
+		const mongoItems = await this.model.find({ state: 'Active' }).exec();
 		return mongoItems.map((item) =>
 			this.typeConverter.toDomain(item, this.passport),
 		);
@@ -93,11 +87,11 @@ export class ItemListingRepository<
 		// Build MongoDB query
 		const query: Record<string, unknown> = {};
 
-			// Add search text filter
-			if (options.searchText) {
-				// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
-				query['$or'] = [
-					{ title: { $regex: options.searchText, $options: 'i' } },
+		// Add search text filter
+		if (options.searchText) {
+			// biome-ignore lint/complexity/useLiteralKeys: MongoDB query uses index signature
+			query['$or'] = [
+				{ title: { $regex: options.searchText, $options: 'i' } },
 				{ description: { $regex: options.searchText, $options: 'i' } },
 				{ category: { $regex: options.searchText, $options: 'i' } },
 				{ location: { $regex: options.searchText, $options: 'i' } },
@@ -116,15 +110,16 @@ export class ItemListingRepository<
 			const direction = options.sorter.order === 'ascend' ? 1 : -1;
 			// Map GraphQL field names to MongoDB field names
 			const fieldMapping: Record<string, string> = {
-				publishedAt: 'createdAt',
+				createdAt: 'createdAt',
 				status: 'state',
 			};
-			const mongoField = fieldMapping[options.sorter.field] || options.sorter.field;
+			const mongoField =
+				fieldMapping[options.sorter.field] || options.sorter.field;
 			sort[mongoField] = direction;
 		} else {
 			// biome-ignore lint/complexity/useLiteralKeys: MongoDB sort uses index signature
 			sort['createdAt'] = -1; // Default sort by newest
-		}		// Calculate pagination
+		} // Calculate pagination
 		const skip = (options.page - 1) * options.pageSize;
 
 		// Execute queries
@@ -150,5 +145,4 @@ export class ItemListingRepository<
 			pageSize: options.pageSize,
 		};
 	}
-
 }

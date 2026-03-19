@@ -1,6 +1,6 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
-	"vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
+	"vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": true },
 	"files": { "ignoreUnknown": false },
 	"formatter": {
 		"enabled": true,
@@ -101,10 +101,12 @@
 			"!**/node_modules/**",
 			"!**/dist/**",
 			"!**/*.d.ts",
+			"!**/*.min.js",
 			"!**/package.json",
 			"!**/coverage/**",
 			"!**/generated.ts",
-			"!**/generated.tsx"
+			"!**/generated.tsx",
+            "!**/target/**"
 		]
 	},
 	"javascript": { "formatter": { "quoteStyle": "single" }, "globals": [] },

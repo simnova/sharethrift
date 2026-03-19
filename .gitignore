@@ -1,6 +1,8 @@
 /node_modules
 .DS_Store
 **/coverage
+**/test-results
+**/target
 # .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
 lcov-report
 __*
@@ -11,16 +13,18 @@ __*
 # SonarScanner
 .scannerwork
 
+# Serenity reports copied to Docusaurus static folder (build artifacts)
+apps/docs/static/serenity-reports
+apps/docs/apps/docs/static/serenity-reports
+
 # Generated GraphQL files
 **/generated.ts
 **/generated.tsx
 **/graphql.schema.json
 # Build artifacts
-dist/
-*.tsbuildinfo
-
-# Test results
-*.json
+**/dist
+**/*.tsbuildinfo
+**/node_modules
 
 # Temporary test files
 test-*.js

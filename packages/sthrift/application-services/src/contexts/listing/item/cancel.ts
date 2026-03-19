@@ -19,7 +19,12 @@ export const cancel = (dataSources: DataSources) => {
 					throw new Error('Listing not found');
 				}
 
+                // 6 month expiration time
+				const expirationDate = new Date();
+				expirationDate.setMonth(expirationDate.getMonth() + 6);
+                
 				listing.cancel();
+                listing.expiresAt = expirationDate;
 				itemListingToReturn = await repo.save(listing);
 			},
 		);

@@ -25,7 +25,7 @@ function makeMockModel(): Models.Listing.ItemListingModelType {
             location: 'Delhi',
             sharingPeriodStart: new Date('2025-10-06'),
             sharingPeriodEnd: new Date('2025-11-06'),
-            state: 'Published',
+            state: 'Active',
             sharer: 'user-1',
             images: [],
             reports: 0,

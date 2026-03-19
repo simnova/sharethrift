@@ -1,0 +1,1 @@
+export * as AdminRole from './admin-role/index.ts';

@@ -1,24 +1,53 @@
-mutation SignupSelectAccountTypePersonalUserUpdate(
-  $input: PersonalUserUpdateInput!
-) {
-  personalUserUpdate(input: $input) {
-    id
+query SelectAccountTypeCurrentPersonalUserAndCreateIfNotExists {
+	currentPersonalUserAndCreateIfNotExists {
+		id
 
-    schemaVersion
-    createdAt
-    updatedAt
-    account {
-      accountType
-    }
-  }
+		account {
+			accountType
+		}
+	}
 }
 
-query SignupSelectAccountTypeCurrentPersonalUserAndCreateIfNotExists {
-  currentPersonalUserAndCreateIfNotExists {
-    id
-    
-    account {
-      accountType
-    }
+mutation SelectAccountTypePersonalUserUpdate($input: PersonalUserUpdateInput!) {
+	personalUserUpdate(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		personalUser {
+			id
+
+			account {
+				accountType
+			}
+		}
+	}
+}
+
+fragment SelectAccountTypeContainerAccountPlanFields on AccountPlan {
+	name
+	description
+	billingPeriodLength
+	billingPeriodUnit
+	billingAmount
+	currency
+	setupFee
+	feature {
+		activeReservations
+		bookmarks
+		itemsToShare
+		friends
+	}
+	status
+	cybersourcePlanId
+	id
+	schemaVersion
+	createdAt
+	updatedAt
+}
+
+query SelectAccountTypeContainerAccountPlans {
+	accountPlans {
+    ...SelectAccountTypeContainerAccountPlanFields
   }
 }

@@ -16,7 +16,12 @@ export interface ReservationRequestApplicationService {
     queryActiveByReserverIdAndListingId: (command: ReservationRequestQueryActiveByReserverIdAndListingIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference | null>,
     queryOverlapByListingIdAndReservationPeriod: (command: ReservationRequestQueryOverlapByListingIdAndReservationPeriodCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>,
     queryActiveByListingId: (command: ReservationRequestQueryActiveByListingIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>,
-    queryListingRequestsBySharerId: (command: ReservationRequestQueryListingRequestsBySharerIdCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[]>,
+    queryListingRequestsBySharerId: (command: ReservationRequestQueryListingRequestsBySharerIdCommand) => Promise<{
+        items: Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference[];
+        total: number;
+        page: number;
+        pageSize: number;
+    }>,
     create: (command: ReservationRequestCreateCommand) => Promise<Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference>,
 }
 

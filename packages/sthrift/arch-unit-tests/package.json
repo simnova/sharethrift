@@ -1,0 +1,20 @@
+{
+  "name": "@sthrift/arch-unit-tests",
+  "version": "1.0.0",
+  "description": "Architectural fitness tests for ShareThrift application",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "vitest run",
+    "test:arch": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@cellix/arch-unit-tests": "workspace:*",
+    "@cellix/typescript-config": "workspace:*",
+    "@cellix/vitest-config": "workspace:*",
+    "@types/node": "^24.6.1",
+    "typescript": "5.9.3",
+    "vitest": "catalog:"
+  }
+}

@@ -1,0 +1,44 @@
+fragment HomeMyReservationsReservationsViewHistoryContainerReservationFields on ReservationRequest {
+	id
+	state
+	reservationPeriodStart
+	reservationPeriodEnd
+	createdAt
+	updatedAt
+	listing {
+		id
+		title
+	}
+	reserver {
+		... on PersonalUser {
+			id
+			account {
+				username
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+		... on AdminUser {
+			id
+			account {
+				username
+				profile {
+					firstName
+					lastName
+				}
+			}
+		}
+	}
+	closeRequestedBySharer
+	closeRequestedByReserver
+}
+
+query HomeMyReservationsReservationsViewHistoryContainerPastReservations(
+	$userId: ObjectID!
+) {
+	myPastReservations(userId: $userId) {
+		...HomeMyReservationsReservationsViewHistoryContainerReservationFields
+	}
+}

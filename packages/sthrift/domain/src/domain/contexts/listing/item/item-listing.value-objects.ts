@@ -2,32 +2,31 @@ import { VOString } from '@lucaspaganini/value-objects';
 
 /**
  * Enumeration of possible listing states
+ * Note: Reserved is not a state - it's calculated dynamically based on active reservations
  */
 export const ListingStateEnum = {
-	Published: 'Published',
+	Active: 'Active',
 	Paused: 'Paused',
 	Cancelled: 'Cancelled',
-	Drafted: 'Drafted',
+	Draft: 'Draft',
 	Expired: 'Expired',
 	Blocked: 'Blocked',
-	AppealRequested: 'Appeal Requested',
 } as const;
 
 export class ListingState extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 50,
 }) {
-	static Published = new ListingState(ListingStateEnum.Published);
+	static Active = new ListingState(ListingStateEnum.Active);
 	static Paused = new ListingState(ListingStateEnum.Paused);
 	static Cancelled = new ListingState(ListingStateEnum.Cancelled);
-	static Drafted = new ListingState(ListingStateEnum.Drafted);
+	static Draft = new ListingState(ListingStateEnum.Draft);
 	static Expired = new ListingState(ListingStateEnum.Expired);
 	static Blocked = new ListingState(ListingStateEnum.Blocked);
-	static AppealRequested = new ListingState(ListingStateEnum.AppealRequested);
 
 	get isActive(): boolean {
-		return this.valueOf() === ListingStateEnum.Published;
+		return this.valueOf() === ListingStateEnum.Active;
 	}
 }
 
@@ -36,7 +35,7 @@ export class ListingState extends VOString({
  */
 export class Category extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 100,
 }) {
 	static ToolsEquipment = new Category('Tools & Equipment');
@@ -56,7 +55,7 @@ export class Category extends VOString({
  */
 export class Location extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 255,
 }) {
 	get cityState(): string {
@@ -71,7 +70,7 @@ export class Location extends VOString({
  */
 export class Title extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 200,
 }) {}
 
@@ -80,6 +79,6 @@ export class Title extends VOString({
  */
 export class Description extends VOString({
 	trim: true,
-	minLength: 1,
+	minLength: 0,
 	maxLength: 2000,
 }) {}

@@ -47,6 +47,13 @@ function makePassport(): Domain.Passport {
 	} as unknown as Domain.Passport);
 }
 
+function createNullPopulateChain<T>(result: T) {
+	const innerLean = { lean: vi.fn(async () => result) };
+	const innerPopulate = { populate: vi.fn(() => innerLean) };
+	const outerPopulate = { populate: vi.fn(() => innerPopulate) };
+	return { populate: vi.fn(() => outerPopulate) };
+}
+
 function makeMockUser(id: string): Models.User.PersonalUser {
 	return {
 		_id: new MongooseSeedwork.ObjectId(createValidObjectId(id)),
@@ -138,10 +145,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			mockQuery.lean.mockReturnValue(mockQuery);
 			mockQuery.populate.mockReturnValue(mockQuery);
 			
-			// Make the query thenable (like Mongoose queries are) by adding then as property
 			Object.defineProperty(mockQuery, 'then', {
 				value: vi.fn((onResolve) => Promise.resolve(result).then(onResolve)),
 				enumerable: false,
+				configurable: true,
 			});
 			return mockQuery;
 		};
@@ -217,15 +224,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 
 	Scenario('Getting a conversation by nonexistent ID', ({ When, Then }) => {
 		When('I call getById with "nonexistent-id"', async () => {
-			mockModel.findById = vi.fn(() => ({
-				populate: vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							lean: vi.fn(async () => null),
-						})),
-					})),
-				})),
-			})) as unknown as typeof mockModel.findById;
+			mockModel.findById = vi.fn(() => createNullPopulateChain(null)) as unknown as typeof mockModel.findById;
 
 			result = await repository.getById('nonexistent-id');
 		});
@@ -286,15 +285,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 		'Getting conversations by user ID with no conversations',
 		({ When, Then }) => {
 			When('I call getByUser with "user-without-conversations"', async () => {
-				mockModel.find = vi.fn(() => ({
-					populate: vi.fn(() => ({
-						populate: vi.fn(() => ({
-							populate: vi.fn(() => ({
-								lean: vi.fn(async () => []),
-							})),
-						})),
-					})),
-				})) as unknown as typeof mockModel.find;
+				mockModel.find = vi.fn(() => createNullPopulateChain([])) as unknown as typeof mockModel.find;
 
 				result = await repository.getByUser(createValidObjectId('user-without-conversations'));
 			});
@@ -317,4 +308,111 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			});
 		},
 	);
+
+	Scenario('Getting conversation by sharer, reserver, and listing', ({ Given, When, Then }) => {
+		let sharerId: string;
+		let reserverId: string;
+		let listingId: string;
+
+		Given('valid sharer, reserver, and listing IDs', () => {
+			sharerId = createValidObjectId('sharer-1');
+			reserverId = createValidObjectId('reserver-1');
+			listingId = createValidObjectId('listing-1');
+
+			mockModel.findOne = vi.fn().mockReturnValue({
+				lean: vi.fn().mockResolvedValue(makeMockConversation()),
+			}) as never;
+		});
+
+		When('I call getBySharerReserverListing', async () => {
+			result = await repository.getBySharerReserverListing(sharerId, reserverId, listingId);
+		});
+
+		Then('I should receive a Conversation entity or null', () => {
+			expect(result).toBeDefined();
+		});
+	});
+
+	Scenario('Getting conversation with missing sharer ID', ({ Given, When, Then }) => {
+		Given('empty sharer ID', () => {
+			// Empty string setup
+		});
+
+		When('I call getBySharerReserverListing with empty sharer', async () => {
+			result = await repository.getBySharerReserverListing('', createValidObjectId('reserver'), createValidObjectId('listing'));
+		});
+
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with missing reserver ID', ({ Given, When, Then }) => {
+		Given('empty reserver ID', () => {
+			// Empty string setup
+		});
+
+		When('I call getBySharerReserverListing with empty reserver', async () => {
+			result = await repository.getBySharerReserverListing(createValidObjectId('sharer'), '', createValidObjectId('listing'));
+		});
+
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with missing listing ID', ({ Given, When, Then }) => {
+		Given('empty listing ID', () => {
+			// Empty string setup
+		});
+
+		When('I call getBySharerReserverListing with empty listing', async () => {
+			result = await repository.getBySharerReserverListing(createValidObjectId('sharer'), createValidObjectId('reserver'), '');
+		});
+
+		Then('it should return null', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with error in database query', ({ Given, When, Then }) => {
+		Given('an error will occur during the query', () => {
+			mockModel.findOne = vi.fn().mockImplementation(() => {
+				throw new Error('Database error');
+			});
+		});
+
+		When('I call getBySharerReserverListing', async () => {
+			result = await repository.getBySharerReserverListing(
+				createValidObjectId('sharer'),
+				createValidObjectId('reserver'),
+				createValidObjectId('listing')
+			);
+		});
+
+		Then('it should return null due to error', () => {
+			expect(result).toBeNull();
+		});
+	});
+
+	Scenario('Getting conversation with invalid ObjectId format', ({ Given, When, Then }) => {
+		Given('an invalid ObjectId will cause an error', () => {
+			// Mock MongooseSeedwork.ObjectId constructor to throw
+			vi.spyOn(MongooseSeedwork, 'ObjectId').mockImplementationOnce(() => {
+				throw new Error('Invalid ObjectId');
+			});
+		});
+
+		When('I call getBySharerReserverListing with invalid ID', async () => {
+			result = await repository.getBySharerReserverListing(
+				'invalid-id',
+				createValidObjectId('reserver'),
+				createValidObjectId('listing')
+			);
+		});
+
+		Then('it should return null due to ObjectId error', () => {
+			expect(result).toBeNull();
+		});
+	});
 });

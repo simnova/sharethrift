@@ -1,0 +1,60 @@
+{
+  "name": "@cellix/arch-unit-tests",
+  "version": "1.0.0",
+  "description": "Generic architectural fitness test functions for the CellixJS framework",
+  "private": true,
+  "type": "module",
+  "files": ["dist"],
+  "exports": {
+    ".": {
+      "types": "./dist/src/index.d.ts",
+      "default": "./dist/src/index.js"
+    },
+    "./graphql": {
+      "types": "./dist/src/graphql.d.ts",
+      "default": "./dist/src/graphql.js"
+    },
+    "./domain": {
+      "types": "./dist/src/domain.d.ts",
+      "default": "./dist/src/domain.js"
+    },
+    "./persistence": {
+      "types": "./dist/src/persistence.d.ts",
+      "default": "./dist/src/persistence.js"
+    },
+    "./application-services": {
+      "types": "./dist/src/application-services.d.ts",
+      "default": "./dist/src/application-services.js"
+    },
+    "./frontend": {
+      "types": "./dist/src/frontend.d.ts",
+      "default": "./dist/src/frontend.js"
+    },
+    "./data-sources-mongoose-models": {
+      "types": "./dist/src/data-sources-mongoose-models.d.ts",
+      "default": "./dist/src/data-sources-mongoose-models.js"
+    },
+    "./general": {
+      "types": "./dist/src/general.d.ts",
+      "default": "./dist/src/general.js"
+    }
+  },
+  "scripts": {
+    "prebuild": "biome lint",
+    "build": "tsc --build",
+    "watch": "tsc --watch",
+    "test": "vitest run",
+    "test:arch": "vitest run",
+    "test:watch": "vitest",
+    "clean": "rimraf dist"
+  },
+  "devDependencies": {
+    "@cellix/typescript-config": "workspace:*",
+    "@cellix/vitest-config": "workspace:*",
+    "@types/node": "^24.6.1",
+    "archunit": "^2.1.63",
+    "rimraf": "^6.0.1",
+    "typescript": "5.9.3",
+    "vitest": "catalog:"
+  }
+}

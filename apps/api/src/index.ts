@@ -9,21 +9,24 @@ import {
 } from '@sthrift/application-services';
 import { RegisterEventHandlers } from '@sthrift/event-handler';
 
-import { ServiceMongoose } from '@sthrift/service-mongoose';
+import { ServiceMongoose } from '@cellix/service-mongoose';
 import * as MongooseConfig from './service-config/mongoose/index.ts';
 
-import { ServiceBlobStorage } from '@sthrift/service-blob-storage';
+import { ServiceBlobStorage } from '@cellix/service-blob';
 
-import { ServiceTokenValidation } from '@sthrift/service-token-validation';
+import { ServiceTokenValidation } from '@cellix/service-token-validation';
 import * as TokenValidationConfig from './service-config/token-validation/index.ts';
 
-import type { MessagingService } from '@cellix/messaging-service';
-import { ServiceMessagingTwilio } from '@sthrift/messaging-service-twilio';
-import { ServiceMessagingMock } from '@sthrift/messaging-service-mock';
+import type { MessagingService } from '@cellix/service-messaging-base';
+import { ServiceMessagingTwilio } from '@cellix/service-messaging-twilio';
+import { ServiceMessagingMock } from '@cellix/service-messaging-mock';
 
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
-import { ServiceCybersource } from '@sthrift/service-cybersource';
+
+import type { PaymentService } from '@cellix/service-payment-base';
+import { ServicePaymentMock } from '@cellix/service-payment-mock';
+import { ServicePaymentCybersource } from '@cellix/service-payment-cybersource';
 import { ServiceCognitiveSearch } from '@sthrift/service-cognitive-search';
 
 const { NODE_ENV } = process.env;
@@ -43,11 +46,13 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 			.registerInfrastructureService(
 				new ServiceTokenValidation(TokenValidationConfig.portalTokens),
 			)
-		.registerInfrastructureService(
-			isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
-		)
-		.registerInfrastructureService(new ServiceCybersource())
-		.registerInfrastructureService(new ServiceCognitiveSearch());
+			.registerInfrastructureService(
+				isDevelopment ? new ServiceMessagingMock() : new ServiceMessagingTwilio(),
+			)
+			.registerInfrastructureService(
+				isDevelopment ? new ServicePaymentMock() : new ServicePaymentCybersource()
+			)
+			.registerInfrastructureService(new ServiceCognitiveSearch());
 	},
 )
 	.setContext((serviceRegistry) => {
@@ -60,6 +65,10 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 		const messagingService = isDevelopment
 			? serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingMock)
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
+    
+    const paymentService = isDevelopment
+      ? serviceRegistry.getInfrastructureService<PaymentService>(ServicePaymentMock)
+      : serviceRegistry.getInfrastructureService<PaymentService>(ServicePaymentCybersource);
 
 		const { domainDataSource } = dataSourcesFactory.withSystemPassport();
 		const searchService =
@@ -74,15 +83,9 @@ Cellix.initializeInfrastructureServices<ApiContextSpec, ApplicationServices>(
 				serviceRegistry.getInfrastructureService<ServiceTokenValidation>(
 					ServiceTokenValidation,
 				),
-			paymentService:
-				serviceRegistry.getInfrastructureService<ServiceCybersource>(
-					ServiceCybersource,
-				),
-		messagingService,
-		searchService:
-			serviceRegistry.getInfrastructureService<ServiceCognitiveSearch>(
-				ServiceCognitiveSearch,
-			),
+			paymentService,
+			messagingService,
+			searchService,
 		};
 	})
 	.initializeApplicationServices((context) =>

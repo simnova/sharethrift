@@ -1,0 +1,58 @@
+type AdminRole implements MongoBase {
+	id: ObjectID!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+	roleType: String
+	isDefault: Boolean
+	roleName: String
+	permissions: AdminRolePermissions
+}
+
+type AdminRolePermissions {
+	userPermissions: AdminRoleUserPermissions
+	conversationPermissions: AdminRoleConversationPermissions
+	listingPermissions: AdminRoleListingPermissions
+	reservationRequestPermissions: AdminRoleReservationRequestPermissions
+}
+
+type AdminRoleUserPermissions {
+	canBlockUsers: Boolean
+	canViewAllUsers: Boolean
+	canEditUsers: Boolean
+	canDeleteUsers: Boolean
+	canManageUserRoles: Boolean
+	canAccessAnalytics: Boolean
+	canManageRoles: Boolean
+	canViewReports: Boolean
+	canDeleteContent: Boolean
+}
+
+type AdminRoleConversationPermissions {
+	canViewAllConversations: Boolean
+	canEditConversations: Boolean
+	canDeleteConversations: Boolean
+	canCloseConversations: Boolean
+	canModerateConversations: Boolean
+}
+
+type AdminRoleListingPermissions {
+	canViewAllListings: Boolean
+	canManageAllListings: Boolean
+	canEditListings: Boolean
+	canDeleteListings: Boolean
+	canApproveListings: Boolean
+	canRejectListings: Boolean
+	canBlockListings: Boolean
+	canUnblockListings: Boolean
+	canModerateListings: Boolean
+}
+
+type AdminRoleReservationRequestPermissions {
+	canViewAllReservations: Boolean
+	canApproveReservations: Boolean
+	canRejectReservations: Boolean
+	canCancelReservations: Boolean
+	canEditReservations: Boolean
+	canModerateReservations: Boolean
+}

@@ -47,7 +47,7 @@ export class ReservationRequestRepository
 	getNewInstance(
 		state: string,
 		listing: Domain.Contexts.Listing.ItemListing.ItemListingEntityReference,
-		reserver: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference,
+		reserver: Domain.Contexts.User.UserEntityReference,
 		reservationPeriodStart: Date,
 		reservationPeriodEnd: Date,
 	): Promise<

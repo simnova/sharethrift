@@ -14,8 +14,9 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 	determineIf(
 		func: (permissions: Readonly<UserDomainPermissions>) => boolean,
 	): boolean {
+		// const { userPermissions } = this.user.role.permissions; //temporary commented out for role is not populated issue
+
 		const updatedPermissions: UserDomainPermissions = {
-			canCreateUser: false,
 			canBlockUsers: false,
 			canBlockListings: false,
 			canUnblockUsers: false,
@@ -23,9 +24,8 @@ export class PersonalUserUserVisa<root extends PersonalUserEntityReference>
 			canRemoveListings: false,
 			canViewListingReports: false,
 			canViewUserReports: false,
-
+			canManageUserRoles: false,
 			isEditingOwnAccount: this.user.id === this.root.id,
-			isSystemAccount: false,
 		};
 
 		return func(updatedPermissions);

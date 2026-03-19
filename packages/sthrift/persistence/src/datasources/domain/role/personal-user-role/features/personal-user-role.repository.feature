@@ -13,7 +13,7 @@ And valid PersonalUserRole documents exist in the database
 
 	Scenario: Getting a personal user role by a nonexistent ID
 		When I call getById with "nonexistent-id"
-		Then an error should be thrown indicating "EndUserRole with id nonexistent-id not found"
+		Then an error should be thrown indicating "Item with id nonexistent-id not found"
 
 	Scenario: Creating a new personal user role instance
 		When I call getNewInstance with roleName "Editor" and isDefault false

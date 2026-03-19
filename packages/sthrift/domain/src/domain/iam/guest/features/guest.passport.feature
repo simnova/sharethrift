@@ -23,3 +23,15 @@ Feature: <Passport> GuestPassport
     And I access the reservationRequest property
     Then it should return a GuestReservationRequestPassport instance
     And accessing reservationRequest property again should return the same instance
+
+  Scenario: Creating GuestPassport and accessing account plan passport
+    When I create a GuestPassport
+    And I access the accountPlan property
+    Then it should return a GuestAccountPlanPassport instance
+    And accessing accountPlan property again should return the same instance
+
+  Scenario: Creating GuestPassport and accessing appeal request passport
+    When I create a GuestPassport
+    And I access the appealRequest property
+    Then it should return a GuestAppealRequestPassport instance
+    And accessing appealRequest property again should return the same instance

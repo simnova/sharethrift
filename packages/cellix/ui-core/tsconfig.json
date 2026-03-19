@@ -1,5 +1,5 @@
 {
-  "extends": "@cellix/typescript-config/base.json",
+  "extends": "@cellix/typescript-config/tsconfig-base.json",
   "compilerOptions": {
     "composite": true,
     "outDir": "dist",
@@ -8,7 +8,6 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
     "exactOptionalPropertyTypes": false,
     "skipLibCheck": true
   },

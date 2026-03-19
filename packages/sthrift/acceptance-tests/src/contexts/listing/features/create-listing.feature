@@ -1,0 +1,48 @@
+Feature: Create Listing
+
+  As a ShareThrift user
+  I want to create listings for items I want to share
+  So that others can borrow them
+
+  Background:
+    Given Alice is an authenticated user
+
+  Scenario: Create a draft listing with basic details
+    When Alice creates a listing with:
+      | title       | Vintage Camera              |
+      | description | Canon AE-1 in great condition |
+      | category    | Electronics                 |
+      | location    | Seattle, WA                 |
+    Then the listing should be in draft status
+    And the listing title should be "Vintage Camera"
+
+  Scenario: Create listing with all optional fields
+    When Alice creates a listing with:
+      | title          | Mountain Bike                   |
+      | description    | Trek 3900 with 21-speed gears   |
+      | category       | Sports & Recreation             |
+      | location       | Portland, OR                    |
+      | dailyRate      | 25.00                           |
+      | weeklyRate     | 150.00                          |
+      | deposit        | 100.00                          |
+      | tags           | bike, outdoor, sports           |
+    Then the listing should be in draft status
+    And the listing should have a daily rate of "$25.00"
+
+  @validation
+  Scenario: Cannot create listing without required fields
+    When Alice attempts to create a listing with:
+      | description | Missing title |
+      | category    | Home & Garden |
+      | location    | Seattle, WA   |
+    Then she should see a listing error for "title"
+    And no listing should be created
+
+  @validation
+  Scenario: Title must not exceed 200 characters
+    When Alice attempts to create a listing with:
+      | title       | This title is intentionally made extremely long to exceed the two hundred character maximum limit that is enforced by the domain value object validation rules and should trigger an appropriate validation error message when a user attempts to create a listing with it |
+      | description | Long title test        |
+      | category    | Other                  |
+      | location    | Anywhere               |
+    Then she should see a listing error "Too long"

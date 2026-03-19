@@ -1,3 +1,4 @@
+import { SystemAccountPlanPassport } from './contexts/system.account-plan.passport.ts';
 import type { Passport } from '../../contexts/passport.ts';
 import type { UserPassport } from '../../contexts/user/user.passport.ts';
 import type { ListingPassport } from '../../contexts/listing/listing.passport.ts';
@@ -10,34 +11,30 @@ import { SystemConversationPassport } from './contexts/system.conversation.passp
 import { SystemReservationRequestPassport } from './contexts/system.reservation-request.ts';
 import { SystemAppealRequestPassport } from './contexts/system.appeal-request.passport.ts';
 import { SystemPassportBase } from './system.passport-base.ts';
+import type { AccountPlanPassport } from '../../contexts/account-plan/account-plan.passport.ts';
 
 export class SystemPassport extends SystemPassportBase implements Passport {
 	private _userPassport: UserPassport | undefined;
 	private _listingPassport: ListingPassport | undefined;
 	private _conversationPassport: ConversationPassport | undefined;
 	private _reservationRequestPassport: ReservationRequestPassport | undefined;
+	private _accountPlanPassport: AccountPlanPassport | undefined;
 	private _appealRequestPassport: AppealRequestPassport | undefined;
 
 	public get user(): UserPassport {
-		if (!this._userPassport) {
-			this._userPassport = new SystemUserPassport(this.permissions);
-		}
+		this._userPassport ??= new SystemUserPassport(this.permissions);
 		return this._userPassport;
 	}
 
 	public get listing(): ListingPassport {
-		if (!this._listingPassport) {
-			this._listingPassport = new SystemListingPassport(this.permissions);
-		}
+		this._listingPassport ??= new SystemListingPassport(this.permissions);
 		return this._listingPassport;
 	}
 
 	public get conversation(): ConversationPassport {
-		if (!this._conversationPassport) {
-			this._conversationPassport = new SystemConversationPassport(
-				this.permissions,
-			);
-		}
+		this._conversationPassport ??= new SystemConversationPassport(
+			this.permissions,
+		);
 		return this._conversationPassport;
 	}
 
@@ -50,9 +47,18 @@ export class SystemPassport extends SystemPassportBase implements Passport {
 		return this._reservationRequestPassport;
 	}
 
+	public get accountPlan(): AccountPlanPassport {
+		this._accountPlanPassport ??= new SystemAccountPlanPassport(
+			this.permissions,
+		);
+		return this._accountPlanPassport;
+	}
+
 	public get appealRequest(): AppealRequestPassport {
 		if (!this._appealRequestPassport) {
-			this._appealRequestPassport = new SystemAppealRequestPassport(this.permissions);
+			this._appealRequestPassport = new SystemAppealRequestPassport(
+				this.permissions,
+			);
 		}
 		return this._appealRequestPassport;
 	}

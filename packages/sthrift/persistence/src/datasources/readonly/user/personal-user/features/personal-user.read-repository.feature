@@ -8,6 +8,11 @@ And valid PersonalUser documents exist in the database
 		When I call getAll
 		Then I should receive an array of PersonalUser domain objects
 
+	Scenario: Getting all personal users with no results
+		Given no PersonalUser documents exist in the database
+		When I call getAll
+		Then I should receive an empty array
+
 	Scenario: Getting all users with pagination
 		Given multiple PersonalUser documents exist in the database
 		When I call getAllUsers with page 1 and pageSize 10
@@ -40,3 +45,23 @@ And valid PersonalUser documents exist in the database
 	Scenario: Getting a personal user by email that doesn't exist
 		When I call getByEmail with "nonexistent@example.com"
 		Then I should receive null
+
+	Scenario: Getting all users with sorter by email ascending
+		Given PersonalUser documents with various emails
+		When I call getAllUsers with sorter field "email" and order "ascend"
+		Then I should receive users sorted by email in ascending order
+
+	Scenario: Getting all users with sorter by email descending
+		Given PersonalUser documents with various emails
+		When I call getAllUsers with sorter field "email" and order "descend"
+		Then I should receive users sorted by email in descending order
+
+	Scenario: Getting all users with Blocked status filter
+		Given PersonalUser documents with different statuses
+		When I call getAllUsers with statusFilters including "Blocked"
+		Then I should receive only blocked users
+
+	Scenario: Getting all users with both Active and Blocked status filters
+		Given PersonalUser documents with different statuses
+		When I call getAllUsers with statusFilters including both "Active" and "Blocked"
+		Then I should receive all users regardless of status

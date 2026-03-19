@@ -1,7 +1,7 @@
 import type React from 'react';
 import { Tag } from 'antd';
 
-export interface ReservationStatusTagProps {
+interface ReservationStatusTagProps {
 	status: 'REQUESTED' | 'ACCEPTED' | 'REJECTED' | 'CLOSED' | 'CANCELLED';
 }
 
@@ -25,4 +25,3 @@ export const ReservationStatusTag: React.FC<ReservationStatusTagProps> = ({
 	return <Tag color={color}>{statusTextFormatted}</Tag>;
 };
 
-export default ReservationStatusTag;

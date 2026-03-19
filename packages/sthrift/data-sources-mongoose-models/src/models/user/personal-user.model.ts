@@ -1,14 +1,12 @@
 import {
 	type Model,
 	Schema,
-	type ObjectId,
 	type SchemaDefinition,
-	type PopulatedDoc,
+	type Types,
 } from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { type User, type UserModelType, userOptions } from './user.model.ts';
 import { Patterns } from '../../patterns.ts';
-import * as PersonalUserRole from '../role/personal-user-role.model.ts';
 
 // Location
 export interface PersonalUserAccountProfileLocation
@@ -30,40 +28,92 @@ export const PersonalUserAccountProfileLocationType: SchemaDefinition<PersonalUs
 		zipCode: { type: String, required: true },
 	};
 
-export const PaymentStateEnum = {
+export const PaymentState = {
 	FAILED: 'FAILED',
 	PENDING: 'PENDING',
 	REFUNDED: 'REFUNDED',
 	SUCCEEDED: 'SUCCEEDED',
-} as const;
-export type PaymentStateEnum =
-	(typeof PaymentStateEnum)[keyof typeof PaymentStateEnum];
+};
+
+export const SubscriptionStatus = {
+	ACTIVE: 'ACTIVE',
+	FAILED: 'FAILED',
+	PENDING: 'PENDING',
+};
+export interface PersonalUserAccountProfileBillingSubscription
+	extends MongooseSeedwork.NestedPath {
+	subscriptionId: string;
+	planCode: string;
+	status: string;
+	startDate: Date;
+}
+
+export interface PersonalUserAccountProfileBillingTransactions
+	extends MongooseSeedwork.SubdocumentBase {
+	transactionId: string;
+	amount: number;
+	referenceId: string;
+	status: string;
+	completedAt: Date;
+	errorMessage: string | null;
+}
 
 export interface PersonalUserAccountProfileBilling
 	extends MongooseSeedwork.NestedPath {
-	subscriptionId: string;
 	cybersourceCustomerId: string;
-	paymentState: string;
-	lastTransactionId: string;
-	lastPaymentAmount: number;
+	subscription: PersonalUserAccountProfileBillingSubscription;
+	transactions: Types.DocumentArray<PersonalUserAccountProfileBillingTransactions>;
 }
 
+export const PersonalUserAccountProfileBillingSubscriptionType: SchemaDefinition<PersonalUserAccountProfileBillingSubscription> =
+	{
+		subscriptionId: { type: String, required: true },
+		planCode: { type: String, required: true },
+		status: {
+			type: String,
+			required: true,
+			enum: [
+				SubscriptionStatus.PENDING,
+				SubscriptionStatus.ACTIVE,
+				SubscriptionStatus.FAILED,
+			],
+		},
+		startDate: { type: Date, required: true, default: Date.now },
+	};
+
+export const PersonalUserAccountProfileBillingTransactionsSchema = new Schema<
+	PersonalUserAccountProfileBillingTransactions,
+	Model<PersonalUserAccountProfileBillingTransactions>,
+	PersonalUserAccountProfileBillingTransactions
+>({
+	transactionId: { type: String, required: true },
+	amount: { type: Number, required: true },
+	referenceId: { type: String, required: true },
+	status: {
+		type: String,
+		required: true,
+		enum: [
+			PaymentState.FAILED,
+			PaymentState.PENDING,
+			PaymentState.REFUNDED,
+			PaymentState.SUCCEEDED,
+		],
+	},
+	completedAt: { type: Date, required: false },
+	errorMessage: { type: String, required: false },
+});
 export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> =
 	{
-		subscriptionId: { type: String, required: false },
 		cybersourceCustomerId: { type: String, required: false },
-		paymentState: {
-			type: String,
-			enum: [
-				PaymentStateEnum.FAILED,
-				PaymentStateEnum.PENDING,
-				PaymentStateEnum.REFUNDED,
-				PaymentStateEnum.SUCCEEDED,
-			],
+		subscription: {
+			type: PersonalUserAccountProfileBillingSubscriptionType,
+			required: false,
+			...MongooseSeedwork.NestedPathOptions,
+		},
+		transactions: {
+			type: [PersonalUserAccountProfileBillingTransactionsSchema],
 			required: false,
 		},
-		lastTransactionId: { type: String, required: false },
-		lastPaymentAmount: { type: Number, required: false },
 	};
 
 // Profile
@@ -131,9 +181,7 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 };
 
 export interface PersonalUser extends User {
-	userType: string;
 	isBlocked: boolean;
-	role?: PopulatedDoc<PersonalUserRole.PersonalUserRole> | ObjectId;
 	account: PersonalUserAccount;
 	hasCompletedOnboarding: boolean;
 
@@ -149,11 +197,6 @@ const PersonalUserSchema = new Schema<
 >(
 	{
 		isBlocked: { type: Boolean, required: false, default: false },
-		role: {
-			type: Schema.Types.ObjectId,
-			ref: PersonalUserRole.PersonalUserRoleModelName,
-			required: false,
-		},
 		account: {
 			type: PersonalUserAccountType,
 			required: false,
@@ -165,10 +208,13 @@ const PersonalUserSchema = new Schema<
 	userOptions,
 ).index(
 	{ 'account.username': 1 },
-	{ unique: true, partialFilterExpression: { 'account.username': { $exists: true } } }, // enforce unique only when username exists
+	{
+		unique: true,
+		partialFilterExpression: { 'account.username': { $exists: true } },
+	}, // enforce unique only when username exists
 );
 
-export const PersonalUserModelName: string = 'personal-users'; //TODO: This should be in singular form
+export const PersonalUserModelName: string = 'personal-user';
 
 export const PersonalUserModelFactory = (UserModel: UserModelType) => {
 	return UserModel.discriminator(PersonalUserModelName, PersonalUserSchema);

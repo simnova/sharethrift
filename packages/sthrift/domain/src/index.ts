@@ -11,6 +11,9 @@ export interface DomainDataSource {
 		PersonalUser: {
 			PersonalUserUnitOfWork: Contexts.User.PersonalUser.PersonalUserUnitOfWork;
 		};
+		AdminUser: {
+			AdminUserUnitOfWork: Contexts.User.AdminUser.AdminUserUnitOfWork;
+		};
 	};
 
 	Listing: {
@@ -29,7 +32,11 @@ export interface DomainDataSource {
 			ReservationRequestUnitOfWork: Contexts.ReservationRequest.ReservationRequest.ReservationRequestUnitOfWork;
 		};
 	};
-
+AccountPlan: {
+		AccountPlan: {
+			AccountPlanUnitOfWork: Contexts.AccountPlan.AccountPlan.AccountPlanUnitOfWork;
+		};
+	};
 	AppealRequest: {
 		ListingAppealRequest: {
 			ListingAppealRequestUnitOfWork: Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestUnitOfWork;

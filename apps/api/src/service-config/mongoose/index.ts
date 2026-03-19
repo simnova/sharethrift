@@ -1,6 +1,6 @@
 import type { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import { Persistence } from '@sthrift/persistence';
-import type { ServiceMongooseOptions } from '@sthrift/service-mongoose';
+import type { ServiceMongooseOptions } from '@cellix/service-mongoose';
 
 const isUsingCosmosDBEmulator =
 	//biome-ignore lint:useLiteralKeys
@@ -30,5 +30,3 @@ export const mongooseContextBuilder = (
 ) => {
 	return Persistence(initializedService);
 };
-
-export type MongooseModels = ReturnType<typeof mongooseContextBuilder>;

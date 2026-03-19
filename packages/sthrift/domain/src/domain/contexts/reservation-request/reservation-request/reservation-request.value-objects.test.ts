@@ -41,23 +41,6 @@ test.for(feature, ({ Scenario }) => {
 		});
 	});
 
-	Scenario(
-		'Creating a ReservationPeriodStart with an empty string',
-		({ When, Then }) => {
-			let createEmpty: () => void;
-			When('I try to create a ReservationPeriodStart with an empty string', () => {
-				createEmpty = () => {
-					new ValueObjects.ReservationPeriodStart('').valueOf();
-				};
-			});
-			Then('an error should be thrown indicating the value is invalid', () => {
-				// Empty strings are trimmed to empty, which may not throw
-				// This is acceptable behavior for the VOString implementation
-				expect(createEmpty).not.toThrow();
-			});
-		},
-	);
-
 	// ReservationPeriodEnd
 	Scenario(
 		'Creating a ReservationPeriodEnd with a valid value',
@@ -86,23 +69,6 @@ test.for(feature, ({ Scenario }) => {
 			expect(createNull).toThrow(/Wrong raw value type/i);
 		});
 	});
-
-	Scenario(
-		'Creating a ReservationPeriodEnd with an empty string',
-		({ When, Then }) => {
-			let createEmpty: () => void;
-			When('I try to create a ReservationPeriodEnd with an empty string', () => {
-				createEmpty = () => {
-					new ValueObjects.ReservationPeriodEnd('').valueOf();
-				};
-			});
-			Then('an error should be thrown indicating the value is invalid', () => {
-				// Empty strings are trimmed to empty, which may not throw
-				// This is acceptable behavior for the VOString implementation
-				expect(createEmpty).not.toThrow();
-			});
-		},
-	);
 
 	// ReservationRequestStateValue
 	Scenario(
@@ -135,26 +101,26 @@ test.for(feature, ({ Scenario }) => {
 		},
 	);
 
-	Scenario(
-		'Creating a ReservationRequestStateValue with an invalid state',
-		({ When, Then }) => {
-			let createInvalid: () => void;
-			When(
-				'I try to create a ReservationRequestStateValue with "Pending"',
-				() => {
-					createInvalid = () => {
-						new ValueObjects.ReservationRequestStateValue('Pending').valueOf();
-					};
-				},
-			);
-			Then(
-				'an error should be thrown indicating the state is invalid',
-				() => {
-					expect(createInvalid).toThrow(/Invalid state/i);
-				},
-			);
-		},
-	);
+		Scenario(
+			'Creating a ReservationRequestStateValue with an invalid state',
+			({ When, Then }) => {
+				let createInvalid: () => void;
+				When(
+					'I try to create a ReservationRequestStateValue with "InvalidState"',
+					() => {
+						createInvalid = () => {
+							new ValueObjects.ReservationRequestStateValue('InvalidState').valueOf();
+						};
+					},
+				);
+				Then(
+					'an error should be thrown indicating the state is invalid',
+					() => {
+						expect(createInvalid).toThrow(/Invalid state/i);
+					},
+				);
+			},
+		);
 
 	Scenario(
 		'Creating a ReservationRequestStateValue with null',

@@ -1,0 +1,93 @@
+query HomeAccountProfileViewContainerCurrentUser {
+	currentUser {
+		... on PersonalUser {
+			id
+			userIsAdmin
+			userType
+			createdAt
+			account {
+				...PersonalUserProfileViewAccountFields
+			}
+		}
+		... on AdminUser {
+			id
+			userIsAdmin
+			userType
+			createdAt
+			account {
+				...AdminUserProfileViewAccountFields
+			}
+			role {
+				...AdminUserRoleFields
+			}
+		}
+	}
+}
+
+query HomeAccountProfileViewContainerUserListings(
+	$page: Int!
+	$pageSize: Int!
+) {
+	myListingsAll(page: $page, pageSize: $pageSize) {
+		items {
+			id
+			title
+			state
+			images
+			createdAt
+			sharingPeriodStart
+			sharingPeriodEnd
+		}
+		total
+		page
+		pageSize
+	}
+}
+
+fragment PersonalUserProfileViewAccountFields on PersonalUserAccount {
+	accountType
+	email
+	username
+	profile {
+		...PersonalUserProfileViewAccountProfileFields
+	}
+}
+
+fragment PersonalUserProfileViewAccountProfileFields on PersonalUserAccountProfile {
+	firstName
+	lastName
+	location {
+		city
+		state
+	}
+}
+
+fragment AdminUserProfileViewAccountFields on AdminUserAccount {
+	accountType
+	email
+	username
+	profile {
+		...AdminUserProfileViewAccountProfileFields
+	}
+}
+
+fragment AdminUserProfileViewAccountProfileFields on AdminUserAccountProfile {
+	firstName
+	lastName
+	location {
+		city
+		state
+	}
+}
+
+fragment AdminUserRoleFields on AdminRole {
+	id
+	roleName
+	permissions {
+		userPermissions {
+			canViewAllUsers
+			canEditUsers
+			canBlockUsers
+		}
+	}
+}
