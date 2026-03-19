@@ -1,11 +1,16 @@
 import { VOString } from '@lucaspaganini/value-objects';
+import { ObjectId } from '../../value-objects.ts';
 
-// Twilio Message SID value object
-export class TwilioMessageSid extends VOString({
+// Constant for messages with unknown/anonymous authors
+export const ANONYMOUS_AUTHOR_ID = '000000000000000000000000';
+
+export class AuthorId extends ObjectId {}
+
+// Messaging provider message ID value object
+export class MessagingMessageId extends VOString({
 	trim: true,
-	minLength: 34,
-	maxLength: 34,
-	pattern: /^IM[a-zA-Z0-9]{32}$/,
+	minLength: 1,
+	maxLength: 255,
 }) {}
 
 // Message content value object

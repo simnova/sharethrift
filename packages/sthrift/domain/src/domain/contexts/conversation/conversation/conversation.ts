@@ -145,10 +145,10 @@ export class Conversation<props extends ConversationProps>
 		this.props.listing = listing;
 	}
 
-	get twilioConversationId(): string {
-		return this.props.twilioConversationId;
+	get messagingConversationId(): string {
+		return this.props.messagingConversationId;
 	}
-	set twilioConversationId(value: string) {
+	set messagingConversationId(value: string) {
 		if (
 			!this.isNew &&
 			!this.visa.determineIf(
@@ -156,10 +156,10 @@ export class Conversation<props extends ConversationProps>
 			)
 		) {
 			throw new DomainSeedwork.PermissionError(
-				'You do not have permission to change the twilioConversationId of this conversation',
+				'You do not have permission to change the messagingConversationId of this conversation',
 			);
 		}
-		this.props.twilioConversationId = value;
+		this.props.messagingConversationId = value;
 	}
 
 	get createdAt(): Date {

@@ -31,11 +31,11 @@ export class ConversationRepository
 		return this.typeConverter.toDomain(mongoConversation, this.passport);
 	}
 
-	async getByTwilioSid(
-		twilioConversationId: string,
+	async getByMessagingId(
+		messagingConversationId: string,
 	): Promise<Domain.Contexts.Conversation.Conversation.Conversation<PropType> | null> {
 		const mongoConversation = await this.model
-			.findOne({ twilioConversationId })
+			.findOne({ messagingConversationId })
 			.populate('sharer')
 			.populate('reserver')
 			.populate('listing')

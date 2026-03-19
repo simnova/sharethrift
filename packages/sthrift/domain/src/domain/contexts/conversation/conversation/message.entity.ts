@@ -1,10 +1,9 @@
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type * as ValueObjects from './message.value-objects.ts';
-import type { ObjectId } from 'bson';
 
 export interface MessageProps extends DomainSeedwork.DomainEntityProps {
-	twilioMessageSid: ValueObjects.TwilioMessageSid;
-	authorId: ObjectId;
+	messagingMessageId: ValueObjects.MessagingMessageId;
+	authorId: ValueObjects.AuthorId;
 	content: ValueObjects.MessageContent;
 	createdAt: Date;
 }
@@ -15,8 +14,8 @@ export class Message
 	extends DomainSeedwork.DomainEntity<MessageProps>
 	implements MessageEntityReference
 {
-	get twilioMessageSid() {
-		return this.props.twilioMessageSid;
+	get messagingMessageId() {
+		return this.props.messagingMessageId;
 	}
 	get authorId() {
 		return this.props.authorId;

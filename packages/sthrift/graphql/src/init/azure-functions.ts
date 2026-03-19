@@ -10,7 +10,7 @@ import type {
 	HttpHandler,
 	HttpRequest,
 	InvocationContext,
-} from '@azure/functions-v4';
+} from '@azure/functions';
 
 export type { WithRequired } from '@apollo/utils.withrequired';
 

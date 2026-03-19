@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "files": [
+        "dist"
+    ],
     "exports": {
         ".": {
             "types": "./dist/src/index.d.ts",
@@ -18,11 +21,11 @@
     },
     "dependencies": {
         "@azure/storage-blob": "^12.28.0",
-        "@cellix/api-services-spec": "*",
-        "@sthrift/domain": "*"
+        "@cellix/api-services-spec": "workspace:*",
+        "@sthrift/domain": "workspace:*"
     },
     "devDependencies": {
-        "@cellix/api-services-spec": "*",
+        "@cellix/typescript-config": "workspace:*",
         "typescript": "^5.8.3",
         "rimraf": "^6.0.1"
     }

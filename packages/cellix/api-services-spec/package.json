@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "files": [
+        "dist"
+    ],
     "exports": {
         ".": {
             "types": "./dist/src/index.d.ts",
@@ -22,6 +25,6 @@
         "eslint": "^9.29.0",
         "@eslint/js": "^9.29.0",
         "typescript-eslint": "^8.34.0",
-        "@cellix/typescript-config": "*"
+        "@cellix/typescript-config": "workspace:*"
     }
 }

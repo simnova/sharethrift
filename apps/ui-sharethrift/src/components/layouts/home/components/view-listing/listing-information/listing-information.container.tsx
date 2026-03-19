@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useApolloClient } from '@apollo/client';
+import { useApolloClient, useMutation, useQuery } from '@apollo/client/react';
 import { useState } from 'react';
 import { message } from 'antd';
 import { ListingInformation } from './listing-information.tsx';
@@ -30,29 +30,9 @@ interface ListingInformationContainerProps {
 	className?: string;
 }
 
-// Map backend ItemListingState to frontend ListingStatus
-// function mapListingStateToStatus(state: string | null | undefined): ListingStatus {
-//   switch (state) {
-//     case 'Published':
-//       return 'Active';
-//     case 'Paused':
-//       return 'Paused';
-//     case 'Blocked':
-//       return 'Blocked';
-//     case 'Cancelled':
-//       return 'Cancelled';
-//     case 'Expired':
-//       return 'Expired';
-//     case 'Drafted':
-//       return 'Cancelled';
-//     case 'Appeal_Requested':
-//       return 'Blocked';
-//     default:
-//       return 'Active';
-//   }
-// }
-
-export default function ListingInformationContainer({
+export const ListingInformationContainer: React.FC<
+	ListingInformationContainerProps
+> = ({
 	listing,
 	userIsSharer,
 	isAuthenticated,
@@ -60,7 +40,7 @@ export default function ListingInformationContainer({
 	onLoginClick,
 	onSignUpClick,
 	className,
-}: ListingInformationContainerProps) {
+}) => {
 	const [reservationDates, setReservationDates] = useState<{
 		startDate: Date | null;
 		endDate: Date | null;
@@ -148,4 +128,4 @@ export default function ListingInformationContainer({
 			otherReservations={otherReservationsData?.queryActiveByListingId}
 		/>
 	);
-}
+};

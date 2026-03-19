@@ -5,9 +5,8 @@ interface CreateListingProps {
 	isAuthenticated?: boolean; // use for mock/testing purposes
 }
 
-export default function CreateListing({ isAuthenticated }: CreateListingProps) {
+export const CreateListing: React.FC<CreateListingProps> = ({ isAuthenticated }) => {
 	const auth = useAuth();
 	const isUserAuthenticated = isAuthenticated ?? auth.isAuthenticated;
-
 	return <CreateListingContainer isAuthenticated={isUserAuthenticated} />;
-}
+};

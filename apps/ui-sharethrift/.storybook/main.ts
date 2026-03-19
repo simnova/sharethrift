@@ -23,7 +23,6 @@ const config: StorybookConfig = {
 		getAbsolutePath('@storybook/addon-docs'),
 		getAbsolutePath('@storybook/addon-a11y'),
 		getAbsolutePath('@storybook/addon-vitest'),
-        getAbsolutePath('storybook-addon-apollo-client'),
 	],
 	framework: {
 		name: getAbsolutePath('@storybook/react-vite'),

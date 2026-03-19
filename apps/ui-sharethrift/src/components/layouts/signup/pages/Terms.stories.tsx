@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
-import Terms from './Terms.tsx';
+import { Terms } from './Terms.tsx';
 
 const meta: Meta<typeof Terms> = {
 	title: 'Pages/Signup/Terms',

@@ -72,6 +72,8 @@ generates:
         Conversation: "import('@sthrift/domain').Domain.Contexts.Conversation.Conversation.ConversationEntityReference"
         PersonalUser: "import('@sthrift/domain').Domain.Contexts.User.PersonalUser.PersonalUserEntityReference"
         ReservationRequest: "import('@sthrift/domain').Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestEntityReference"
+        ListingAppealRequest: "import('@sthrift/domain').Domain.Contexts.AppealRequest.ListingAppealRequest.ListingAppealRequestEntityReference"
+        UserAppealRequest: "import('@sthrift/domain').Domain.Contexts.AppealRequest.UserAppealRequest.UserAppealRequestEntityReference"
         
     plugins:
       - 'typescript'

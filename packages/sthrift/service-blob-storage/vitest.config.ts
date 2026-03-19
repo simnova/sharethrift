@@ -1,6 +1,9 @@
 import { defineConfig, mergeConfig } from 'vitest/config';
-import baseConfig from '../../vitest.base.config.ts';
+import { baseConfig } from '@cellix/vitest-config';
 
-export default mergeConfig(baseConfig, defineConfig({
-  // Add package-specific overrides here if needed
-}));
+export default mergeConfig(
+	baseConfig,
+	defineConfig({
+		// Add package-specific overrides here if needed
+	}),
+);

@@ -11,7 +11,7 @@ interface AccountSetupFormData {
   confirmPassword: string;
 }
 
-export default function AccountSetup() {
+export const AccountSetup: React.FC = () => {
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -178,4 +178,4 @@ export default function AccountSetup() {
       </Card>
     </div>
   );
-}
+};

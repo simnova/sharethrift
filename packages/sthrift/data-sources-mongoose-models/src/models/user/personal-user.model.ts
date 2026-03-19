@@ -71,6 +71,7 @@ export interface PersonalUserAccountProfile
 	extends MongooseSeedwork.NestedPath {
 	firstName: string;
 	lastName: string;
+	aboutMe: string;
 	location: PersonalUserAccountProfileLocation;
 	billing: PersonalUserAccountProfileBilling;
 }
@@ -78,6 +79,7 @@ export const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccoun
 	{
 		firstName: { type: String, required: true },
 		lastName: { type: String, required: true },
+		aboutMe: { type: String, required: false },
 		location: {
 			type: PersonalUserAccountProfileLocationType,
 			required: false,
@@ -114,7 +116,6 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 		match: Patterns.EMAIL_PATTERN,
 		maxlength: 254,
 		required: true,
-		unique: true,
 	},
 	username: {
 		type: String,
@@ -162,7 +163,7 @@ const PersonalUserSchema = new Schema<
 		schemaVersion: { type: String, required: true, default: '1.0.0' },
 	},
 	userOptions,
-).index({ 'account.email': 1 }, { sparse: true });
+).index({ 'account.email': 1 }, { sparse: true, unique: true });
 
 export const PersonalUserModelName: string = 'personal-users'; //TODO: This should be in singular form
 

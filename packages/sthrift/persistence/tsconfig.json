@@ -2,7 +2,7 @@
 	"extends": "@cellix/typescript-config/node.json",
 	"compilerOptions": {
 		"outDir": "dist",
-		"rootDir": "."
+		"rootDir": ".",
 	},
 	"include": ["src/**/*.ts"],
 	"exclude": ["node_modules", "dist"],
@@ -11,6 +11,7 @@
 		{ "path": "../../cellix/event-bus-seedwork-node" },
 		{ "path": "../../cellix/mongoose-seedwork" },
 		{ "path": "../domain" },
-		{ "path": "../data-sources-mongoose-models" }
+		{ "path": "../data-sources-mongoose-models" },
+		{ "path": "../messaging-service-twilio" }
 	]
 }

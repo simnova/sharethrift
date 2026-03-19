@@ -1,7 +1,7 @@
 import { Route, Routes, Navigate } from 'react-router-dom';
-import HomeRoutes from './components/layouts/home/index.tsx';
+import { HomeRoutes } from './components/layouts/home/index.tsx';
 import { ApolloConnection } from './components/shared/apollo-connection.tsx';
-import SignupRoutes from './components/layouts/signup/Index.tsx';
+import { SignupRoutes } from './components/layouts/signup/Index.tsx';
 import { RequireAuth } from './components/shared/require-auth.tsx';
 import { AuthLanding } from './components/shared/auth-landing.tsx';
 
@@ -11,7 +11,7 @@ const authSection = (
 	</RequireAuth>
 );
 
-function App() {
+const App: React.FC = () => {
 	return (
 		<ApolloConnection>
 			<Routes>
@@ -22,6 +22,6 @@ function App() {
 			</Routes>
 		</ApolloConnection>
 	);
-}
+};
 
 export default App;

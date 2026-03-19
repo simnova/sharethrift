@@ -1,0 +1,54 @@
+type ListingAppealRequest implements MongoBase {
+	id: ObjectID!
+	user: PersonalUser!
+	listing: ItemListing!
+	reason: String!
+	state: AppealRequestState!
+	type: AppealRequestType!
+	blocker: PersonalUser!
+	schemaVersion: String
+	createdAt: DateTime
+	updatedAt: DateTime
+}
+
+type ListingAppealRequestPageResult {
+	items: [ListingAppealRequest!]!
+	total: Int!
+	page: Int!
+	pageSize: Int!
+}
+
+input CreateListingAppealRequestInput {
+	userId: ObjectID!
+	listingId: ObjectID!
+	reason: String!
+	blockerId: ObjectID!
+}
+
+input UpdateListingAppealRequestStateInput {
+	id: ObjectID!
+	state: AppealRequestState!
+}
+
+input GetAllListingAppealRequestsInput {
+	page: Int!
+	pageSize: Int!
+	stateFilters: [String!]
+	sorter: SorterInput
+}
+
+extend type Query {
+	getListingAppealRequest(id: ObjectID!): ListingAppealRequest
+	getAllListingAppealRequests(
+		input: GetAllListingAppealRequestsInput!
+	): ListingAppealRequestPageResult!
+}
+
+extend type Mutation {
+	createListingAppealRequest(
+		input: CreateListingAppealRequestInput!
+	): ListingAppealRequest!
+	updateListingAppealRequestState(
+		input: UpdateListingAppealRequestStateInput!
+	): ListingAppealRequest!
+}

@@ -36,7 +36,7 @@ export const Dashboard = <T extends object>({
 	onPageChange,
 	showPagination = false,
 	onChange,
-}: DashboardProps<T>) => {
+}: DashboardProps<T>): React.ReactElement => {
 	// Show loading skeleton
 	if (loading) {
 		return (
@@ -64,7 +64,7 @@ export const Dashboard = <T extends object>({
 					}}
 				>
 					<Table
-						columns={columns as TableProps<T>['columns']}
+						columns={columns}
 						dataSource={data}
 						rowKey={rowKey as string}
 						pagination={false}

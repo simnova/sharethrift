@@ -32,7 +32,7 @@ interface BillingFormData {
     acceptAgreement: boolean;
 }
 
-export default function Payment() {
+export const Payment: React.FC = () => {
     const [form] = Form.useForm();
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
@@ -482,4 +482,4 @@ export default function Payment() {
             </Card>
         </div>
     );
-}
+};

@@ -24,4 +24,3 @@ Feature: MongoosePropArray
     Given a mongoose prop array with a document array containing multiple documents
     When the items property is accessed
     Then it should return an array of adapters for each document
->>>>>>> REPLACE

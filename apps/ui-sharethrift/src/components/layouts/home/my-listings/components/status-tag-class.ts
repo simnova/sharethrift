@@ -7,7 +7,8 @@ export type ListingStatus =
   | 'Reserved'
   | 'Expired'
   | 'Draft'
-  | 'Blocked';
+  | 'Blocked'
+  | 'Cancelled';
 
 export function getStatusTagClass(status: string): string {
   switch (status) {
@@ -23,6 +24,8 @@ export function getStatusTagClass(status: string): string {
       return 'draftTag';
     case 'Blocked':
       return 'blockedTag';
+    case 'Cancelled':
+      return 'cancelledTag';
     default:
       return '';
   }

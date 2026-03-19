@@ -1,3 +1,3 @@
-export default function Conversation() {
+export const Conversation: React.FC = () => {
   return <div>Conversation Page</div>;
-}
+};

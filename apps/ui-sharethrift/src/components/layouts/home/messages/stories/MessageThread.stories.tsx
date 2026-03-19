@@ -4,7 +4,7 @@ import { MessageThread } from "../components/message-thread.tsx";
 const mockMessages = [
   {
     id: "m1",
-    twilioMessageSid: "SM1",
+    messagingMessageId: "SM1",
     conversationId: "1",
     authorId: "user123",
     content: "Hey Alice, is the bike still available?",
@@ -12,7 +12,7 @@ const mockMessages = [
   },
   {
     id: "m2",
-    twilioMessageSid: "SM2",
+    messagingMessageId: "SM2",
     conversationId: "1",
     authorId: "Alice",
     content: "Yes, it is! Do you want to see it?",

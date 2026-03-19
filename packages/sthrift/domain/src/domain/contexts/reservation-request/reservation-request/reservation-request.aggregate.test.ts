@@ -29,6 +29,16 @@ describe('ReservationRequest', () => {
 				}),
 			};
 		},
+		get appealRequest() {
+			return {
+				forListingAppealRequest: () => ({
+					determineIf: () => true,
+				}),
+				forUserAppealRequest: () => ({
+					determineIf: () => true,
+				}),
+			};
+		},
 		get conversation() {
 			return {
 				forConversation: () => ({
@@ -63,6 +73,7 @@ describe('ReservationRequest', () => {
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		schemaVersion: '1',
+		listingType: 'item-listing',
 	});
 
 	const mockRole: Readonly<PersonalUserRoleEntityReference> = {
@@ -108,6 +119,7 @@ describe('ReservationRequest', () => {
 				profile: {
 					firstName: 'Mock',
 					lastName: 'User',
+                    aboutMe: 'Hello',
 					location: {
 						address1: '123 Main St',
 						address2: null,
@@ -220,8 +232,18 @@ describe('ReservationRequest', () => {
 		it('should throw error if start date is after end date', () => {
 			const { startDate, endDate } = getFutureDates();
 			expect(() => {
-				if (endDate <= startDate)
-					throw new Error('Reservation start date must be before end date');
+				ReservationRequest.getNewInstance(
+					createMockProps({
+						reservationPeriodStart: endDate,
+						reservationPeriodEnd: startDate,
+					}),
+					ReservationRequestStates.REQUESTED,
+					createMockListing(),
+					createMockReserver(),
+					endDate,
+					startDate,
+					mockPassport,
+				);
 			}).toThrow('Reservation start date must be before end date');
 		});
 	});

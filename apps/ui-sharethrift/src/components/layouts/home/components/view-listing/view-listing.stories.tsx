@@ -1,31 +1,26 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ViewListing } from './view-listing.tsx';
-//import type { ViewListingProps } from "./view-listing";
-import type { ItemListing } from '../../../../../generated.tsx';
-import { MockedProvider } from '@apollo/client/testing';
-import { gql } from '@apollo/client';
-
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import ListingImagesQuerySource from './listing-image-gallery/listing-image-gallery.graphql?raw';
-// eslint-disable-next-line import/no-absolute-path, @typescript-eslint/ban-ts-comment
-// @ts-ignore - allow raw import string
-import ListingInformationQuerySource from './listing-information/listing-information.graphql?raw';
-
-const GET_LISTING_IMAGES = gql(ListingImagesQuerySource);
-const GET_LISTING_INFORMATION = gql(ListingInformationQuerySource);
+import {
+	type ItemListing,
+	ViewListingImageGalleryGetImagesDocument,
+	ViewListingInformationGetListingDocument,
+} from '../../../../../generated.tsx';
+import {
+	withMockApolloClient,
+	withMockRouter,
+} from '../../../../../test-utils/storybook-decorators.tsx';
 
 // Local mock listing data (removed dependency on DUMMY_LISTINGS)
 const baseListingId = 'mock-listing-id-1';
 const MOCK_LISTING_BASE: ItemListing = {
-	id: baseListingId as any, // GraphQL generated type may treat id as scalar (any)
+	id: baseListingId as string, // GraphQL generated type may treat id as scalar (any)
 	title: 'Cordless Drill',
 	description: '18V cordless drill with two batteries and charger.',
 	category: 'Tools',
 	location: 'Philadelphia, PA',
 	sharingPeriodStart: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2), // 2 days ago
 	sharingPeriodEnd: new Date(Date.now() + 1000 * 60 * 60 * 24 * 10), // in 10 days
-	state: 'Published' as any,
+	state: 'Published' as string,
 	images: [
 		'https://placehold.co/600x400?text=Drill+1',
 		'https://placehold.co/600x400?text=Drill+2',
@@ -52,15 +47,22 @@ const MOCK_LISTING_BASE: ItemListing = {
 		schemaVersion: '1.0',
 		userType: 'personal',
 	},
+    listingType: 'item-listing',
 };
 
 const mocks = [
 	{
-		request: { query: GET_LISTING_IMAGES, variables: { listingId: baseListingId } },
+		request: {
+			query: ViewListingImageGalleryGetImagesDocument,
+			variables: { listingId: baseListingId },
+		},
 		result: { data: { itemListing: { images: MOCK_LISTING_BASE.images } } },
 	},
 	{
-		request: { query: GET_LISTING_INFORMATION, variables: { listingId: baseListingId } },
+		request: {
+			query: ViewListingInformationGetListingDocument,
+			variables: { listingId: baseListingId },
+		},
 		result: {
 			data: {
 				itemListing: {
@@ -69,7 +71,8 @@ const mocks = [
 					description: MOCK_LISTING_BASE.description,
 					category: MOCK_LISTING_BASE.category,
 					location: MOCK_LISTING_BASE.location,
-					sharingPeriodStart: MOCK_LISTING_BASE.sharingPeriodStart.toISOString(),
+					sharingPeriodStart:
+						MOCK_LISTING_BASE.sharingPeriodStart.toISOString(),
 					sharingPeriodEnd: MOCK_LISTING_BASE.sharingPeriodEnd.toISOString(),
 					state: MOCK_LISTING_BASE.state,
 					images: MOCK_LISTING_BASE.images,
@@ -90,52 +93,27 @@ const meta: Meta<typeof ViewListing> = {
 	component: ViewListing,
 	parameters: {
 		layout: 'fullscreen',
+		apolloClient: {
+			mocks,
+		},
 	},
 	decorators: [
-		(Story) => {
-			// Add a console log to debug the variables passed to the query
-			if (typeof window !== 'undefined') {
-				const origFetch = window.fetch;
-				window.fetch = function (...args) {
-					if (
-						args[0] &&
-						typeof args[0] === 'string' &&
-						args[0].includes('/graphql')
-					) {
-						try {
-							const maybeBody = args[1]?.body;
-							if (typeof maybeBody === 'string') {
-								const body = JSON.parse(maybeBody);
-								if (body?.variables) {
-									console.log('[Storybook GraphQL Variables]', body.variables);
-								}
-							}
-						} catch (_error) {
-							// Ignore parsing errors for non-GraphQL requests
-						}
-					}
-					return origFetch.apply(this, args);
-				};
-			}
-			return (
-				<MockedProvider mocks={mocks}>
-					<Story />
-				</MockedProvider>
-			);
-		},
+		withMockApolloClient,
+		withMockRouter('/listing/mock-listing-id-1'),
 	],
 };
 export default meta;
 
 type Story = StoryObj<typeof ViewListing>;
 
-const baseListing: ItemListing = MOCK_LISTING_BASE as ItemListing;
+const baseListing = MOCK_LISTING_BASE;
 
 export const Default: Story = {
 	args: {
 		listing: baseListing,
 		userIsSharer: false,
 		isAuthenticated: false,
+		userReservationRequest: null,
 		sharedTimeAgo: '2 days ago',
 	},
 };
@@ -145,6 +123,7 @@ export const AsReserver: Story = {
 		...Default.args,
 		userIsSharer: false,
 		isAuthenticated: true,
+		userReservationRequest: null,
 	},
 };
 
@@ -153,5 +132,6 @@ export const AsOwner: Story = {
 		...Default.args,
 		userIsSharer: true,
 		isAuthenticated: true,
+		userReservationRequest: null,
 	},
 };

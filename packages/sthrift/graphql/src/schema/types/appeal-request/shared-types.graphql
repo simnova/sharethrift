@@ -1,0 +1,6 @@
+# Shared input types for appeal request queries
+
+input SorterInput {
+	field: String!
+	order: String!
+}

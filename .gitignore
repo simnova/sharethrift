@@ -4,7 +4,6 @@
 # .gitignore template - https://github.com/github/gitignore/blob/main/Node.gitignore
 lcov-report
 __*
-local.settings.json
 
 # Turborepo
 .turbo

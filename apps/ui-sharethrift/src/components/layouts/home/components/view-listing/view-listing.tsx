@@ -1,8 +1,8 @@
 import { Row, Col, Button } from 'antd';
 import { LeftOutlined } from '@ant-design/icons';
-import ListingImageGalleryContainer from './listing-image-gallery/listing-image-gallery.container.tsx';
-import SharerInformationContainer from './sharer-information/sharer-information.container.tsx';
-import ListingInformationContainer from './listing-information/listing-information.container.tsx';
+import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
+import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
+import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
 import type {
 	ItemListing,
 	ViewListingActiveReservationRequestForListingQuery,
@@ -18,13 +18,13 @@ export interface ViewListingProps {
 	sharedTimeAgo?: string;
 }
 
-export function ViewListing({
+export const ViewListing: React.FC<ViewListingProps> = ({
 	listing,
 	userIsSharer,
 	isAuthenticated,
 	userReservationRequest,
 	sharedTimeAgo,
-}: ViewListingProps) {
+}) => {
 	// Mock sharer info (since ItemListing.sharer is just an ID)
 	const sharer = listing.sharer;
 	// Get userId from localStorage if available
@@ -165,4 +165,4 @@ export function ViewListing({
 			{/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
 		</>
 	);
-}
+};

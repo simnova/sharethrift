@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { MemoryRouter } from 'react-router-dom';
-import ProfileSetup from './ProfileSetup.tsx';
+import { ProfileSetup } from './ProfileSetup.tsx';
 
 const meta: Meta<typeof ProfileSetup> = {
 	title: 'Pages/Signup/ProfileSetup',

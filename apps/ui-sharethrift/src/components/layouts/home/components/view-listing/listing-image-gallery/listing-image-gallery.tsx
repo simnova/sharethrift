@@ -7,7 +7,7 @@ export interface ListingImageGalleryProps {
   className?: string;
 }
 
-export function ListingImageGallery({ images, title, className = '' }: ListingImageGalleryProps) {
+export const ListingImageGallery: React.FC<ListingImageGalleryProps> = ({ images, title, className = '' }) => {
   return (
     <div
       className={className}

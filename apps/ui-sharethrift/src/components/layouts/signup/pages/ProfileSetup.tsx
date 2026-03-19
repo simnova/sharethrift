@@ -30,7 +30,7 @@ interface ProfileSetupFormData {
 	country: string;
 }
 
-export default function ProfileSetup() {
+export const ProfileSetup: React.FC = () => {
 	const [form] = Form.useForm();
 	const navigate = useNavigate();
 	const [avatarUrl, setAvatarUrl] = useState<string>('');
@@ -297,4 +297,4 @@ export default function ProfileSetup() {
 			</Card>
 		</div>
 	);
-}
+};

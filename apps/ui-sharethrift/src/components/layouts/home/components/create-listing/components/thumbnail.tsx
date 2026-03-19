@@ -2,12 +2,12 @@ import styles from './thumbnail.module.css';
 import { CloseOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
-export const Thumbnail = ({
-	src,
-	onRemove,
-}: {
+export const Thumbnail: React.FC<{
 	src: string;
 	onRemove: () => void;
+}> = ({
+	src,
+	onRemove,
 }) => (
 	<div className={styles['wrapper']}>
 		<img src={src} className={styles['img']} alt="" />

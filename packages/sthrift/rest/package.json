@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "files": [
+        "dist"
+    ],
     "exports": {
         ".": {
             "types": "./dist/src/index.d.ts",
@@ -20,10 +23,10 @@
         "@azure/functions": "^4.6.0",
         "rimraf": "^6.0.1",
         "typescript": "^5.8.3",
-        "@sthrift/application-services": "*"
+        "@sthrift/application-services": "workspace:*"
     },
     "devDependencies": {
-        "@cellix/typescript-config": "*",
+        "@cellix/typescript-config": "workspace:*",
         "typescript": "^5.8.3",
         "rimraf": "^6.0.1"
     }

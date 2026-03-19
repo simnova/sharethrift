@@ -3,6 +3,9 @@
     "version": "1.0.0",
     "private": true,
     "type": "module",
+    "files": [
+        "dist"
+    ],
     "exports": {
         ".": {
             "types": "./dist/src/index.d.ts",
@@ -13,19 +16,17 @@
         "prebuild": "biome lint",
         "build": "tsc --build",
         "watch": "tsc- --watch",
-        "test": "vitest run",
-        "test:coverage": "vitest run --coverage",
         "test:watch": "vitest",
         "lint": "biome lint",
         "clean": "rimraf dist"
     },
     "dependencies": {
         "jose": "^5.9.6",
-        "@cellix/api-services-spec": "*"
+        "@cellix/api-services-spec": "workspace:*"
     },
     "devDependencies": {
-        "@cellix/typescript-config": "*",
-        "@cellix/vitest-config": "*",
+        "@cellix/typescript-config": "workspace:*",
+        "@cellix/vitest-config": "workspace:*",
         "typescript": "^5.8.3",
         "rimraf": "^6.0.1"
     }

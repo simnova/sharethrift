@@ -4,7 +4,7 @@ import React from 'react';
 import { Button, Popconfirm } from 'antd';
 import type { ListingRequestData } from './my-listings-dashboard.types.ts';
 
-export function getStatusTagClass(status: string): string {
+export const getStatusTagClass = (status: string): string => {
 	switch (status) {
 		case 'Accepted':
 			return 'requestAcceptedTag';
@@ -21,10 +21,10 @@ export function getStatusTagClass(status: string): string {
 	}
 }
 
-export function getActionButtons(
+export const getActionButtons = (
 	record: ListingRequestData,
 	onAction: (action: string, requestId: string) => void,
-) {
+) => {
 	const buttons: React.ReactNode[] = [];
 
 	if (record.status === 'Cancelled' || record.status === 'Rejected') {

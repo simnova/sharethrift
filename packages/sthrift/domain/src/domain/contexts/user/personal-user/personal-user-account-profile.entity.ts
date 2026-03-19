@@ -12,6 +12,7 @@ export interface PersonalUserProfileProps
 	extends DomainSeedwork.ValueObjectProps {
 	firstName: string;
 	lastName: string;
+    aboutMe: string;
 
 	readonly location: PersonalUserAccountProfileLocationProps;
 	readonly billing: PersonalUserAccountProfileBillingProps;

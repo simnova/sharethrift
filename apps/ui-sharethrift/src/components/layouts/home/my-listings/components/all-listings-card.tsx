@@ -75,6 +75,24 @@ const AllListingsCard: React.FC<AllListingsCardProps> = ({
 			);
 		}
 
+		// Cancel button for active listings
+		if (record.status === 'Active' || record.status === 'Paused') {
+			buttons.push(
+				<Popconfirm
+					key="cancel"
+					title="Cancel this listing?"
+					description="Are you sure you want to cancel this listing? It will be removed from search results and marked as inactive."
+					onConfirm={() => onAction('cancel', record.id)}
+					okText="Yes"
+					cancelText="No"
+				>
+					<Button type="link" size="small" danger>
+						Cancel
+					</Button>
+				</Popconfirm>,
+			);
+		}
+
 		return buttons;
 	};
 

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 19
+sidebar_position: 18
 sidebar_label: 0018 Docusaurus Azure Pipeline Stages
 description: "Split Docusaurus Azure Pipeline into separate build and deploy stages to prevent unwanted deployments from PRs."
 status: accepted

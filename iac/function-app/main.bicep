@@ -18,6 +18,7 @@ param allowedOrigins array
 @description('Key Vault Name')
 param keyVaultName string
 param env string
+param applicationInsightsConnectionString string
 
 // variables
 var uniqueId = uniqueString(resourceGroup().id)
@@ -46,7 +47,7 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-05-01' existing 
   name: storageAccountName
 }
 
-module functionApp 'br/public:avm/res/web/site:0.16.0' = {
+module functionApp 'br/public:avm/res/web/site:0.19.3' = {
   name: 'functionAppDeployment'
   params: {
     name: functionAppName
@@ -67,10 +68,12 @@ module functionApp 'br/public:avm/res/web/site:0.16.0' = {
           AzureWebJobsStorage: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
           WEBSITE_CONTENTAZUREFILECONNECTIONSTRING: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
           WEBSITES_CONTAINER_START_TIME_LIMIT: '1800'
+          WEBSITE_CONTENTSHARE: 'sth-dev-func-pri-ygkpomwvecmsc-29a98763l' //This needs to run initially but can be deleted afterwards. This is amanual step to create a fileshare in the function's storage account.
           ENABLE_ORYX_BUILD: 'false'
           SCM_DO_BUILD_DURING_DEPLOYMENT: 'false'
           WEBSITE_RUN_FROM_PACKAGE: '1'
           languageWorkers__node__arguments: '--max-old-space-size=${maxOldSpaceSizeMB}' // Set max memory size for V8 old memory section
+          APPLICATIONINSIGHTS_CONNECTION_STRING: applicationInsightsConnectionString
         }
       }
       {
@@ -107,6 +110,7 @@ module functionApp 'br/public:avm/res/web/site:0.16.0' = {
     }
   ]
     siteConfig: {
+      alwaysOn: true
       linuxFxVersion: linuxFxVersion // Specify the Node.js version for the function app
       localMySqlEnabled: false
       netFrameworkVersion: null
@@ -118,28 +122,18 @@ module functionApp 'br/public:avm/res/web/site:0.16.0' = {
   }
 }
 
-
-// create access policy for key vault
-resource keyVault 'Microsoft.KeyVault/vaults@2022-07-01' existing = {
-  name: keyVaultName
-}
-resource addKeyVaultAccessPolicy 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = {
-  name: 'add'
-  parent: keyVault
-  properties: {
-    accessPolicies: [
-      {
-        tenantId: subscription().tenantId
-        objectId: functionApp.outputs.systemAssignedMIPrincipalId
-        permissions: {
-          certificates: []
-          keys: []
-          secrets: [
-            'get'
-            'list'
-          ]
-        }
-      }
-    ]
+// Key Vault role assignment module
+module keyVaultRoleAssignment 'key-vault-role-assignment.bicep' = {
+  name: 'keyVaultRoleAssignment${moduleNameSuffix}'
+  params: {
+    keyVaultName: keyVaultName
+    principalId: functionApp.outputs.systemAssignedMIPrincipalId!
+    principalType: 'ServicePrincipal'
   }
 }
+
+// Outputs
+output functionAppNamePri string = functionApp.outputs.name
+@secure()
+output systemAssignedMIPrincipalId string = functionApp.outputs.systemAssignedMIPrincipalId!
+output keyVaultRoleAssignmentId string = keyVaultRoleAssignment.outputs.roleAssignmentId

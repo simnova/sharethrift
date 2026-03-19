@@ -8,6 +8,7 @@
 	"exclude": ["node_modules", "dist"],
 	"references": [
 		{ "path": "../persistence" },
+        { "path": "../service-cybersource" },
 		{ "path": "../service-token-validation" }
 	]
 }

@@ -1,10 +1,10 @@
-import type { Domain } from '@sthrift/domain';
-import type { Models } from '@sthrift/data-sources-mongoose-models';
-import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 import {
 	InProcEventBusInstance,
 	NodeEventBusInstance,
 } from '@cellix/event-bus-seedwork-node';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import type { Models } from '@sthrift/data-sources-mongoose-models';
+import type { Domain } from '@sthrift/domain';
 
 import { PersonalUserConverter } from './personal-user.domain-adapter.ts';
 import { PersonalUserRepository } from './personal-user.repository.ts';

@@ -1,28 +1,27 @@
-# CODEOWNERS for CellixJS framework
+# CODEOWNERS for Sharethrift 
 
 # Assigns code ownership of all CellixJS framework files to the core team
-/packages/cellix-*                          @CellixJs/tech-sme
-/packages/service-*                         @CellixJs/tech-sme
+/packages/cellix/                           @jasonmorais @nnoce14
 
 # Assigns code ownership of configuration files to the admin team
-/tsconfig.json                              @CellixJs/tech-admin
-/tsconfig.base.json                         @CellixJs/tech-admin
-/packages/**/tsconfig.json                  @CellixJs/tech-admin
-/biome.json                                 @CellixJs/tech-admin
-/packages/**/biome.json                     @CellixJs/tech-admin
-# TODO - replace test suite config files here after CageMatch 2 conclusion
-/vitest.config.ts                           @CellixJs/tech-admin
-/vitest.base.config.js                      @CellixJs/tech-admin
-/packages/**/vitest.config.ts               @CellixJs/tech-admin
+/packages/**/tsconfig.json                  @jasonmorais @nnoce14
+biome.json                                  @jasonmorais @nnoce14
+/packages/**/biome.json                     @jasonmorais @nnoce14
+/vitest.config.ts                           @jasonmorais @nnoce14
+/packages/**/vitest.config.ts               @jasonmorais @nnoce14
+/.github/workflows/*                        @jasonmorais @nnoce14
+pnpm-workspace.yaml                         @jasonmorais @nnoce14
+turbo.json                                  @jasonmorais @nnoce14
+codegen.yml                                 @jasonmorais @nnoce14
+azure-pipelines.yml                         @jasonmorais @nnoce14
+sonar-project.properties                    @jasonmorais @nnoce14
 
-# TODO - update specific build-pipeline files after CI/CD is implemented
-/iac/*                                      @CellixJs/tech-admin
-/build-pipeline/*.yml                       @CellixJs/tech-admin
+# Assigns ownership of infrastructure as code files to the admin team
+/iac/*                                      @jasonmorais @nnoce14
+/build-pipeline/*.yml                       @jasonmorais @nnoce14
+/apps/**/iac/*                              @jasonmorais @nnoce14
 
-# Assigns code ownership of all .feature files to the QA team
-/packages/**/*.feature                      @CellixJs/tech-qa
+# Assigns code ownership of all .feature files to the QA team (need to create 'tech-qa' team)
+# /packages/**/*.feature                      @CellixJs/tech-qa
 
-# Assigns sourcery ownership to all source code
-/packages/**/src/**/*.ts                    @sourcery
-
-# Allows application-specific (@sthrift) package changes without requiring core team approval
+# Allows application-specific (@ocom) package changes without requiring core team approval

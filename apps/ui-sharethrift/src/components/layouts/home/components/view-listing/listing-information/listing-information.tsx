@@ -18,14 +18,12 @@ function isBetweenManual(
 	unit: dayjs.OpUnitType = 'millisecond',
 	inclusive: '()' | '[]' | '[)' | '(]' = '()',
 ): boolean {
-	const isAfterStart =
-		inclusive[0] === '['
-			? date.isSame(start, unit) || date.isAfter(start, unit)
-			: date.isAfter(start, unit);
-	const isBeforeEnd =
-		inclusive[1] === ']'
-			? date.isSame(end, unit) || date.isBefore(end, unit)
-			: date.isBefore(end, unit);
+	const isAfterStart = inclusive.startsWith('[')
+		? date.isSame(start, unit) || date.isAfter(start, unit)
+		: date.isAfter(start, unit);
+	const isBeforeEnd = inclusive.endsWith(']')
+		? date.isSame(end, unit) || date.isBefore(end, unit)
+		: date.isBefore(end, unit);
 	return isAfterStart && isBeforeEnd;
 }
 export interface ListingInformationProps {
@@ -54,7 +52,7 @@ export interface ListingInformationProps {
 	otherReservations?: ViewListingQueryActiveByListingIdQuery['queryActiveByListingId'];
 }
 
-export function ListingInformation({
+export const ListingInformation: React.FC<ListingInformationProps> = ({
 	listing,
 	onReserveClick,
 	onCancelClick,
@@ -68,7 +66,7 @@ export function ListingInformation({
 	otherReservationsLoading = false,
 	otherReservationsError,
 	otherReservations,
-}: ListingInformationProps) {
+}) => {
 	const navigate = useNavigate();
 	const [dateSelectionError, setDateSelectionError] = useState<string | null>(
 		null,
@@ -227,69 +225,81 @@ export function ListingInformation({
 				{/* Reservation Period Section - Only show if authenticated */}
 				<Row style={{ marginTop: 16 }}>
 					<Col span={24}>
-						{otherReservationsLoading ? (
-							<LoadingOutlined style={{ fontSize: 24, marginBottom: 8 }} />
-						) : isAuthenticated ? (
-							<>
-								<h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
-								<DatePicker.RangePicker
-									style={{ width: '100%' }}
-									placeholder={['Start date', 'End date']}
-									allowClear
-									onChange={handleDateRangeChange}
-									value={
-										userReservationRequest?.reservationPeriodStart != null &&
-										userReservationRequest?.reservationPeriodEnd
-											? [
-													dayjs(
-														Number(
-															userReservationRequest.reservationPeriodStart,
+						{(() => {
+							if (otherReservationsLoading) {
+								return (
+									<LoadingOutlined style={{ fontSize: 24, marginBottom: 8 }} />
+								);
+							}
+
+							if (!isAuthenticated) {
+								return null;
+							}
+
+							return (
+								<>
+									<h3 style={{ marginBottom: 8 }}>Reservation Period</h3>
+									<DatePicker.RangePicker
+										style={{ width: '100%' }}
+										placeholder={['Start date', 'End date']}
+										allowClear
+										onChange={handleDateRangeChange}
+										value={
+											userReservationRequest?.reservationPeriodStart != null &&
+											userReservationRequest?.reservationPeriodEnd
+												? [
+														dayjs(
+															Number(
+																userReservationRequest.reservationPeriodStart,
+															),
 														),
-													),
-													dayjs(
-														Number(userReservationRequest.reservationPeriodEnd),
-													),
-												]
-											: [
-													reservationDates?.startDate
-														? dayjs(reservationDates.startDate)
-														: null,
-													reservationDates?.endDate
-														? dayjs(reservationDates.endDate)
-														: null,
-												]
-									}
-									disabled={reservationRequestStatus !== null}
-									disabledDate={(current) => {
-										// Disable dates that overlap with other active reservations
-										if (current.isBefore(dayjs().startOf('day'))) {
-											return true;
+														dayjs(
+															Number(
+																userReservationRequest.reservationPeriodEnd,
+															),
+														),
+													]
+												: [
+														reservationDates?.startDate
+															? dayjs(reservationDates.startDate)
+															: null,
+														reservationDates?.endDate
+															? dayjs(reservationDates.endDate)
+															: null,
+													]
 										}
-										if (otherReservationsError || !otherReservations) {
-											return false;
-										}
-										return otherReservations.some((reservation) => {
-											const resStart = dayjs(
-												Number(reservation?.reservationPeriodStart),
-											);
-											const resEnd = dayjs(
-												Number(reservation?.reservationPeriodEnd),
-											);
-											return isBetweenManual(
-												current,
-												resStart,
-												resEnd,
-												'day',
-												'[]',
-											);
-										});
-									}}
-								/>
-								<div style={{ color: 'red', marginTop: 8 }}>
-									{dateSelectionError}
-								</div>
-							</>
-						) : null}
+										disabled={reservationRequestStatus !== null}
+										disabledDate={(current) => {
+											// Disable dates that overlap with other active reservations
+											if (current.isBefore(dayjs().startOf('day'))) {
+												return true;
+											}
+											if (otherReservationsError || !otherReservations) {
+												return false;
+											}
+											return otherReservations.some((reservation) => {
+												const resStart = dayjs(
+													Number(reservation?.reservationPeriodStart),
+												);
+												const resEnd = dayjs(
+													Number(reservation?.reservationPeriodEnd),
+												);
+												return isBetweenManual(
+													current,
+													resStart,
+													resEnd,
+													'day',
+													'[]',
+												);
+											});
+										}}
+									/>
+									<div style={{ color: 'red', marginTop: 8 }}>
+										{dateSelectionError}
+									</div>
+								</>
+							);
+						})()}
 					</Col>
 				</Row>
 			</Col>
@@ -297,40 +307,51 @@ export function ListingInformation({
 				{/* Reserve Button - Only show if authenticated */}
 				<Row>
 					<Col span={24}>
-						{!userIsSharer && isAuthenticated ? (
-							<Button
-								type={
-									reservationRequestStatus === 'Requested'
-										? 'default'
-										: 'primary'
-								}
-								block
-								onClick={
-									reservationRequestStatus === 'Requested'
-										? onCancelClick
-										: onReserveClick
-								}
-								disabled={
-									!areDatesSelected && reservationRequestStatus !== 'Requested'
-								}
-								icon={reservationLoading ? <LoadingOutlined /> : undefined}
-							>
-								{reservationRequestStatus === 'Requested'
-									? 'Cancel Request'
-									: 'Reserve'}
-							</Button>
-						) : !isAuthenticated ? (
-							<Button
-								type="primary"
-								block
-								onClick={() => navigate('/signup/select-account-type')}
-							>
-								Log in to Reserve
-							</Button>
-						) : null}
+						{(() => {
+							if (!userIsSharer && isAuthenticated) {
+								return (
+									<Button
+										type={
+											reservationRequestStatus === 'Requested'
+												? 'default'
+												: 'primary'
+										}
+										block
+										onClick={
+											reservationRequestStatus === 'Requested'
+												? onCancelClick
+												: onReserveClick
+										}
+										disabled={
+											!areDatesSelected &&
+											reservationRequestStatus !== 'Requested'
+										}
+										icon={reservationLoading ? <LoadingOutlined /> : undefined}
+									>
+										{reservationRequestStatus === 'Requested'
+											? 'Cancel Request'
+											: 'Reserve'}
+									</Button>
+								);
+							}
+
+							if (!isAuthenticated) {
+								return (
+									<Button
+										type="primary"
+										block
+										onClick={() => navigate('/signup/select-account-type')}
+									>
+										Log in to Reserve
+									</Button>
+								);
+							}
+
+							return null;
+						})()}
 					</Col>
 				</Row>
 			</Col>
 		</Row>
 	);
-}
+};

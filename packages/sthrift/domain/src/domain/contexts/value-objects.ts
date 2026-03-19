@@ -26,3 +26,11 @@ export class ExternalId extends VOString({
 	maxLength: 36,
 	pattern: GUID_PATTERN,
 }) {}
+
+const OBJECT_ID_PATTERN = /^[0-9a-fA-F]{24}$/;
+export class ObjectId extends VOString({
+    trim: true,
+    minLength: 24,
+    maxLength: 24,
+    pattern: OBJECT_ID_PATTERN,
+}) {}

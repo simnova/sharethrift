@@ -1,0 +1,15 @@
+mutation CreateConversation($input: ConversationCreateInput!) {
+	createConversation(input: $input) {
+		conversation {
+			id
+			messagingConversationId
+			listing {
+				id
+			}
+		}
+		status {
+			success
+			errorMessage
+		}
+	}
+}

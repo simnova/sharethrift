@@ -37,7 +37,7 @@ const REQUEST_STATUS_OPTIONS = [
 
 // getStatusTagClass and getActionButtons moved to requests-status-helpers.tsx
 
-export function RequestsTable({
+export const RequestsTable: React.FC<RequestsTableProps> = ({
 	data,
 	searchText,
 	statusFilters,
@@ -51,7 +51,7 @@ export function RequestsTable({
 	onTableChange,
 	onPageChange,
 	onAction,
-}: RequestsTableProps) {
+}) => {
 	const columns: TableProps<ListingRequestData>['columns'] = [
 		{
 			title: 'Listing',

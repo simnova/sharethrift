@@ -32,11 +32,12 @@ const STATUS_OPTIONS = [
 	{ label: 'Expired', value: 'Expired' },
 	{ label: 'Draft', value: 'Draft' },
 	{ label: 'Blocked', value: 'Blocked' },
+	{ label: 'Cancelled', value: 'Cancelled' },
 ];
 
 // getStatusTagClass moved to shared helper status-tag-class.ts
 
-export function AllListingsTable({
+export const AllListingsTable: React.FC<AllListingsTableProps> = ({
 	data,
 	searchText,
 	statusFilters,
@@ -51,7 +52,7 @@ export function AllListingsTable({
 	onPageChange,
 	onAction,
 	onViewAllRequests,
-}: AllListingsTableProps) {
+}) => {
 	const getActionButtons = (record: MyListingData) => {
 		const buttons = [];
 
@@ -109,6 +110,24 @@ export function AllListingsTable({
 				>
 					Publish
 				</Button>,
+			);
+		}
+
+		// Cancel button for active listings
+		if (record.status === 'Active' || record.status === 'Paused') {
+			buttons.push(
+				<Popconfirm
+					key="cancel"
+					title="Cancel this listing?"
+					description="Are you sure you want to cancel this listing? It will be removed from search results and marked as inactive."
+					onConfirm={() => onAction('cancel', record.id)}
+					okText="Yes"
+					cancelText="No"
+				>
+					<Button type="link" size="small" danger>
+						Cancel
+					</Button>
+				</Popconfirm>,
 			);
 		}
 
@@ -240,7 +259,7 @@ export function AllListingsTable({
 				// Try to format both as yyyy-mm-dd
 				function formatDate(str: string) {
 					const d = new Date(str);
-					if (isNaN(d.getTime())) {
+					if (Number.isNaN(d.getTime())) {
 						return str;
 					}
 					const yyyy = d.getFullYear();

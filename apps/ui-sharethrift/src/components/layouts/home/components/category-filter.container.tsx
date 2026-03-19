@@ -19,11 +19,11 @@ const DEFAULT_CATEGORIES = [
 	'Miscellaneous',
 ];
 
-export function CategoryFilterContainer({
+export const CategoryFilterContainer: React.FC<CategoryFilterContainerProps> = ({
 	selectedCategory,
 	onCategoryChange,
 	label = 'Category',
-}: CategoryFilterContainerProps) {
+}) => {
 	// TODO: Replace with real GraphQL query when backend is ready
 	const categories = DEFAULT_CATEGORIES;
 

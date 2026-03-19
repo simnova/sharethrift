@@ -1,65 +1,58 @@
----
-applyTo: "apps/ui-sharethrift/src/components/layouts/**/pages/*.tsx"
----
+# Copilot Instructions: Page Components
 
-# Copilot Instructions: Pages
-
-## Internal References
-- ui.instructions.md
-- components.instructions.md
-- layouts.instructions.md
-- container-components.instructions.md
+Page components in the `pages/` folder represent top-level routes within a layout. They compose UI from reusable components and containers and are mapped via the layout’s `index.tsx`.
 
 ## Purpose
 
-- The `pages` folder contains page-level React components for a specific layout.
-- Each page component represents a distinct route/view and is mapped in the layout's `index.tsx`.
-- Pages are composed of components from the layout's `components/` folder wrapped in the layout's `SubPageLayout` component.
+- Define route-level views tied to a layout.
+- Use components from the layout’s `components/` folder.
+- Wrap content in `SubPageLayout` to ensure consistent headers/structure.
 
 ## Page Types
 
 - **Single Page**:
-	- Implements a single view using `SubPageLayout` for header/content.
-	- Can include subpages/tabs via the shared `VerticalTabs` component.
-	- Example: 
+  - A single view using `SubPageLayout`.
+  - May include `VerticalTabs` for internal tabs.
+  - Example:
     ```tsx
-    // example-page.tsx
-    import { SubPageLayout } from '../layouts/sub-page-layout';
-    import { ExampleComponent } from '../components/example-component';
-
-    export const ExamplePage: React.FC = () => (
-        <SubPageLayout header={<h1>Example Page</h1>}>
-            <ExampleComponent />
-        </SubPageLayout>
-    );
+    <SubPageLayout header={<h1>Title</h1>}>
+      <MyComponent />
+    </SubPageLayout>
     ```
-- **Page Group (Multi-View Section)**:
-	- Implements a set of nested `Routes` for a section, each route providing its own page component.
-	- Used for sections with multiple related views (e.g., `properties.tsx`, `service-tickets.tsx`).
-	- Example:
-		```tsx
-		// properties.tsx
-		<Routes>
-			<Route path="" element={<PropertiesList />} />
-            <Route path="create" element={<PropertiesCreate />} />
-			<Route path=":id/*" element={<PropertiesDetail />} />
-		</Routes>
-		```
 
-## Coding Conventions
+- **Page Group**:
+  - Defines multiple sub-routes using nested `<Routes>`.
+  - Used for multi-view flows (e.g. list/detail/create).
+  - Example:
+    ```tsx
+    <Routes>
+      <Route path="" element={<ListView />} />
+      <Route path="create" element={<CreateView />} />
+      <Route path=":id/*" element={<DetailView />} />
+    </Routes>
+    ```
+
+## Conventions
 
 - Use functional components and React hooks.
-- Compose pages from reusable components and containers.
-- Define `{PageName}Props` type for each page.
-- Use strict TypeScript types.
+- Define a `{PageName}Props` type for each page.
+- Use strict TypeScript types for props and local state.
 - Use kebab-case for file names.
+- Compose pages from containers and presentational components.
 
-## Composition
+## Composition Patterns
 
-- Use `SubPageLayout` for single pages.
-- Use `VerticalTabs` for tabbed subpages.
-- Use nested `Routes` for page groups.
+- Wrap single pages in `SubPageLayout`.
+- Use `VerticalTabs` for tabbed interfaces.
+- Use nested `Routes` for multi-view page groups.
 
-## Testing & Reusability
+## Testing & Storybook
 
-- Each page component must have a Storybook story.
+- Every page component must have a corresponding Storybook story.
+- Write unit tests if logic or branching is non-trivial.
+
+## References
+
+- [React Docs](https://react.dev/)
+- [Storybook Docs](https://storybook.js.org/docs/react/get-started/introduction)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)

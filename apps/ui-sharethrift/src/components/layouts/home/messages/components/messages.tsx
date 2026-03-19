@@ -4,7 +4,7 @@ import { ArrowLeftOutlined } from "@ant-design/icons";
 import { ConversationListContainer } from "./conversation-list.container.tsx";
 import { ConversationBoxContainer } from "./conversation-box.container.tsx";
 
-export const Messages = () => {
+export const Messages: React.FC = () => {
   const [selectedConversationId, setSelectedConversationId] = useState<
     string | null
   >(null);

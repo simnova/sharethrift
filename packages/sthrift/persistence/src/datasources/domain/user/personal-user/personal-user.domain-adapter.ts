@@ -64,6 +64,11 @@ export class PersonalUserDomainAdapter
 			this.doc.set('role', role.props.doc);
 			return;
 		}
+		// Handle PersonalUserRoleDomainAdapter (has a doc property)
+		if (role && 'doc' in role && role.doc) {
+			this.doc.set('role', role.doc);
+			return;
+		}
 		if (!role?.id) {
 			throw new Error('role reference is missing id');
 		}
@@ -118,7 +123,7 @@ export class PersonalUserAccountDomainAdapter
 	// Nested Path Getters
 	get profile() {
 		if (!this.props.profile) {
-			this.props.set('profile', {});
+			this.props.profile = {} as Models.User.PersonalUserAccountProfile;
 		}
 		return new PersonalUserAccountProfileDomainAdapter(this.props.profile);
 	}
@@ -147,11 +152,19 @@ export class PersonalUserAccountProfileDomainAdapter
 	set lastName(value: string) {
 		this.props.lastName = value;
 	}
+	get aboutMe() {
+		return this.props.aboutMe;
+	}
+	set aboutMe(value: string) {
+		this.props.aboutMe = value;
+	}
 
 	// Nested Path Getters
 	get location() {
 		if (!this.props.location) {
-			this.props.set('location', {});
+			// this.props.set('location', {}); // this is causing runtime error "this.props.set is not a function"
+			this.props.location =
+				{} as Models.User.PersonalUserAccountProfileLocation;
 		}
 		return new PersonalUserAccountProfileLocationDomainAdapter(
 			this.props.location,
@@ -159,7 +172,8 @@ export class PersonalUserAccountProfileDomainAdapter
 	}
 	get billing() {
 		if (!this.props.billing) {
-			this.props.set('billing', {});
+			// this.props.set('billing', {});
+			this.props.billing = {} as Models.User.PersonalUserAccountProfileBilling;
 		}
 		return new PersonalUserAccountProfileBillingDomainAdapter(
 			this.props.billing,
