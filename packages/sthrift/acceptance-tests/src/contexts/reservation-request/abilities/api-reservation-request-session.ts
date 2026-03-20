@@ -36,21 +36,27 @@ export abstract class ApiReservationRequestSession extends ApiSession {
 		input: CreateReservationRequestInput,
 	): Promise<ReservationRequestResponse> {
 		const mutation = `
-			mutation CreateReservationRequest($input: CreateReservationRequestInput!) {
+			mutation CreateReservationRequest($input: ReservationRequestCreateInput!) {
 				createReservationRequest(input: $input) {
-					id
-					state
-					reservationPeriodStart
-					reservationPeriodEnd
-					listing {
+					status {
+						success
+						errorMessage
+					}
+					reservationRequest {
 						id
+						state
+						reservationPeriodStart
+						reservationPeriodEnd
+						listing {
+							id
+						}
+						reserver {
+							... on PersonalUser { id }
+							... on AdminUser { id }
+						}
+						createdAt
+						updatedAt
 					}
-					reserver {
-						... on PersonalUser { id }
-						... on AdminUser { id }
-					}
-					createdAt
-					updatedAt
 				}
 			}
 		`;
@@ -63,7 +69,14 @@ export abstract class ApiReservationRequestSession extends ApiSession {
 			},
 		});
 
-		const data = response.data['createReservationRequest'] as Record<string, unknown>;
+		const mutationResult = response.data['createReservationRequest'] as Record<string, unknown>;
+		const status = mutationResult['status'] as Record<string, unknown> | undefined;
+
+		if (status && !status['success']) {
+			throw new Error(String(status['errorMessage'] ?? 'Failed to create reservation request'));
+		}
+
+		const data = (mutationResult['reservationRequest'] ?? {}) as Record<string, unknown>;
 		return this.deserializeReservationRequest(data, input);
 	}
 

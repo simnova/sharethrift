@@ -10,7 +10,7 @@
 		"test:session:mongodb": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"session\",\"session\":\"mongodb\"}' --require-module tsx/esm --import './src/world.ts' --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-session-mongodb.json",
 		"test:dom:domain": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"dom\",\"session\":\"domain\"}' --require-module tsx/esm --import './src/world.ts' --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-dom-domain.json",
 		"test:dom:graphql": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"dom\",\"session\":\"graphql\"}' --require-module tsx/esm --import './src/world.ts' --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-dom-graphql.json",
-        "test:dom:mongodb": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"dom\",\"session\":\"mongodb\"}' --require-module tsx/esm --import './src/world.ts' --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-dom-mongodb.json",
+		"test:dom:mongodb": "NODE_OPTIONS='--import ./src/shared/support/register-css.mjs' cucumber-js src/contexts/**/features/**/*.feature --world-parameters '{\"tasks\":\"dom\",\"session\":\"mongodb\"}' --require-module tsx/esm --import './src/world.ts' --import './src/step-definitions/**/*.ts' --import './src/shared/support/**/*.ts' --import './src/shared/support/stubs/**/*.js' --format json:./reports/cucumber-report-dom-mongodb.json",
 		"test:fast": "pnpm run test:domain && pnpm run test:session:graphql",
 		"test:all": "pnpm run test:domain && pnpm run test:session:graphql && pnpm run test:session:mongodb && pnpm run test:dom:domain && pnpm run test:dom:graphql && pnpm run test:dom:mongodb",
 		"clean": "rimraf dist reports target"
@@ -22,7 +22,8 @@
 		"@serenity-js/core": "^3.37.2",
 		"@serenity-js/cucumber": "^3.37.2",
 		"@serenity-js/serenity-bdd": "^3.37.2",
-		"graphql": "^16.12.0"
+		"graphql": "^16.12.0",
+		"std-env": "^4.0.0"
 	},
 	"devDependencies": {
 		"@ant-design/icons": "^6.1.0",
@@ -32,6 +33,7 @@
 		"@cellix/service-payment-base": "workspace:*",
 		"@cellix/service-token-validation": "workspace:*",
 		"@cellix/typescript-config": "workspace:*",
+		"@cucumber/messages": "^32.2.0",
 		"@sthrift/application-services": "workspace:*",
 		"@sthrift/context-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*",
