@@ -1,0 +1,16 @@
+version: '1'
+
+ignore:
+  # Directories to skip
+  - dist/
+  - build/
+  - node_modules/
+  - coverage/
+  - .turbo/
+  - __blobstorage__/
+  - __queuestorage__/
+  - __tablestorage__/
+  - '*.generated.ts'
+  - '*.generated.tsx'
+  - '**/generated.ts'
+  - '**/generated.tsx'

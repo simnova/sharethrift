@@ -42,26 +42,26 @@ cellix.registerAzureFunctionHandler('graphql', { route: 'graphql' }, graphHandle
 
 ### Essential Commands
 ```bash
-# Initial setup (Node v20 required)
-nvm use v20 && npm run clean && npm install && npm run build
+# Initial setup (Node v22 required)
+mise install && pnpm install && pnpm run build
 
 # Development startup
-npm run start  # Builds all packages and starts Azure Functions
+pnpm run start  # Builds all packages and starts Azure Functions
 
 # Package-specific operations
-npm run build --ws --if-present    # Build all workspaces
-npm run lint --ws --if-present     # Lint all workspaces
+pnpm run build --ws --if-present    # Build all workspaces
+pnpm run lint --ws --if-present     # Lint all workspaces
 ```
 
 ### VS Code Tasks
 Use VS Code tasks for development (preferred over manual commands):
 - `func: host start` - Start Azure Functions runtime
-- `npm watch (functions)` - Watch mode for API package
-- `npm build (functions)` - Build API package
+- `pnpm watch (functions)` - Watch mode for API package
+- `pnpm build (functions)` - Build API package
 
 ### Testing
 - Coverage reports generated in `packages/*/coverage/`
-- Run tests: `npm test`
+- Run tests: `pnpm test`
 
 ## Code Quality & Standards
 
@@ -78,7 +78,7 @@ Use VS Code tasks for development (preferred over manual commands):
 ## Key Dependencies
 
 ### Workspace Structure
-Monorepo uses npm workspaces with these core packages:
+Monorepo uses pnpm workspaces with these core packages:
 - `@apps/api` - Main Azure Functions application
 - `@sthrift/domain` - Domain models and business logic
 - `@sthrift/graphql` - GraphQL implementation

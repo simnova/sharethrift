@@ -1,18 +1,16 @@
-nvm use v20
+## Setup
+
+```bash
+# Install tools and dependencies (from project root)
+mise install
+pnpm install
+```
 
 
 
 
 
-npm install -D @types/node -w api
-
-npm install -D eslint @eslint/js typescript-eslint -w @apps/api
-
-npm install @azure/identity -w api
-
-npm install @as-integrations/azure-functions -api
-
-needed "skipLibCheck": true in tsconfig.json to build mongoose
+> Note: "skipLibCheck": true in tsconfig.json is needed to build mongoose
 
 
 
