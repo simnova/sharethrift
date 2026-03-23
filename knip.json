@@ -33,7 +33,7 @@
 		"packages/sthrift/graphql": {
 			"entry": ["src/index.ts", "src/schema/types/**/*.resolvers.ts", "src/schema/builder/*.ts"],
 			"project": ["src/**/*.ts"],
-			"ignore": ["**/graphql-tools-scalars.ts", "**/azure-functions.ts"]
+			"ignore": ["**/graphql-tools-scalars.cts", "**/azure-functions.ts"]
 		},
 		"packages/sthrift/domain": {
 			"entry": [
