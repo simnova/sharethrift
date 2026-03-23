@@ -1609,6 +1609,9 @@ importers:
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../../cellix/typescript-config
+      '@types/lunr':
+        specifier: ^2.3.7
+        version: 2.3.7
       '@vitest/coverage-v8':
         specifier: ^3.2.4
         version: 3.2.4(@vitest/browser@3.2.4)(vitest@3.2.4)
