@@ -7,8 +7,6 @@
 import type { GraphContext } from '../../../init/context.ts';
 import type { GraphQLResolveInfo } from 'graphql';
 import type { Resolvers } from '../../builder/generated.ts';
-import { ItemListingSearchApplicationService } from '@sthrift/application-services';
-import type { ServiceCognitiveSearch } from '@sthrift/service-cognitive-search';
 
 const itemListingSearchResolvers: Resolvers = {
 	Query: {
@@ -18,27 +16,10 @@ const itemListingSearchResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			console.log('searchItemListings resolver called with input:', args.input);
-
 			try {
-				// Get the search service from context
-				const searchService = context.apiContext
-					.searchService as ServiceCognitiveSearch;
-
-				if (!searchService) {
-					throw new Error('Search service not available in context');
-				}
-
-				// Create the search application service
-				const searchApplicationService =
-					new ItemListingSearchApplicationService(searchService);
-
-				// Execute the search
-				const result = await searchApplicationService.searchItemListings(
+				return await context.applicationServices.Listing.ListingSearch.searchItemListings(
 					args.input,
 				);
-
-				return result;
 			} catch (error) {
 				console.error('Error in searchItemListings resolver:', error);
 				throw new Error('Failed to search item listings');

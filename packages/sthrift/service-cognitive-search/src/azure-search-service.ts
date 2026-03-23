@@ -6,11 +6,11 @@ import {
 import { DefaultAzureCredential } from '@azure/identity';
 import type {
 	SearchIndex,
-	CognitiveSearchBase,
+	SearchService,
 	SearchOptions,
 	SearchDocumentsResult,
 	SearchField,
-} from '@cellix/mock-cognitive-search';
+} from '@cellix/search-service';
 
 /**
  * Azure Cognitive Search implementation
@@ -18,7 +18,7 @@ import type {
  * Provides a wrapper around Azure Cognitive Search that implements
  * the CognitiveSearchBase interface for consistency with the mock implementation.
  */
-export class AzureCognitiveSearch implements CognitiveSearchBase {
+export class AzureCognitiveSearch implements SearchService {
 	private indexClient: SearchIndexClient;
 	private searchClients: Map<string, SearchClient<Record<string, unknown>>> =
 		new Map();
@@ -51,13 +51,13 @@ export class AzureCognitiveSearch implements CognitiveSearchBase {
 	/**
 	 * Service lifecycle methods
 	 */
-	async startup(): Promise<void> {
+	async startUp(): Promise<void> {
 		console.log('AzureCognitiveSearch: Starting up');
 		// Azure client doesn't need explicit startup - connection is lazy
 		await Promise.resolve();
 	}
 
-	async shutdown(): Promise<void> {
+	async shutDown(): Promise<void> {
 		console.log('AzureCognitiveSearch: Shutting down');
 		this.searchClients.clear();
 		await Promise.resolve();

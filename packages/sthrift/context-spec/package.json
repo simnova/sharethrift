@@ -20,11 +20,11 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@cellix/messaging-service": "workspace:*",
-		"@cellix/payment-service": "workspace:*",
+		"@cellix/service-messaging-base": "workspace:*",
+		"@cellix/service-payment-base": "workspace:*",
 		"@cellix/search-service": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
-		"@sthrift/service-token-validation": "workspace:*"
+		"@cellix/service-token-validation": "workspace:*"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

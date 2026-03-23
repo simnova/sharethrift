@@ -1,13 +1,12 @@
 import type { ServiceBase } from '@cellix/api-services-spec';
-import { InMemoryCognitiveSearch } from '@cellix/mock-cognitive-search';
+import { InMemoryCognitiveSearch } from '@sthrift/search-service-index';
 import { AzureCognitiveSearch } from './azure-search-service.js';
 import type {
-	CognitiveSearchService,
+	SearchService,
 	SearchIndex,
-	CognitiveSearchBase,
 	SearchOptions,
 	SearchDocumentsResult,
-} from '@cellix/mock-cognitive-search';
+} from '@cellix/search-service';
 
 /**
  * Cognitive Search Service for ShareThrift
@@ -16,9 +15,9 @@ import type {
  * and Mock implementation based on available credentials and configuration.
  */
 export class ServiceCognitiveSearch
-	implements ServiceBase<unknown>, CognitiveSearchBase
+	implements ServiceBase<unknown>, SearchService
 {
-	private searchService: CognitiveSearchService;
+	private searchService: SearchService;
 	private implementationType: 'azure' | 'mock';
 
 	constructor() {
@@ -81,7 +80,7 @@ export class ServiceCognitiveSearch
 	/**
 	 * Creates the appropriate search service implementation
 	 */
-	private createSearchService(): CognitiveSearchService {
+	private createSearchService(): SearchService {
 		if (this.implementationType === 'mock') {
 			return new InMemoryCognitiveSearch({
 				enablePersistence: process.env['ENABLE_SEARCH_PERSISTENCE'] === 'true',
@@ -118,12 +117,12 @@ export class ServiceCognitiveSearch
 		console.log(
 			`ServiceCognitiveSearch: Starting up with ${this.implementationType} implementation`,
 		);
-		await this.searchService.startup();
+		await this.searchService.startUp();
 	}
 
 	async shutDown(): Promise<void> {
 		console.log('ServiceCognitiveSearch: Shutting down');
-		await this.searchService.shutdown();
+		await this.searchService.shutDown();
 	}
 
 	/**

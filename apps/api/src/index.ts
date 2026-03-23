@@ -24,9 +24,9 @@ import { ServiceMessagingMock } from '@cellix/service-messaging-mock';
 import { graphHandlerCreator } from '@sthrift/graphql';
 import { restHandlerCreator } from '@sthrift/rest';
 
-import type { PaymentService } from '@cellix/payment-service';
-import { PaymentServiceMock } from '@sthrift/payment-service-mock';
-import { PaymentServiceCybersource } from '@sthrift/payment-service-cybersource';
+import type { PaymentService } from '@cellix/service-payment-base';
+import { ServicePaymentMock } from '@cellix/service-payment-mock';
+import { ServicePaymentCybersource } from '@cellix/service-payment-cybersource';
 
 import type { SearchService } from '@cellix/search-service';
 import { ServiceSearchIndex } from '@sthrift/search-service-index';
@@ -53,7 +53,7 @@ isDevelopment
 					: new ServiceMessagingTwilio(),
 			)
 			.registerInfrastructureService(
-				isDevelopment ? new PaymentServiceMock() : new PaymentServiceCybersource(),
+				isDevelopment ? new ServicePaymentMock() : new ServicePaymentCybersource(),
 			)
 			.registerInfrastructureService(new ServiceSearchIndex());
 	},
@@ -70,8 +70,8 @@ serviceRegistry.getInfrastructureService<ServiceMongoose>(
 			: serviceRegistry.getInfrastructureService<MessagingService>(ServiceMessagingTwilio);
 
 	const paymentService = isDevelopment
-		? serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceMock)
-		: serviceRegistry.getInfrastructureService<PaymentService>(PaymentServiceCybersource);
+		? serviceRegistry.getInfrastructureService<PaymentService>(ServicePaymentMock)
+		: serviceRegistry.getInfrastructureService<PaymentService>(ServicePaymentCybersource);
 
 	const searchService =
 		serviceRegistry.getInfrastructureService<SearchService>(ServiceSearchIndex);
