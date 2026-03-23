@@ -2,7 +2,7 @@
 
 overwrite: true
 schema:
-  - './packages/sthrift/graphql/src/schema/core/graphql-tools-scalars.ts'
+  - './packages/sthrift/graphql/src/schema/core/graphql-tools-scalars.cjs'
   - './packages/sthrift/graphql/src/schema/**/**.graphql'
 generates:
   ./packages/sthrift/graphql/src/schema/builder/generated.ts:

@@ -1,0 +1,34 @@
+query ListingsPageSearchListings($input: ListingSearchInput!) {
+	searchListings(input: $input) {
+		items {
+			id
+			title
+			description
+			category
+			location
+			state
+			sharerName
+			sharerId
+			sharingPeriodStart
+			sharingPeriodEnd
+			createdAt
+			updatedAt
+			images
+		}
+		count
+		facets {
+			category {
+				value
+				count
+			}
+			state {
+				value
+				count
+			}
+			sharerId {
+				value
+				count
+			}
+		}
+	}
+}

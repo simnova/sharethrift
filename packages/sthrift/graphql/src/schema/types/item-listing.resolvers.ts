@@ -18,6 +18,66 @@ const itemListingResolvers: Resolvers = {
 					}).then((user) => (user ? user.id : undefined));
 			}
 
+			const mapStateToStatus = (state?: string): string => {
+				if (!state || state.trim() === '') return 'Unknown';
+				switch (state) {
+					case 'Published': return 'Active';
+					case 'Drafted': return 'Draft';
+					case 'Appeal Requested': return 'Appeal_Requested';
+					default: return state;
+				}
+			};
+
+			if (args.searchText && args.searchText.trim() !== '') {
+				try {
+					const searchInput = {
+						searchString: args.searchText,
+						options: {
+							top: args.pageSize,
+							skip: (args.page - 1) * args.pageSize,
+							filter: {
+								sharerId: sharerId ? [sharerId] : null,
+								state: args.statusFilters ?? null,
+							},
+							orderBy: args.sorter
+								? [`${args.sorter.field} ${args.sorter.order === 'ascend' ? 'asc' : 'desc'}`]
+								: ['updatedAt desc'],
+						},
+					};
+
+					const searchResult =
+						await context.applicationServices.Listing.ListingSearch.searchListings(
+							searchInput,
+						);
+
+					const items = searchResult.items.map((item: {
+						id: string;
+						title: string;
+						images?: string[];
+						createdAt: string;
+						sharingPeriodStart: string;
+						sharingPeriodEnd: string;
+						state?: string;
+					}) => {
+						const sharingStart = new Date(item.sharingPeriodStart).toISOString();
+						const sharingEnd = new Date(item.sharingPeriodEnd).toISOString();
+						return {
+							id: item.id,
+							title: item.title,
+							image: item.images && item.images.length > 0 ? item.images[0] : null,
+							publishedAt: item.createdAt,
+							reservationPeriod: `${sharingStart.slice(0, 10)} - ${sharingEnd.slice(0, 10)}`,
+							status: mapStateToStatus(item.state),
+							pendingRequestsCount: 0,
+						};
+					});
+
+					return { items, total: searchResult.count, page: args.page, pageSize: args.pageSize };
+				} catch (error) {
+					console.error('Cognitive search failed, falling back to database query:', error);
+				}
+			}
+
 			const command: Parameters<typeof context.applicationServices.Listing.ItemListing.queryPaged>[0] = {
 				page: args.page,
 				pageSize: args.pageSize,

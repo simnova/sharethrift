@@ -1,0 +1,52 @@
+{
+	"name": "@sthrift/service-cognitive-search",
+	"version": "1.0.0",
+	"type": "module",
+	"description": "Cognitive Search service for ShareThrift with auto-detection of Azure vs Mock implementation",
+	"main": "dist/index.js",
+	"types": "dist/index.d.ts",
+	"scripts": {
+		"build": "tsc",
+		"clean": "rm -rf dist",
+		"test": "vitest",
+		"lint": "biome check src/",
+		"format": "biome format --write src/"
+	},
+	"keywords": [
+		"cognitive-search",
+		"azure",
+		"search",
+		"service"
+	],
+	"author": "ShareThrift Team",
+	"license": "MIT",
+	"dependencies": {
+		"@azure/identity": "^4.13.0",
+		"@azure/search-documents": "^12.2.0",
+		"@cellix/api-services-spec": "workspace:*",
+		"@cellix/search-service": "workspace:*",
+		"@sthrift/search-service-index": "workspace:*"
+	},
+	"devDependencies": {
+		"@cellix/typescript-config": "workspace:*",
+		"typescript": "^5.3.0",
+		"vitest": "^1.6.0"
+	},
+	"peerDependencies": {
+		"typescript": "^5.0.0"
+	},
+	"files": [
+		"dist/**/*",
+		"README.md"
+	],
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js",
+			"require": "./dist/index.js"
+		}
+	},
+	"publishConfig": {
+		"access": "restricted"
+	}
+}

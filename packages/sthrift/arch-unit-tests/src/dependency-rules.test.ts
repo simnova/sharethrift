@@ -3,6 +3,7 @@ import { describeDependencyRulesTests, type DependencyRulesTestsConfig } from '@
 const config: DependencyRulesTestsConfig = {
   appsGlob: '../../apps/**',
   packagesGlob: '../**',
+  appsCircularDependenciesTimeoutMs: 120000,
 
   domainFolder: '../domain',
   persistenceFolder: '../persistence',

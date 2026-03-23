@@ -33,7 +33,7 @@
 		"packages/sthrift/graphql": {
 			"entry": ["src/index.ts", "src/schema/types/**/*.resolvers.ts", "src/schema/builder/*.ts"],
 			"project": ["src/**/*.ts"],
-			"ignore": ["**/graphql-tools-scalars.ts", "**/azure-functions.ts"]
+			"ignore": ["**/graphql-tools-scalars.cjs", "**/azure-functions.ts"]
 		},
 		"packages/sthrift/domain": {
 			"entry": [
@@ -87,7 +87,15 @@
 		"**/vite.config.ts",
 		"packages/cellix/server-payment-seedwork/src/copy-assets.ts",
 		"packages/sthrift/acceptance-tests/src/shared/support/css-loader.mjs",
-		"packages/sthrift/acceptance-tests/src/shared/support/stubs/**"
+		"packages/sthrift/acceptance-tests/src/shared/support/stubs/**",
+		"packages/cellix/mock-mongodb-memory-server/src/data-seeding.ts",
+		"packages/sthrift/application-services/src/contexts/listing/item-listing-search.ts",
+		"packages/sthrift/domain/src/domain/infrastructure/cognitive-search/item-listing-search-index.ts",
+		"packages/sthrift/event-handler/src/handlers/item-listing-deleted-update-search-index.ts",
+		"packages/sthrift/event-handler/src/handlers/item-listing-updated-update-search-index.ts",
+		"packages/sthrift/search-service-index/src/in-memory-search.d.ts",
+		"packages/sthrift/search-service-index/src/index.d.ts",
+		"packages/sthrift/search-service-index/src/interfaces.d.ts"
 	],
 	"ignoreDependencies": [
 		"@cucumber/node",

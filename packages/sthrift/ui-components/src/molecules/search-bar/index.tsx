@@ -6,7 +6,7 @@ import styles from './index.module.css';
 interface SearchBarProps {
 	searchValue?: string;
 	onSearchChange?: (value: string) => void;
-	onSearch?: (query: string) => void;
+	onSearch?: () => void;
 }
 
 export const SearchBar: React.FC<SearchBarProps> = ({
@@ -15,7 +15,13 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 	onSearch,
 }) => {
 	const handleSearch = () => {
-		onSearch?.(searchValue);
+		onSearch?.();
+	};
+
+	const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+		if (e.key === 'Enter') {
+			handleSearch();
+		}
 	};
 
 	return (
@@ -24,6 +30,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 				placeholder="Search"
 				value={searchValue}
 				onChange={(e) => onSearchChange?.((e.target as HTMLInputElement).value)}
+				onKeyDown={handleKeyPress}
 				className={styles.searchInput}
 			/>
 			<Button
