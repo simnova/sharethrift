@@ -6,7 +6,7 @@
  * in the ShareThrift application.
  */
 
-import type { SearchIndex } from '@cellix/mock-cognitive-search';
+import type { SearchIndex } from '@cellix/search-service';
 
 /**
  * Search index definition for Item Listings

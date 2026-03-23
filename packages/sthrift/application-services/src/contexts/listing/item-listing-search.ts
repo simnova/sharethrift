@@ -6,17 +6,17 @@
  */
 
 import type {
-	ItemListingSearchInput,
-	ItemListingSearchResult,
-	ItemListingSearchFilter,
-	ItemListingSearchDocument,
+	ListingSearchInput as ItemListingSearchInput,
+	ListingSearchResult as ItemListingSearchResult,
+	ListingSearchFilter as ItemListingSearchFilter,
+	ListingSearchDocument as ItemListingSearchDocument,
 } from '@sthrift/domain';
 import type { CognitiveSearchDomain } from '@sthrift/domain';
 import type {
 	SearchOptions,
 	SearchDocumentsResult,
-} from '@cellix/mock-cognitive-search';
-import { ItemListingSearchIndexSpec } from '@sthrift/domain';
+} from '@cellix/search-service';
+import { ListingSearchIndexSpec as ItemListingSearchIndexSpec } from '@sthrift/domain';
 
 /**
  * Application service for Item Listing search operations
@@ -39,7 +39,7 @@ export class ItemListingSearchApplicationService {
 
 		// Build search query
 		const searchString = input.searchString?.trim() || '*';
-		const options = this.buildSearchOptions(input.options);
+		const options = this.buildSearchOptions(input.options ?? undefined);
 
 		// Execute search
 		const searchResults = await this.searchService.search(
@@ -55,20 +55,26 @@ export class ItemListingSearchApplicationService {
 	/**
 	 * Build search options from input
 	 */
-	private buildSearchOptions(inputOptions?: {
-		filter?: ItemListingSearchFilter;
-		top?: number;
-		skip?: number;
-		orderBy?: string[];
-	}): SearchOptions {
+	private buildSearchOptions(
+		inputOptions?:
+			| {
+					filter?: ItemListingSearchFilter | null;
+					top?: number | null;
+					skip?: number | null;
+					orderBy?: readonly string[] | null;
+			  }
+			| null,
+	): SearchOptions {
 		const options: SearchOptions = {
 			queryType: 'full',
 			searchMode: 'all',
 			includeTotalCount: true,
 			facets: ['category,count:0', 'state,count:0', 'sharerId,count:0'],
-			top: inputOptions?.top || 50,
-			skip: inputOptions?.skip || 0,
-			orderBy: inputOptions?.orderBy || ['updatedAt desc'],
+			top: inputOptions?.top ?? 50,
+			skip: inputOptions?.skip ?? 0,
+			orderBy: inputOptions?.orderBy
+				? [...inputOptions.orderBy]
+				: ['updatedAt desc'],
 		};
 
 		// Build filter string
@@ -88,20 +94,24 @@ export class ItemListingSearchApplicationService {
 		// Category filter
 		if (filter.category && filter.category.length > 0) {
 			const categoryFilters = filter.category.map(
-				(cat) => `category eq '${cat}'`,
+				(cat: string) => `category eq '${cat}'`,
 			);
 			filterParts.push(`(${categoryFilters.join(' or ')})`);
 		}
 
 		// State filter
 		if (filter.state && filter.state.length > 0) {
-			const stateFilters = filter.state.map((state) => `state eq '${state}'`);
+			const stateFilters = filter.state.map(
+				(state: string) => `state eq '${state}'`,
+			);
 			filterParts.push(`(${stateFilters.join(' or ')})`);
 		}
 
 		// Sharer ID filter
 		if (filter.sharerId && filter.sharerId.length > 0) {
-			const sharerFilters = filter.sharerId.map((id) => `sharerId eq '${id}'`);
+			const sharerFilters = filter.sharerId.map(
+				(id: string) => `sharerId eq '${id}'`,
+			);
 			filterParts.push(`(${sharerFilters.join(' or ')})`);
 		}
 

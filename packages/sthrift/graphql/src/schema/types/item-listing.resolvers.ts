@@ -36,8 +36,8 @@ const itemListingResolvers: Resolvers = {
 							top: args.pageSize,
 							skip: (args.page - 1) * args.pageSize,
 							filter: {
-								sharerId: sharerId ? [sharerId] : undefined,
-								state: args.statusFilters,
+								sharerId: sharerId ? [sharerId] : null,
+								state: args.statusFilters ?? null,
 							},
 							orderBy: args.sorter
 								? [`${args.sorter.field} ${args.sorter.order === 'ascend' ? 'asc' : 'desc'}`]
@@ -46,11 +46,19 @@ const itemListingResolvers: Resolvers = {
 					};
 
 					const searchResult =
-						await context.applicationServices.Listing.ItemListingSearch.searchItemListings(
+						await context.applicationServices.Listing.ListingSearch.searchListings(
 							searchInput,
 						);
 
-					const items = searchResult.items.map((item) => {
+					const items = searchResult.items.map((item: {
+						id: string;
+						title: string;
+						images?: string[];
+						createdAt: string;
+						sharingPeriodStart: string;
+						sharingPeriodEnd: string;
+						state?: string;
+					}) => {
 						const sharingStart = new Date(item.sharingPeriodStart).toISOString();
 						const sharingEnd = new Date(item.sharingPeriodEnd).toISOString();
 						return {

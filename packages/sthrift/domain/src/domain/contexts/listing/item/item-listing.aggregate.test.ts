@@ -1082,7 +1082,6 @@ Scenario(
 		});
 	});
 
-<<<<<<< HEAD:packages/sthrift/domain/src/domain/contexts/listing/item/item-listing.aggregate.test.ts
 	Scenario('Getting sharer as AdminUser', ({ Given, When, Then }) => {
 		let adminSharer: AdminUser<AdminUserProps>;
 		Given('an ItemListing aggregate with an admin user sharer', () => {
@@ -1202,8 +1201,7 @@ Scenario(
 			expect(entityRef.id).toBe(listing.id);
 		});
 	});
-});
-=======
+
 	Scenario('Raising integration event when listing is modified', ({ Given, When, Then, And }) => {
 		Given('an ItemListing aggregate that has been modified', () => {
 			passport = makePassport(true, true, true, true);
@@ -1283,4 +1281,3 @@ Scenario(
 		});
 	});
 });
->>>>>>> 1708f96b4db82aa21d258f468d86a6520298bb75:packages/sthrift/domain/src/domain/contexts/listing/item/item-listing.test.ts

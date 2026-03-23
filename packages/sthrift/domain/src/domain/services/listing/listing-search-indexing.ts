@@ -7,6 +7,9 @@ import {
 import crypto from 'node:crypto';
 
 export class ListingSearchIndexingService {
+	private readonly searchService: CognitiveSearchDomain;
+	private readonly itemListingUnitOfWork: ItemListingUnitOfWork;
+
 	constructor(
 		searchService: CognitiveSearchDomain,
 		itemListingUnitOfWork: ItemListingUnitOfWork,
@@ -14,9 +17,6 @@ export class ListingSearchIndexingService {
 		this.searchService = searchService;
 		this.itemListingUnitOfWork = itemListingUnitOfWork;
 	}
-
-	private readonly searchService: CognitiveSearchDomain;
-	private readonly itemListingUnitOfWork: ItemListingUnitOfWork;
 
 	async indexListing(listingId: string): Promise<void> {
 		await this.itemListingUnitOfWork.withScopedTransaction(

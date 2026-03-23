@@ -15,7 +15,7 @@ type ItemListingSearchResult {
 	"""
 	Search facets for filtering
 	"""
-	facets: SearchFacets
+	facets: ItemListingSearchFacets
 }
 
 type ItemListingSearchDocument {
@@ -85,17 +85,17 @@ type ItemListingSearchDocument {
 	images: [String!]!
 }
 
-type SearchFacets {
+type ItemListingSearchFacets {
 	"""
 	Facets grouped by field name
 	"""
-	category: [SearchFacet!]
-	state: [SearchFacet!]
-	sharerId: [SearchFacet!]
-	createdAt: [SearchFacet!]
+	category: [ItemListingSearchFacet!]
+	state: [ItemListingSearchFacet!]
+	sharerId: [ItemListingSearchFacet!]
+	createdAt: [ItemListingSearchFacet!]
 }
 
-type SearchFacet {
+type ItemListingSearchFacet {
 	"""
 	Facet value
 	"""
@@ -116,10 +116,10 @@ input ItemListingSearchInput {
 	"""
 	Search options for filtering, sorting, and pagination
 	"""
-	options: SearchOptions
+	options: ItemListingSearchOptions
 }
 
-input SearchOptions {
+input ItemListingSearchOptions {
 	"""
 	Filters to apply to the search
 	"""
@@ -165,10 +165,10 @@ input ItemListingSearchFilter {
 	"""
 	Filter by date range
 	"""
-	dateRange: DateRangeFilter
+	dateRange: ItemListingDateRangeFilter
 }
 
-input DateRangeFilter {
+input ItemListingDateRangeFilter {
 	"""
 	Start date (ISO string)
 	"""

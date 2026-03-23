@@ -23,7 +23,9 @@
 	"dependencies": {
 		"@cellix/search-service": "workspace:*",
 		"@sthrift/domain": "workspace:*",
-		"@sthrift/search-service-mock": "workspace:*"
+		"@sthrift/search-service-mock": "workspace:*",
+		"liqe": "^3.8.4",
+		"lunr": "^2.3.9"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

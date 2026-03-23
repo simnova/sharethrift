@@ -1,4 +1,4 @@
-import type { MessageInstance } from '@cellix/messaging-service';
+import type { MessageInstance } from '@cellix/service-messaging-base';
 import { Domain } from '@sthrift/domain';
 
 export function toDomainMessage(
@@ -14,15 +14,15 @@ export function toDomainMessage(
 		new Domain.Contexts.Conversation.Conversation.MessagingMessageId(
 			messagingId,
 		);
-	const content = new Domain.Contexts.Conversation.Conversation.MessageContent(
+	const contents = new Domain.Contexts.Conversation.Conversation.MessageContents([
 		messagingMessage.body,
-	);
+	]);
 
 	return new Domain.Contexts.Conversation.Conversation.Message({
 		id: messagingMessage.id,
 		messagingMessageId,
 		authorId,
-		content,
+		contents,
 		createdAt: messagingMessage.createdAt ?? new Date(),
 	});
 }
