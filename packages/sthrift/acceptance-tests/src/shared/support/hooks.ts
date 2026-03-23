@@ -1,7 +1,7 @@
 import type { IWorld } from '@cucumber/cucumber';
-import { After, Before, setDefaultTimeout } from '@cucumber/cucumber';
+import { After, AfterAll, Before, setDefaultTimeout } from '@cucumber/cucumber';
 
-import type { ShareThriftWorld } from '../../world.ts';
+import { type ShareThriftWorld, stopSharedServers } from '../../world.ts';
 
 // Track printed headers per test configuration
 let lastTestConfig: string | undefined;
@@ -32,4 +32,8 @@ Before(async function (this: IWorld<{ session?: string; tasks?: string }>) {
 After(async function (this: IWorld<{ session?: string; tasks?: string }>) {
 	const world = this as IWorld<{ session?: string; tasks?: string }> & ShareThriftWorld;
 	await world.cleanup();
+});
+
+AfterAll(async function () {
+	await stopSharedServers();
 });

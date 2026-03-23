@@ -1,15 +1,12 @@
 import { isAgent } from 'std-env';
 
-const agentMode = isAgent
-
-const terminalFormat = agentMode
+const terminalFormat = isAgent
 	? './src/support/formatters/agent-formatter.ts'
 	: 'progress-bar';
 
 export default {
 	paths: ['src/contexts/**/features/**/*.feature'],
 	import: ['src/**/*.ts'],
-	requireModule: ['tsx/esm'],
 	format: [
 		terminalFormat,
 		'json:./reports/cucumber-report.json',
@@ -18,6 +15,5 @@ export default {
 	formatOptions: {
 		snippetInterface: 'async-await',
 	},
-	parallel: 2,
-	publishQuiet: true,
+	parallel: 1,
 };

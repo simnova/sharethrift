@@ -18,7 +18,7 @@ export class TestServer {
 
 	constructor(private readonly applicationServicesFactory?: ApplicationServicesFactory) {}
 
-	async start(port = 4000): Promise<string> {
+	async start(port = 0): Promise<string> {
 		if (this.server) {
 			throw new Error('Test server already started');
 		}
