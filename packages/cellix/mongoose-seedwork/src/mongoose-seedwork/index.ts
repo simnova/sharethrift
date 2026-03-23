@@ -1,6 +1,7 @@
 
 export { ObjectId } from 'mongodb';
 export { type Base, type NestedPath, NestedPathOptions, type SubdocumentBase } from './base.ts';
+export { logger } from './logger.ts';
 export { type MongooseContextFactory, modelFactory} from './mongo-connection.ts';
 export { MongooseDomainAdapter } from './mongo-domain-adapter.ts';
 export { MongoosePropArray } from './mongoose-prop-array.ts';

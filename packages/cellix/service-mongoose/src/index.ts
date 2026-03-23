@@ -1,6 +1,6 @@
 import mongoose, { type Mongoose, type ConnectOptions } from 'mongoose';
 import type { ServiceBase } from '@cellix/api-services-spec';
-import type { MongooseSeedwork } from '@cellix/mongoose-seedwork';
+import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
 
 export type ServiceMongooseOptions = ConnectOptions & { debug?: boolean };
 
@@ -34,7 +34,7 @@ export class ServiceMongoose
 			);
 		}
 		await this.serviceInternal.disconnect();
-		console.log('ServiceMongoose stopped');
+		MongooseSeedwork.logger.info('ServiceMongoose stopped');
 	}
 	public get service(): Mongoose {
 		if (!this.serviceInternal) {
