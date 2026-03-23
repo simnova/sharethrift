@@ -68,7 +68,7 @@ def main() -> None:
 
     if args.diff:
         # Use Sourcery's native --diff flag to review only changed lines
-        cmd.extend(["--diff", shlex.quote(f"git diff {args.base}")])
+        cmd.extend(["--diff", f"git diff {args.base}"])
 
     # Review from repo root
     cmd.append(".")
