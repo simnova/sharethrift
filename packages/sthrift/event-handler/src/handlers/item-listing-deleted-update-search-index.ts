@@ -8,7 +8,7 @@
 import type { CognitiveSearchDomain } from '@sthrift/domain';
 import { ItemListingDeletedEvent } from '@sthrift/domain';
 import { EventBusInstance } from '@sthrift/domain';
-import { ItemListingSearchIndexSpec } from '@sthrift/domain';
+import { ListingSearchIndexSpec } from '@sthrift/domain';
 import { deleteFromSearchIndexWithRetry } from './search-index-helpers.js';
 
 /**
@@ -28,7 +28,7 @@ export function registerItemListingDeletedUpdateSearchIndexHandler(
 				// Remove document from search index
 				await deleteFromSearchIndexWithRetry(
 					searchService,
-					ItemListingSearchIndexSpec.name,
+					ListingSearchIndexSpec.name,
 					payload.id,
 					3, // max attempts
 				);

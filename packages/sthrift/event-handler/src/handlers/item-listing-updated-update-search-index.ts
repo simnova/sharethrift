@@ -11,8 +11,8 @@ import type { ItemListingUnitOfWork } from '@sthrift/domain';
 import { ItemListingUpdatedEvent } from '@sthrift/domain';
 import { EventBusInstance } from '@sthrift/domain';
 import {
-	ItemListingSearchIndexSpec,
-	convertItemListingToSearchDocument,
+	ListingSearchIndexSpec,
+	convertListingToSearchDocument,
 } from '@sthrift/domain';
 import { updateSearchIndexWithRetry } from './search-index-helpers.js';
 
@@ -49,12 +49,12 @@ export function registerItemListingUpdatedUpdateSearchIndexHandler(
 				}
 
 				// Convert domain entity to search document
-				const searchDocument = convertItemListingToSearchDocument(itemListing);
+				const searchDocument = convertListingToSearchDocument(itemListing);
 
 				// Update search index with retry logic and hash-based change detection
 				await updateSearchIndexWithRetry(
 					searchService,
-					ItemListingSearchIndexSpec,
+					ListingSearchIndexSpec,
 					searchDocument,
 					itemListing,
 					3, // max attempts
