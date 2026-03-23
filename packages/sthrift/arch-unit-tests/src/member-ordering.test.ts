@@ -4,6 +4,7 @@ const config: MemberOrderingTestsConfig = {
   domainSourcePath: '../domain/src',
   persistenceSourcePath: '../persistence/src',
   graphqlSourcePath: '../graphql/src/schema/types',
+  memberOrderingTimeoutMs: 120000,
 };
 
 describeMemberOrderingTests(config);

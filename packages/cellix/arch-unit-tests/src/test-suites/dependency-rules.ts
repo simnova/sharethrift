@@ -9,6 +9,8 @@ export interface DependencyRulesTestsConfig {
   // Circular Dependencies
   appsGlob?: string;
   packagesGlob?: string;
+  appsCircularDependenciesTimeoutMs?: number;
+  packagesCircularDependenciesTimeoutMs?: number;
 
   // Layered Architecture
   domainFolder?: string;
@@ -29,6 +31,8 @@ export function describeDependencyRulesTests(config: DependencyRulesTestsConfig)
   const {
     appsGlob,
     packagesGlob,
+    appsCircularDependenciesTimeoutMs,
+    packagesCircularDependenciesTimeoutMs,
     domainFolder,
     persistenceFolder,
     applicationServicesFolder,
@@ -40,6 +44,8 @@ export function describeDependencyRulesTests(config: DependencyRulesTestsConfig)
     uiComponentsFolder,
     appUiFolder,
   } = config;
+  const appsCircularTimeout = appsCircularDependenciesTimeoutMs ?? 30000;
+  const packagesCircularTimeout = packagesCircularDependenciesTimeoutMs ?? 10000;
 
   describe('Dependency Rules', () => {
     if (appsGlob || packagesGlob) {
@@ -48,14 +54,14 @@ export function describeDependencyRulesTests(config: DependencyRulesTestsConfig)
           it('apps should not have circular dependencies', async () => {
             const violations = await checkCircularDependencies({ appsGlob });
             expect(violations).toStrictEqual([]);
-          }, 30000);
+          }, appsCircularTimeout);
         }
 
         if (packagesGlob) {
           it('packages should not have circular dependencies', async () => {
             const violations = await checkCircularDependencies({ packagesGlob });
             expect(violations).toStrictEqual([]);
-          }, 10000);
+          }, packagesCircularTimeout);
         }
       });
     }

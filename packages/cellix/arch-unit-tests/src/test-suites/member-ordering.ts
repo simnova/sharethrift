@@ -6,9 +6,12 @@ export interface MemberOrderingTestsConfig {
   persistenceSourcePath: string;
   graphqlSourcePath: string;
   fixturesSourcePath?: string;
+  memberOrderingTimeoutMs?: number;
 }
 
 export function describeMemberOrderingTests(config: MemberOrderingTestsConfig): void {
+  const timeoutMs = config.memberOrderingTimeoutMs ?? 30000;
+
   describe('Member Ordering Conventions', () => {
     describe('Domain Layer Classes', () => {
       it('domain classes should follow member ordering convention', async () => {
@@ -16,21 +19,21 @@ export function describeMemberOrderingTests(config: MemberOrderingTestsConfig): 
           sourceGlobs: [`${config.domainSourcePath}/**/*.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 30000);
+      }, timeoutMs);
 
       it('aggregate root classes should follow member ordering convention', async () => {
         const violations = await checkMemberOrdering({
           sourceGlobs: [`${config.domainSourcePath}/contexts/**/*.aggregate.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 30000);
+      }, timeoutMs);
 
       it('entity classes should follow member ordering convention', async () => {
         const violations = await checkMemberOrdering({
           sourceGlobs: [`${config.domainSourcePath}/contexts/**/*.entity.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 30000);
+      }, timeoutMs);
     });
 
     describe('Persistence Layer Classes', () => {
@@ -39,7 +42,7 @@ export function describeMemberOrderingTests(config: MemberOrderingTestsConfig): 
           sourceGlobs: [`${config.persistenceSourcePath}/**/*.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 30000);
+      }, timeoutMs);
     });
 
     describe('GraphQL Layer Classes', () => {
@@ -48,7 +51,7 @@ export function describeMemberOrderingTests(config: MemberOrderingTestsConfig): 
           sourceGlobs: [`${config.graphqlSourcePath}/**/*.ts`],
         });
         expect(violations).toStrictEqual([]);
-      }, 30000);
+      }, timeoutMs);
     });
 
     describe('member-ordering rule semantics', () => {
