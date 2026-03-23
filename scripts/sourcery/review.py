@@ -1,4 +1,5 @@
 import argparse
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -10,12 +11,15 @@ DEFAULT_BASE_BRANCH = "origin/main"
 
 def check_sourcery_installed() -> bool:
     """Verify Sourcery is installed and accessible."""
-    result = subprocess.run(
-        ["sourcery", "--version"],
-        capture_output=True,
-        text=True,
-    )
-    return result.returncode == 0
+    try:
+        result = subprocess.run(
+            ["sourcery", "--version"],
+            capture_output=True,
+            text=True,
+        )
+        return result.returncode == 0
+    except FileNotFoundError:
+        return False
 
 
 def main() -> None:
@@ -64,14 +68,18 @@ def main() -> None:
 
     if args.diff:
         # Use Sourcery's native --diff flag to review only changed lines
-        cmd.extend(["--diff", f"git diff {args.base}"])
+        cmd.extend(["--diff", shlex.quote(f"git diff {args.base}")])
 
     # Review from repo root
     cmd.append(".")
 
     # Run Sourcery
-    proc = subprocess.run(cmd, cwd=REPO_ROOT)
-    sys.exit(proc.returncode)
+    try:
+        proc = subprocess.run(cmd, cwd=REPO_ROOT)
+        sys.exit(proc.returncode)
+    except FileNotFoundError:
+        print("✘ Sourcery command not found. Ensure it's installed and in PATH.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":
