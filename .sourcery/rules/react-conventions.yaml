@@ -1,0 +1,33 @@
+version: '2'
+
+# React Performance Convention Rules
+#
+# Enforce React performance best practices from Vercel guidelines.
+# Scoped to front-end packages via review.py tag system.
+#
+# Reference:
+#   - .github/instructions/react-performance.instructions.md
+#   - .github/skills/vercel-react-best-practices/SKILL.md
+
+rules:
+- id: no-barrel-lucide-import
+  description: Import Lucide icons from specific files, not the barrel export.
+  explanation: |
+    Importing from the barrel 'lucide-react' package loads all icons into
+    the bundle. Import specific icons from their individual files instead:
+
+    Bad:  import { Check } from 'lucide-react'
+    Good: import Check from 'lucide-react/dist/esm/icons/check'
+
+    Reference: .github/instructions/react-performance.instructions.md
+  pattern: |
+    import ${_} from 'lucide-react'
+  language:
+  - typescript
+  tags:
+  - react-perf
+  tests:
+  - match: |
+      import { Check } from 'lucide-react'
+  - no-match: |
+      import Check from 'lucide-react/dist/esm/icons/check'

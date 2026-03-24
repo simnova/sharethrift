@@ -1,0 +1,33 @@
+version: '2'
+
+# TypeScript Convention Rules
+#
+# Enforce strict TypeScript patterns per project coding standards.
+# These supplement Biome's lint rules with project-specific patterns.
+#
+# Reference:
+#   - CLAUDE.md (Code Conventions — strict TypeScript)
+#   - tsconfig.base.json (strict: true)
+
+rules:
+- id: no-any-type-assertion
+  description: Avoid 'as any' type assertions — use proper typing instead.
+  explanation: |
+    Type assertions to 'any' bypass TypeScript's type system and defeat
+    the purpose of strict mode. Use proper types, generics, type guards,
+    or 'as unknown' if a type assertion is truly needed.
+
+    Reference: CLAUDE.md — "Use Record<string, unknown> for unknown object shapes"
+  pattern: |
+    ${_} as any
+  language:
+  - typescript
+  tags:
+  - ts-conventions
+  tests:
+  - match: |
+      const x = foo as any
+  - match: |
+      doStuff(bar as any)
+  - no-match: |
+      const x = foo as unknown

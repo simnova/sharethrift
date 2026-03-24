@@ -1,0 +1,81 @@
+version: '2'
+
+# TypeScript/JavaScript Security Rules
+#
+# Common security anti-patterns. Supplements the built-in no-eval rule.
+#
+# Reference:
+#   - .github/instructions/snyk_cli.instructions.md
+#   - .github/skills/vercel-react-best-practices/SKILL.md
+
+rules:
+- id: no-innerhtml-assignment
+  description: Avoid innerHTML assignment — XSS risk.
+  explanation: |
+    Assigning unsanitized values to innerHTML can introduce cross-site
+    scripting (XSS) vulnerabilities. Use textContent for plain text
+    or a sanitization library for HTML content.
+
+    Skill: .github/skills/vercel-react-best-practices/SKILL.md
+  pattern: |
+    ${element}.innerHTML = ${value}
+  language:
+  - typescript
+  - javascript
+  tags:
+  - security
+  tests:
+  - match: |
+      document.getElementById('app').innerHTML = userInput
+  - no-match: |
+      document.getElementById('app').textContent = userInput
+
+- id: no-document-write
+  description: Avoid document.write() — XSS risk and performance issues.
+  explanation: |
+    document.write() can introduce XSS vulnerabilities and causes
+    performance issues by blocking page rendering. Use DOM manipulation
+    methods instead.
+  any:
+  - pattern: |
+      document.write(${value})
+  - pattern: |
+      document.writeln(${value})
+  language:
+  - typescript
+  - javascript
+  tags:
+  - security
+  tests:
+  - match: |
+      document.write('<script>alert(1)</script>')
+  - match: |
+      document.writeln(userContent)
+  - no-match: |
+      element.textContent = value
+
+- id: no-child-process-import
+  description: Avoid importing child_process — command injection risk.
+  explanation: |
+    Direct use of child_process can introduce command injection
+    vulnerabilities. If shell execution is truly required, use a
+    well-tested library with proper input sanitization.
+
+    Reference: .github/instructions/snyk_cli.instructions.md
+  any:
+  - pattern: |
+      import ${_} from 'child_process'
+  - pattern: |
+      import ${_} from 'node:child_process'
+  language:
+  - typescript
+  - javascript
+  tags:
+  - security
+  tests:
+  - match: |
+      import { exec } from 'child_process'
+  - match: |
+      import { execSync } from 'node:child_process'
+  - no-match: |
+      import { readFile } from 'fs'

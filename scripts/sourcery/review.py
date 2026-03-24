@@ -7,7 +7,30 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_BASE_BRANCH = "origin/main"
 
-ENABLE_TAGS = ["default"]
+# Global tags — applied to the entire repo
+GLOBAL_TAGS = ["default", "security"]
+
+# DDD boundary tags — scoped to specific package directories
+# Each entry maps a tag to the directory it should be applied to.
+DDD_SCOPED_TAGS: list[tuple[str, str]] = [
+    ("ddd-domain", "packages/sthrift/domain"),
+    ("ddd-graphql", "packages/sthrift/graphql"),
+    ("ddd-persistence", "packages/sthrift/persistence"),
+    ("ddd-seedwork", "packages/cellix/domain-seedwork"),
+    ("ts-conventions", "packages/sthrift/domain/src"),
+    ("react-perf", "apps/ui-sharethrift"),
+    ("react-perf", "packages/sthrift/ui-components"),
+]
+
+# Friendly labels for each tag (used in terminal output)
+TAG_LABELS: dict[str, str] = {
+    "ddd-domain": "DDD boundaries (domain)",
+    "ddd-graphql": "DDD boundaries (graphql)",
+    "ddd-persistence": "DDD boundaries (persistence)",
+    "ddd-seedwork": "DDD boundaries (seedwork)",
+    "ts-conventions": "TypeScript conventions",
+    "react-perf": "React performance",
+}
 
 
 def check_sourcery_installed() -> bool:
@@ -23,10 +46,37 @@ def check_sourcery_installed() -> bool:
         return False
 
 
+def build_base_cmd(args: argparse.Namespace) -> list[str]:
+    """Build the common Sourcery command prefix."""
+    cmd: list[str] = ["sourcery", "review"]
+
+    if args.fix:
+        cmd.append("--fix")
+    if args.check:
+        cmd.append("--check")
+    if args.diff:
+        cmd.extend(["--diff", f"git diff {args.base}"])
+
+    return cmd
+
+
+def run_sourcery(cmd: list[str], label: str) -> int:
+    """Run a Sourcery command, print its label, return the exit code."""
+    print(f"\n{'─' * 60}")
+    print(f"  {label}")
+    print(f"{'─' * 60}\n")
+    try:
+        proc = subprocess.run(cmd, cwd=REPO_ROOT)
+        return proc.returncode
+    except FileNotFoundError:
+        print("✘ Sourcery command not found.")
+        return 1
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
         description="Run Sourcery code review",
-        epilog="Sourcery configuration: .sourcery.yaml",
+        epilog="Sourcery configuration: .sourcery.yaml + .sourcery/rules/",
     )
     parser.add_argument(
         "--fix",
@@ -50,7 +100,6 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    # Check if Sourcery is installed
     if not check_sourcery_installed():
         print(
             "✘ Sourcery is not installed or not in PATH.\n"
@@ -58,32 +107,30 @@ def main() -> None:
         )
         sys.exit(1)
 
-    # Build Sourcery command with all rule tags enabled
-    cmd = ["sourcery", "review"]
+    worst_exit = 0
 
-    for tag in ENABLE_TAGS:
+    # 1. Global rules (default + security) on the whole repo
+    cmd = build_base_cmd(args)
+    for tag in GLOBAL_TAGS:
         cmd.extend(["--enable", tag])
-
-    if args.fix:
-        cmd.append("--fix")
-
-    if args.check:
-        cmd.append("--check")
-
-    if args.diff:
-        # Use Sourcery's native --diff flag to review only changed lines
-        cmd.extend(["--diff", f"git diff {args.base}"])
-
-    # Review from repo root
     cmd.append(".")
+    rc = run_sourcery(cmd, "Global rules (default + security)")
+    worst_exit = max(worst_exit, rc)
 
-    # Run Sourcery
-    try:
-        proc = subprocess.run(cmd, cwd=REPO_ROOT)
-        sys.exit(proc.returncode)
-    except FileNotFoundError:
-        print("✘ Sourcery command not found. Ensure it's installed and in PATH.")
-        sys.exit(1)
+    # 2. Scoped rules — applied to their respective directories
+    for tag, directory in DDD_SCOPED_TAGS:
+        target = REPO_ROOT / directory
+        if not target.is_dir():
+            print(f"⚠ Skipping {tag}: {directory} not found")
+            continue
+        cmd = build_base_cmd(args)
+        cmd.extend(["--enable", tag])
+        cmd.append(directory)
+        label = TAG_LABELS.get(tag, tag)
+        rc = run_sourcery(cmd, f"{label} → {directory}/")
+        worst_exit = max(worst_exit, rc)
+
+    sys.exit(worst_exit)
 
 
 if __name__ == "__main__":

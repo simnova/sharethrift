@@ -1,21 +1,30 @@
 version: '1'
 
 ignore:
-  # Directories to skip
   - dist/
   - build/
+  - apps/docs/build/
   - node_modules/
-  - coverage/
   - .turbo/
   - .venv/
+  - coverage/
+  - '**/coverage/'
   - __blobstorage__/
   - __queuestorage__/
   - __tablestorage__/
+  - apps/docs/static/serenity-reports/
   - '*.generated.ts'
   - '*.generated.tsx'
   - '**/generated.ts'
   - '**/generated.tsx'
-
+  
 rule_settings:
   enable:
     - default
+    - security
+    - ts-conventions
+    - react-perf
+    - ddd-domain
+    - ddd-graphql
+    - ddd-persistence
+    - ddd-seedwork

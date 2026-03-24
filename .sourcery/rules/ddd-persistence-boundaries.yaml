@@ -1,0 +1,101 @@
+version: '2'
+
+# Persistence Layer Boundary Rules
+#
+# The persistence layer (packages/sthrift/persistence/) should not import
+# from the GraphQL layer or Apollo.
+#
+# Reference:
+#   - sthrift-guidelines/api/api-persistence.instructions.md
+#   - .agents/skills/mongoose-mongodb/SKILL.md
+
+rules:
+- id: no-graphql-in-persistence
+  description: Persistence layer must not import from GraphQL package.
+  explanation: |
+    The persistence layer implements domain repository interfaces and
+    must not depend on API/transport concerns like GraphQL.
+
+    See: sthrift-guidelines/api/api-persistence.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@sthrift/graphql'
+  - pattern: |
+      import ${_} from '@sthrift/graphql/${...}'
+  language:
+  - typescript
+  tags:
+  - ddd-persistence
+  tests:
+  - match: |
+      import { resolvers } from '@sthrift/graphql'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-apollo-in-persistence
+  description: Persistence layer must not import Apollo Server.
+  explanation: |
+    The persistence layer implements domain repository interfaces and
+    must not depend on API/transport concerns like Apollo Server.
+
+    See: sthrift-guidelines/api/api-persistence.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@apollo/server'
+  - pattern: |
+      import ${_} from '@apollo/server/${...}'
+  language:
+  - typescript
+  tags:
+  - ddd-persistence
+  tests:
+  - match: |
+      import { ApolloServer } from '@apollo/server'
+  - no-match: |
+      import { MongoRepositoryBase } from '@cellix/data-sources-mongoose'
+
+- id: no-rest-in-persistence
+  description: Persistence layer must not import the REST package.
+  explanation: |
+    The persistence layer implements domain repository interfaces
+    and must not depend on API transport concerns like REST endpoints.
+
+    Reference: api-persistence.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@sthrift/rest'
+  - pattern: |
+      import ${_} from '@sthrift/rest/${...}'
+  - pattern: |
+      import type ${_} from '@sthrift/rest'
+  language:
+  - typescript
+  tags:
+  - ddd-persistence
+  tests:
+  - match: |
+      import { restHandler } from '@sthrift/rest'
+  - no-match: |
+      import { MongoRepositoryBase } from '@cellix/data-sources-mongoose'
+
+- id: no-azure-functions-in-persistence
+  description: Persistence layer must not import Azure Functions SDK.
+  explanation: |
+    The persistence layer implements domain repository interfaces
+    and must not depend on hosting framework concerns.
+
+    Reference: api-persistence.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@azure/functions'
+  - pattern: |
+      import type ${_} from '@azure/functions'
+  language:
+  - typescript
+  tags:
+  - ddd-persistence
+  tests:
+  - match: |
+      import { app } from '@azure/functions'
+  - no-match: |
+      import { MongoRepositoryBase } from '@cellix/data-sources-mongoose'
