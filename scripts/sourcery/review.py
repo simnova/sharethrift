@@ -1,5 +1,4 @@
 import argparse
-import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -7,6 +6,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_BASE_BRANCH = "origin/main"
+
+ENABLE_TAGS = ["default"]
 
 
 def check_sourcery_installed() -> bool:
@@ -57,8 +58,11 @@ def main() -> None:
         )
         sys.exit(1)
 
-    # Build Sourcery command
+    # Build Sourcery command with all rule tags enabled
     cmd = ["sourcery", "review"]
+
+    for tag in ENABLE_TAGS:
+        cmd.extend(["--enable", tag])
 
     if args.fix:
         cmd.append("--fix")

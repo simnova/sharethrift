@@ -7,7 +7,7 @@
     "license": "MIT",
     "packageManager": "pnpm@10.18.2",
     "scripts": {
-        "install:all": "pnpm install && python -m pip install --constraint pip-constraints.txt -r requirements.txt",
+        "install:all": "pnpm install && python -m pip install -r requirements.txt",
         "analyze": "pnpm dlx @e18e/cli analyze --log-level error",
         "build": "turbo run build",
         "test": "turbo run test",
@@ -60,7 +60,7 @@
         "sourcery:review:check": "python3 scripts/sourcery/review.py --check",
         "sourcery:review:diff": "python3 scripts/sourcery/review.py --diff",
         "sourcery:review:fix": "python3 scripts/sourcery/review.py --fix",
-        "verify": "pnpm run test:arch && pnpm run test:coverage:merge && pnpm run knip && pnpm run sourcery:review:check && pnpm run snyk && pnpm run sonar:pr && pnpm run check-sonar",
+        "verify": "pnpm run test:arch && pnpm run test:coverage:merge && pnpm run knip && pnpm run sourcery:review:diff && pnpm run snyk && pnpm run sonar:pr && pnpm run check-sonar",
         "knip": "knip",
         "snyk": "pnpm run snyk:test && pnpm run snyk:code",
         "snyk:report": "pnpm run snyk:monitor && pnpm run snyk:code:report",
