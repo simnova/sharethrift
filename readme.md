@@ -145,6 +145,14 @@ eval "$(mise activate zsh)"  # or bash/fish
 # Then reload: source ~/.zshrc
 ```
 
+**2.1 Trouble Shooting
+May need to run 
+
+```bash
+mise trust
+```
+if it says it does not have permission.
+
 **3. Install tools & dependencies**
 ```bash
 mise install  # Installs Node.js + Python per mise.toml + requirements.txt
@@ -157,6 +165,13 @@ This automatically:
 - Installs Python packages from `requirements.txt` (Sourcery for code review)
 
 ### 🏗️ Install & Build
+
+
+May need to run 
+
+```bash 
+pnpm setup
+```
 
 ```bash
 # Install Node and Python dependencies
@@ -181,6 +196,9 @@ pnpm run build
 ```
 pnpm run dev
 ```
+
+If a popup appears for network security after running dev, enter your password and approve.
+
 
 ![Terminal running 'pnpm run dev' starting Azure Functions host and frontend](./readme-assets/pnpm_dev.gif)
 
