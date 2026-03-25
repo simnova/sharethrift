@@ -108,7 +108,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          export NODE_OPTIONS=--max_old_space_size=16384
+          export NODE_OPTIONS="${NODE_OPTIONS:-} --max_old_space_size=16384"
           pnpm install
         workingDirectory: ''
 
@@ -118,7 +118,7 @@ stages:
       inputs:
         targetType: 'inline'
         script: |
-          export NODE_OPTIONS=--max_old_space_size=16384
+          export NODE_OPTIONS="${NODE_OPTIONS:-} --max_old_space_size=16384"
           pnpm install --frozen-lockfile
         workingDirectory: ''
 
@@ -224,7 +224,7 @@ stages:
         targetType: 'inline'
         script: |
           set -euo pipefail
-          export NODE_OPTIONS=--max_old_space_size=16384
+          export NODE_OPTIONS="${NODE_OPTIONS:-} --max_old_space_size=16384"
 
           echo "Running architectural fitness tests (system-wide validation)..."
           pnpm run test:arch
@@ -241,7 +241,7 @@ stages:
         script: |
           set -euo pipefail
           echo "Open file limit (ulimit -n): $(ulimit -n)"
-          export NODE_OPTIONS=--max_old_space_size=16384
+          export NODE_OPTIONS="${NODE_OPTIONS:-} --max_old_space_size=16384"
           export PLAYWRIGHT_BROWSERS_PATH="$(PLAYWRIGHT_BROWSERS_PATH)"
 
           # Show Turbo cache status
@@ -292,13 +292,13 @@ stages:
         script: |
           set -euo pipefail
           echo "Building packages required for acceptance tests..."
-          export NODE_OPTIONS=--max_old_space_size=16384
+          export NODE_OPTIONS="${NODE_OPTIONS:-} --max_old_space_size=16384"
           pnpm run build
 
           echo "Running acceptance tests (all scenarios)..."
           export PLAYWRIGHT_BROWSERS_PATH="$(PLAYWRIGHT_BROWSERS_PATH)"
           pnpm run test:acceptance:all
-        workingDirectory: ''
+        workingDirectory: '$(Build.SourcesDirectory)'
       env:
         PLAYWRIGHT_BROWSERS_PATH: $(PLAYWRIGHT_BROWSERS_PATH)
 
