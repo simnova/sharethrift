@@ -2,32 +2,33 @@ version: '2'
 
 # React Performance Convention Rules
 #
-# Enforce React performance best practices from Vercel guidelines.
+# Enforce React performance best practices.
 # Scoped to front-end packages via review.py tag system.
 #
-# Reference:
-#   - .github/instructions/react-performance.instructions.md
-#   - .github/skills/vercel-react-best-practices/SKILL.md
 
 rules:
-- id: no-barrel-lucide-import
-  description: Import Lucide icons from specific files, not the barrel export.
+- id: use-ant-design-barrel-imports
+  description: Import Ant Design components from the barrel export, not sub-paths.
   explanation: |
-    Importing from the barrel 'lucide-react' package loads all icons into
-    the bundle. Import specific icons from their individual files instead:
+    Ant Design is tree-shakeable. Import components from the main 'antd' barrel
+    export, not from internal paths. This is more maintainable and the library
+    handles optimization automatically:
 
-    Bad:  import { Check } from 'lucide-react'
-    Good: import Check from 'lucide-react/dist/esm/icons/check'
+    Bad:  import Button from 'antd/lib/button'
+    Good: import { Button } from 'antd'
 
-    Reference: .github/instructions/react-performance.instructions.md
-  pattern: |
-    import ${_} from 'lucide-react'
+    Reference: https://ant.design/docs/react/introduce
+  any:
+  - pattern: |
+      import ${_} from 'antd/lib/button'
+  - pattern: |
+      import ${_} from 'antd/lib/${...}'
   language:
   - typescript
   tags:
-  - react-perf
+  - react-conventions
   tests:
   - match: |
-      import { Check } from 'lucide-react'
+      import Button from 'antd/lib/button'
   - no-match: |
-      import Check from 'lucide-react/dist/esm/icons/check'
+      import { Button } from 'antd'

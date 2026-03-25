@@ -21,10 +21,8 @@ ignore:
 rule_settings:
   enable:
     - default
-    - security
     - ts-conventions
-    - react-perf
+    - react-conventions
     - ddd-domain
     - ddd-graphql
     - ddd-persistence
-    - ddd-seedwork

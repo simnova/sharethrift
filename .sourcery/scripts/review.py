@@ -1,4 +1,5 @@
 import argparse
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -8,18 +9,15 @@ REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_BASE_BRANCH = "origin/main"
 
 # Global tags — applied to the entire repo
-GLOBAL_TAGS = ["default", "security"]
+GLOBAL_TAGS = ["default", "ts-conventions"]
 
-# DDD boundary tags — scoped to specific package directories
+# Scoped rules — applied to specific package directories
 # Each entry maps a tag to the directory it should be applied to.
-DDD_SCOPED_TAGS: list[tuple[str, str]] = [
+SCOPED_TAGS: list[tuple[str, str]] = [
     ("ddd-domain", "packages/sthrift/domain"),
     ("ddd-graphql", "packages/sthrift/graphql"),
     ("ddd-persistence", "packages/sthrift/persistence"),
-    ("ddd-seedwork", "packages/cellix/domain-seedwork"),
-    ("ts-conventions", "packages/sthrift/domain/src"),
-    ("react-perf", "apps/ui-sharethrift"),
-    ("react-perf", "packages/sthrift/ui-components"),
+    ("react-conventions", "apps/ui-sharethrift"),
 ]
 
 # Friendly labels for each tag (used in terminal output)
@@ -27,10 +25,15 @@ TAG_LABELS: dict[str, str] = {
     "ddd-domain": "DDD boundaries (domain)",
     "ddd-graphql": "DDD boundaries (graphql)",
     "ddd-persistence": "DDD boundaries (persistence)",
-    "ddd-seedwork": "DDD boundaries (seedwork)",
-    "ts-conventions": "TypeScript conventions",
-    "react-perf": "React performance",
+    "react-conventions": "React conventions",
 }
+
+
+def validate_git_ref(ref: str) -> str:
+    """Validate git reference to prevent command injection."""
+    if not re.match(r'^[a-zA-Z0-9/_.-]+$', ref):
+        raise ValueError(f"Invalid git reference: {ref}")
+    return ref
 
 
 def check_sourcery_installed() -> bool:
@@ -55,7 +58,12 @@ def build_base_cmd(args: argparse.Namespace) -> list[str]:
     if args.check:
         cmd.append("--check")
     if args.diff:
-        cmd.extend(["--diff", f"git diff {args.base}"])
+        try:
+            safe_base = validate_git_ref(args.base)
+            cmd.extend(["--diff", f"git diff {safe_base}"])
+        except ValueError as e:
+            print(f"✘ {e}")
+            sys.exit(1)
 
     return cmd
 
@@ -109,25 +117,34 @@ def main() -> None:
 
     worst_exit = 0
 
-    # 1. Global rules (default + security) on the whole repo
+    # 1. Global rules (safe to run on entire repo, no false positives)
     cmd = build_base_cmd(args)
     for tag in GLOBAL_TAGS:
         cmd.extend(["--enable", tag])
     cmd.append(".")
-    rc = run_sourcery(cmd, "Global rules (default + security)")
+    global_tags_str = ", ".join(GLOBAL_TAGS)
+    rc = run_sourcery(cmd, f"Global rules ({global_tags_str})")
     worst_exit = max(worst_exit, rc)
 
-    # 2. Scoped rules — applied to their respective directories
-    for tag, directory in DDD_SCOPED_TAGS:
+    # 2. Scoped rules (must be scoped to specific directories)
+    # Group by directory to reduce command invocations
+    dirs_with_tags: dict[str, list[str]] = {}
+    for tag, directory in SCOPED_TAGS:
+        if directory not in dirs_with_tags:
+            dirs_with_tags[directory] = []
+        dirs_with_tags[directory].append(tag)
+
+    for directory, tags in dirs_with_tags.items():
         target = REPO_ROOT / directory
         if not target.is_dir():
-            print(f"⚠ Skipping {tag}: {directory} not found")
+            print(f"⚠ Skipping {directory}: not found")
             continue
         cmd = build_base_cmd(args)
-        cmd.extend(["--enable", tag])
+        for tag in tags:
+            cmd.extend(["--enable", tag])
         cmd.append(directory)
-        label = TAG_LABELS.get(tag, tag)
-        rc = run_sourcery(cmd, f"{label} → {directory}/")
+        tag_names = ", ".join(TAG_LABELS.get(t, t) for t in tags)
+        rc = run_sourcery(cmd, f"{tag_names} → {directory}/")
         worst_exit = max(worst_exit, rc)
 
     sys.exit(worst_exit)
