@@ -1,5 +1,5 @@
 import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumber';
-import { configure, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
+import { engage, type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
 import './shared/support/hooks.ts';
 import './shared/support/register-css.mjs';
 import { RenderComponents } from './shared/abilities/render-components.ts';
@@ -24,6 +24,29 @@ export interface WorldParameters {
 	tasks: TaskLevel;
 	session?: SessionType;
 	apiUrl?: string;
+}
+
+// Shared servers persist across scenarios within a test run to avoid
+// port conflicts and stale-URL issues caused by Serenity.js actor caching.
+let sharedGraphQLServer: TestServer | undefined;
+let sharedMongoDBServer: MongoDBTestServer | undefined;
+let sharedMongoDBGraphQLServer: TestServer | undefined;
+let sharedApiUrl: string | undefined;
+
+export async function stopSharedServers(): Promise<void> {
+	if (sharedMongoDBGraphQLServer) {
+		await sharedMongoDBGraphQLServer.stop();
+		sharedMongoDBGraphQLServer = undefined;
+	}
+	if (sharedGraphQLServer) {
+		await sharedGraphQLServer.stop();
+		sharedGraphQLServer = undefined;
+	}
+	if (sharedMongoDBServer) {
+		await sharedMongoDBServer.stop();
+		sharedMongoDBServer = undefined;
+	}
+	sharedApiUrl = undefined;
 }
 
 class ShareThriftCast implements Cast {
@@ -91,38 +114,35 @@ export class ShareThriftWorld extends World<WorldParameters> {
 	private readonly tasksLevel: TaskLevel;
 	private readonly sessionType: SessionType;
 	private apiUrl: string;
-	private testServer: TestServer | undefined;
-	private mongodbTestServer: MongoDBTestServer | undefined;
 
 	constructor(options: IWorldOptions<WorldParameters>) {
 		super(options);
 		this.tasksLevel = options.parameters?.tasks || 'domain';
 		this.sessionType = options.parameters?.session || 'domain';
 		this.apiUrl = options.parameters?.apiUrl || 'http://localhost:4000/graphql';
-		this.testServer = undefined;
 	}
 
 	async init(): Promise<void> {
-		if (this.sessionType === 'graphql' && !this.testServer) {
+		if (this.sessionType === 'graphql' && !sharedGraphQLServer) {
 			const testFactory = createTestApplicationServicesFactory();
-
-			this.testServer = new TestServer(testFactory);
-			await this.testServer.start(4000);
+			sharedGraphQLServer = new TestServer(testFactory);
+			await sharedGraphQLServer.start();
+			sharedApiUrl = sharedGraphQLServer.getUrl();
 		}
 
-		if (this.sessionType === 'mongodb') {
-			if (this.mongodbTestServer) {
-				await this.mongodbTestServer.stop();
-			}
+		if (this.sessionType === 'mongodb' && !sharedMongoDBServer) {
+			sharedMongoDBServer = new MongoDBTestServer();
+			await sharedMongoDBServer.start();
 
-			this.mongodbTestServer = new MongoDBTestServer();
-			await this.mongodbTestServer.start();
-
-			const serviceMongoose = this.mongodbTestServer.getServiceMongoose();
+			const serviceMongoose = sharedMongoDBServer.getServiceMongoose();
 			const realFactory = createRealApplicationServicesFactory(serviceMongoose);
-			this.testServer = new TestServer(realFactory);
-			const url = await this.testServer.start(4001);
-			this.apiUrl = url;
+			sharedMongoDBGraphQLServer = new TestServer(realFactory);
+			await sharedMongoDBGraphQLServer.start();
+			sharedApiUrl = sharedMongoDBGraphQLServer.getUrl();
+		}
+
+		if (sharedApiUrl) {
+			this.apiUrl = sharedApiUrl;
 		}
 
 		clearMockReservationRequests();
@@ -134,12 +154,10 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			this.apiUrl,
 		);
 
-		configure({
-			actors: cast,
-			crew: [],
-		});
-
-
+		// Use engage() to replace the cast and force fresh actors each scenario.
+		// Serenity.js caches actors globally; without this, actors from previous
+		// scenarios retain stale abilities pointing to stopped servers.
+		engage(cast);
 	}
 
 	async cleanup(): Promise<void> {
@@ -149,16 +167,6 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			} catch {
 				// testing-library not imported
 			}
-		}
-
-		if (this.testServer) {
-			await this.testServer.stop();
-			this.testServer = undefined;
-		}
-
-		if (this.mongodbTestServer) {
-			await this.mongodbTestServer.stop();
-			this.mongodbTestServer = undefined;
 		}
 	}
 

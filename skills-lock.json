@@ -1,6 +1,11 @@
 {
   "version": 1,
   "skills": {
+    "antd": {
+      "source": "ant-design/ant-design-cli",
+      "sourceType": "github",
+      "computedHash": "6ee5a19f0e44c3dd473e06318f70deb46dfa4f20b80a0318a9dc14f44668e0c3"
+    },
     "apollo-client": {
       "source": "apollographql/skills",
       "sourceType": "github",

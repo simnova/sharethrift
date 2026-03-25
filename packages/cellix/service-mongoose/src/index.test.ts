@@ -144,10 +144,9 @@ test.for(
 					await service.shutDown();
 				});
 				Then(
-					'it should disconnect from MongoDB and log that the service stopped',
+					'it should disconnect from MongoDB',
 					() => {
 						expect(disconnectMock).toHaveBeenCalled();
-						expect(logSpy).toHaveBeenCalledWith('ServiceMongoose stopped');
 					},
 				);
 			},

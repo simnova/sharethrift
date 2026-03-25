@@ -80,7 +80,6 @@ export class MongoUnitOfWork<
 			[]; //todo: can we make this an arry of CustomDomainEvents?
 
 		await mongoose.connection.transaction(async (session: ClientSession) => {
-			console.log('transaction');
 			const repo = MongoRepositoryBase.create(
 				passport,
 				this.model,
@@ -89,18 +88,10 @@ export class MongoUnitOfWork<
 				session,
 				this.repoClass,
 			);
-			console.log('repo created');
-			try {
-				await func(repo);
-				// await console.log('func done');
-			} catch (e) {
-				console.log('func failed');
-				console.log(e);
-				throw e;
-			}
+			await func(repo);
+			// await console.log('func done');
 			repoEvents = repo.getIntegrationEvents();
 		});
-		console.log(`${repoEvents.length} integration events`);
 		//Send integration events after transaction is completed
 		for (const event of repoEvents) {
 			await this.integrationEventBus.dispatch(
@@ -108,9 +99,6 @@ export class MongoUnitOfWork<
 					aggregateId: string,
 				) => typeof event,
 				event.payload,
-			);
-			console.log(
-				`dispatch integration event ${event.constructor.name} with payload ${JSON.stringify(event.payload)}`,
 			);
 		}
 	}

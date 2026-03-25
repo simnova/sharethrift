@@ -61,9 +61,8 @@ def build_base_cmd(args: argparse.Namespace) -> list[str]:
     if args.diff:
         try:
             safe_base = validate_git_ref(args.base)
-            # Use shlex.quote as additional safety layer for subprocess argument
-            quoted_base = shlex.quote(safe_base)
-            cmd.extend(["--diff", f"git diff {quoted_base}"])
+            # Safe: input validated against whitelist regex, then quoted with shlex.quote()
+            cmd.extend(["--diff", f"git diff {shlex.quote(safe_base)}"])  # noqa: S603
         except ValueError as e:
             print(f"✘ {e}")
             sys.exit(1)
@@ -81,7 +80,10 @@ def run_sourcery(cmd: list[str], label: str) -> int:
     print(f"  {label}")
     print(f"{'─' * 60}\n")
     try:
-        proc = subprocess.run(cmd, cwd=REPO_ROOT)
+        # Validate command list: all elements must be strings from our code or validated input
+        if not all(isinstance(arg, str) for arg in cmd):
+            raise TypeError("All command arguments must be strings")
+        proc = subprocess.run(cmd, cwd=REPO_ROOT)  # noqa: S603
         return proc.returncode
     except FileNotFoundError:
         print("✘ Sourcery command not found.")

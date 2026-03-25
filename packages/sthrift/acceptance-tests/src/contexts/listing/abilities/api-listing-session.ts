@@ -35,17 +35,23 @@ export abstract class ApiListingSession extends ApiSession {
 
 	protected async handleCreateListing(input: CreateItemListingInput): Promise<ItemListingResponse> {
 		const mutation = `
-			mutation CreateItemListing($input: CreateItemListingInput!) {
+			mutation CreateItemListing($input: ItemListingCreateInput!) {
 				createItemListing(input: $input) {
-					id
-					title
-					description
-					category
-					location
-					state
-					sharingPeriodStart
-					sharingPeriodEnd
-					images
+					status {
+						success
+						errorMessage
+					}
+					listing {
+						id
+						title
+						description
+						category
+						location
+						state
+						sharingPeriodStart
+						sharingPeriodEnd
+						images
+					}
 				}
 			}
 		`;
@@ -53,7 +59,14 @@ export abstract class ApiListingSession extends ApiSession {
 		const response = await this.executeGraphQL(mutation, {
 			input: this.serializeInput(input),
 		});
-		const createItemListingData = response.data['createItemListing'] as Record<string, unknown>;
+		const mutationResult = response.data['createItemListing'] as Record<string, unknown>;
+		const status = mutationResult['status'] as Record<string, unknown> | undefined;
+
+		if (status && !status['success']) {
+			throw new Error(String(status['errorMessage'] ?? 'Failed to create listing'));
+		}
+
+		const createItemListingData = (mutationResult['listing'] ?? {}) as Record<string, unknown>;
 		return this.deserializeItemListing(createItemListingData);
 	}
 

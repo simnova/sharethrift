@@ -51,9 +51,7 @@ export abstract class MongoRepositoryBase<
 	async save(item: DomainType): Promise<DomainType> {
 		item.onSave(this.typeConverter.toPersistence(item).isModified());
 
-		console.log('saving item');
 		for (const event of item.getDomainEvents()) {
-			console.log(`Repo dispatching DomainEvent : ${JSON.stringify(event)}`);
 			// [NN] [ESLINT] will come back to this with refactoring and unit tests to implement similar to QueueSenderApi<T>
 			await this.bus.dispatch(
 				event.constructor as new (
@@ -64,24 +62,17 @@ export abstract class MongoRepositoryBase<
 		}
 		item.clearDomainEvents();
 		this.itemsInTransaction.push(item);
-		try {
-			if (item.isDeleted) {
-				console.log('deleting item id', item.id);
-				await this.model
-					.deleteOne({ _id: item.id }, { session: this.session })
-					.exec();
-				return item;
-			} else {
-				console.log('saving item id', item.id);
-				const mongoObj = this.typeConverter.toPersistence(item);
-				return this.typeConverter.toDomain(
-					await mongoObj.save({ session: this.session }),
-					this.passport,
-				);
-			}
-		} catch (error) {
-			console.log(`Error saving item : ${String(error)}`);
-			throw error;
+		if (item.isDeleted) {
+			await this.model
+				.deleteOne({ _id: item.id }, { session: this.session })
+				.exec();
+			return item;
+		} else {
+			const mongoObj = this.typeConverter.toPersistence(item);
+			return this.typeConverter.toDomain(
+				await mongoObj.save({ session: this.session }),
+				this.passport,
+			);
 		}
 	}
 

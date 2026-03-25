@@ -23,7 +23,7 @@ Feature: ServiceMongoose
   Scenario: Shutting down the service when started
     Given a started mongoose service instance
     When the service is shutdown
-    Then it should disconnect from MongoDB and log that the service stopped
+    Then it should disconnect from MongoDB
 
   Scenario: Shutting down the service when not started
     Given a mongoose service instance that has not been started

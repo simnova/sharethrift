@@ -47,7 +47,6 @@ export function modelFactory<ModelType extends Base>(
 		if (initializedService.service.models[modelName]) {
 			return initializedService.service.models[modelName] as Model<ModelType>;
 		}
-		console.log('ServiceMongoose | registering model > ', modelName);
 		return initializedService.service.model<ModelType>(modelName, schema);
 		//return mongoose.model<ModelType>(modelName, schema);
 	};
