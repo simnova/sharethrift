@@ -80,7 +80,10 @@ def run_sourcery(cmd: list[str], label: str) -> int:
     print(f"  {label}")
     print(f"{'─' * 60}\n")
     try:
-        proc = subprocess.run(cmd, cwd=REPO_ROOT)
+        # Validate command list: all elements must be strings from our code or validated input
+        if not all(isinstance(arg, str) for arg in cmd):
+            raise TypeError("All command arguments must be strings")
+        proc = subprocess.run(cmd, cwd=REPO_ROOT)  # noqa: S603
         return proc.returncode
     except FileNotFoundError:
         print("✘ Sourcery command not found.")
