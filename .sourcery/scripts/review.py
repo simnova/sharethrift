@@ -81,7 +81,8 @@ def run_sourcery(cmd: list[str], label: str) -> int:
     print(f"  {label}")
     print(f"{'─' * 60}\n")
     try:
-        # Safe: subprocess.run with list argument doesn't use shell interpretation
+        # nosec B603: Safe - uses list args (no shell=True), user input validated via validate_git_ref()
+        # and escaped via shlex.quote(). List-based subprocess.run() is the recommended safe pattern.
         proc = subprocess.run(cmd, cwd=REPO_ROOT)
         return proc.returncode
     except FileNotFoundError:
