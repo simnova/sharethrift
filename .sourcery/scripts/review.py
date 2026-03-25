@@ -1,5 +1,6 @@
 import argparse
 import re
+import shlex
 import subprocess
 import sys
 from pathlib import Path
@@ -60,7 +61,9 @@ def build_base_cmd(args: argparse.Namespace) -> list[str]:
     if args.diff:
         try:
             safe_base = validate_git_ref(args.base)
-            cmd.extend(["--diff", f"git diff {safe_base}"])
+            # Use shlex.quote as additional safety layer for subprocess argument
+            quoted_base = shlex.quote(safe_base)
+            cmd.extend(["--diff", f"git diff {quoted_base}"])
         except ValueError as e:
             print(f"✘ {e}")
             sys.exit(1)
