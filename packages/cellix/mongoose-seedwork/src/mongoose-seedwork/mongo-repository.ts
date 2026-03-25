@@ -1,7 +1,6 @@
 import type { ClientSession, Model } from 'mongoose';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Base } from './base.ts';
-import { logger } from './logger.ts';
 
 export abstract class MongoRepositoryBase<
 	MongoType extends Base,
@@ -52,9 +51,7 @@ export abstract class MongoRepositoryBase<
 	async save(item: DomainType): Promise<DomainType> {
 		item.onSave(this.typeConverter.toPersistence(item).isModified());
 
-		logger.debug('saving item');
 		for (const event of item.getDomainEvents()) {
-			logger.debug(`Repo dispatching DomainEvent : ${JSON.stringify(event)}`);
 			// [NN] [ESLINT] will come back to this with refactoring and unit tests to implement similar to QueueSenderApi<T>
 			await this.bus.dispatch(
 				event.constructor as new (
@@ -65,24 +62,17 @@ export abstract class MongoRepositoryBase<
 		}
 		item.clearDomainEvents();
 		this.itemsInTransaction.push(item);
-		try {
-			if (item.isDeleted) {
-				logger.debug('deleting item id', item.id);
-				await this.model
-					.deleteOne({ _id: item.id }, { session: this.session })
-					.exec();
-				return item;
-			} else {
-				logger.debug('saving item id', item.id);
-				const mongoObj = this.typeConverter.toPersistence(item);
-				return this.typeConverter.toDomain(
-					await mongoObj.save({ session: this.session }),
-					this.passport,
-				);
-			}
-		} catch (error) {
-			logger.debug(`Error saving item : ${String(error)}`);
-			throw error;
+		if (item.isDeleted) {
+			await this.model
+				.deleteOne({ _id: item.id }, { session: this.session })
+				.exec();
+			return item;
+		} else {
+			const mongoObj = this.typeConverter.toPersistence(item);
+			return this.typeConverter.toDomain(
+				await mongoObj.save({ session: this.session }),
+				this.passport,
+			);
 		}
 	}
 

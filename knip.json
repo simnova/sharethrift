@@ -108,7 +108,8 @@
 		"@ant-design/icons",
 		"antd",
 		"react-router-dom",
-		"tsx"
+		"tsx",
+		"progress-bar"
 	],
 	"ignoreBinaries": ["func", "open", "concurrently", "container", "portless", "python", "python3"]
 }

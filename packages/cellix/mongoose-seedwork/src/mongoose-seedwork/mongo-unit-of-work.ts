@@ -2,7 +2,6 @@ import mongoose, { type ClientSession, type Model } from 'mongoose';
 import { MongoRepositoryBase } from './mongo-repository.ts';
 import type { DomainSeedwork } from '@cellix/domain-seedwork';
 import type { Base } from './base.ts';
-import { logger } from './logger.ts';
 
 export class MongoUnitOfWork<
 	MongoType extends Base,
@@ -81,7 +80,6 @@ export class MongoUnitOfWork<
 			[]; //todo: can we make this an arry of CustomDomainEvents?
 
 		await mongoose.connection.transaction(async (session: ClientSession) => {
-			logger.debug('transaction');
 			const repo = MongoRepositoryBase.create(
 				passport,
 				this.model,
@@ -90,18 +88,10 @@ export class MongoUnitOfWork<
 				session,
 				this.repoClass,
 			);
-			logger.debug('repo created');
-			try {
-				await func(repo);
-				// await console.log('func done');
-			} catch (e) {
-				logger.debug('func failed');
-				logger.debug(e);
-				throw e;
-			}
+			await func(repo);
+			// await console.log('func done');
 			repoEvents = repo.getIntegrationEvents();
 		});
-		logger.debug(`${repoEvents.length} integration events`);
 		//Send integration events after transaction is completed
 		for (const event of repoEvents) {
 			await this.integrationEventBus.dispatch(
@@ -109,9 +99,6 @@ export class MongoUnitOfWork<
 					aggregateId: string,
 				) => typeof event,
 				event.payload,
-			);
-			logger.debug(
-				`dispatch integration event ${event.constructor.name} with payload ${JSON.stringify(event.payload)}`,
 			);
 		}
 	}

@@ -34,7 +34,6 @@ export class ServiceMongoose
 			);
 		}
 		await this.serviceInternal.disconnect();
-		MongooseSeedwork.logger.info('ServiceMongoose stopped');
 	}
 	public get service(): Mongoose {
 		if (!this.serviceInternal) {

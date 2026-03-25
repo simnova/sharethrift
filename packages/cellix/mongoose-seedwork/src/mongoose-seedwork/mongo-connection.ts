@@ -1,5 +1,4 @@
 import type mongoose from 'mongoose';
-import { logger } from './logger.ts';
 import type {
 	Model,
 	DefaultSchemaOptions,
@@ -48,7 +47,6 @@ export function modelFactory<ModelType extends Base>(
 		if (initializedService.service.models[modelName]) {
 			return initializedService.service.models[modelName] as Model<ModelType>;
 		}
-		logger.debug('ServiceMongoose | registering model > ', modelName);
 		return initializedService.service.model<ModelType>(modelName, schema);
 		//return mongoose.model<ModelType>(modelName, schema);
 	};
