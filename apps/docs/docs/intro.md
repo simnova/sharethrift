@@ -14,10 +14,8 @@ Sharethrift is a Domain-Driven Design (DDD) monorepo built on Azure Functions, i
 
 ### What you'll need
 
-- [Node.js](https://nodejs.org/en/download/) version 22.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+- [mise](https://mise.jdx.dev/) - manages Node.js v22 and Python (replaces nvm)
 - [Azure Functions Core Tools](https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local) for local development
-- [MongoDB](https://www.mongodb.com/try/download/community) or access to a MongoDB instance
 
 ## Clone and Setup
 
@@ -26,16 +24,19 @@ Clone the Sharethrift repository and set up the development environment:
 ```bash
 git clone https://github.com/Sharethrift/sharethrift.git
 cd sharethrift
-```i
+```
 
-Install dependencies and build the project:
+Install tools and dependencies:
 
 ```bash
-# Use Node.js v22
-nvm use v22
+# Install tools (Node + Python)
+mise install
 
-# Clean, install dependencies, and build
-npm run clean && npm install && npm run build
+# Install Node and Python packages in one command
+pnpm run install:all
+
+# Build
+pnpm run build
 ```
 
 ## Start Development
@@ -43,7 +44,7 @@ npm run clean && npm install && npm run build
 Run the development environment:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 This command will:

@@ -1,0 +1,107 @@
+version: '2'
+
+# GraphQL Layer Boundary Rules
+#
+# The GraphQL layer (packages/sthrift/graphql/) should not import directly
+# from persistence/infrastructure layers.
+#
+# Reference:
+#   - sthrift-guidelines/api/api-graphql.instructions.md
+#   - .github/skills/graphql-schema/SKILL.md
+#   - .github/skills/apollo-server/SKILL.md
+
+rules:
+- id: no-mongoose-in-graphql
+  description: GraphQL layer must not import Mongoose directly.
+  explanation: |
+    The GraphQL layer should access data through the domain's Unit of Work
+    pattern via context.apiContext.domainDataSource, not directly through
+    Mongoose models.
+
+    See: sthrift-guidelines/api/api-graphql.instructions.md
+    Skill: .agents/skills/mongoose-mongodb/SKILL.md
+  any:
+  - pattern: |
+      import ${_} from 'mongoose'
+  - pattern: |
+      import type ${_} from 'mongoose'
+  language:
+  - typescript
+  tags:
+  - ddd-graphql
+  tests:
+  - match: |
+      import { Schema } from 'mongoose'
+  - no-match: |
+      import { ApolloServer } from '@apollo/server'
+
+- id: no-data-sources-in-graphql
+  description: GraphQL layer must not import data-sources packages directly.
+  explanation: |
+    The GraphQL layer should access persistence through the domain layer
+    and context.apiContext, not by importing data-source packages directly.
+
+    See: sthrift-guidelines/api/api-graphql.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@cellix/data-sources-mongoose'
+  - pattern: |
+      import ${_} from '@cellix/data-sources-mongoose/${...}'
+  language:
+  - typescript
+  tags:
+  - ddd-graphql
+  tests:
+  - match: |
+      import { MongoRepositoryBase } from '@cellix/data-sources-mongoose'
+  - no-match: |
+      import { ApolloServer } from '@apollo/server'
+
+- id: no-persistence-pkg-in-graphql
+  description: GraphQL layer must not import the persistence package directly.
+  explanation: |
+    The GraphQL layer should access data through the domain's Unit of Work
+    pattern via context.apiContext.domainDataSource, not directly through
+    persistence implementations.
+
+    Reference: api-graphql.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@sthrift/persistence'
+  - pattern: |
+      import ${_} from '@sthrift/persistence/${...}'
+  - pattern: |
+      import type ${_} from '@sthrift/persistence'
+  language:
+  - typescript
+  tags:
+  - ddd-graphql
+  tests:
+  - match: |
+      import { CommunityRepository } from '@sthrift/persistence'
+  - no-match: |
+      import { ApolloServer } from '@apollo/server'
+
+- id: no-mongoose-models-in-graphql
+  description: GraphQL layer must not import Mongoose model definitions.
+  explanation: |
+    The GraphQL layer should access data through the domain layer,
+    not by importing Mongoose model schemas directly.
+
+    Reference: api-graphql.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@sthrift/data-sources-mongoose-models'
+  - pattern: |
+      import ${_} from '@sthrift/data-sources-mongoose-models/${...}'
+  - pattern: |
+      import type ${_} from '@sthrift/data-sources-mongoose-models'
+  language:
+  - typescript
+  tags:
+  - ddd-graphql
+  tests:
+  - match: |
+      import { CommunityModel } from '@sthrift/data-sources-mongoose-models'
+  - no-match: |
+      import { ApolloServer } from '@apollo/server'
