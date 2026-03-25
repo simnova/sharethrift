@@ -7,7 +7,7 @@
     "license": "MIT",
     "packageManager": "pnpm@10.18.2",
     "scripts": {
-        "install:all": "pnpm install && python -m pip install -r requirements.txt",
+        "install:all": "pnpm install && python3 -m pip install -r requirements.txt",
         "analyze": "pnpm dlx @e18e/cli analyze --log-level error",
         "build": "turbo run build",
         "test": "turbo run test",
