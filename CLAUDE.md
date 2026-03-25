@@ -4,6 +4,7 @@
 
 **ShareThrift** is a modern, community-driven peer-to-peer sharing platform designed to reduce waste and enable the sharing of items, services, and classes. It empowers individuals and organizations to participate in the circular economy.
 
+
 ### Core Purpose
 - Reduce consumer waste by extending item lifecycles
 - Enable cost-efficient access to tools, equipment, and skills
