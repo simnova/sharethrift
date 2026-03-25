@@ -61,9 +61,8 @@ def build_base_cmd(args: argparse.Namespace) -> list[str]:
     if args.diff:
         try:
             safe_base = validate_git_ref(args.base)
-            # Use shlex.quote as additional safety layer for subprocess argument
-            quoted_base = shlex.quote(safe_base)
-            cmd.extend(["--diff", f"git diff {quoted_base}"])
+            # Safe: input validated against whitelist regex, then quoted with shlex.quote()
+            cmd.extend(["--diff", f"git diff {shlex.quote(safe_base)}"])  # noqa: S603
         except ValueError as e:
             print(f"✘ {e}")
             sys.exit(1)
