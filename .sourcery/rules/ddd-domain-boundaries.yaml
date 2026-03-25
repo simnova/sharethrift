@@ -1,0 +1,273 @@
+version: '2'
+rules:
+- id: no-mongoose-in-domain
+  description: Domain layer must not import Mongoose.
+  any:
+  - pattern: |
+      import ${_} from 'mongoose'
+  - pattern: |
+      import type ${_} from 'mongoose'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import mongoose from 'mongoose'
+  - match: |
+      import type { Document } from 'mongoose'
+  - no-match: |
+      import { Entity } from '@cellix/domain-seedwork'
+
+- id: no-apollo-in-domain
+  description: Domain layer must not import Apollo Server.
+  any:
+  - pattern: |
+      import ${_} from '@apollo/server'
+  - pattern: |
+      import ${_} from '@apollo/server/${...}'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { ApolloServer } from '@apollo/server'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-graphql-in-domain
+  description: Domain layer must not import graphql directly.
+  pattern: |
+    import ${_} from 'graphql'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { GraphQLObjectType } from 'graphql'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-express-in-domain
+  description: Domain layer must not import Express.
+  pattern: |
+    import ${_} from 'express'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import express from 'express'
+  - no-match: |
+      import { Entity } from '@cellix/domain-seedwork'
+
+- id: no-data-sources-in-domain
+  description: Domain layer must not import data-sources packages.
+  any:
+  - pattern: |
+      import ${_} from '@cellix/data-sources-mongoose'
+  - pattern: |
+      import ${_} from '@cellix/data-sources-mongoose/${...}'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { MongoRepositoryBase } from '@cellix/data-sources-mongoose'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-service-mongoose-in-domain
+  description: Domain layer must not import service-mongoose.
+  pattern: |
+    import ${_} from '@cellix/service-mongoose'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { ServiceMongoose } from '@cellix/service-mongoose'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-service-messaging-in-domain
+  description: Domain layer must not import messaging service implementations.
+  any:
+  - pattern: |
+      import ${_} from '@cellix/service-messaging-twilio'
+  - pattern: |
+      import ${_} from '@cellix/service-messaging-mock'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { ServiceMessagingTwilio } from '@cellix/service-messaging-twilio'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-service-payment-in-domain
+  description: Domain layer must not import payment service implementations.
+  any:
+  - pattern: |
+      import ${_} from '@cellix/service-payment-cybersource'
+  - pattern: |
+      import ${_} from '@cellix/service-payment-mock'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { ServicePayment } from '@cellix/service-payment-cybersource'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-service-infra-in-domain
+  description: Domain layer must not import infrastructure service packages.
+  any:
+  - pattern: |
+      import ${_} from '@cellix/service-blob-storage'
+  - pattern: |
+      import ${_} from '@cellix/service-otel'
+  - pattern: |
+      import ${_} from '@cellix/service-sendgrid'
+  - pattern: |
+      import ${_} from '@cellix/service-token-validation'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { BlobStorage } from '@cellix/service-blob-storage'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-sthrift-persistence-in-domain
+  description: Domain layer must not import the persistence package.
+  explanation: |
+    The domain layer must remain free of infrastructure concerns.
+    Persistence is an infrastructure adapter and must not leak into domain code.
+
+    Reference: api-domain.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@sthrift/persistence'
+  - pattern: |
+      import ${_} from '@sthrift/persistence/${...}'
+  - pattern: |
+      import type ${_} from '@sthrift/persistence'
+  - pattern: |
+      import type ${_} from '@sthrift/persistence/${...}'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { CommunityRepository } from '@sthrift/persistence'
+  - match: |
+      import type { CommunityRepository } from '@sthrift/persistence'
+  - no-match: |
+      import { CommunityRepository } from './community.repository'
+
+- id: no-sthrift-graphql-in-domain
+  description: Domain layer must not import the GraphQL package.
+  explanation: |
+    The domain layer must not depend on API transport concerns.
+    GraphQL is an interface layer and must not leak into domain code.
+
+    Reference: api-domain.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@sthrift/graphql'
+  - pattern: |
+      import ${_} from '@sthrift/graphql/${...}'
+  - pattern: |
+      import type ${_} from '@sthrift/graphql'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { resolvers } from '@sthrift/graphql'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-sthrift-rest-in-domain
+  description: Domain layer must not import the REST package.
+  explanation: |
+    The domain layer must not depend on API transport concerns.
+    REST is an interface layer and must not leak into domain code.
+
+    Reference: api-domain.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@sthrift/rest'
+  - pattern: |
+      import ${_} from '@sthrift/rest/${...}'
+  - pattern: |
+      import type ${_} from '@sthrift/rest'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { restHandler } from '@sthrift/rest'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-mongoose-models-in-domain
+  description: Domain layer must not import Mongoose model definitions.
+  explanation: |
+    Mongoose model definitions are infrastructure concerns.
+    The domain layer must not depend on persistence model schemas.
+
+    Reference: api-domain.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@sthrift/data-sources-mongoose-models'
+  - pattern: |
+      import ${_} from '@sthrift/data-sources-mongoose-models/${...}'
+  - pattern: |
+      import type ${_} from '@sthrift/data-sources-mongoose-models'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { CommunityModel } from '@sthrift/data-sources-mongoose-models'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'
+
+- id: no-azure-functions-in-domain
+  description: Domain layer must not import Azure Functions SDK.
+  explanation: |
+    Azure Functions is an infrastructure concern for hosting.
+    The domain layer must remain framework-agnostic.
+
+    Reference: api-domain.instructions.md
+  any:
+  - pattern: |
+      import ${_} from '@azure/functions'
+  - pattern: |
+      import type ${_} from '@azure/functions'
+  language:
+  - typescript
+  tags:
+  - ddd-domain
+  tests:
+  - match: |
+      import { app } from '@azure/functions'
+  - no-match: |
+      import { DomainSeedwork } from '@cellix/domain-seedwork'

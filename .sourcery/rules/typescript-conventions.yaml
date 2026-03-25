@@ -1,0 +1,109 @@
+version: '2'
+
+# TypeScript Convention & Security Rules
+#
+# Enforce strict TypeScript patterns and security best practices.
+# These supplement Biome's lint rules and built-in security checks with project-specific patterns.
+#
+# Reference:
+#   - CLAUDE.md (Code Conventions — strict TypeScript)
+#   - tsconfig.base.json (strict: true)
+#   - OWASP Top 10 (security patterns)
+
+rules:
+# TypeScript Conventions
+- id: no-any-type-assertion
+  description: Avoid 'as any' type assertions — use proper typing instead.
+  explanation: |
+    Type assertions to 'any' bypass TypeScript's type system and defeat
+    the purpose of strict mode. Use proper types, generics, type guards,
+    or 'as unknown' if a type assertion is truly needed.
+
+    Reference: CLAUDE.md — "Use Record<string, unknown> for unknown object shapes"
+  pattern: |
+    ${_} as any
+  language:
+  - typescript
+  tags:
+  - ts-conventions
+  tests:
+  - match: |
+      const x = foo as any
+  - match: |
+      doStuff(bar as any)
+  - no-match: |
+      const x = foo as unknown
+
+# Security Patterns
+- id: no-innerhtml-assignment
+  description: Avoid innerHTML assignment — XSS risk.
+  explanation: |
+    Assigning unsanitized values to innerHTML can introduce cross-site
+    scripting (XSS) vulnerabilities. Use textContent for plain text
+    or a sanitization library for HTML content.
+
+    OWASP: A7:2017 — Cross-Site Scripting (XSS)
+  pattern: |
+    ${element}.innerHTML = ${value}
+  language:
+  - typescript
+  - javascript
+  tags:
+  - ts-conventions
+  tests:
+  - match: |
+      document.getElementById('app').innerHTML = userInput
+  - no-match: |
+      document.getElementById('app').textContent = userInput
+
+- id: no-document-write
+  description: Avoid document.write() — XSS risk and performance issues.
+  explanation: |
+    document.write() can introduce XSS vulnerabilities and causes
+    performance issues by blocking page rendering. Use DOM manipulation
+    methods instead.
+
+    OWASP: A7:2017 — Cross-Site Scripting (XSS)
+  any:
+  - pattern: |
+      document.write(${value})
+  - pattern: |
+      document.writeln(${value})
+  language:
+  - typescript
+  - javascript
+  tags:
+  - ts-conventions
+  tests:
+  - match: |
+      document.write('<script>alert(1)</script>')
+  - match: |
+      document.writeln(userContent)
+  - no-match: |
+      element.textContent = value
+
+- id: no-child-process-import
+  description: Avoid importing child_process — command injection risk.
+  explanation: |
+    Direct use of child_process can introduce command injection
+    vulnerabilities. If shell execution is truly required, use a
+    well-tested library with proper input sanitization.
+
+    OWASP: A1:2017 — Injection
+  any:
+  - pattern: |
+      import ${_} from 'child_process'
+  - pattern: |
+      import ${_} from 'node:child_process'
+  language:
+  - typescript
+  - javascript
+  tags:
+  - ts-conventions
+  tests:
+  - match: |
+      import { exec } from 'child_process'
+  - match: |
+      import { execSync } from 'node:child_process'
+  - no-match: |
+      import { readFile } from 'fs'

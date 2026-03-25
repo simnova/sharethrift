@@ -24,3 +24,10 @@ apps/docs/apps/docs/static/serenity-reports
 apps/ui-sharethrift/tsconfig.tsbuildinfo
 **/node_modules
 **/dist
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/

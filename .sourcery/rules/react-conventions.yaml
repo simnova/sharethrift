@@ -1,0 +1,34 @@
+version: '2'
+
+# React Performance Convention Rules
+#
+# Enforce React performance best practices.
+# Scoped to front-end packages via review.py tag system.
+#
+
+rules:
+- id: use-ant-design-barrel-imports
+  description: Import Ant Design components from the barrel export, not sub-paths.
+  explanation: |
+    Ant Design is tree-shakeable. Import components from the main 'antd' barrel
+    export, not from internal paths. This is more maintainable and the library
+    handles optimization automatically:
+
+    Bad:  import Button from 'antd/lib/button'
+    Good: import { Button } from 'antd'
+
+    Reference: https://ant.design/docs/react/introduce
+  any:
+  - pattern: |
+      import ${_} from 'antd/lib/button'
+  - pattern: |
+      import ${_} from 'antd/lib/${...}'
+  language:
+  - typescript
+  tags:
+  - react-conventions
+  tests:
+  - match: |
+      import Button from 'antd/lib/button'
+  - no-match: |
+      import { Button } from 'antd'

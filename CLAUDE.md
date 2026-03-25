@@ -4,6 +4,7 @@
 
 **ShareThrift** is a modern, community-driven peer-to-peer sharing platform designed to reduce waste and enable the sharing of items, services, and classes. It empowers individuals and organizations to participate in the circular economy.
 
+
 ### Core Purpose
 - Reduce consumer waste by extending item lifecycles
 - Enable cost-efficient access to tools, equipment, and skills
@@ -110,8 +111,9 @@ Example: `@cellix/server-messaging-seedwork` → `@apps/server-messaging-mock`
 
 | Category | Technology |
 |----------|-----------|
-| **Runtime** | Node.js (v20, see `.nvmrc`) |
+| **Runtime** | Node.js (v22, see `mise.toml`) |
 | **Language** | TypeScript (strict config) |
+| **Version Manager** | [mise](https://mise.jdx.dev/) (Node.js + Python) |
 | **Package Manager** | pnpm@10.18.2 |
 | **Monorepo Tool** | Turborepo 2.8.16 |
 | **API** | Apollo GraphQL |
@@ -120,7 +122,7 @@ Example: `@cellix/server-messaging-seedwork` → `@apps/server-messaging-mock`
 | **Infrastructure** | Azure Functions v4 |
 | **IaC** | Bicep modules |
 | **Testing** | Vitest, Serenity.js, Playwright |
-| **Code Quality** | Biome 2.0 (linting + formatting) |
+| **Code Quality** | Biome 2.0 (linting + formatting), Sourcery (local review) |
 | **CI/CD** | Azure Pipelines |
 | **Code Analysis** | SonarCloud |
 | **Vulnerability Scanning** | Snyk |
@@ -130,13 +132,38 @@ Example: `@cellix/server-messaging-seedwork` → `@apps/server-messaging-mock`
 ## 🔧 Development Workflow
 
 ### Prerequisites
+
+**1. Install mise (version manager)**
 ```bash
-nvm use v20  # Node v20
+# On macOS with Homebrew
+brew install mise
+
+# On other systems, see https://mise.jdx.dev/getting-started.html
 ```
+
+**2. Activate mise in your shell** (already added to `~/.zshrc`)
+```bash
+eval "$(mise activate zsh)"
+```
+
+**3. Install tools and dependencies**
+```bash
+mise install              # Installs Node.js and Python per mise.toml + requirements.txt
+source .venv/bin/activate # Activate Python virtual environment (optional but recommended)
+```
+
+This will:
+- Install Node.js v22.20.0 (from `mise.toml`)
+- Install Python 3.13 (from `mise.toml`)
+- Create `.venv/` Python virtual environment (auto-created)
+- Install Python packages from `requirements.txt` (Sourcery, etc.)
 
 ### Initial Setup
 ```bash
-pnpm install
+# Install Node + Python dependencies
+pnpm run install:all
+
+# Build the project
 pnpm run build
 ```
 
@@ -178,8 +205,32 @@ pnpm run test:acceptance:all             # All acceptance tests
 pnpm run lint             # Linting
 pnpm run format           # Format with Biome
 pnpm run test:arch        # Architecture unit tests
-pnpm run verify           # Full verification (arch + coverage + knip + snyk + sonar)
+pnpm run sourcery:review       # Sourcery code review (changed files)
+pnpm run sourcery:review:diff  # Sourcery diff-only review
+pnpm run sourcery:review:fix   # Sourcery auto-fix suggestions
+pnpm run verify           # Full verification (arch + coverage + knip + sourcery + snyk + sonar)
 ```
+
+### Code Review with Sourcery
+
+**Setup** (one-time):
+```bash
+sourcery login  # Sign up at https://sourcery.ai and authenticate
+```
+
+**Usage**:
+```bash
+# Review changed files in current branch
+pnpm run sourcery:review
+
+# Review only diff (against main)
+pnpm run sourcery:review:diff
+
+# Auto-fix suggestions
+pnpm run sourcery:review:fix
+```
+
+See [`.sourcery.yaml`](.sourcery.yaml) for configuration (ignored paths, etc.).
 
 ## 📝 Code Conventions
 
@@ -452,8 +503,9 @@ pnpm run test:acceptance:dom:graphql     # DOM + GraphQL
 - `tsconfig.base.json`: Base TypeScript configuration
 - `biome.json`: Linter and formatter configuration
 - `sonar-project.properties`: SonarCloud analysis config
-- `.nvmrc`: Node version requirement
+- `mise.toml`: Tool version management (Node.js v22.20.0, Python 3.13)
 - `pnpm-workspace.yaml`: Workspace root declaration
+- `.sourcery.yaml`: Sourcery review configuration
 
 ## 🤝 Collaboration Notes
 

@@ -113,7 +113,8 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 
 ## 🛠 Tech Stack
 
-- Runtime: Node.js (per `.nvmrc`) / Azure Functions ([see package.json](./apps/api/package.json))
+- Runtime: Node.js (v22 per `mise.toml`) / Azure Functions ([see package.json](./apps/api/package.json))
+- Version Manager: [mise](https://mise.jdx.dev/) (manages Node.js + Python)
 - Package Manager: pnpm ([see package.json](./package.json))
 - Language: TypeScript (strict config) ([see package.json](./package.json))
 - API: Apollo GraphQL ([see package.json](./packages/sthrift/graphql/package.json))
@@ -122,20 +123,68 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 - Tooling: Turborepo ([see package.json](./package.json)), Vitest ([see package.json](./package.json)), Biome ([see package.json](./package.json)), SonarQube ([see package.json](./package.json)), Sourcery
 - Local Azure Emulation: Azurite (blob/queue) ([see package.json](./package.json))
 - Observability: OpenTelemetry + Azure Monitor integration
-- Quality Gates: Sonar + coverage thresholds per package
+- Quality Gates: Sonar + Sourcery + coverage thresholds per package
 
 ## 🚀 Getting Started
 
 ### 🧩 Prerequisites
 
-- Node.js (use `nvm` with project `.nvmrc`)
-- Azurite
+**1. Install mise** (version manager for Node.js + Python)
+```bash
+# macOS with Homebrew
+brew install mise
+
+# Other systems: https://mise.jdx.dev/getting-started.html
+```
+
+**2. Activate mise in your shell**
+```bash
+# Add this to ~/.zshrc or ~/.bashrc (one-time setup)
+eval "$(mise activate zsh)"  # or bash/fish
+
+# Then reload: source ~/.zshrc
+```
+
+**2.1 Trouble Shooting
+May need to run 
+
+```bash
+mise trust
+```
+if it says it does not have permission.
+
+**3. Install tools & dependencies**
+```bash
+mise install  # Installs Node.js + Python per mise.toml + requirements.txt
+```
+
+This automatically:
+- Installs Node.js v22.20.0 (from `mise.toml`)
+- Installs Python 3.13 (from `mise.toml`)
+- Creates `.venv/` Python virtual environment
+- Installs Python packages from `requirements.txt` (Sourcery for code review)
 
 ### 🏗️ Install & Build
 
+
+May need to run 
+
+```bash 
+pnpm setup
 ```
-nvm use
+
+```bash
+# Install Node and Python dependencies
+pnpm run install:all
+
+# Build the project
+pnpm run build
+```
+
+Or install separately:
+```bash
 pnpm install
+pip install -r requirements.txt
 pnpm run build
 ```
 
@@ -147,6 +196,9 @@ pnpm run build
 ```
 pnpm run dev
 ```
+
+If a popup appears for network security after running dev, enter your password and approve.
+
 
 ![Terminal running 'pnpm run dev' starting Azure Functions host and frontend](./readme-assets/pnpm_dev.gif)
 
@@ -165,13 +217,25 @@ This repo follows strict DDD boundaries (contexts, aggregates, value objects, re
 - Full guidance: see [CONTRIBUTING → Domain & DDD Conventions](./CONTRIBUTING.md#domain--ddd-conventions)
 - Naming and layout: see [CONTRIBUTING → Naming & File Conventions](./CONTRIBUTING.md#naming--file-conventions)
 
-## 🧪 Testing
+## 🧪 Testing & Code Review
 
-Run tests with `pnpm run test`. Detailed expectations for coverage, styles, and scenario files are centralized in CONTRIBUTING.
+**Unit & Integration Tests**
+```bash
+pnpm run test              # Run all tests
+pnpm run test:watch       # Watch mode
+pnpm run test:all         # Full suite with coverage
+```
 
 ![Terminal running 'pnpm run test' showing passing unit tests and coverage](./readme-assets/pnpm_test.gif)
 
-- Full guidance: see [CONTRIBUTING → Testing & Quality Requirements](./CONTRIBUTING.md#testing--quality-requirements)
+**Code Review with Sourcery**
+```bash
+sourcery login            # One-time setup (https://sourcery.ai)
+pnpm run sourcery:review  # Review changed files
+pnpm run sourcery:review:diff  # Review only diff vs main
+```
+
+Full guidance: see [CONTRIBUTING → Testing & Quality Requirements](./CONTRIBUTING.md#testing--quality-requirements)
 
 ## 🧾 Architecture Decisions (ADRs)
 
