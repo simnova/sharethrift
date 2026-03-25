@@ -67,7 +67,7 @@ See the package-wide and context-specific instructions `.github/instructions/dom
   6. **Properties (Getters/Setters)**: Expose state, enforce permission checks in setters, and leverage value objects/entities as needed.
     - Getters/Setters match the name of the aggregate's properties, and should adhere to the types defined in the *Props* interface.
     - Setters can include validation logic via `ValueObjects` and permission checks via `Visa`, as well as include domain-specific behavior as needed.
-        - All complex property validation must use value objects from `{aggregate}.value-objects.ts`. See `./github/instructions/value-objects.instructions.md` for more information.
+        - All complex property validation must use value objects from `{aggregate}.value-objects.ts`. See `.github/instructions/value-objects.instructions.md` for more information.
         - All permission errors should use a clear, consistent message: `"You do not have permission to update this {property}"`.
     - Immutable properties can omit setters.
 
