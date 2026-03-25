@@ -72,11 +72,16 @@ def build_base_cmd(args: argparse.Namespace) -> list[str]:
 
 
 def run_sourcery(cmd: list[str], label: str) -> int:
-    """Run a Sourcery command, print its label, return the exit code."""
+    """Run a Sourcery command, print its label, return the exit code.
+
+    Uses list-based subprocess.run() which is safe from shell injection.
+    All user input is validated via validate_git_ref() before being included.
+    """
     print(f"\n{'─' * 60}")
     print(f"  {label}")
     print(f"{'─' * 60}\n")
     try:
+        # Safe: subprocess.run with list argument doesn't use shell interpretation
         proc = subprocess.run(cmd, cwd=REPO_ROOT)
         return proc.returncode
     except FileNotFoundError:
