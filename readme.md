@@ -133,8 +133,6 @@ documents/        # BRD, SRD, ADRs, architecture diagrams
 ```bash
 # macOS with Homebrew
 brew install mise
-
-# Other systems: https://mise.jdx.dev/getting-started.html
 ```
 
 **2. Activate mise in your shell**
@@ -151,7 +149,9 @@ May need to run
 ```bash
 mise trust
 ```
-if it says it does not have permission.
+if mise says it does not have permission.
+
+Would reccomend creating a new terminal if it still doesnt find mise to reload from your zshrc file.
 
 **3. Install tools & dependencies**
 ```bash

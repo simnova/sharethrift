@@ -3,10 +3,10 @@ import { actorCalled, notes } from '@serenity-js/core';
 import type { ShareThriftWorld } from '../../../world.ts';
 import { makeTestUserData } from '../../../shared/support/domain-test-helpers.ts';
 import type { CreateReservationRequestInput } from '../abilities/reservation-request-types.ts';
-import { CreateListing as DomCreateListing } from '../../listing/tasks/dom/create-listing.ts';
+import { CreateListing as E2eCreateListing } from '../../listing/tasks/e2e/create-listing.ts';
 import { CreateListing as SessionCreateListing } from '../../listing/tasks/session/create-listing.ts';
 import { CreateListing as DomainCreateListing, type CreateListingInput } from '../../listing/tasks/domain/create-listing.ts';
-import { CreateReservationRequest as DomCreateReservationRequest } from '../tasks/dom/create-reservation-request.ts';
+import { CreateReservationRequest as E2eCreateReservationRequest } from '../tasks/e2e/create-reservation-request.ts';
 import { CreateReservationRequest as SessionCreateReservationRequest } from '../tasks/session/create-reservation-request.ts';
 import { CreateReservationRequest as DomainCreateReservationRequest } from '../tasks/domain/create-reservation-request.ts';
 import { GetReservationRequestCountForListing } from '../questions/get-reservation-request-count-for-listing.ts';
@@ -23,8 +23,8 @@ interface ReservationRequestNotes {
 
 function getCreateListingTask(level: string) {
 	switch (level) {
-		case 'dom':
-			return DomCreateListing;
+		case 'e2e':
+			return E2eCreateListing;
 		case 'session':
 			return SessionCreateListing;
 		default:
@@ -34,8 +34,8 @@ function getCreateListingTask(level: string) {
 
 function getCreateReservationRequestTask(level: string) {
 	switch (level) {
-		case 'dom':
-			return DomCreateReservationRequest;
+		case 'e2e':
+			return E2eCreateReservationRequest;
 		case 'session':
 			return SessionCreateReservationRequest;
 		default:
@@ -81,7 +81,7 @@ Given(
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
-		const CreateListing = getCreateListingTask(this.level);
+		const CreateListing = getCreateListingTask(this.setupLevel);
 
 		await actor.attemptsTo(
 			CreateListing.with(details as unknown as CreateListingInput),
@@ -119,6 +119,11 @@ When(
 		const data = dataTable.rowsHash();
 
 		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
+
+		// Clear any stale validation error from a previous scenario
+		await actor.attemptsTo(
+			notes<ReservationRequestNotes>().set('lastValidationError', undefined as unknown as string),
+		);
 
 		try {
 			const startDate = data['reservationPeriodStart'];
@@ -364,7 +369,7 @@ Given(
 		const actor = actorCalled(reserver);
 		const data = dataTable.rowsHash();
 
-		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
+		const CreateReservationRequest = getCreateReservationRequestTask(this.setupLevel);
 
 		const listingId = await getListingIdFromOwner(owner);
 		const startDate = data['reservationPeriodStart'];

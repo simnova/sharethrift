@@ -2,7 +2,7 @@ import { Given, When, Then, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
 import type { ShareThriftWorld } from '../../../world.ts';
 import type { ListingDetails } from '../tasks/domain/create-listing.ts';
-import { CreateListing as DomCreateListing } from '../tasks/dom/create-listing.ts';
+import { CreateListing as E2eCreateListing } from '../tasks/e2e/create-listing.ts';
 import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.ts';
 import { CreateListing as DomainCreateListing } from '../tasks/domain/create-listing.ts';
 import  { ListingStatus } from '../questions/listing-status.ts';
@@ -11,8 +11,8 @@ import  { FormValidationError } from '../questions/form-validation-error.ts';
 
 function getCreateListingTask(level: string) {
 	switch (level) {
-		case 'dom':
-			return DomCreateListing;
+		case 'e2e':
+			return E2eCreateListing;
 		case 'session':
 			return SessionCreateListing;
 		default:
@@ -32,7 +32,7 @@ Given(
 	async function (this: ShareThriftWorld, actorName: string, title: string) {
 		const actor = actorCalled(actorName);
 
-		const CreateListing = getCreateListingTask(this.level);
+		const CreateListing = getCreateListingTask(this.setupLevel);
 
 		await actor.attemptsTo(
 			CreateListing.with({
@@ -67,6 +67,12 @@ When(
 		const details = dataTable.rowsHash();
 
 		const CreateListing = getCreateListingTask(this.level);
+
+		// Clear any stale validation error from a previous scenario
+		// (Serenity.js actors are cached across scenarios without @serenity-js/cucumber adapter)
+		await actor.attemptsTo(
+			notes<{lastValidationError: string | undefined}>().set('lastValidationError', undefined),
+		);
 
 		try {
 			await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
