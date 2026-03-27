@@ -7,7 +7,8 @@ import { type ShareThriftWorld, stopSharedServers } from '../../world.ts';
 // Track printed headers per test configuration
 let lastTestConfig: string | undefined;
 
-setDefaultTimeout(60_000);
+// E2E with real API server needs more startup time
+setDefaultTimeout(120_000);
 
 Before(async function (this: IWorld<{ session?: string; tasks?: string }>) {
 	const world = this as IWorld<{ session?: string; tasks?: string }> & ShareThriftWorld;

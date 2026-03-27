@@ -37,6 +37,7 @@
         "test:acceptance:session:graphql": "pnpm --filter=@sthrift/acceptance-tests run test:session:graphql",
         "test:acceptance:session:mongodb": "pnpm --filter=@sthrift/acceptance-tests run test:session:mongodb",
         "test:acceptance:e2e": "pnpm --filter=@sthrift/acceptance-tests run test:e2e",
+        "test:acceptance:e2e:deployed": "pnpm --filter=@sthrift/acceptance-tests run test:e2e:deployed",
         "test:acceptance:fast": "pnpm --filter=@sthrift/acceptance-tests run test:fast",
         "test:acceptance:all": "pnpm --filter=@sthrift/acceptance-tests run test:all",
         "test:coverage": "turbo run test:coverage:ui && turbo run test:coverage:node && turbo run test:arch",

@@ -1,3 +1,10 @@
+export interface ListingNotes {
+	lastListingId: string;
+	lastListingTitle: string;
+	lastListingStatus: string;
+	lastValidationError: string;
+}
+
 export interface ListingDetails {
 	title: string;
 	description: string;

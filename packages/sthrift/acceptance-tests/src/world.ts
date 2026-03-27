@@ -9,10 +9,11 @@ import { reservationRequestAbilities } from './contexts/reservation-request/abil
 import { GraphQLReservationRequestSession } from './contexts/reservation-request/abilities/graphql-reservation-request-session.ts';
 import { MongoReservationRequestSession } from './contexts/reservation-request/abilities/mongo-reservation-request-session.ts';
 import { MultiContextSession } from './shared/abilities/multi-context-session.ts';
-import { TestServer, MongoDBTestServer, TestOAuth2Server, TestViteServer } from './shared/support/servers/index.ts';
+import { TestServer, MongoDBTestServer, TestOAuth2Server, TestViteServer, TestApiServer } from './shared/support/servers/index.ts';
 import { createTestApplicationServicesFactory, createRealApplicationServicesFactory } from './shared/support/application-services/index.ts';
 import { clearMockListings } from './shared/support/test-data/listing.test-data.ts';
 import { clearMockReservationRequests } from './shared/support/test-data/reservation-request.test-data.ts';
+import { localSettings } from './shared/support/local-settings.ts';
 import { chromium, type Browser } from '@playwright/test';
 
 type TaskLevel = 'domain' | 'session' | 'e2e';
@@ -24,18 +25,28 @@ export interface WorldParameters {
 	apiUrl?: string;
 }
 
-// Shared servers persist across scenarios within a test run to avoid
-// port conflicts and stale-URL issues caused by Serenity.js actor caching.
+// Environment detection — E2E_DEPLOYED or use local.settings.json
+const isDeployedE2E = process.env['E2E_DEPLOYED'] === 'true';
+const deployedApiUrl = process.env['E2E_API_URL'];
+const deployedUiUrl = process.env['E2E_UI_URL'];
+
+// Shared servers persist across scenarios to avoid port conflicts
 let sharedGraphQLServer: TestServer | undefined;
 let sharedMongoDBServer: MongoDBTestServer | undefined;
 let sharedMongoDBGraphQLServer: TestServer | undefined;
 let sharedApiUrl: string | undefined;
 
-// E2E infrastructure — shared across scenarios
+// E2E infrastructure
 let sharedOAuth2Server: TestOAuth2Server | undefined;
+let sharedApiServer: TestApiServer | undefined;
 let sharedViteServer: TestViteServer | undefined;
 let sharedBrowser: Browser | undefined;
 let sharedBrowserBaseUrl: string | undefined;
+let sharedAccessToken: string | undefined;
+
+// E2E MongoDB
+let sharedE2EMongoServer: MongoDBTestServer | undefined;
+let sharedE2EMongoSeeded = false;
 
 export async function stopSharedServers(): Promise<void> {
 	if (sharedBrowser) {
@@ -45,6 +56,10 @@ export async function stopSharedServers(): Promise<void> {
 	if (sharedViteServer) {
 		await sharedViteServer.stop();
 		sharedViteServer = undefined;
+	}
+	if (sharedApiServer) {
+		await sharedApiServer.stop();
+		sharedApiServer = undefined;
 	}
 	if (sharedOAuth2Server) {
 		await sharedOAuth2Server.stop();
@@ -62,8 +77,14 @@ export async function stopSharedServers(): Promise<void> {
 		await sharedMongoDBServer.stop();
 		sharedMongoDBServer = undefined;
 	}
+	if (sharedE2EMongoServer) {
+		await sharedE2EMongoServer.stop();
+		sharedE2EMongoServer = undefined;
+	}
 	sharedApiUrl = undefined;
 	sharedBrowserBaseUrl = undefined;
+	sharedAccessToken = undefined;
+	sharedE2EMongoSeeded = false;
 }
 
 class ShareThriftCast implements Cast {
@@ -72,6 +93,7 @@ class ShareThriftCast implements Cast {
 		private readonly sessionType: SessionType,
 		private readonly apiUrl: string,
 		private readonly browseTheWeb?: BrowseTheWeb,
+		private readonly authToken?: string,
 	) {}
 
 	private createMultiContextSession(): MultiContextSession {
@@ -80,12 +102,12 @@ class ShareThriftCast implements Cast {
 
 		switch (this.sessionType) {
 			case 'mongodb':
-				listingSession = new MongoListingSession(this.apiUrl);
-				reservationRequestSession = new MongoReservationRequestSession(this.apiUrl);
+				listingSession = new MongoListingSession(this.apiUrl, this.authToken);
+				reservationRequestSession = new MongoReservationRequestSession(this.apiUrl, this.authToken);
 				break;
 			default:
-				listingSession = new GraphQLListingSession(this.apiUrl);
-				reservationRequestSession = new GraphQLReservationRequestSession(this.apiUrl);
+				listingSession = new GraphQLListingSession(this.apiUrl, this.authToken);
+				reservationRequestSession = new GraphQLReservationRequestSession(this.apiUrl, this.authToken);
 				break;
 		}
 
@@ -115,7 +137,6 @@ class ShareThriftCast implements Cast {
 				if (!this.browseTheWeb) {
 					throw new Error('E2E tests require a browser — ensure the BrowseTheWeb ability was created');
 				}
-				// E2E actors need both browser (for When steps) and session (for Given setup steps)
 				return actor.whoCan(
 					TakeNotes.using(Notepad.empty()),
 					this.browseTheWeb,
@@ -161,42 +182,11 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			sharedApiUrl = sharedMongoDBGraphQLServer.getUrl();
 		}
 
-		// E2E infrastructure: OAuth2 mock → GraphQL backend → Vite UI → Browser
 		if (this.tasksLevel === 'e2e') {
-			// 1. Start MongoDB + GraphQL backend (with real persistence)
-			if (!sharedMongoDBServer) {
-				sharedMongoDBServer = new MongoDBTestServer();
-				await sharedMongoDBServer.start();
-
-				const serviceMongoose = sharedMongoDBServer.getServiceMongoose();
-				const realFactory = createRealApplicationServicesFactory(serviceMongoose);
-				sharedMongoDBGraphQLServer = new TestServer(realFactory);
-				await sharedMongoDBGraphQLServer.start();
-				sharedApiUrl = sharedMongoDBGraphQLServer.getUrl();
-			}
-
-			// 2. Start mock OAuth2 server
-			if (!sharedOAuth2Server) {
-				sharedOAuth2Server = new TestOAuth2Server();
-				await sharedOAuth2Server.start();
-			}
-
-			// 3. Start Vite dev server pointing at test backends
-			if (!sharedViteServer) {
-				sharedViteServer = new TestViteServer({
-					graphqlUrl: sharedApiUrl!,
-					oauth2Url: sharedOAuth2Server.getUrl(),
-				});
-				await sharedViteServer.start();
-				sharedBrowserBaseUrl = sharedViteServer.getUrl();
-			}
-
-			// 4. Launch browser (once per test run)
-			if (!sharedBrowser) {
-				sharedBrowser = await chromium.launch({
-					headless: true,
-					args: ['--headless=new'],
-				});
+			if (isDeployedE2E) {
+				await this.initDeployedE2E();
+			} else {
+				await this.initLocalE2E();
 			}
 		}
 
@@ -207,7 +197,7 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		clearMockReservationRequests();
 		clearMockListings();
 
-		// For E2E, create fresh browser context + page per scenario
+		// Fresh browser context per scenario for E2E
 		if (this.tasksLevel === 'e2e' && sharedBrowser && sharedBrowserBaseUrl && sharedOAuth2Server) {
 			const context = await sharedBrowser.newContext({
 				baseURL: sharedBrowserBaseUrl,
@@ -215,13 +205,21 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			});
 			const page = await context.newPage();
 
-			// Pre-seed OIDC user session so the app considers us authenticated
-			// without going through the full OAuth2 redirect flow.
-			const { storageKey, storageValue } = await sharedOAuth2Server.generateOidcUserSession('e2e-test-client');
+			const { storageKey, storageValue } = await sharedOAuth2Server.generateOidcUserSession();
 			await context.addInitScript(({ key, value }: { key: string; value: string }) => {
 				sessionStorage.setItem(key, value);
 			}, { key: storageKey, value: storageValue });
 
+			this.browseTheWeb = BrowseTheWeb.using(page, context);
+		}
+
+		// E2E without OAuth2 server (deployed)
+		if (this.tasksLevel === 'e2e' && sharedBrowser && sharedBrowserBaseUrl && !sharedOAuth2Server) {
+			const context = await sharedBrowser.newContext({
+				baseURL: sharedBrowserBaseUrl,
+				ignoreHTTPSErrors: true,
+			});
+			const page = await context.newPage();
 			this.browseTheWeb = BrowseTheWeb.using(page, context);
 		}
 
@@ -230,12 +228,103 @@ export class ShareThriftWorld extends World<WorldParameters> {
 			this.sessionType,
 			this.apiUrl,
 			this.browseTheWeb,
+			sharedAccessToken,
 		);
 
-		// Use engage() to replace the cast and force fresh actors each scenario.
-		// Serenity.js caches actors globally; without this, actors from previous
-		// scenarios retain stale abilities pointing to stopped servers.
 		engage(cast);
+	}
+
+	// Local E2E infrastructure from local.settings.json (probes before starting)
+	private async initLocalE2E(): Promise<void> {
+		// Accept portless self-signed certs
+		process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '0';
+
+		const {
+			cosmosDbConnectionString,
+			cosmosDbName,
+			cosmosDbPort,
+			apiGraphqlUrl,
+			uiUrl,
+		} = localSettings;
+
+		// Ensure MongoDB is seeded
+		if (!sharedE2EMongoSeeded) {
+			const mongoUp = await MongoDBTestServer.isReachable(cosmosDbConnectionString);
+			if (!mongoUp) {
+				sharedE2EMongoServer = new MongoDBTestServer();
+				await sharedE2EMongoServer.start({ port: cosmosDbPort, dbName: cosmosDbName });
+			} else {
+				await MongoDBTestServer.seedData(cosmosDbConnectionString, cosmosDbName);
+			}
+			sharedE2EMongoSeeded = true;
+		}
+
+		// Ensure OAuth2 mock is reachable
+		if (!sharedOAuth2Server) {
+			sharedOAuth2Server = new TestOAuth2Server({
+				testUser: {
+					email: 'alice@example.com',
+					given_name: 'Alice',
+					family_name: 'Smith',
+				},
+			});
+			await sharedOAuth2Server.start();
+		}
+
+		// Ensure API is reachable
+		if (!sharedApiServer) {
+			sharedApiServer = new TestApiServer();
+			await sharedApiServer.start();
+			sharedApiUrl = sharedApiServer.getUrl();
+		}
+
+		// Generate access token
+		if (!sharedAccessToken) {
+			sharedAccessToken =
+				await sharedOAuth2Server.generateAccessToken(localSettings.oauthAudience);
+		}
+
+		// Ensure UI dev server is reachable
+		if (!sharedViteServer) {
+			sharedViteServer = new TestViteServer();
+			await sharedViteServer.start();
+			sharedBrowserBaseUrl = uiUrl;
+		}
+
+		// Use API URL from settings
+		if (!sharedApiUrl) {
+			sharedApiUrl = apiGraphqlUrl;
+		}
+
+		// Launch browser
+		if (!sharedBrowser) {
+			sharedBrowser = await chromium.launch({
+				headless: true,
+				args: ['--headless=new'],
+			});
+		}
+	}
+
+	// Deployed E2E — requires E2E_DEPLOYED, E2E_API_URL, E2E_UI_URL env vars
+	private async initDeployedE2E(): Promise<void> {
+		if (!deployedApiUrl) {
+			throw new Error('E2E_API_URL is required when E2E_DEPLOYED=true');
+		}
+		if (!deployedUiUrl) {
+			throw new Error('E2E_UI_URL is required when E2E_DEPLOYED=true');
+		}
+
+		sharedApiUrl = deployedApiUrl;
+		sharedBrowserBaseUrl = deployedUiUrl;
+
+		sharedAccessToken = process.env['E2E_ACCESS_TOKEN'] ?? undefined;
+
+		if (!sharedBrowser) {
+			sharedBrowser = await chromium.launch({
+				headless: true,
+				args: ['--headless=new'],
+			});
+		}
 	}
 
 	async cleanup(): Promise<void> {
@@ -249,11 +338,7 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		return this.tasksLevel;
 	}
 
-	/**
-	 * The task level to use for setup/precondition steps (Given).
-	 * For E2E, setup uses the session layer (GraphQL) for speed and
-	 * reliability — only the main action (When) goes through the browser.
-	 */
+	// Setup level (Given steps) — E2E uses session layer for speed
 	get setupLevel(): TaskLevel {
 		return this.tasksLevel === 'e2e' ? 'session' : this.tasksLevel;
 	}

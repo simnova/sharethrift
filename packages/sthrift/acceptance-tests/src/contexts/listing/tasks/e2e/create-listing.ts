@@ -1,13 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../../../shared/abilities/browse-the-web.ts';
-import type { ListingDetails } from '../../abilities/listing-types.ts';
-
-interface ListingNotes {
-	lastListingId: string;
-	lastListingTitle: string;
-	lastListingStatus: string;
-	lastValidationError: string;
-}
+import type { ListingDetails, ListingNotes } from '../../abilities/listing-types.ts';
 
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
@@ -21,11 +14,10 @@ export class CreateListing extends Task {
 	async performAs(actor: Actor): Promise<void> {
 		const { page } = BrowseTheWeb.as(actor);
 
-		// Navigate to create listing page
+		// Navigate and fill form
 		await page.goto('/create-listing');
 		await page.waitForLoadState('networkidle');
 
-		// Fill in the listing form fields
 		if (this.details.title) {
 			await page.getByPlaceholder('Enter listing title').fill(this.details.title);
 		}
@@ -35,7 +27,7 @@ export class CreateListing extends Task {
 		}
 
 		if (this.details.category) {
-			// antd Select: click to open dropdown, then click the option
+			// Open antd Select dropdown and click option
 			const select = page.locator('.ant-select').first();
 			await select.click();
 			await page.locator(`.ant-select-item[title="${this.details.category}"]`).click();
@@ -45,7 +37,7 @@ export class CreateListing extends Task {
 			await page.getByPlaceholder('Enter location').fill(this.details.location);
 		}
 
-		// Select sharing period dates
+		// Fill sharing period dates
 		const rangePicker = page.locator('.ant-picker-range');
 		if (await rangePicker.isVisible()) {
 			await rangePicker.click();
@@ -61,7 +53,7 @@ export class CreateListing extends Task {
 				await startCell.click();
 			}
 
-			// The end date may be in the next month — navigate forward if needed
+			// Navigate forward if end date in next month
 			let endCell = page.locator(`td[title="${this.formatDate(endDate)}"]`).first();
 			if (!(await endCell.isVisible({ timeout: 1_000 }).catch(() => false))) {
 				await page.locator('.ant-picker-header-next-btn').last().click();
@@ -72,23 +64,21 @@ export class CreateListing extends Task {
 				await endCell.click();
 			}
 
-			// Ensure the date picker is closed before interacting with buttons
+			// Close date picker
 			await page.keyboard.press('Escape');
 		}
 
-		// Dismiss any lingering overlays (dropdowns, pickers) by clicking the page body
+		// Clear overlays
 		await page.locator('body').click({ position: { x: 0, y: 0 } });
 
 		const isDraft = !(this.details.isDraft === 'false' || this.details.isDraft === false);
 
-		// When required fields are missing, use Publish to trigger form validation
+		// Check for missing required fields
 		const hasMissingRequired = !this.details.title;
 
 		if (hasMissingRequired) {
-			// Click Publish Listing to trigger antd form validation
 			await page.getByRole('button', { name: /Publish Listing/i }).click();
 
-			// Wait for antd validation errors to appear
 			const validationError = await page.locator('.ant-form-item-explain-error').first()
 				.textContent({ timeout: 3_000 })
 				.catch(() => null);
@@ -97,14 +87,10 @@ export class CreateListing extends Task {
 				throw new Error(validationError);
 			}
 
-			// If no client-side validation error appeared but required fields are missing,
-			// the form didn't submit — that's still a validation failure
 			throw new Error('Required fields are missing');
 		}
 
-		// Set up response interception BEFORE button click.
-		// Use route interception so we can reliably inspect the mutation request body
-		// even with Apollo's batch HTTP link.
+		// Intercept mutation response
 		let mutationResponse: { success: boolean; errorMessage?: string; listing?: { id: string; state: string } } | undefined;
 		let mutationError: string | undefined;
 
@@ -113,14 +99,11 @@ export class CreateListing extends Task {
 				if (resp.request().method() !== 'POST') return;
 				try {
 					const postData = resp.request().postData();
-					// Match both the query text (createItemListing) and the operation name
-					// (HomeCreateListingContainerCreateItemListing). Apollo may use
-					// persisted queries where only the operation name + hash are sent,
-					// so a case-insensitive check covers both forms.
+					// Match both query text and operation name (covers persisted queries)
 					if (!postData?.toLowerCase().includes('createitemlisting')) return;
 
 					const json = await resp.json();
-					// Handle both batched (array) and single responses
+					// Handle batched and single responses
 					const responses = Array.isArray(json) ? json : [json];
 					for (const entry of responses) {
 						if (entry?.data?.createItemListing) {
@@ -135,8 +118,7 @@ export class CreateListing extends Task {
 							return;
 						}
 						if (entry?.errors?.length) {
-							// Skip PersistedQueryNotFound — Apollo Client retries
-							// automatically with the full query text.
+							// Skip PersistedQueryNotFound (Apollo retries with full query)
 							const isPersistedQueryRetry = entry.errors.some(
 								(e: { message: string }) => e.message === 'PersistedQueryNotFound',
 							);
@@ -149,12 +131,12 @@ export class CreateListing extends Task {
 						}
 					}
 				} catch {
-					// Response wasn't JSON — ignore
+					// Ignore non-JSON responses
 				}
 			};
 			page.on('response', handler);
 
-			// Timeout fallback
+			// 15s timeout
 			setTimeout(() => {
 				page.off('response', handler);
 				resolve();
@@ -183,14 +165,12 @@ export class CreateListing extends Task {
 		const listing = mutationResponse.listing;
 		const listingId = listing?.id ?? 'e2e-unknown';
 
-		// Store the listing ID from the mutation response (needed for navigation)
+		// Store listing ID for subsequent steps
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listingId),
 		);
 
-		// --- DOM verification: the site is the source of truth ---
-
-		// 1. Verify the success modal appears with the correct status text
+		// Verify success modal
 		const expectedModalText = isDraft ? 'Draft saved!' : 'Your listing is live!';
 		const modal = page.locator('.ant-modal');
 		await modal.waitFor({ state: 'visible', timeout: 10_000 });
@@ -203,11 +183,10 @@ export class CreateListing extends Task {
 		}
 		const domStatus = isDraft ? 'draft' : 'published';
 
-		// 2. Navigate to /my-listings and verify the listing title from the table
+		// Verify listing appears in /my-listings
 		await page.goto('/my-listings');
 		await page.waitForLoadState('networkidle');
 
-		// Wait for the table to render with the listing title
 		const listingTitleCell = page.getByRole('table').locator('span').filter({ hasText: this.details.title });
 		await listingTitleCell.first().waitFor({ state: 'visible', timeout: 10_000 });
 		const domTitle = await listingTitleCell.first().textContent();

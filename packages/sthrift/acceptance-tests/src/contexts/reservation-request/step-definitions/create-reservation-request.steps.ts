@@ -1,8 +1,7 @@
 import { Given, Then, When, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
 import type { ShareThriftWorld } from '../../../world.ts';
-import { makeTestUserData } from '../../../shared/support/domain-test-helpers.ts';
-import type { CreateReservationRequestInput } from '../abilities/reservation-request-types.ts';
+import { makeTestUserData, resolveActorName } from '../../../shared/support/domain-test-helpers.ts';
 import { CreateListing as E2eCreateListing } from '../../listing/tasks/e2e/create-listing.ts';
 import { CreateListing as SessionCreateListing } from '../../listing/tasks/session/create-listing.ts';
 import { CreateListing as DomainCreateListing, type CreateListingInput } from '../../listing/tasks/domain/create-listing.ts';
@@ -10,16 +9,7 @@ import { CreateReservationRequest as E2eCreateReservationRequest } from '../task
 import { CreateReservationRequest as SessionCreateReservationRequest } from '../tasks/session/create-reservation-request.ts';
 import { CreateReservationRequest as DomainCreateReservationRequest } from '../tasks/domain/create-reservation-request.ts';
 import { GetReservationRequestCountForListing } from '../questions/get-reservation-request-count-for-listing.ts';
-import { DomainGetReservationRequestCountForListing } from '../questions/domain-get-reservation-request-count-for-listing.ts';
-
-interface ReservationRequestNotes {
-	lastReservationRequestId: string;
-	lastReservationRequestState: string;
-	lastReservationRequestStartDate: string;
-	lastReservationRequestEndDate: string;
-	lastValidationError: string;
-	reservationRequestCountForListing: number;
-}
+import type { CreateReservationRequestInput, ReservationRequestNotes } from '../abilities/reservation-request-types.ts';
 
 function getCreateListingTask(level: string) {
 	switch (level) {
@@ -284,8 +274,7 @@ Then(
 Then(
 	'{word} should see a reservation error for {string}',
 	async function (this: ShareThriftWorld, actorName: string, fieldName: string) {
-		// Map pronouns to actual actor names
-		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
 		// Check if actor has a stored validation error from task execution
@@ -306,8 +295,7 @@ Then(
 Then(
 	'{word} should see a reservation error {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedMessage: string) {
-		// Map pronouns to actual actor names
-		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
 		// Check if actor has a stored validation error from task execution

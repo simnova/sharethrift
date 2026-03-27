@@ -1,13 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { getSession } from '../../../../shared/abilities/session.ts';
 import { ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../../shared/support/domain-test-helpers.ts';
-import type { ListingDetails, CreateItemListingInput, ItemListingResponse } from '../../abilities/listing-types.ts';
-
-interface ListingNotes {
-	lastListingId: string;
-	lastListingTitle: string;
-	lastListingStatus: string;
-}
+import type { ListingDetails, ListingNotes, CreateItemListingInput, ItemListingResponse } from '../../abilities/listing-types.ts';
 
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
@@ -21,7 +15,7 @@ export class CreateListing extends Task {
 	async performAs(actor: Actor): Promise<void> {
 		const session = getSession(actor, 'listing');
 
-		// Convert isDraft string from feature file to boolean (isDraft: false = Active)
+		// isDraft false → draft false (Active)
 		const isDraft = !(this.details.isDraft === 'false' || this.details.isDraft === false);
 
 		const listing = await session.execute<CreateItemListingInput, ItemListingResponse>('listing:create', {

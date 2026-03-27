@@ -3,6 +3,11 @@ import type { Domain } from '@sthrift/domain';
 export const ONE_DAY_MS = 86_400_000;
 export const DEFAULT_SHARING_PERIOD_DAYS = 30;
 
+// Resolve Gherkin pronoun references (she/he/they) to actor names
+export function resolveActorName(actorName: string, defaultName = 'Alice'): string {
+	return /^(she|he|they)$/i.test(actorName) ? defaultName : actorName;
+}
+
 type ItemListingProps = Domain.Contexts.Listing.ItemListing.ItemListingProps;
 type ItemListingEntityReference = Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
 type ReservationRequestProps = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps;

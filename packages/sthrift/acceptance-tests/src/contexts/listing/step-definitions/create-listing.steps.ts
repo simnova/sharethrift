@@ -1,6 +1,7 @@
 import { Given, When, Then, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
 import type { ShareThriftWorld } from '../../../world.ts';
+import { resolveActorName } from '../../../shared/support/domain-test-helpers.ts';
 import type { ListingDetails } from '../tasks/domain/create-listing.ts';
 import { CreateListing as E2eCreateListing } from '../tasks/e2e/create-listing.ts';
 import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.ts';
@@ -127,7 +128,7 @@ Then(
 Then(
 	'{word} should see a listing error for {string}',
 	async function (this: ShareThriftWorld, actorName: string, fieldName: string) {
-		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
 		try {
@@ -148,8 +149,7 @@ Then(
 Then(
 	'{word} should see a listing error {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedMessage: string) {
-		// Map pronouns to actual actor names
-		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
 		// Check if actor has a stored validation error from task execution

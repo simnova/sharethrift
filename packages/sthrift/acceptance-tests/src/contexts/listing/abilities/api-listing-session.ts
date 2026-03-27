@@ -3,7 +3,7 @@ import type { CreateItemListingInput, ItemListingResponse } from './listing-type
 
 
 interface ListingSessionConfig {
-	/** Whether to include isDraft parameter in serialization (MongoDB only) */
+	// Include isDraft in serialization (MongoDB only)
 	includeIsDraft?: boolean;
 }
 
@@ -11,8 +11,8 @@ export abstract class ApiListingSession extends ApiSession {
 	context = 'listing';
 	protected config: ListingSessionConfig = {};
 
-	constructor(apiUrl: string) {
-		super(apiUrl);
+	constructor(apiUrl: string, authToken?: string) {
+		super(apiUrl, authToken);
 		this.registerOperations();
 	}
 
