@@ -3,13 +3,7 @@ import { ListingForm, type ListingFormProps } from '@sthrift/ui-components';
 import { RenderComponents } from '../../../../shared/abilities/render-components.ts';
 import { getSession } from '../../../../shared/abilities/session.ts';
 import { ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../../shared/support/domain-test-helpers.ts';
-import type { ListingDetails, CreateItemListingInput, ItemListingResponse } from '../../abilities/listing-types.ts';
-
-interface ListingNotes {
-	lastListingId: string;
-	lastListingTitle: string;
-	lastListingStatus: string;
-}
+import type { ListingDetails, ListingNotes, CreateItemListingInput, ItemListingResponse } from '../../abilities/listing-types.ts';
 
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {

@@ -1,72 +1,43 @@
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
-import { ObjectId } from 'mongodb';
+import { MongoClient, ObjectId } from 'mongodb';
 import { ServiceMongoose } from '@cellix/service-mongoose';
 import { getAllMockAccountPlans } from '../test-data/account-plan.test-data.ts';
 import { getAllMockUsers } from '../test-data/user.test-data.ts';
 
-async function seedTestDatabase(
-	serviceMongoose: ServiceMongoose,
-): Promise<void> {
-	const { connection } = serviceMongoose.service;
+const MONGO_BINARY_VERSION = '7.0.14';
+const DEFAULT_DB_NAME = 'sharethrift-test';
 
-	const accountPlans = getAllMockAccountPlans();
-	if (accountPlans.length > 0) {
-		await connection.collection('accountplans').insertMany(
-			accountPlans.map((plan) => ({
-				_id: new ObjectId(plan.id),
-				...plan,
-			})),
-		);
-	}
-
-	const usersList = getAllMockUsers();
-	if (usersList.length > 0) {
-		await connection.collection('users').insertMany(
-			usersList.map((user) => {
-				return {
-					_id: new ObjectId(user.id),
-					userType: 'userType' in user ? user.userType : 'personal-user',
-					isBlocked: user.isBlocked,
-					hasCompletedOnboarding: 'hasCompletedOnboarding' in user ? user.hasCompletedOnboarding : false,
-					account: user.account,
-					schemaVersion: user.schemaVersion,
-					createdAt: user.createdAt,
-					updatedAt: user.updatedAt,
-				};
-			}),
-		);
-	}
-}
+// In-memory MongoDB with seeded reference data
 export class MongoDBTestServer {
 	private replSet: MongoMemoryReplSet | null = null;
 	private serviceMongoose: ServiceMongoose | null = null;
+	private dbName: string = DEFAULT_DB_NAME;
 
-	async start(): Promise<void> {
-		this.replSet = await MongoMemoryReplSet.create({
-			binary: { version: '7.0.14' },
-			replSet: { name: 'rs0', count: 1, storageEngine: 'wiredTiger' },
-		});
+	async start(options?: { port?: number; dbName?: string }): Promise<void> {
+		this.dbName = options?.dbName ?? DEFAULT_DB_NAME;
+
+		const config = {
+			binary: { version: MONGO_BINARY_VERSION },
+			replSet: { name: 'rs0', count: 1, storageEngine: 'wiredTiger' as const },
+			...(options?.port && { instanceOpts: [{ port: options.port }] }),
+		};
+
+		this.replSet = await MongoMemoryReplSet.create(config);
 		const uri = this.replSet.getUri();
 
 		this.serviceMongoose = new ServiceMongoose(uri, {
-			dbName: 'sharethrift-test',
+			dbName: this.dbName,
 			autoIndex: true,
 			autoCreate: true,
 		});
 		await this.serviceMongoose.startUp();
 
-		// Clear any previously registered Mongoose models to prevent discriminator conflicts
-		// Models will be re-registered by mongooseContextBuilder in the next persistence setup
 		const { connection } = this.serviceMongoose.service;
 		for (const modelName of Object.keys(connection.models)) {
-			try {
-				connection.deleteModel(modelName);
-			} catch {
-				// Model may already be deleted
-			}
+			try { connection.deleteModel(modelName); } catch { /* already deleted */ }
 		}
 
-		await seedTestDatabase(this.serviceMongoose);
+		await MongoDBTestServer.seedData(uri, this.dbName);
 	}
 
 	getServiceMongoose(): ServiceMongoose {
@@ -74,6 +45,13 @@ export class MongoDBTestServer {
 			throw new Error('MongoDBTestServer not started');
 		}
 		return this.serviceMongoose;
+	}
+
+	getConnectionString(): string {
+		if (!this.replSet) {
+			throw new Error('MongoDBTestServer not started');
+		}
+		return this.replSet.getUri();
 	}
 
 	async stop(): Promise<void> {
@@ -89,5 +67,74 @@ export class MongoDBTestServer {
 
 	isRunning(): boolean {
 		return this.serviceMongoose !== null;
+	}
+
+	static async isReachable(connectionString: string): Promise<boolean> {
+		const client = new MongoClient(connectionString, {
+			serverSelectionTimeoutMS: 3_000,
+			connectTimeoutMS: 3_000,
+		});
+		try {
+			await client.connect();
+			await client.db().command({ ping: 1 });
+			return true;
+		} catch {
+			return false;
+		} finally {
+			await client.close();
+		}
+	}
+
+	static async seedData(
+		connectionString: string,
+		dbName: string,
+	): Promise<void> {
+		const client = new MongoClient(connectionString);
+		try {
+			await client.connect();
+			const db = client.db(dbName);
+
+			const accountPlans = getAllMockAccountPlans();
+			if (accountPlans.length > 0) {
+				const ops = accountPlans.map((plan) => ({
+					updateOne: {
+						filter: { _id: new ObjectId(plan.id) },
+						update: {
+							$setOnInsert: { _id: new ObjectId(plan.id), ...plan },
+						},
+						upsert: true,
+					},
+				}));
+				await db.collection('accountplans').bulkWrite(ops);
+			}
+
+			const usersList = getAllMockUsers();
+			if (usersList.length > 0) {
+				const ops = usersList.map((user) => ({
+					updateOne: {
+						filter: { _id: new ObjectId(user.id) },
+						update: {
+							$setOnInsert: {
+								_id: new ObjectId(user.id),
+								userType: 'userType' in user ? user.userType : 'personal-user',
+								isBlocked: user.isBlocked,
+								hasCompletedOnboarding:
+									'hasCompletedOnboarding' in user
+										? user.hasCompletedOnboarding
+										: false,
+								account: user.account,
+								schemaVersion: user.schemaVersion,
+								createdAt: user.createdAt,
+								updatedAt: user.updatedAt,
+							},
+						},
+						upsert: true,
+					},
+				}));
+				await db.collection('users').bulkWrite(ops);
+			}
+		} finally {
+			await client.close();
+		}
 	}
 }

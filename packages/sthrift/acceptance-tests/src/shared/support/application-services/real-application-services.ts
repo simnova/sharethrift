@@ -11,6 +11,7 @@ import type {
 } from '@cellix/service-token-validation';
 import type { MessagingService } from '@cellix/service-messaging-base';
 import type { PaymentService } from '@cellix/service-payment-base';
+import { defaultActor } from '../test-data/test-actors.ts';
 
 function createMockTokenValidation(): TokenValidation {
 	return {
@@ -19,10 +20,10 @@ function createMockTokenValidation(): TokenValidation {
 		): Promise<TokenValidationResult<ClaimsType> | null> => {
 			return Promise.resolve({
 				verifiedJwt: {
-					given_name: 'Alice',
-					family_name: 'Smith',
-					email: 'alice@example.com',
-					sub: 'test-alice-sub',
+					given_name: defaultActor.givenName,
+					family_name: defaultActor.familyName,
+					email: defaultActor.email,
+					sub: `test-${defaultActor.name.toLowerCase()}-sub`,
 				} as unknown as ClaimsType,
 				openIdConfigKey: 'UserPortal',
 			});

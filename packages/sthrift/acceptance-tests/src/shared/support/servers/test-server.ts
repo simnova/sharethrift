@@ -11,7 +11,7 @@ interface GraphContext {
 
 const MAX_QUERY_DEPTH = 10;
 
-// Real GraphQL Apollo Server for tests
+// In-process Apollo Server for session tests
 export class TestServer {
 	private server: ApolloServer<GraphContext> | null = null;
 	private url: string | null = null;
@@ -35,15 +35,14 @@ export class TestServer {
 		const { url } = await startStandaloneServer(this.server, {
 			listen: { port },
 			context: async ({ req }) => {
-				// Extract headers just like Azure Functions handler does
+
 				const authHeader = req.headers.authorization ?? undefined;
 				const hints = {
 					memberId: req.headers['x-member-id'] as string | undefined,
 					communityId: req.headers['x-community-id'] as string | undefined,
 				};
 
-				// Use ApplicationServicesFactory to get real application services
-				const applicationServices = this.applicationServicesFactory
+const applicationServices = this.applicationServicesFactory
 					? await this.applicationServicesFactory.forRequest(authHeader, hints)
 					: undefined;
 

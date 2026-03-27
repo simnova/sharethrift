@@ -1,12 +1,6 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { CreateListingAbility } from '../../abilities/create-listing-ability.ts';
-import type { ListingDetails } from '../../abilities/listing-types.ts';
-
-interface ListingNotes {
-	lastListingId: string;
-	lastListingTitle: string;
-	lastListingStatus: string;
-}
+import type { ListingDetails, ListingNotes } from '../../abilities/listing-types.ts';
 
 export type { ListingDetails };
 
@@ -29,7 +23,7 @@ export class CreateListing extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const ability = CreateListingAbility.as(actor);
-		// Convert isDraft from feature file to state parameter (isDraft: false = Active)
+		// isDraft false → Active, true → Draft
 		const state = this.details.isDraft === 'false' || this.details.isDraft === false ? 'Active' : 'Draft';
 		ability.createDraftListing({
 			title: this.details.title,

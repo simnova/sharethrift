@@ -1,3 +1,12 @@
+export interface ReservationRequestNotes {
+	lastReservationRequestId: string;
+	lastReservationRequestState: string;
+	lastReservationRequestStartDate: string;
+	lastReservationRequestEndDate: string;
+	lastValidationError: string;
+	reservationRequestCountForListing: number;
+}
+
 export interface CreateReservationRequestInput {
 	listingId: string;
 	reservationPeriodStart: Date;

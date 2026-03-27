@@ -8,6 +8,7 @@ import {
 	users,
 	getVerifiedUserFromMock,
 } from '../test-data/user.test-data.ts';
+import { defaultActor } from '../test-data/test-actors.ts';
 
 type PersonalUserEntityReference = Domain.Contexts.User.PersonalUser.PersonalUserEntityReference;
 import { createMockUserService } from './test-app-services/user.test-app-services.ts';
@@ -19,8 +20,8 @@ import { createMockAppealRequestService } from './test-app-services/appeal-reque
 
 export function createTestApplicationServicesFactory(): ApplicationServicesFactory {
 	const allUsers = Array.from(users.values());
-	const alice = allUsers.find((u) => u.account.email === 'alice@example.com');
-	const alicePersonal = alice?.userType === 'personal-user' ? (alice as PersonalUserEntityReference) : null;
+	const defaultUser = allUsers.find((u) => u.account.email === defaultActor.email);
+	const defaultPersonalUser = defaultUser?.userType === 'personal-user' ? (defaultUser as PersonalUserEntityReference) : null;
 
 	return {
 		forRequest: (): Promise<ApplicationServices> => {
@@ -32,7 +33,7 @@ export function createTestApplicationServicesFactory(): ApplicationServicesFacto
 				ReservationRequest: createMockReservationRequestService(),
 				Listing: createMockListingService(),
 				get verifiedUser(): VerifiedUser | null {
-					return alicePersonal ? getVerifiedUserFromMock(alicePersonal) : null;
+					return defaultPersonalUser ? getVerifiedUserFromMock(defaultPersonalUser) : null;
 				},
 			} as ApplicationServices);
 		},

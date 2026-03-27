@@ -30,6 +30,13 @@ export class CreateReservationRequestAbility extends Ability {
 			lastName: string;
 		};
 	}): void {
+		if (!params.reservationPeriodStart) {
+			throw new Error('Required field missing: reservationPeriodStart');
+		}
+		if (!params.reservationPeriodEnd) {
+			throw new Error('Required field missing: reservationPeriodEnd');
+		}
+
 		const listingId = params.listingId ?? 'test-listing-1';
 		const listing = makeListingReference({ id: listingId });
 		const reserver = makeSharerUser({
@@ -39,8 +46,8 @@ export class CreateReservationRequestAbility extends Ability {
 			lastName: params.reserver?.lastName ?? 'Tester',
 		});
 		const props = makeReservationRequestProps();
-		const startDate = params.reservationPeriodStart ?? new Date(Date.now() + ONE_DAY_MS);
-		const endDate = params.reservationPeriodEnd ?? new Date(Date.now() + ONE_DAY_MS * DEFAULT_SHARING_PERIOD_DAYS);
+		const startDate = params.reservationPeriodStart;
+		const endDate = params.reservationPeriodEnd;
 
 		// Check for overlapping reservations in shared test-data
 		const existingRequests = Array.from(reservationRequests.values()).filter(

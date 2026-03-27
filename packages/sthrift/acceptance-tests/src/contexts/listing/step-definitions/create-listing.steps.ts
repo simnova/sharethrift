@@ -1,18 +1,23 @@
 import { Given, When, Then, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
+import { Ensure, equals } from '@serenity-js/assertions';
 import type { ShareThriftWorld } from '../../../world.ts';
+import { resolveActorName } from '../../../shared/support/domain-test-helpers.ts';
 import type { ListingDetails } from '../tasks/domain/create-listing.ts';
-import { CreateListing as DomCreateListing } from '../tasks/dom/create-listing.ts';
+import { CreateListing as E2eCreateListing } from '../tasks/e2e/create-listing.ts';
 import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.ts';
 import { CreateListing as DomainCreateListing } from '../tasks/domain/create-listing.ts';
-import  { ListingStatus } from '../questions/listing-status.ts';
-import  { ListingTitle } from '../questions/listing-title.ts';
-import  { FormValidationError } from '../questions/form-validation-error.ts';
+import { ListingStatus } from '../questions/listing-status.ts';
+import { ListingTitle } from '../questions/listing-title.ts';
+import { FormValidationError } from '../questions/form-validation-error.ts';
+
+// Track last actor used in When steps so Then steps can reference them without hardcoding
+let lastActorName = 'Alice';
 
 function getCreateListingTask(level: string) {
 	switch (level) {
-		case 'dom':
-			return DomCreateListing;
+		case 'e2e':
+			return E2eCreateListing;
 		case 'session':
 			return SessionCreateListing;
 		default:
@@ -23,8 +28,9 @@ function getCreateListingTask(level: string) {
 Given(
 	'{word} is an authenticated user',
 	function (this: ShareThriftWorld, actorName: string) {
+		lastActorName = actorName;
 		actorCalled(actorName);
-		},
+	},
 );
 
 Given(
@@ -32,7 +38,7 @@ Given(
 	async function (this: ShareThriftWorld, actorName: string, title: string) {
 		const actor = actorCalled(actorName);
 
-		const CreateListing = getCreateListingTask(this.level);
+		const CreateListing = getCreateListingTask(this.setupLevel);
 
 		await actor.attemptsTo(
 			CreateListing.with({
@@ -49,20 +55,20 @@ Given(
 When(
 	'{word} creates a listing with:',
 	async function (this: ShareThriftWorld, actorName: string, dataTable: DataTable) {
+		lastActorName = actorName;
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
 		const CreateListing = getCreateListingTask(this.level);
 
-		// Execute the task
 		await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
-
 	},
 );
 
 When(
 	'{word} attempts to create a listing with:',
 	async function (this: ShareThriftWorld, actorName: string, dataTable: DataTable) {
+		lastActorName = actorName;
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
@@ -76,7 +82,6 @@ When(
 				notes<{lastValidationError: string}>().set('lastValidationError', errorMessage),
 			);
 		}
-
 	},
 );
 
@@ -85,11 +90,9 @@ Then(
 	async function (this: ShareThriftWorld, actorName: string, expectedStatus: string) {
 		const actor = actorCalled(actorName);
 
-		const status = await actor.answer(ListingStatus.of());
-		if (status !== expectedStatus) {
-			throw new Error(`Expected listing status "${expectedStatus}" but got "${status}"`);
-		}
-
+		await actor.attemptsTo(
+			Ensure.that(ListingStatus.of(), equals(expectedStatus)),
+		);
 	},
 );
 
@@ -97,20 +100,18 @@ Then(
 	'{word} sees the listing title as {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedTitle: string) {
 		const actor = actorCalled(actorName);
-		const title = await actor.answer(ListingTitle.displayed());
-		if (title !== expectedTitle) {
-			throw new Error(`Expected listing title "${expectedTitle}" but got "${title}"`);
-		}
 
+		await actor.attemptsTo(
+			Ensure.that(ListingTitle.displayed(), equals(expectedTitle)),
+		);
 	},
 );
 
 Then(
 	'the listing should have a daily rate of {string}',
 	async function (this: ShareThriftWorld, _expectedRate: string) {
-		// Daily rate is not yet tracked in the domain model.
-		// This step will need implementation once the domain adds rate support.
-		const actor = actorCalled('Alice');
+		// TODO: Replace with daily rate Question once domain model supports it
+		const actor = actorCalled(lastActorName);
 		const status = await actor.answer(ListingStatus.of());
 		if (!status) {
 			throw new Error('Expected a listing to exist before checking its daily rate');
@@ -121,7 +122,7 @@ Then(
 Then(
 	'{word} should see a listing error for {string}',
 	async function (this: ShareThriftWorld, actorName: string, fieldName: string) {
-		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
 		try {
@@ -142,8 +143,7 @@ Then(
 Then(
 	'{word} should see a listing error {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedMessage: string) {
-		// Map pronouns to actual actor names
-		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
 		// Check if actor has a stored validation error from task execution
@@ -169,9 +169,7 @@ Then(
 );
 
 Then('no listing should be created', async function (this: ShareThriftWorld) {
-	const actor = actorCalled('Alice');
-	// If the listing creation errored (as expected), there should be a validation error in notes
-	// and no lastListingId set.
+	const actor = actorCalled(lastActorName);
 	try {
 		const listingId = await actor.answer(notes<{ lastListingId?: string }>().get('lastListingId'));
 		if (listingId) {
@@ -186,23 +184,21 @@ Then('no listing should be created', async function (this: ShareThriftWorld) {
 Then(
 	'the listing should be in {word} status',
 	async function (this: ShareThriftWorld, expectedStatus: string) {
-		const actor = actorCalled('Alice');
+		const actor = actorCalled(lastActorName);
 
-		const status = await actor.answer(ListingStatus.of());
-		if (status !== expectedStatus) {
-			throw new Error(`Expected listing status "${expectedStatus}" but got "${status}"`);
-		}
+		await actor.attemptsTo(
+			Ensure.that(ListingStatus.of(), equals(expectedStatus)),
+		);
 	},
 );
 
 Then(
 	'the listing title should be {string}',
 	async function (this: ShareThriftWorld, expectedTitle: string) {
-		const actor = actorCalled('Alice');
+		const actor = actorCalled(lastActorName);
 
-		const title = await actor.answer(ListingTitle.displayed());
-		if (title !== expectedTitle) {
-			throw new Error(`Expected listing title "${expectedTitle}" but got "${title}"`);
-		}
+		await actor.attemptsTo(
+			Ensure.that(ListingTitle.displayed(), equals(expectedTitle)),
+		);
 	},
 );

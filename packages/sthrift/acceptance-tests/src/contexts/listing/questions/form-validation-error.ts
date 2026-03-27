@@ -1,4 +1,5 @@
 import { Question, type AnswersQuestions, type UsesAbilities } from '@serenity-js/core';
+import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
 
 export class FormValidationError extends Question<Promise<string>> {
 	static displayed(): FormValidationError {
@@ -14,34 +15,25 @@ export class FormValidationError extends Question<Promise<string>> {
 		super(message);
 	}
 
-	override answeredBy(_actor: AnswersQuestions & UsesAbilities): Promise<string> {
+	override async answeredBy(actor: AnswersQuestions & UsesAbilities): Promise<string> {
+		// Try to use Playwright page (E2E level)
 		try {
-			if (typeof document === 'undefined') {
-				return Promise.resolve('');
-			}
-
-			if (this.type === 'form') {
-				const errorElement = document.querySelector('[role="alert"]') ||
-					document.querySelector('.ant-message-error') ||
-					document.querySelector('[data-testid="form-error"]');
-				return Promise.resolve(errorElement?.textContent?.trim() || '');
-			}
+			const { page } = BrowseTheWeb.as(actor as UsesAbilities);
 
 			if (this.type === 'field' && this.fieldName) {
-				const fieldLabel = this.normalizeFieldName(this.fieldName);
-				const errorElement = document.querySelector(`[data-error="${fieldLabel}"]`) ||
-					document.querySelector(`[aria-label*="error"][aria-label*="${this.fieldName}"]`);
-				return Promise.resolve(errorElement?.textContent?.trim() || '');
+				const errorEl = page.locator('.ant-form-item-explain-error').first();
+				const text = await errorEl.textContent({ timeout: 3_000 }).catch(() => null);
+				return text?.trim() || '';
 			}
 
-			return Promise.resolve('');
+			// Form-level: look for any validation error or alert
+			const errorEl = page.locator('.ant-form-item-explain-error, [role="alert"], .ant-message-error').first();
+			const text = await errorEl.textContent({ timeout: 3_000 }).catch(() => null);
+			return text?.trim() || '';
 		} catch {
-			return Promise.resolve('');
+			// BrowseTheWeb ability not available (domain/session level) — return empty
+			return '';
 		}
-	}
-
-	private normalizeFieldName(name: string): string {
-		return name.toLowerCase().replace(/\s+/g, '-');
 	}
 
 	override toString = () => {
