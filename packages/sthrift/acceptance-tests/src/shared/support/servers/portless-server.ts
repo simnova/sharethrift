@@ -1,28 +1,25 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 
-// Base class for portless servers (probes, spawns, waits for ready)
+// Base class for portless-proxied servers
 export abstract class PortlessServer {
 	private process: ChildProcess | null = null;
 	private startedByUs = false;
 
-	protected abstract get probeUrl(): string; // URL to probe
-	protected abstract get readyMarker(): string; // Ready marker in stdout
-	protected abstract get serverName(): string; // Name for error messages
-	protected abstract get startupTimeoutMs(): number; // Startup timeout (ms)
-	protected abstract get spawnArgs(): string[]; // Portless spawn args
-	protected abstract get cwd(): string; // Working directory
-	protected get extraEnv(): Record<string, string> { // Extra env vars
-		return {};
-	}
+	protected abstract get probeUrl(): string;
+	protected abstract get readyMarker(): string;
+	protected abstract get serverName(): string;
+	protected abstract get startupTimeoutMs(): number;
+	protected abstract get spawnArgs(): string[];
+	protected abstract get cwd(): string;
+	protected get extraEnv(): Record<string, string> { return {}; }
 
-	// Probe if server is already accepting requests
 	async isAlreadyRunning(): Promise<boolean> {
 		try {
 			const controller = new AbortController();
 			const timeout = setTimeout(() => controller.abort(), 3_000);
 			const res = await fetch(this.probeUrl, { signal: controller.signal });
 			clearTimeout(timeout);
-			return res.status < 500;
+			return res.ok;
 		} catch {
 			return false;
 		}

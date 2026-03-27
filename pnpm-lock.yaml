@@ -1188,6 +1188,9 @@ importers:
       '@sthrift/persistence':
         specifier: workspace:*
         version: link:../persistence
+      '@sthrift/ui-components':
+        specifier: workspace:*
+        version: link:../ui-components
       '@types/graphql-depth-limit':
         specifier: ^1.1.6
         version: 1.1.6

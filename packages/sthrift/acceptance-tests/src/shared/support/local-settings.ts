@@ -1,7 +1,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-// Single source of truth for local dev config (local.settings.json + .env)
+// apiSettings  ← apps/api/local.settings.json
+// uiSettings   ← apps/ui-sharethrift/.env
 
 function findWorkspaceRoot(): string {
 	let dir = import.meta.dirname;
@@ -14,15 +15,12 @@ function findWorkspaceRoot(): string {
 	throw new Error('Could not find workspace root (pnpm-workspace.yaml)');
 }
 
-function readSettings(): Record<string, string> {
-	const root = findWorkspaceRoot();
-	const settingsPath = path.join(root, 'apps', 'api', 'local.settings.json');
-	const raw = fs.readFileSync(settingsPath, 'utf-8');
+function readJsonSettings(filePath: string): Record<string, string> {
+	const raw = fs.readFileSync(filePath, 'utf-8');
 	const parsed = JSON.parse(raw) as { Values?: Record<string, string> };
 	return parsed.Values ?? {};
 }
 
-// Parse .env file (KEY=VALUE per line)
 function readDotEnv(filePath: string): Record<string, string> {
 	if (!fs.existsSync(filePath)) return {};
 	const lines = fs.readFileSync(filePath, 'utf-8').split('\n');
@@ -37,59 +35,63 @@ function readDotEnv(filePath: string): Record<string, string> {
 	return result;
 }
 
-const values = readSettings();
 const workspaceRoot = findWorkspaceRoot();
-const uiEnv = readDotEnv(path.join(workspaceRoot, 'apps', 'ui-sharethrift', '.env'));
+const apiValues = readJsonSettings(path.join(workspaceRoot, 'apps', 'api', 'local.settings.json'));
+const uiValues = readDotEnv(path.join(workspaceRoot, 'apps', 'ui-sharethrift', '.env'));
 
-const nodeEnv = values['NODE_ENV'] ?? 'development';
-const isDevelopment = nodeEnv === 'development';
+// API Settings
+export const apiSettings = {
+	nodeEnv: apiValues['NODE_ENV'] ?? 'development',
+	isDevelopment: (apiValues['NODE_ENV'] ?? 'development') === 'development',
 
-const cosmosDbConnectionString = values['COSMOSDB_CONNECTION_STRING'] ?? '';
-const cosmosDbName = values['COSMOSDB_DBNAME'] ?? 'sharethrift';
-const cosmosDbPort = Number(values['COSMOSDB_PORT'] ?? '50000');
+	cosmosDbConnectionString: apiValues['COSMOSDB_CONNECTION_STRING'] ?? '',
+	cosmosDbName: apiValues['COSMOSDB_DBNAME'] ?? 'sharethrift',
+	cosmosDbPort: Number(apiValues['COSMOSDB_PORT'] ?? '50000'),
 
-const oauthIssuerUrl = values['USER_PORTAL_OIDC_ISSUER'] ?? '';
-const oauthJwksEndpoint = values['USER_PORTAL_OIDC_ENDPOINT'] ?? '';
-const oauthAudience = values['USER_PORTAL_OIDC_AUDIENCE'] ?? 'user-portal';
+	userPortalOidcIssuer: apiValues['USER_PORTAL_OIDC_ISSUER'] ?? '',
+	userPortalOidcEndpoint: apiValues['USER_PORTAL_OIDC_ENDPOINT'] ?? '',
+	userPortalOidcAudience: apiValues['USER_PORTAL_OIDC_AUDIENCE'] ?? 'user-portal',
 
-const apiGraphqlUrl =
-	'https://data-access.sharethrift.localhost:1355/api/graphql';
-const uiUrl = 'https://sharethrift.localhost:1355';
+	adminPortalOidcIssuer: apiValues['ADMIN_PORTAL_OIDC_ISSUER'] ?? '',
+	adminPortalOidcEndpoint: apiValues['ADMIN_PORTAL_OIDC_ENDPOINT'] ?? '',
+	adminPortalOidcAudience: apiValues['ADMIN_PORTAL_OIDC_AUDIENCE'] ?? 'admin-portal',
 
-const uiClientId = uiEnv['VITE_B2C_CLIENTID'] ?? 'mock-client';
-const uiRedirectUri = uiEnv['VITE_B2C_REDIRECT_URI'] ?? `${uiUrl}/auth-redirect-user`;
-const uiScope = uiEnv['VITE_B2C_SCOPE'] ?? 'openid user-portal';
-const uiAdminClientId = uiEnv['VITE_B2C_ADMIN_CLIENTID'] ?? 'mock-client';
-const uiAdminRedirectUri = uiEnv['VITE_B2C_ADMIN_REDIRECT_URI'] ?? `${uiUrl}/auth-redirect-admin`;
-const uiAdminScope = uiEnv['VITE_B2C_ADMIN_SCOPE'] ?? 'openid admin-portal';
+	apiGraphqlUrl: apiValues['VITE_FUNCTION_ENDPOINT'] || (() => {
+		throw new Error('VITE_FUNCTION_ENDPOINT is required in local.settings.json');
+	})(),
 
-const apiDir = path.join(workspaceRoot, 'apps', 'api');
-const oauth2MockDir = path.join(workspaceRoot, 'apps', 'server-oauth2-mock');
-const uiDir = path.join(workspaceRoot, 'apps', 'ui-sharethrift');
+	messagingMockUrl: apiValues['MESSAGING_MOCK_URL'] ?? '',
+	paymentMockUrl: apiValues['PAYMENT_MOCK_URL'] ?? '',
 
-export const localSettings = {
-	isDevelopment,
-	nodeEnv,
+	// Directories
+	apiDir: path.join(workspaceRoot, 'apps', 'api'),
+	oauth2MockDir: path.join(workspaceRoot, 'apps', 'server-oauth2-mock'),
+	uiDir: path.join(workspaceRoot, 'apps', 'ui-sharethrift'),
+} as const;
 
-	cosmosDbConnectionString,
-	cosmosDbName,
-	cosmosDbPort,
+// UI Settings
+const uiBaseUrl = uiValues['VITE_BASE_URL'] || (() => {
+	throw new Error('VITE_BASE_URL is required in .env');
+})();
 
-	oauthIssuerUrl,
-	oauthJwksEndpoint,
-	oauthAudience,
+export const uiSettings = {
+	baseUrl: uiBaseUrl,
 
-	apiGraphqlUrl,
-	uiUrl,
+	clientId: uiValues['VITE_B2C_CLIENTID'] ?? 'mock-client',
+	authority: uiValues['VITE_B2C_AUTHORITY'] ?? apiSettings.userPortalOidcIssuer,
+	redirectUri: uiValues['VITE_B2C_REDIRECT_URI'] || (() => {
+		throw new Error('VITE_B2C_REDIRECT_URI is required in .env');
+	})(),
+	scope: uiValues['VITE_B2C_SCOPE'] ?? 'openid user-portal',
 
-	uiClientId,
-	uiRedirectUri,
-	uiScope,
-	uiAdminClientId,
-	uiAdminRedirectUri,
-	uiAdminScope,
+	adminClientId: uiValues['VITE_B2C_ADMIN_CLIENTID'] ?? 'mock-client',
+	adminAuthority: uiValues['VITE_B2C_ADMIN_AUTHORITY'] ?? apiSettings.adminPortalOidcIssuer,
+	adminRedirectUri: uiValues['VITE_B2C_ADMIN_REDIRECT_URI'] || (() => {
+		throw new Error('VITE_B2C_ADMIN_REDIRECT_URI is required in .env');
+	})(),
+	adminScope: uiValues['VITE_B2C_ADMIN_SCOPE'] ?? 'openid admin-portal',
 
-	apiDir,
-	oauth2MockDir,
-	uiDir,
+	graphqlEndpoint: uiValues['VITE_FUNCTION_ENDPOINT'] || (() => {
+		throw new Error('VITE_FUNCTION_ENDPOINT is required in .env');
+	})(),
 } as const;

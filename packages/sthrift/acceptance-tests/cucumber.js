@@ -6,7 +6,11 @@ const terminalFormat = isAgent
 
 export default {
 	paths: ['src/contexts/**/features/**/*.feature'],
-	import: ['src/**/*.ts'],
+	import: [
+		'src/world.ts',
+		'src/step-definitions/**/*.ts',
+		'src/shared/support/**/*.ts',
+	],
 	format: [
 		terminalFormat,
 		'json:./reports/cucumber-report.json',

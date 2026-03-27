@@ -1,42 +1,49 @@
-import { Ability, type Actor } from '@serenity-js/core';
+import { Ability, type Actor, type UsesAbilities } from '@serenity-js/core';
 import type { Browser, BrowserContext, Page } from '@playwright/test';
 
-// Module-level reference updated each scenario.
-// This avoids issues with Serenity.js actor caching — actors are created
-// once and reused, so we can't rely on per-actor ability instances staying
-// in sync with per-scenario browser contexts.
-let activeBrowseTheWeb: BrowseTheWeb | undefined;
+// Per-actor browser ability registry — supports multi-actor E2E scenarios.
+// Falls back to the last-created instance for backward compatibility with
+// tasks that call BrowseTheWeb.as(actor) before the actor ability map is accessible.
+const actorBrowserMap = new Map<string, BrowseTheWeb>();
+let fallbackInstance: BrowseTheWeb | undefined;
 
-/**
- * Serenity.js Ability that wraps a Playwright Page for E2E browser interactions.
- *
- * Usage in Cast:
- *   actor.whoCan(BrowseTheWeb.using(page, context))
- *
- * Usage in Tasks:
- *   const { page } = BrowseTheWeb.as(actor);
- *   await page.goto('/create-listing');
- */
+// Serenity.js Ability wrapping a Playwright Page for E2E browser interactions
 export class BrowseTheWeb extends Ability {
 	readonly page: Page;
 	private readonly context: BrowserContext;
+	private actorName: string | undefined;
 
 	static using(page: Page, context: BrowserContext): BrowseTheWeb {
 		const ability = new BrowseTheWeb(page, context);
-		activeBrowseTheWeb = ability;
+		fallbackInstance = ability;
 		return ability;
 	}
 
-	/**
-	 * Returns the BrowseTheWeb ability for the current scenario.
-	 * Uses the module-level active instance rather than the actor's cached abilities
-	 * to work around Serenity.js's actor caching between scenarios.
-	 */
-	static as(_actor: Actor): BrowseTheWeb {
-		if (!activeBrowseTheWeb) {
-			throw new Error('No BrowseTheWeb ability is active — ensure the E2E infrastructure was started');
+	// Register this ability for a specific actor name (called during Cast.prepare)
+	registerForActor(name: string): BrowseTheWeb {
+		this.actorName = name;
+		actorBrowserMap.set(name, this);
+		return this;
+	}
+
+	static as(actor: UsesAbilities): BrowseTheWeb {
+		// Try actor-specific lookup first
+		const actorName = 'name' in actor ? (actor as Actor).name : undefined;
+		if (actorName) {
+			const perActor = actorBrowserMap.get(actorName);
+			if (perActor) return perActor;
 		}
-		return activeBrowseTheWeb;
+
+		// Fallback to module-level instance
+		if (!fallbackInstance) {
+			throw new Error('No BrowseTheWeb ability is active');
+		}
+		return fallbackInstance;
+	}
+
+	// Returns the active instance without throwing — used by hooks for best-effort screenshot capture
+	static current(): BrowseTheWeb | undefined {
+		return fallbackInstance;
 	}
 
 	private constructor(page: Page, context: BrowserContext) {
@@ -48,16 +55,15 @@ export class BrowseTheWeb extends Ability {
 	async close(): Promise<void> {
 		await this.page.close();
 		await this.context.close();
-		if (activeBrowseTheWeb === this) {
-			activeBrowseTheWeb = undefined;
+		if (this.actorName) {
+			actorBrowserMap.delete(this.actorName);
+		}
+		if (fallbackInstance === this) {
+			fallbackInstance = undefined;
 		}
 	}
 }
 
-/**
- * Shared browser instance for E2E tests.
- * Launched once per test run, closed in AfterAll hook.
- */
 export interface SharedBrowserState {
 	browser: Browser;
 	baseUrl: string;

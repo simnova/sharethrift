@@ -1,6 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../../../shared/abilities/browse-the-web.ts';
 import type { CreateReservationRequestInput, ReservationRequestNotes } from '../../abilities/reservation-request-types.ts';
+import { ReservationPage } from './reservation-page.ts';
 
 export class CreateReservationRequest extends Task {
 	static with(input: CreateReservationRequestInput) {
@@ -13,28 +14,22 @@ export class CreateReservationRequest extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const { page } = BrowseTheWeb.as(actor);
+		const reservationPage = new ReservationPage(page);
 
-		// Navigate and load listing page
 		await page.goto(`/listing/${this.input.listingId}`);
 		await page.waitForLoadState('networkidle');
 
-		const rangePicker = page.locator('.ant-picker-range');
-		await rangePicker.waitFor({ state: 'visible', timeout: 10_000 });
+		await reservationPage.rangePicker.waitFor({ state: 'visible', timeout: 10_000 });
 
-		// Disabled picker means existing overlapping reservations
-		const pickerDisabled = await rangePicker.evaluate(
-			(el) => el.classList.contains('ant-picker-disabled'),
-		);
-		if (pickerDisabled) {
+		if (await reservationPage.isRangePickerDisabled) {
 			throw new Error('Reservation period overlaps with existing active reservation requests');
 		}
 
-		await rangePicker.click();
+		await reservationPage.rangePicker.click();
 
 		const hasStart = this.input.reservationPeriodStart instanceof Date;
 		const hasEnd = this.input.reservationPeriodEnd instanceof Date;
 
-		// Both dates required
 		if (!hasStart || !hasEnd) {
 			await page.keyboard.press('Escape');
 			const missing = !hasStart ? 'reservationPeriodStart' : 'reservationPeriodEnd';
@@ -44,128 +39,56 @@ export class CreateReservationRequest extends Task {
 		const startDateStr = this.formatDate(this.input.reservationPeriodStart);
 		const endDateStr = this.formatDate(this.input.reservationPeriodEnd);
 
-		// Check if start date is disabled (antd: ant-picker-cell-disabled)
-		const startCell = page.locator(`td[title="${startDateStr}"]`).first();
+		const startCell = reservationPage.calendarCell(startDateStr);
 		await startCell.waitFor({ state: 'visible', timeout: 5_000 });
 
-		const startDisabled = await startCell.evaluate(
-			(el) => el.classList.contains('ant-picker-cell-disabled'),
-		);
-
-		if (startDisabled) {
+		if (await reservationPage.isCalendarCellDisabled(startDateStr)) {
 			await page.keyboard.press('Escape');
 			throw new Error('Reservation period overlaps with existing active reservation requests');
 		}
 
 		await startCell.click();
 
-		// Check if end date is disabled
-		const endCell = page.locator(`td[title="${endDateStr}"]`).first();
+		const endCell = reservationPage.calendarCell(endDateStr);
 		await endCell.waitFor({ state: 'visible', timeout: 5_000 });
 
-		const endDisabled = await endCell.evaluate(
-			(el) => el.classList.contains('ant-picker-cell-disabled'),
-		);
-
-		if (endDisabled) {
+		if (await reservationPage.isCalendarCellDisabled(endDateStr)) {
 			await page.keyboard.press('Escape');
 			throw new Error('Reservation period overlaps with existing active reservation requests');
 		}
 
 		await endCell.click();
 
-		// Check for client-side overlap error
-		const dateErrorEl = page.locator('div').filter({ hasText: /overlaps with existing reservations/i }).first();
-		const dateSelectionError = await dateErrorEl.textContent({ timeout: 2_000 }).catch(() => null);
+		const dateSelectionError = await reservationPage.overlapErrorMessage
+			.textContent({ timeout: 2_000 }).catch(() => null);
 		if (dateSelectionError) {
 			throw new Error('Reservation period overlaps with existing active reservation requests');
 		}
 
 		// Click Reserve button
-		const reserveButton = page.getByRole('button', { name: /Reserve/i });
-		await reserveButton.waitFor({ state: 'visible', timeout: 5_000 });
+		await reservationPage.reserveButton.waitFor({ state: 'visible', timeout: 5_000 });
+		await reservationPage.reserveButton.click();
 
-		// Intercept mutation response
-		let mutationResponse: { success: boolean; errorMessage?: string; reservationRequest?: { id: string; state: string } } | undefined;
-		let mutationError: string | undefined;
+		// Verify button shows loading state during submission
+		await reservationPage.loadingIcon.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => {});
 
-		const mutationResponsePromise = new Promise<void>((resolve) => {
-			const handler = async (resp: import('@playwright/test').Response) => {
-				if (resp.request().method() !== 'POST') return;
-				try {
-					const postData = resp.request().postData();
-					if (!postData?.toLowerCase().includes('createreservationrequest')) return;
+		// Verify "Cancel Request" button appears (proves reservation was accepted)
+		await reservationPage.cancelRequestButton.waitFor({ state: 'visible', timeout: 15_000 });
 
-					const json = await resp.json();
-					const responses = Array.isArray(json) ? json : [json];
-					for (const entry of responses) {
-						if (entry?.data?.createReservationRequest) {
-							const result = entry.data.createReservationRequest;
-							mutationResponse = {
-								success: result.status?.success ?? true,
-								errorMessage: result.status?.errorMessage,
-								reservationRequest: result.reservationRequest,
-							};
-							page.off('response', handler);
-							resolve();
-							return;
-						}
-						if (entry?.errors?.length) {
-							// Skip PersistedQueryNotFound (Apollo retries with full query)
-							const isPersistedQueryRetry = entry.errors.some(
-								(e: { message: string }) => e.message === 'PersistedQueryNotFound',
-							);
-							if (isPersistedQueryRetry) return;
+		const cancelButtonText = await reservationPage.cancelRequestButton.textContent();
+		const domState = cancelButtonText?.includes('Cancel Request') ? 'Requested' : 'Unknown';
 
-							mutationError = entry.errors.map((e: { message: string }) => e.message).join('; ');
-							page.off('response', handler);
-							resolve();
-							return;
-						}
-					}
-				} catch {
-					// Ignore non-JSON responses
-				}
-			};
-			page.on('response', handler);
-
-			// 15s timeout
-			setTimeout(() => {
-				page.off('response', handler);
-				resolve();
-			}, 15_000);
-		});
-
-		await reserveButton.click();
-
-		await mutationResponsePromise;
-
-		if (mutationError) {
-			throw new Error(mutationError);
+		if (domState !== 'Requested') {
+			throw new Error(
+				`Expected reservation button to show "Cancel Request" but got: "${cancelButtonText}"`,
+			);
 		}
 
-		if (!mutationResponse) {
-			throw new Error('No createReservationRequest response received');
-		}
-
-		if (!mutationResponse.success) {
-			throw new Error(mutationResponse.errorMessage ?? 'Reservation request creation failed');
-		}
-
-		const reservation = mutationResponse.reservationRequest;
-		const reservationId = reservation?.id ?? 'e2e-unknown';
-
-		// Verify Cancel Request button appears (proves reservation accepted)
-		const cancelButton = page.getByRole('button', { name: /Cancel Request/i });
-		await cancelButton.waitFor({ state: 'visible', timeout: 10_000 });
-		const domState = 'Requested';
-
-		// Verify date picker is disabled
-		const disabledPicker = page.locator('.ant-picker-range.ant-picker-disabled');
-		const pickerIsDisabled = await disabledPicker.isVisible({ timeout: 5_000 }).catch(() => false);
+		// Verify date picker is disabled after reservation
+		await reservationPage.disabledRangePicker.waitFor({ state: 'visible', timeout: 5_000 });
 
 		await actor.attemptsTo(
-			notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationId),
+			notes<ReservationRequestNotes>().set('lastReservationRequestId', this.input.listingId),
 			notes<ReservationRequestNotes>().set('lastReservationRequestState', domState),
 			notes<ReservationRequestNotes>().set('lastReservationRequestStartDate', startDateStr),
 			notes<ReservationRequestNotes>().set('lastReservationRequestEndDate', endDateStr),

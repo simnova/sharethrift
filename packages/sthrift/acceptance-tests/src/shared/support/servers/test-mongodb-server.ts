@@ -7,7 +7,7 @@ import { getAllMockUsers } from '../test-data/user.test-data.ts';
 const MONGO_BINARY_VERSION = '7.0.14';
 const DEFAULT_DB_NAME = 'sharethrift-test';
 
-// In-memory MongoDB with seeded reference data (users, account plans)
+// In-memory MongoDB with seeded reference data
 export class MongoDBTestServer {
 	private replSet: MongoMemoryReplSet | null = null;
 	private serviceMongoose: ServiceMongoose | null = null;
@@ -16,11 +16,13 @@ export class MongoDBTestServer {
 	async start(options?: { port?: number; dbName?: string }): Promise<void> {
 		this.dbName = options?.dbName ?? DEFAULT_DB_NAME;
 
-		this.replSet = await MongoMemoryReplSet.create({
+		const config = {
 			binary: { version: MONGO_BINARY_VERSION },
-			replSet: { name: 'rs0', count: 1, storageEngine: 'wiredTiger' },
-			instanceOpts: options?.port ? [{ port: options.port }] : undefined,
-		});
+			replSet: { name: 'rs0', count: 1, storageEngine: 'wiredTiger' as const },
+			...(options?.port && { instanceOpts: [{ port: options.port }] }),
+		};
+
+		this.replSet = await MongoMemoryReplSet.create(config);
 		const uri = this.replSet.getUri();
 
 		this.serviceMongoose = new ServiceMongoose(uri, {
@@ -30,14 +32,9 @@ export class MongoDBTestServer {
 		});
 		await this.serviceMongoose.startUp();
 
-		// Clear stale Mongoose model registrations from previous runs
 		const { connection } = this.serviceMongoose.service;
 		for (const modelName of Object.keys(connection.models)) {
-			try {
-				connection.deleteModel(modelName);
-			} catch {
-				// Model may already be deleted
-			}
+			try { connection.deleteModel(modelName); } catch { /* already deleted */ }
 		}
 
 		await MongoDBTestServer.seedData(uri, this.dbName);
@@ -72,7 +69,6 @@ export class MongoDBTestServer {
 		return this.serviceMongoose !== null;
 	}
 
-	// Check whether MongoDB is reachable
 	static async isReachable(connectionString: string): Promise<boolean> {
 		const client = new MongoClient(connectionString, {
 			serverSelectionTimeoutMS: 3_000,
@@ -89,7 +85,6 @@ export class MongoDBTestServer {
 		}
 	}
 
-	// Upsert reference data (users, account plans) into MongoDB
 	static async seedData(
 		connectionString: string,
 		dbName: string,

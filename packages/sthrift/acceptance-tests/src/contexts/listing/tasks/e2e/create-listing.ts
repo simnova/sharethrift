@@ -1,6 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../../../shared/abilities/browse-the-web.ts';
 import type { ListingDetails, ListingNotes } from '../../abilities/listing-types.ts';
+import { ListingPage } from './listing-page.ts';
 
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
@@ -13,73 +14,66 @@ export class CreateListing extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const { page } = BrowseTheWeb.as(actor);
+		const listingPage = new ListingPage(page);
 
-		// Navigate and fill form
 		await page.goto('/create-listing');
 		await page.waitForLoadState('networkidle');
 
 		if (this.details.title) {
-			await page.getByPlaceholder('Enter listing title').fill(this.details.title);
+			await listingPage.titleInput.fill(this.details.title);
 		}
 
 		if (this.details.description) {
-			await page.getByPlaceholder('Describe your item and sharing terms').fill(this.details.description);
+			await listingPage.descriptionInput.fill(this.details.description);
 		}
 
 		if (this.details.category) {
-			// Open antd Select dropdown and click option
-			const select = page.locator('.ant-select').first();
-			await select.click();
-			await page.locator(`.ant-select-item[title="${this.details.category}"]`).click();
+			await listingPage.categorySelect.click();
+			await listingPage.categoryOption(this.details.category).click();
 		}
 
 		if (this.details.location) {
-			await page.getByPlaceholder('Enter location').fill(this.details.location);
+			await listingPage.locationInput.fill(this.details.location);
 		}
 
-		// Fill sharing period dates
-		const rangePicker = page.locator('.ant-picker-range');
-		if (await rangePicker.isVisible()) {
-			await rangePicker.click();
+		// Fill sharing period
+		if (await listingPage.rangePicker.isVisible()) {
+			await listingPage.rangePicker.click();
 			const today = new Date();
 			const startDate = new Date(today);
 			startDate.setDate(today.getDate() + 1);
 			const endDate = new Date(today);
 			endDate.setDate(today.getDate() + 30);
 
-			const startCell = page.locator(`td[title="${this.formatDate(startDate)}"]`).first();
+			const startCell = listingPage.calendarCell(this.formatDate(startDate));
 			await startCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => {});
 			if (await startCell.isVisible()) {
 				await startCell.click();
 			}
 
-			// Navigate forward if end date in next month
-			let endCell = page.locator(`td[title="${this.formatDate(endDate)}"]`).first();
+			let endCell = listingPage.calendarCell(this.formatDate(endDate));
 			if (!(await endCell.isVisible({ timeout: 1_000 }).catch(() => false))) {
-				await page.locator('.ant-picker-header-next-btn').last().click();
-				endCell = page.locator(`td[title="${this.formatDate(endDate)}"]`).first();
+				await listingPage.nextMonthButton.click();
+				endCell = listingPage.calendarCell(this.formatDate(endDate));
 			}
 			await endCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => {});
 			if (await endCell.isVisible()) {
 				await endCell.click();
 			}
 
-			// Close date picker
 			await page.keyboard.press('Escape');
 		}
 
-		// Clear overlays
 		await page.locator('body').click({ position: { x: 0, y: 0 } });
 
 		const isDraft = !(this.details.isDraft === 'false' || this.details.isDraft === false);
 
-		// Check for missing required fields
 		const hasMissingRequired = !this.details.title;
 
 		if (hasMissingRequired) {
-			await page.getByRole('button', { name: /Publish Listing/i }).click();
+			await listingPage.publishButton.click();
 
-			const validationError = await page.locator('.ant-form-item-explain-error').first()
+			const validationError = await listingPage.firstValidationError
 				.textContent({ timeout: 3_000 })
 				.catch(() => null);
 
@@ -90,106 +84,47 @@ export class CreateListing extends Task {
 			throw new Error('Required fields are missing');
 		}
 
-		// Intercept mutation response
-		let mutationResponse: { success: boolean; errorMessage?: string; listing?: { id: string; state: string } } | undefined;
-		let mutationError: string | undefined;
-
-		const mutationResponsePromise = new Promise<void>((resolve) => {
-			const handler = async (resp: import('@playwright/test').Response) => {
-				if (resp.request().method() !== 'POST') return;
-				try {
-					const postData = resp.request().postData();
-					// Match both query text and operation name (covers persisted queries)
-					if (!postData?.toLowerCase().includes('createitemlisting')) return;
-
-					const json = await resp.json();
-					// Handle batched and single responses
-					const responses = Array.isArray(json) ? json : [json];
-					for (const entry of responses) {
-						if (entry?.data?.createItemListing) {
-							const result = entry.data.createItemListing;
-							mutationResponse = {
-								success: result.status?.success ?? true,
-								errorMessage: result.status?.errorMessage,
-								listing: result.listing,
-							};
-							page.off('response', handler);
-							resolve();
-							return;
-						}
-						if (entry?.errors?.length) {
-							// Skip PersistedQueryNotFound (Apollo retries with full query)
-							const isPersistedQueryRetry = entry.errors.some(
-								(e: { message: string }) => e.message === 'PersistedQueryNotFound',
-							);
-							if (isPersistedQueryRetry) return;
-
-							mutationError = entry.errors.map((e: { message: string }) => e.message).join('; ');
-							page.off('response', handler);
-							resolve();
-							return;
-						}
-					}
-				} catch {
-					// Ignore non-JSON responses
-				}
-			};
-			page.on('response', handler);
-
-			// 15s timeout
-			setTimeout(() => {
-				page.off('response', handler);
-				resolve();
-			}, 15_000);
-		});
-
 		// Click the appropriate submit button
-		const buttonText = isDraft ? /Save as Draft/i : /Publish Listing/i;
-		await page.getByRole('button', { name: buttonText }).click();
+		const submitButton = isDraft ? listingPage.saveDraftButton : listingPage.publishButton;
 
-		// Wait for the mutation response
-		await mutationResponsePromise;
+		// Listen for server-side validation errors in the GraphQL response
+		const getServerError = await listingPage.listenForMutationError('createItemListing');
 
-		if (mutationError) {
-			throw new Error(mutationError);
-		}
+		await submitButton.click();
 
-		if (!mutationResponse) {
-			throw new Error('No createItemListing response received');
-		}
+		// Verify button enters loading state during submission
+		await listingPage.loadingButton.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => {});
 
-		if (!mutationResponse.success) {
-			throw new Error(mutationResponse.errorMessage ?? 'Listing creation failed');
-		}
-
-		const listing = mutationResponse.listing;
-		const listingId = listing?.id ?? 'e2e-unknown';
-
-		// Store listing ID for subsequent steps
-		await actor.attemptsTo(
-			notes<ListingNotes>().set('lastListingId', listingId),
-		);
-
-		// Verify success modal
+		// Wait for the success modal to appear
 		const expectedModalText = isDraft ? 'Draft saved!' : 'Your listing is live!';
-		const modal = page.locator('.ant-modal');
-		await modal.waitFor({ state: 'visible', timeout: 10_000 });
+		await listingPage.modal.waitFor({ state: 'visible', timeout: 15_000 });
+		await listingPage.modal.getByText(expectedModalText).waitFor({ state: 'visible', timeout: 15_000 });
 
-		const modalContent = await modal.textContent();
+		// Check for server-side errors
+		const serverError = getServerError();
+		if (serverError) {
+			throw new Error(serverError);
+		}
+
+		const modalContent = await listingPage.modal.textContent();
 		if (!modalContent?.includes(expectedModalText)) {
 			throw new Error(
 				`Expected success modal with "${expectedModalText}" but got: "${modalContent}"`,
 			);
 		}
-		const domStatus = isDraft ? 'draft' : 'published';
 
-		// Verify listing appears in /my-listings
-		await page.goto('/my-listings');
+		// Navigate via modal button (real user interaction)
+		const viewButton = isDraft ? listingPage.viewDraftButton : listingPage.viewListingButton;
+		await viewButton.click();
+
+		// Verify actual page navigation occurred
+		await page.waitForURL('**/my-listings**', { timeout: 10_000 });
 		await page.waitForLoadState('networkidle');
 
-		const listingTitleCell = page.getByRole('table').locator('span').filter({ hasText: this.details.title });
-		await listingTitleCell.first().waitFor({ state: 'visible', timeout: 10_000 });
-		const domTitle = await listingTitleCell.first().textContent();
+		// Read listing title from the table DOM
+		const listingTitleCell = listingPage.listingTitleCell(this.details.title);
+		await listingTitleCell.waitFor({ state: 'visible', timeout: 10_000 });
+		const domTitle = await listingTitleCell.textContent();
 
 		if (!domTitle?.trim()) {
 			throw new Error(
@@ -197,9 +132,33 @@ export class CreateListing extends Task {
 			);
 		}
 
+		// Read listing status from the table row
+		const statusTag = listingPage.statusTagInRow(this.details.title);
+		await statusTag.waitFor({ state: 'visible', timeout: 5_000 });
+		const domStatus = await statusTag.textContent();
+
+		if (!domStatus?.trim()) {
+			throw new Error(
+				`Listing status not found in table for "${this.details.title}"`,
+			);
+		}
+
+		// Extract listing ID from the row link
+		const listingLink = listingPage.listingLinkInRow(this.details.title);
+		let listingId = 'e2e-unknown';
+		const hasLink = await listingLink.isVisible({ timeout: 2_000 }).catch(() => false);
+		if (hasLink) {
+			const href = await listingLink.getAttribute('href');
+			const match = href?.match(/\/listing\/([^/]+)/);
+			if (match?.[1]) {
+				listingId = match[1];
+			}
+		}
+
 		await actor.attemptsTo(
+			notes<ListingNotes>().set('lastListingId', listingId),
 			notes<ListingNotes>().set('lastListingTitle', domTitle.trim()),
-			notes<ListingNotes>().set('lastListingStatus', domStatus),
+			notes<ListingNotes>().set('lastListingStatus', domStatus.trim().toLowerCase()),
 		);
 	}
 
