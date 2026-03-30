@@ -1,5 +1,6 @@
 import { spawn, type ChildProcess } from 'node:child_process';
 import { getPortlessPath } from './resolve-portless.ts';
+import { tlsFetch } from '../tls-fetch.ts';
 
 // Base class for portless-proxied servers
 export abstract class PortlessServer {
@@ -14,12 +15,13 @@ export abstract class PortlessServer {
 	protected abstract get cwd(): string;
 	protected get extraEnv(): Record<string, string> { return {}; }
 
+	protected tlsFetch(url: string, options: { method?: string; headers?: Record<string, string>; body?: string } = {}) {
+		return tlsFetch(url, options);
+	}
+
 	async isAlreadyRunning(): Promise<boolean> {
 		try {
-			const controller = new AbortController();
-			const timeout = setTimeout(() => controller.abort(), 3_000);
-			const res = await fetch(this.probeUrl, { signal: controller.signal });
-			clearTimeout(timeout);
+			const res = await this.tlsFetch(this.probeUrl);
 			return res.ok;
 		} catch {
 			return false;

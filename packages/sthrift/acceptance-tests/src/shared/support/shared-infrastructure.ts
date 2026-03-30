@@ -98,7 +98,6 @@ export async function ensureE2EServers(): Promise<void> {
 }
 
 async function initLocalE2E(): Promise<void> {
-
 	await initTestEnvironment();
 
 	if (!mongoDBServer) {
@@ -140,7 +139,7 @@ async function initLocalE2E(): Promise<void> {
 	}
 
 	if (!browser) {
-		browser = await chromium.launch({ headless: false });
+		browser = await chromium.launch({ headless: true });
 	}
 
 	if (!browseTheWeb && browser && browserBaseUrl) {
