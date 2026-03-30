@@ -29,6 +29,31 @@ export class CreateListing extends Task {
 			isDraft,
 		});
 
+		// Validate the response contains expected data
+		if (!listing.id) {
+			throw new Error('Session listing:create returned a listing without an id');
+		}
+		if (listing.title !== this.details.title) {
+			throw new Error(
+				`Session listing:create returned title "${listing.title}", expected "${this.details.title}"`,
+			);
+		}
+
+		// Re-query to verify persistence
+		const persisted = await session.execute<{ id: string }, ItemListingResponse | null>('listing:getById', {
+			id: listing.id,
+		});
+		if (!persisted) {
+			throw new Error(
+				`Listing ${listing.id} was not found on re-query — session backend did not persist the listing`,
+			);
+		}
+		if (persisted.title !== this.details.title) {
+			throw new Error(
+				`Re-queried listing title "${persisted.title}" does not match created title "${this.details.title}"`,
+			);
+		}
+
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listing.id),
 			notes<ListingNotes>().set('lastListingTitle', listing.title),

@@ -20,22 +20,26 @@ const BASE_URL = process.env['BASE_URL'] ?? 'https://mock-auth.sharethrift.local
 // Extract host from BASE_URL
 const baseUrlHost = new URL(BASE_URL).hostname;
 
+// Derive the UI base URL from the proxy port so redirect URIs adapt to dynamic ports
+const baseUrlPort = new URL(BASE_URL).port || '1355';
+const uiBaseUrl = `https://sharethrift.localhost:${baseUrlPort}`;
+
 const allowedRedirectUris = new Set([
 	'http://localhost:3000/auth-redirect-user',
 	'http://localhost:3000/auth-redirect-admin',
-	'https://sharethrift.localhost:1355/auth-redirect-user',
-	'https://sharethrift.localhost:1355/auth-redirect-admin',
+	`${uiBaseUrl}/auth-redirect-user`,
+	`${uiBaseUrl}/auth-redirect-admin`,
 ]);
 
 const allowedRedirectUri =
 	process.env['ALLOWED_REDIRECT_URI'] ||
-	'http://localhost:3000/auth-redirect-user';
+	`${uiBaseUrl}/auth-redirect-user`;
 
 const redirectUriToAudience = new Map([
 	['http://localhost:3000/auth-redirect-user', 'user-portal'],
 	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
-	['https://sharethrift.localhost:1355/auth-redirect-user', 'user-portal'],
-	['https://sharethrift.localhost:1355/auth-redirect-admin', 'admin-portal'],
+	[`${uiBaseUrl}/auth-redirect-user`, 'user-portal'],
+	[`${uiBaseUrl}/auth-redirect-admin`, 'admin-portal'],
 ]);
 
 

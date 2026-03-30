@@ -1,9 +1,10 @@
-import { apiSettings, uiSettings } from '../local-settings.ts';
+import { apiSettings } from '../local-settings.ts';
 import { PortlessServer } from './portless-server.ts';
+import { buildUrl } from './test-environment.ts';
 
 // OAuth2 mock server via portless
 export class TestOAuth2Server extends PortlessServer {
-	protected get probeUrl() { return `${apiSettings.userPortalOidcIssuer}/.well-known/jwks.json`; }
+	protected get probeUrl() { return `${buildUrl('mock-auth.sharethrift.localhost')}/.well-known/jwks.json`; }
 	protected get readyMarker() { return 'Mock OAuth2 server running'; }
 	protected get serverName() { return 'TestOAuth2Server'; }
 	protected get startupTimeoutMs() { return 30_000; }
@@ -36,6 +37,7 @@ export class TestOAuth2Server extends PortlessServer {
 			EMAIL: this.testUser.email,
 			GIVEN_NAME: this.testUser.given_name,
 			FAMILY_NAME: this.testUser.family_name,
+			BASE_URL: buildUrl('mock-auth.sharethrift.localhost'),
 		};
 	}
 
@@ -52,16 +54,17 @@ export class TestOAuth2Server extends PortlessServer {
 	}
 
 	getUrl(): string {
-		return apiSettings.userPortalOidcIssuer;
+		return buildUrl('mock-auth.sharethrift.localhost');
 	}
 
 	async generateAccessToken(audience = 'user-portal'): Promise<string> {
-		const issuer = apiSettings.userPortalOidcIssuer;
+		const issuer = this.getUrl();
+		const uiBaseUrl = buildUrl('sharethrift.localhost');
 
 		const redirectUri =
 			audience === 'admin-portal'
-				? uiSettings.adminRedirectUri
-				: uiSettings.redirectUri;
+				? `${uiBaseUrl}/auth-redirect-admin`
+				: `${uiBaseUrl}/auth-redirect-user`;
 
 		const code = `mock-auth-code-${Buffer.from(redirectUri).toString('base64')}`;
 

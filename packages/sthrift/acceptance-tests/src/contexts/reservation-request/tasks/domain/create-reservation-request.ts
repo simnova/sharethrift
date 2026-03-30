@@ -23,23 +23,31 @@ export class CreateReservationRequest extends Task {
 		ability.createReservationRequest(this.input);
 
 		const reservationRequest = ability.getCreatedAggregate();
-		if (reservationRequest) {
-			const startDate = reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ?? '';
-			const endDate = reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
-
-			await actor.attemptsTo(
-				notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
-				notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
-				notes<ReservationRequestNotes>().set(
-					'lastReservationRequestStartDate',
-					startDate,
-				),
-				notes<ReservationRequestNotes>().set(
-					'lastReservationRequestEndDate',
-					endDate,
-				),
-			);
+		if (!reservationRequest) {
+			throw new Error('Domain CreateReservationRequestAbility.createReservationRequest did not produce an aggregate');
 		}
+		if (!reservationRequest.id) {
+			throw new Error('Domain reservation request aggregate has no id');
+		}
+		if (!reservationRequest.state) {
+			throw new Error('Domain reservation request aggregate has no state');
+		}
+
+		const startDate = reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ?? '';
+		const endDate = reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
+
+		await actor.attemptsTo(
+			notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
+			notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
+			notes<ReservationRequestNotes>().set(
+				'lastReservationRequestStartDate',
+				startDate,
+			),
+			notes<ReservationRequestNotes>().set(
+				'lastReservationRequestEndDate',
+				endDate,
+			),
+		);
 	}
 
 	override toString = () => `creates reservation request for listing "${this.input.listingId}" (domain)`;

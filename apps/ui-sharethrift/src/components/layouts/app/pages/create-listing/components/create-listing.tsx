@@ -26,6 +26,7 @@ export interface CreateListingFormData {
 interface CreateListingProps {
 	categories: string[];
 	isLoading: boolean;
+	submissionStatus: 'idle' | 'success' | 'error';
 	onSubmit: (data: CreateListingFormData, isDraft: boolean) => void;
 	onCancel: () => void;
 	uploadedImages: string[];
@@ -39,6 +40,7 @@ interface CreateListingProps {
 export const CreateListing: React.FC<CreateListingProps> = ({
 	categories,
 	isLoading,
+	submissionStatus,
 	onSubmit,
 	onCancel,
 	uploadedImages,
@@ -128,6 +130,11 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 		if (isLoading) {
 			setLocalModal('loading');
 		} else if (localModal === 'loading') {
+			if (submissionStatus !== 'success') {
+				setLocalModal('none');
+				return;
+			}
+
 			// transition from loading to result
 			if (lastAction === 'publish') {
 				setLocalModal('published');
@@ -137,7 +144,7 @@ export const CreateListing: React.FC<CreateListingProps> = ({
 				setLocalModal('none');
 			}
 		}
-	}, [isLoading, localModal, lastAction]);
+	}, [isLoading, localModal, lastAction, submissionStatus]);
 
 	return (
 		<>

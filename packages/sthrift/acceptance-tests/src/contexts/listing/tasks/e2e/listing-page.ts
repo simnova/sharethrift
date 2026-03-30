@@ -16,6 +16,7 @@ export class ListingPage {
 	get saveDraftButton() { return this.page.getByRole('button', { name: /Save as Draft/i }); }
 	get publishButton() { return this.page.getByRole('button', { name: /Publish Listing/i }); }
 	get firstValidationError() { return this.page.locator('.ant-form-item-explain-error').first(); }
+	get errorToast() { return this.page.locator('.ant-message-error, [role="alert"]').last(); }
 
 	// --- Success modal ---
 	get modal() { return this.page.locator('.ant-modal'); }

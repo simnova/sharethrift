@@ -31,3 +31,6 @@ __pycache__/
 *.pyc
 *.pyo
 *.egg-info/
+
+# Portless proxy state (generated at runtime)
+.portless/

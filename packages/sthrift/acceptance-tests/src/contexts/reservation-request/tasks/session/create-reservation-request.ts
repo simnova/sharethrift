@@ -19,6 +19,25 @@ export class CreateReservationRequest extends Task {
 			this.input,
 		);
 
+		// Validate the response contains expected data
+		if (!reservationRequest.id) {
+			throw new Error('Session reservation:create returned a reservation request without an id');
+		}
+		if (!reservationRequest.state) {
+			throw new Error('Session reservation:create returned a reservation request without a state');
+		}
+
+		// Verify persistence via count query
+		const count = await session.execute<{ listingId: string }, number>(
+			'reservation:getCountForListing',
+			{ listingId: this.input.listingId },
+		);
+		if (count < 1) {
+			throw new Error(
+				`Expected at least 1 reservation request for listing ${this.input.listingId} after creation, but found ${count}`,
+			);
+		}
+
 		const startDate = reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ?? '';
 		const endDate = reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
 

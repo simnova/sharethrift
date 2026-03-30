@@ -34,14 +34,24 @@ export class CreateListing extends Task {
 		});
 
 		const listing = ability.getCreatedListing();
-		if (listing) {
-			const state = String(listing['state'] ?? 'draft').toLowerCase();
-			await actor.attemptsTo(
-				notes<ListingNotes>().set('lastListingId', listing.id),
-				notes<ListingNotes>().set('lastListingTitle', this.details.title),
-				notes<ListingNotes>().set('lastListingStatus', state),
+		if (!listing) {
+			throw new Error('Domain CreateListingAbility.createDraftListing did not produce a listing');
+		}
+		if (!listing.id) {
+			throw new Error('Domain CreateListingAbility produced a listing without an id');
+		}
+		if (listing.title !== this.details.title) {
+			throw new Error(
+				`Domain listing title "${listing.title}" does not match input "${this.details.title}"`,
 			);
 		}
+
+		const listingState = String(listing['state'] ?? 'draft').toLowerCase();
+		await actor.attemptsTo(
+			notes<ListingNotes>().set('lastListingId', listing.id),
+			notes<ListingNotes>().set('lastListingTitle', this.details.title),
+			notes<ListingNotes>().set('lastListingStatus', listingState),
+		);
 	}
 
 	override toString = () => `creates listing "${this.details.title}" (domain)`;

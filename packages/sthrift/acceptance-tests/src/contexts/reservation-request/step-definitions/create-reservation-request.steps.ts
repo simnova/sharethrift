@@ -115,6 +115,13 @@ When(
 
 		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
 
+		// Clear notes from any previous scenario to prevent state leakage
+		await actor.attemptsTo(
+			notes<ReservationRequestNotes>().set('lastReservationRequestId', undefined as unknown as string),
+			notes<ReservationRequestNotes>().set('lastReservationRequestState', undefined as unknown as string),
+			notes<ReservationRequestNotes>().set('lastValidationError', undefined as unknown as string),
+		);
+
 		try {
 			const startDate = data['reservationPeriodStart'];
 			const endDate = data['reservationPeriodEnd'];
@@ -233,7 +240,34 @@ Then(
 
 		const storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
 		if (!storedError) {
-			throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
+			throw new Error(`Expected a validation error for "${fieldName}" but no error was captured`);
+		}
+
+		// Validate the error is related to the field: either mentions the field name,
+		// or is a known validation/runtime error caused by the missing field
+		const lowerError = storedError.toLowerCase();
+		const lowerField = fieldName.toLowerCase();
+		const isFieldMentioned = lowerError.includes(lowerField);
+		const isValidationPattern = /required|missing|invalid|cannot read properties of undefined|wrong raw value type/i.test(storedError);
+
+		if (!isFieldMentioned && !isValidationPattern) {
+			throw new Error(
+				`Expected a validation error related to "${fieldName}", but got an unrecognized error: "${storedError}"`,
+			);
+		}
+
+		// Also confirm no reservation request was created
+		let requestId: string | undefined;
+		try {
+			requestId = await actor.answer(notes<ReservationRequestNotes>().get('lastReservationRequestId'));
+		} catch {
+			// expected
+		}
+		if (requestId) {
+			throw new Error(
+				`Expected reservation creation to be blocked by "${fieldName}" validation, ` +
+				`but a request was created with id: ${requestId}`,
+			);
 		}
 	},
 );
@@ -257,13 +291,35 @@ Then(
 	'no reservation request should be created',
 	async function (this: ShareThriftWorld) {
 		const actor = actorCalled(lastActorName);
+
+		// Verify there was a validation error stored
+		let hasValidationError = false;
 		try {
-			const requestId = await actor.answer(notes<ReservationRequestNotes>().get('lastReservationRequestId'));
-			if (requestId) {
-				throw new Error('Expected no reservation request to be created, but one was');
-			}
+			const storedError = await actor.answer(notes<ReservationRequestNotes>().get('lastValidationError'));
+			hasValidationError = !!storedError;
 		} catch {
-			// Expected - no reservation request was created
+			// No error stored
+		}
+
+		// Verify no reservation request ID was stored
+		let requestId: string | undefined;
+		try {
+			requestId = await actor.answer(notes<ReservationRequestNotes>().get('lastReservationRequestId'));
+		} catch {
+			// No ID — expected
+		}
+
+		if (requestId) {
+			throw new Error(
+				`Expected no reservation request to be created, but one was created with id: ${requestId}`,
+			);
+		}
+
+		if (!hasValidationError) {
+			throw new Error(
+				'Expected a validation error to prevent reservation creation, but no error was captured. ' +
+				'The test may be passing without actually validating the scenario.',
+			);
 		}
 	},
 );
@@ -314,6 +370,11 @@ When(
 
 		const CreateReservationRequest = getCreateReservationRequestTask(this.level);
 
+		// Clear validation error from any previous attempt
+		await actor.attemptsTo(
+			notes<{lastValidationError?: string}>().set('lastValidationError', undefined as unknown as string),
+		);
+
 		try {
 			const listingId = await getListingIdFromOwner('Bob');
 			const startDate = data['reservationPeriodStart'];
@@ -332,9 +393,6 @@ When(
 					},
 				}),
 			);
-
-			// Store that no error occurred
-			await actor.attemptsTo(notes<{lastValidationError?: string}>().set('lastValidationError', undefined));
 		} catch (error) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
 			await actor.attemptsTo(notes<{lastValidationError?: string}>().set('lastValidationError', errorMessage));

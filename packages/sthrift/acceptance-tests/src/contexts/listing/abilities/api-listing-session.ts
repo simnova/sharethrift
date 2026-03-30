@@ -72,7 +72,7 @@ export abstract class ApiListingSession extends ApiSession {
 
 	protected async handleGetListingById(input: { id: string }): Promise<ItemListingResponse | null> {
 		const query = `
-			query GetListing($id: ID!) {
+			query GetListing($id: ObjectID!) {
 				itemListing(id: $id) {
 					id
 					title

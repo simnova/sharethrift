@@ -1,5 +1,6 @@
 import { CreateReservationRequestAbility } from './create-reservation-request-ability.ts';
 
-export const reservationRequestAbilities = [
-	CreateReservationRequestAbility.using(),
-];
+// Factory: creates fresh ability instances per scenario to prevent state leakage
+export const reservationRequestAbilities = {
+	create: () => [CreateReservationRequestAbility.using()],
+};

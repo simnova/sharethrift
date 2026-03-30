@@ -16,8 +16,9 @@ export class CreateListing extends Task {
 		const { page } = BrowseTheWeb.as(actor);
 		const listingPage = new ListingPage(page);
 
-		await page.goto('/create-listing');
-		await page.waitForLoadState('networkidle');
+		await page.goto('/create-listing', { waitUntil: 'domcontentloaded' });
+		await page.waitForURL('**/create-listing', { timeout: 15_000 });
+		await this.ensureCreateListingFormReady(page, listingPage);
 
 		if (this.details.title) {
 			await listingPage.titleInput.fill(this.details.title);
@@ -97,14 +98,37 @@ export class CreateListing extends Task {
 
 		// Wait for the success modal to appear
 		const expectedModalText = isDraft ? 'Draft saved!' : 'Your listing is live!';
-		await listingPage.modal.waitFor({ state: 'visible', timeout: 15_000 });
-		await listingPage.modal.getByText(expectedModalText).waitFor({ state: 'visible', timeout: 15_000 });
+		const submissionOutcome = await page.waitForFunction(
+			(successText) => {
+				const modal = document.querySelector('.ant-modal');
+				if (modal?.textContent?.includes(String(successText))) {
+					return { kind: 'success' };
+				}
+
+				const errorEl = document.querySelector('.ant-form-item-explain-error, .ant-message-error, [role="alert"]');
+				const errorText = errorEl?.textContent?.trim();
+				if (errorText) {
+					return { kind: 'error', message: errorText };
+				}
+
+				return null;
+			},
+			expectedModalText,
+			{ timeout: 15_000 },
+		).then((handle) => handle.jsonValue() as Promise<{ kind: 'success' } | { kind: 'error'; message: string }>);
 
 		// Check for server-side errors
 		const serverError = getServerError();
+		if (submissionOutcome.kind === 'error') {
+			throw new Error(submissionOutcome.message);
+		}
+
 		if (serverError) {
 			throw new Error(serverError);
 		}
+
+		await listingPage.modal.waitFor({ state: 'visible', timeout: 5_000 });
+		await listingPage.modal.getByText(expectedModalText).waitFor({ state: 'visible', timeout: 5_000 });
 
 		const modalContent = await listingPage.modal.textContent();
 		if (!modalContent?.includes(expectedModalText)) {
@@ -164,6 +188,18 @@ export class CreateListing extends Task {
 
 	private formatDate(date: Date): string {
 		return date.toISOString().split('T')[0] ?? '';
+	}
+
+	private async ensureCreateListingFormReady(page: BrowseTheWeb['page'], listingPage: ListingPage): Promise<void> {
+		try {
+			await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
+		} catch {
+			await page.reload({ waitUntil: 'domcontentloaded' });
+			await page.waitForURL('**/create-listing', { timeout: 15_000 });
+			await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
+		}
+
+		await page.waitForLoadState('networkidle').catch(() => {});
 	}
 
 	override toString = () => `creates listing "${this.details.title}" (e2e)`;

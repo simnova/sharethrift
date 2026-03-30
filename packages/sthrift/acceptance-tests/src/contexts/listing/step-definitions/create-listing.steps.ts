@@ -4,6 +4,7 @@ import { Ensure, equals } from '@serenity-js/assertions';
 import type { ShareThriftWorld } from '../../../world.ts';
 import { resolveActorName } from '../../../shared/support/domain-test-helpers.ts';
 import type { ListingDetails } from '../tasks/domain/create-listing.ts';
+import type { ListingNotes } from '../abilities/listing-types.ts';
 import { CreateListing as E2eCreateListing } from '../tasks/e2e/create-listing.ts';
 import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.ts';
 import { CreateListing as DomainCreateListing } from '../tasks/domain/create-listing.ts';
@@ -74,6 +75,12 @@ When(
 
 		const CreateListing = getCreateListingTask(this.level);
 
+		// Clear notes from any previous scenario to prevent state leakage
+		await actor.attemptsTo(
+			notes<ListingNotes>().set('lastListingId', undefined as unknown as string),
+			notes<ListingNotes>().set('lastValidationError', undefined as unknown as string),
+		);
+
 		try {
 			await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
 		} catch (error) {
@@ -109,12 +116,24 @@ Then(
 
 Then(
 	'the listing should have a daily rate of {string}',
-	async function (this: ShareThriftWorld, _expectedRate: string) {
-		// TODO: Replace with daily rate Question once domain model supports it
+	async function (this: ShareThriftWorld, expectedRate: string) {
 		const actor = actorCalled(lastActorName);
-		const status = await actor.answer(ListingStatus.of());
-		if (!status) {
+
+		// Verify listing was created and is in the expected state
+		const listingId = await actor.answer(notes<ListingNotes>().get('lastListingId'));
+		if (!listingId) {
 			throw new Error('Expected a listing to exist before checking its daily rate');
+		}
+
+		// Verify listing is in draft status (confirms the full creation path worked)
+		await actor.attemptsTo(
+			Ensure.that(ListingStatus.of(), equals('draft')),
+		);
+
+		// TODO: Verify actual daily rate value once domain model exposes it via notes.
+		// For now, confirm the rate was provided in the input and listing was created successfully.
+		if (!expectedRate) {
+			throw new Error('Expected rate must be provided');
 		}
 	},
 );
@@ -125,16 +144,48 @@ Then(
 		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
+		// Check stored validation error from task execution (domain/session levels)
+		let storedError: string | undefined;
 		try {
-			const storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
-			if (storedError) {
-				return;
-			}
+			storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
 		} catch {
 			// No error in notes
 		}
+
+		if (storedError) {
+			// Verify the error is related to the field: either mentions the field name,
+			// or is a known validation error pattern (e.g., "Wrong raw value type" for missing required fields)
+			const lowerError = storedError.toLowerCase();
+			const lowerField = fieldName.toLowerCase();
+			const isFieldMentioned = lowerError.includes(lowerField);
+			const isValidationPattern = /wrong raw value type|cannot be empty|required|missing|invalid/i.test(storedError);
+
+			if (!isFieldMentioned && !isValidationPattern) {
+				throw new Error(
+					`Expected a validation error related to "${fieldName}", but got an unrecognized error: "${storedError}"`,
+				);
+			}
+
+			// Also confirm the listing was NOT created
+			let listingId: string | undefined;
+			try {
+				listingId = await actor.answer(notes<ListingNotes>().get('lastListingId'));
+			} catch {
+				// expected
+			}
+			if (listingId) {
+				throw new Error(
+					`Expected listing creation to be blocked by "${fieldName}" validation, ` +
+					`but a listing was created with id: ${listingId}`,
+				);
+			}
+
+			return;
+		}
+
+		// E2E level: check DOM for field-specific error
 		const error = await actor.answer(FormValidationError.forField(fieldName));
-		if (!error) {
+		if (!error || error.trim().length === 0) {
 			throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
 		}
 	},
@@ -146,37 +197,66 @@ Then(
 		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
-		// Check if actor has a stored validation error from task execution
+		// Check stored validation error from task execution (domain/session levels)
+		let storedError: string | undefined;
 		try {
-			const storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
-			if (storedError) {
-				if (!storedError.includes(expectedMessage)) {
-					throw new Error(`Expected error message "${expectedMessage}", but got: "${storedError}"`);
-				}
-				return;
-			}
+			storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
 		} catch {
-			// No error stored - check DOM instead
+			// No error stored
 		}
 
-		// For DOM tests, try to get error from form UI
+		if (storedError) {
+			if (!storedError.includes(expectedMessage)) {
+				throw new Error(`Expected error message "${expectedMessage}", but got: "${storedError}"`);
+			}
+			return;
+		}
+
+		// E2E level: check DOM for error message
 		const error = await actor.answer(FormValidationError.displayed());
 
-		if (!error?.includes(expectedMessage)) {
-			throw new Error(`Expected error message "${expectedMessage}", but got: "${error || 'none'}"`);
+		if (!error || error.trim().length === 0) {
+			throw new Error(
+				`Expected error message "${expectedMessage}", but no validation error was found. ` +
+				'Ensure the validation step actually triggered an error.',
+			);
+		}
+
+		if (!error.includes(expectedMessage)) {
+			throw new Error(`Expected error message "${expectedMessage}", but got: "${error}"`);
 		}
 	},
 );
 
 Then('no listing should be created', async function (this: ShareThriftWorld) {
 	const actor = actorCalled(lastActorName);
+
+	// Verify there was a validation error stored
+	let hasValidationError = false;
 	try {
-		const listingId = await actor.answer(notes<{ lastListingId?: string }>().get('lastListingId'));
-		if (listingId) {
-			throw new Error('Expected no listing to be created, but one was');
-		}
+		const storedError = await actor.answer(notes<{ lastValidationError?: string }>().get('lastValidationError'));
+		hasValidationError = !!storedError;
 	} catch {
-		// No listing ID in notes — this is the expected state
+		// No error stored
+	}
+
+	// Verify no listing ID was stored
+	let listingId: string | undefined;
+	try {
+		listingId = await actor.answer(notes<{ lastListingId?: string }>().get('lastListingId'));
+	} catch {
+		// No listing ID — expected
+	}
+
+	if (listingId) {
+		throw new Error(`Expected no listing to be created, but one was created with id: ${listingId}`);
+	}
+
+	if (!hasValidationError) {
+		throw new Error(
+			'Expected a validation error to prevent listing creation, but no error was captured. ' +
+			'The test may be passing without actually validating the scenario.',
+		);
 	}
 });
 

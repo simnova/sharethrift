@@ -52,6 +52,10 @@ export class BrowseTheWeb extends Ability {
 		this.context = context;
 	}
 
+	get browserContext(): BrowserContext {
+		return this.context;
+	}
+
 	async close(): Promise<void> {
 		await this.page.close();
 		await this.context.close();
