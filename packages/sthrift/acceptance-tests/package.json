@@ -16,7 +16,7 @@
 		"clean": "rimraf dist reports target"
 	},
 	"dependencies": {
-		"@cucumber/cucumber": "^11.2.0",
+		"@cucumber/cucumber": "^12.7.0",
 		"@serenity-js/assertions": "^3.37.2",
 		"@serenity-js/console-reporter": "^3.37.2",
 		"@serenity-js/core": "^3.37.2",
@@ -26,7 +26,7 @@
 		"std-env": "^4.0.0"
 	},
 	"devDependencies": {
-		"@apollo/server": "^5.4.0",
+		"@apollo/server": "^5.5.0",
 		"@cellix/service-messaging-base": "workspace:*",
 		"@cellix/service-mongoose": "workspace:*",
 		"@cellix/service-payment-base": "workspace:*",
@@ -39,7 +39,6 @@
 		"@sthrift/domain": "workspace:*",
 		"@sthrift/graphql": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
-		"@sthrift/ui-components": "workspace:*",
 		"@types/graphql-depth-limit": "^1.1.6",
 		"@types/node": "^24.6.1",
 		"graphql-depth-limit": "^1.1.0",

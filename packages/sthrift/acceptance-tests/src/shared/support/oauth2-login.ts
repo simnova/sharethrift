@@ -19,7 +19,7 @@ function loadTestCredentials(): { username: string; password: string } {
 
 	return {
 		username: process.env['E2E_USERNAME'] || defaults['E2E_USERNAME'] || 'test@sharethrift.local',
-		password: process.env['E2E_PASSWORD'] || defaults['E2E_PASSWORD'] || 'Test@Password1',
+		password: process.env['E2E_PASSWORD'] || defaults['E2E_PASSWORD'] || '',
 	};
 }
 

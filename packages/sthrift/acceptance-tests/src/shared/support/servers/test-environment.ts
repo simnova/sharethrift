@@ -1,11 +1,7 @@
-// Manages an isolated portless proxy instance for each test run.
-// Each run gets its own port and a local .portless state directory (gitignored)
-// so TLS certificates are cached and don't prompt for password each run.
-// Follows the same pattern as dev (proxy:start → portless <hostname> <cmd>) but
-// with a unique port so multiple runs don't conflict.
 import net from 'node:net';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
+import { getPortlessPath } from './resolve-portless.ts';
 
 let proxyPort: number | undefined;
 let stateDir: string | undefined;
@@ -41,7 +37,7 @@ export async function initTestEnvironment(): Promise<void> {
 	process.env['PORTLESS_HTTPS'] = '1';
 
 	// Start the portless proxy daemon on our unique port
-	execSync('portless proxy start --https', {
+	execFileSync(getPortlessPath(), ['proxy', 'start', '--https'], {
 		env: process.env,
 		timeout: 15_000,
 		stdio: 'pipe',
@@ -69,7 +65,7 @@ export function getMongoConnectionString(): string {
 export function cleanupTestEnvironment(): void {
 	if (stateDir) {
 		try {
-			execSync('portless proxy stop', {
+			execFileSync(getPortlessPath(), ['proxy', 'stop'], {
 				env: process.env,
 				timeout: 5_000,
 				stdio: 'pipe',

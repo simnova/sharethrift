@@ -67,8 +67,3 @@ export class BrowseTheWeb extends Ability {
 		}
 	}
 }
-
-export interface SharedBrowserState {
-	browser: Browser;
-	baseUrl: string;
-}

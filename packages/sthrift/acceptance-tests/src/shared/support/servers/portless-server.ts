@@ -1,4 +1,5 @@
 import { spawn, type ChildProcess } from 'node:child_process';
+import { getPortlessPath } from './resolve-portless.ts';
 
 // Base class for portless-proxied servers
 export abstract class PortlessServer {
@@ -29,7 +30,7 @@ export abstract class PortlessServer {
 		if (this.process || this.startedByUs) return;
 		if (await this.isAlreadyRunning()) return;
 
-		this.process = spawn('portless', this.spawnArgs, {
+		this.process = spawn(getPortlessPath(), this.spawnArgs, {
 			cwd: this.cwd,
 			env: { ...process.env, ...this.extraEnv },
 			stdio: ['ignore', 'pipe', 'pipe'],
