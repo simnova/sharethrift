@@ -1,6 +1,5 @@
 import { Ability } from '@serenity-js/core';
 import type { Session, OperationInput, OperationResult } from './session.ts';
-import { tlsFetch } from '../support/tls-fetch.ts';
 
 type ApiOperationHandler = (input: OperationInput) => Promise<OperationResult>;
 
@@ -54,7 +53,7 @@ export class ApiSession extends Ability implements Session {
 			headers['Authorization'] = `Bearer ${this.authToken}`;
 		}
 
-		const response = await tlsFetch(this.apiUrl, {
+		const response = await fetch(this.apiUrl, {
 			method: 'POST',
 			headers,
 			body: JSON.stringify({ query, variables }),
@@ -71,7 +70,7 @@ export class ApiSession extends Ability implements Session {
 		}
 
 		if (!response.ok) {
-			throw new Error(`GraphQL error: ${response.status}`);
+			throw new Error(`GraphQL error: ${response.status} ${response.statusText}`);
 		}
 
 		return result;

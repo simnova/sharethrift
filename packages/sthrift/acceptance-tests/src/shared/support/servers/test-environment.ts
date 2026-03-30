@@ -1,47 +1,31 @@
-import net from 'node:net';
 import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { homedir } from 'node:os';
 import { getPortlessPath } from './resolve-portless.ts';
 
 let proxyPort: number | undefined;
-let stateDir: string | undefined;
 let mongoConnectionString: string | undefined;
 
-function findAvailablePort(): Promise<number> {
-	return new Promise((resolve, reject) => {
-		const server = net.createServer();
-		server.listen(0, '127.0.0.1', () => {
-			const addr = server.address();
-			if (addr && typeof addr === 'object') {
-				const { port } = addr;
-				server.close(() => resolve(port));
-			} else {
-				server.close(() => reject(new Error('Could not determine port')));
-			}
-		});
-		server.on('error', reject);
-	});
-}
+// Use the global portless proxy — same as `pnpm run dev`.
+// The CA is trusted via `portless trust` (system keychain for browsers)
+// and NODE_EXTRA_CA_CERTS (set in the test:e2e npm script for Node.js).
+const globalStateDir = join(homedir(), '.portless');
 
 export async function initTestEnvironment(): Promise<void> {
 	if (proxyPort) return;
 
-	proxyPort = await findAvailablePort();
-	// Store portless state in a local .portless directory (gitignored) so TLS
-	// certificates are cached across runs and don't require password prompts.
-	stateDir = join(import.meta.dirname, '.portless');
-
-	// Set process-wide env vars so all subsequent portless invocations use our isolated instance
-	process.env['PORTLESS_PORT'] = String(proxyPort);
-	process.env['PORTLESS_STATE_DIR'] = stateDir;
-	process.env['PORTLESS_HTTPS'] = '1';
-
-	// Start the portless proxy daemon on our unique port
+	// Ensure the global portless proxy is running with HTTPS
 	execFileSync(getPortlessPath(), ['proxy', 'start', '--https'], {
-		env: process.env,
 		timeout: 15_000,
 		stdio: 'pipe',
 	});
+
+	try {
+		proxyPort = Number.parseInt(readFileSync(join(globalStateDir, 'proxy.port'), 'utf-8').trim(), 10);
+	} catch {
+		proxyPort = 1355;
+	}
 }
 
 export function getProxyPort(): number {
@@ -63,24 +47,7 @@ export function getMongoConnectionString(): string {
 }
 
 export function cleanupTestEnvironment(): void {
-	if (stateDir) {
-		try {
-			execFileSync(getPortlessPath(), ['proxy', 'stop'], {
-				env: process.env,
-				timeout: 5_000,
-				stdio: 'pipe',
-			});
-		} catch {
-			// Proxy might already be stopped
-		}
-		// Keep .portless directory — it caches TLS certificates across runs
-	}
-
-	delete process.env['PORTLESS_PORT'];
-	delete process.env['PORTLESS_STATE_DIR'];
-	delete process.env['PORTLESS_HTTPS'];
-
+	// Don't stop the global portless proxy — it's shared with `pnpm run dev`
 	proxyPort = undefined;
-	stateDir = undefined;
 	mongoConnectionString = undefined;
 }

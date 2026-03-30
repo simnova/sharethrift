@@ -43,7 +43,10 @@ export class TestOAuth2Server extends PortlessServer {
 
 	override async isAlreadyRunning(): Promise<boolean> {
 		try {
-			const res = await this.tlsFetch(this.probeUrl);
+			const controller = new AbortController();
+			const timeout = setTimeout(() => controller.abort(), 3_000);
+			const res = await fetch(this.probeUrl, { signal: controller.signal });
+			clearTimeout(timeout);
 			return res.ok;
 		} catch {
 			return false;
@@ -65,7 +68,7 @@ export class TestOAuth2Server extends PortlessServer {
 
 		const code = `mock-auth-code-${Buffer.from(redirectUri).toString('base64')}`;
 
-		const response = await this.tlsFetch(`${issuer}/token`, {
+		const response = await fetch(`${issuer}/token`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
 			body: JSON.stringify({ code, grant_type: 'authorization_code' }),
