@@ -1,7 +1,7 @@
 import { isAgent } from 'std-env';
 
 const terminalFormat = isAgent
-	? './src/support/formatters/agent-formatter.ts'
+	? './src/shared/support/formatters/agent-formatter.ts'
 	: 'progress-bar';
 
 export default {
