@@ -39,6 +39,13 @@ export class CreateListing extends Task {
 			);
 		}
 
+		const expectedState = isDraft ? 'Draft' : 'Active';
+		if (listing.state !== expectedState) {
+			throw new Error(
+				`Session listing:create returned state "${listing.state}", expected "${expectedState}"`,
+			);
+		}
+
 		// Re-query to verify persistence
 		const persisted = await session.execute<{ id: string }, ItemListingResponse | null>('listing:getById', {
 			id: listing.id,

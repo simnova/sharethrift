@@ -10,7 +10,6 @@ export interface ListingDetails {
 	description: string;
 	category: string;
 	location: string;
-	dailyRate?: string;
 	weeklyRate?: string;
 	deposit?: string;
 	tags?: string;

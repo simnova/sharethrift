@@ -32,6 +32,11 @@ export class CreateReservationRequest extends Task {
 		if (!reservationRequest.state) {
 			throw new Error('Domain reservation request aggregate has no state');
 		}
+		if (reservationRequest.state !== 'Requested') {
+			throw new Error(
+				`Domain reservation request state "${reservationRequest.state}" does not match expected "Requested"`,
+			);
+		}
 
 		const startDate = reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ?? '';
 		const endDate = reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';

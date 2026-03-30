@@ -26,6 +26,11 @@ export class CreateReservationRequest extends Task {
 		if (!reservationRequest.state) {
 			throw new Error('Session reservation:create returned a reservation request without a state');
 		}
+		if (reservationRequest.state !== 'Requested') {
+			throw new Error(
+				`Session reservation:create returned state "${reservationRequest.state}", expected "Requested"`,
+			);
+		}
 
 		// Verify persistence via count query
 		const count = await session.execute<{ listingId: string }, number>(

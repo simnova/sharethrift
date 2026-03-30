@@ -11,8 +11,8 @@ interface GraphContext {
 
 const MAX_QUERY_DEPTH = 10;
 
-// In-process Apollo Server for session tests
-export class TestServer {
+// In-process Apollo Server for session-level and integration tests
+export class GraphQLTestServer {
 	private server: ApolloServer<GraphContext> | null = null;
 	private url: string | null = null;
 
@@ -37,13 +37,9 @@ export class TestServer {
 			context: async ({ req }) => {
 
 				const authHeader = req.headers.authorization ?? undefined;
-				const hints = {
-					memberId: req.headers['x-member-id'] as string | undefined,
-					communityId: req.headers['x-community-id'] as string | undefined,
-				};
 
 const applicationServices = this.applicationServicesFactory
-					? await this.applicationServicesFactory.forRequest(authHeader, hints)
+					? await this.applicationServicesFactory.forRequest(authHeader)
 					: undefined;
 
 				if (!applicationServices) {

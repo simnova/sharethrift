@@ -1,6 +1,6 @@
 import { chromium, type Browser } from '@playwright/test';
 import { BrowseTheWeb } from '../abilities/browse-the-web.ts';
-import { TestServer, MongoDBTestServer, TestOAuth2Server, TestViteServer, TestApiServer, initTestEnvironment, cleanupTestEnvironment, setMongoConnectionString } from './servers/index.ts';
+import { GraphQLTestServer, MongoDBTestServer, TestOAuth2Server, TestViteServer, TestApiServer, initTestEnvironment, cleanupTestEnvironment, setMongoConnectionString } from './servers/index.ts';
 import { createTestApplicationServicesFactory, createRealApplicationServicesFactory } from './application-services/index.ts';
 import { defaultActor } from './test-data/test-actors.ts';
 import { performOAuth2Login } from './oauth2-login.ts';
@@ -14,7 +14,7 @@ const deployedUiUrl = process.env['E2E_UI_URL'];
 // Shared infrastructure — persists across scenarios within a single test run
 let mongoDBServer: MongoDBTestServer | undefined;
 let mongoSeeded = false;
-let graphQLServer: TestServer | undefined;
+let graphQLServer: GraphQLTestServer | undefined;
 let oauth2Server: TestOAuth2Server | undefined;
 let apiServer: TestApiServer | undefined;
 let viteServer: TestViteServer | undefined;
@@ -75,7 +75,7 @@ export async function ensureSessionServers(sessionType: SessionType): Promise<vo
 
 	if (sessionType === 'graphql') {
 		const testFactory = createTestApplicationServicesFactory();
-		graphQLServer = new TestServer(testFactory);
+		graphQLServer = new GraphQLTestServer(testFactory);
 		await graphQLServer.start();
 		apiUrl = graphQLServer.getUrl();
 	}
@@ -83,7 +83,7 @@ export async function ensureSessionServers(sessionType: SessionType): Promise<vo
 	if (sessionType === 'mongodb') {
 		const mongo = await ensureMongoDBServer();
 		const realFactory = createRealApplicationServicesFactory(mongo.getServiceMongoose());
-		graphQLServer = new TestServer(realFactory);
+		graphQLServer = new GraphQLTestServer(realFactory);
 		await graphQLServer.start();
 		apiUrl = graphQLServer.getUrl();
 	}

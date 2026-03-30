@@ -45,12 +45,19 @@ export class CreateListing extends Task {
 				`Domain listing title "${listing.title}" does not match input "${this.details.title}"`,
 			);
 		}
+		if (!listing.state) {
+			throw new Error('Domain CreateListingAbility produced a listing without a state');
+		}
+		if (listing.state !== state) {
+			throw new Error(
+				`Domain listing state "${listing.state}" does not match expected "${state}"`,
+			);
+		}
 
-		const listingState = String(listing['state'] ?? 'draft').toLowerCase();
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listing.id),
-			notes<ListingNotes>().set('lastListingTitle', this.details.title),
-			notes<ListingNotes>().set('lastListingStatus', listingState),
+			notes<ListingNotes>().set('lastListingTitle', listing.title),
+			notes<ListingNotes>().set('lastListingStatus', listing.state.toLowerCase()),
 		);
 	}
 
