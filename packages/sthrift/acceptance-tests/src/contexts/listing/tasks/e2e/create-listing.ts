@@ -1,7 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../../../shared/abilities/browse-the-web.ts';
 import type { ListingDetails, ListingNotes } from '../../abilities/listing-types.ts';
-import { ListingPage } from './listing-page.ts';
+import { ListingPage } from '../../../../shared/pages/listing.page.ts';
 
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
@@ -38,34 +38,14 @@ export class CreateListing extends Task {
 		}
 
 		// Fill sharing period
-		if (await listingPage.rangePicker.isVisible()) {
-			await listingPage.rangePicker.click();
+		if (await listingPage.datePicker.rangePicker.isVisible()) {
 			const today = new Date();
 			const startDate = new Date(today);
 			startDate.setDate(today.getDate() + 1);
 			const endDate = new Date(today);
 			endDate.setDate(today.getDate() + 30);
 
-			const startCell = listingPage.calendarCell(this.formatDate(startDate));
-			await startCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => {
-				// Cell may not exist if date is not available
-			});
-			if (await startCell.isVisible()) {
-				await startCell.click();
-			}
-
-			let endCell = listingPage.calendarCell(this.formatDate(endDate));
-			if (!(await endCell.isVisible({ timeout: 1_000 }).catch(() => false))) {
-				await listingPage.nextMonthButton.click();
-				endCell = listingPage.calendarCell(this.formatDate(endDate));
-			}
-			await endCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => {
-				// Cell may not exist if date is not available
-			});
-			if (await endCell.isVisible()) {
-				await endCell.click();
-			}
-
+			await listingPage.datePicker.selectDateRange(startDate, endDate);
 			await page.keyboard.press('Escape');
 		}
 
@@ -190,10 +170,6 @@ export class CreateListing extends Task {
 			notes<ListingNotes>().set('lastListingTitle', domTitle.trim()),
 			notes<ListingNotes>().set('lastListingStatus', domStatus.trim().toLowerCase()),
 		);
-	}
-
-	private formatDate(date: Date): string {
-		return date.toISOString().split('T')[0] ?? '';
 	}
 
 	private async ensureCreateListingFormReady(page: BrowseTheWeb['page'], listingPage: ListingPage): Promise<void> {

@@ -1,9 +1,15 @@
 import type { Page } from '@playwright/test';
+import { DateRangePicker } from './components/date-range-picker.component.ts';
 
-// Centralised locators for listing-related pages.
-// Prefer accessible roles and test-ids over Ant Design internal CSS classes.
+/**
+ * Page object for listing-related pages: Create Listing form and My Listings table.
+ */
 export class ListingPage {
-	constructor(private readonly page: Page) {}
+	readonly datePicker: DateRangePicker;
+
+	constructor(private readonly page: Page) {
+		this.datePicker = new DateRangePicker(page);
+	}
 
 	// --- Create Listing form ---
 	get titleInput() { return this.page.getByPlaceholder('Enter listing title'); }
@@ -11,8 +17,6 @@ export class ListingPage {
 	get locationInput() { return this.page.getByPlaceholder('Enter location'); }
 	get categorySelect() { return this.page.getByRole('combobox').first(); }
 	categoryOption(name: string) { return this.page.getByTitle(name, { exact: true }); }
-	get sharingPeriodPicker() { return this.page.getByRole('textbox', { name: /start date|sharing period/i }).first().locator('..').locator('..'); }
-	get rangePicker() { return this.page.locator('.ant-picker-range'); }
 	get saveDraftButton() { return this.page.getByRole('button', { name: /Save as Draft/i }); }
 	get publishButton() { return this.page.getByRole('button', { name: /Publish Listing/i }); }
 	get firstValidationError() { return this.page.locator('.ant-form-item-explain-error').first(); }
@@ -39,10 +43,6 @@ export class ListingPage {
 	listingLinkInRow(title: string) {
 		return this.listingRowByTitle(title).locator('a[href*="/listing/"]').first();
 	}
-
-	// --- Calendar helpers ---
-	calendarCell(dateStr: string) { return this.page.locator(`td[title="${dateStr}"]`).first(); }
-	get nextMonthButton() { return this.page.locator('.ant-picker-header-next-btn').last(); }
 
 	// --- Loading indicator ---
 	get loadingButton() { return this.page.locator('.ant-btn-loading').first(); }

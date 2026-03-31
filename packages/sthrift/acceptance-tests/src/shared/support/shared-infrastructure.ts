@@ -139,7 +139,7 @@ async function initLocalE2E(): Promise<void> {
 	}
 
 	if (!browser) {
-		browser = await chromium.launch({ headless: true });
+		browser = await chromium.launch({ headless: false });
 	}
 
 	if (!browseTheWeb && browser && browserBaseUrl) {
