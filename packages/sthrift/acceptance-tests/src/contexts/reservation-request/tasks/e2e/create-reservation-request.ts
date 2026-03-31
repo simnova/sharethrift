@@ -13,7 +13,7 @@ export class CreateReservationRequest extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		const { page } = BrowseTheWeb.as(actor);
+		const { page } = BrowseTheWeb.withActor(actor);
 		const reservationPage = new ReservationPage(page);
 
 		await page.goto(`/listing/${this.input.listingId}`);
@@ -70,7 +70,9 @@ export class CreateReservationRequest extends Task {
 		await reservationPage.reserveButton.click();
 
 		// Verify button shows loading state during submission
-		await reservationPage.loadingIcon.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => {});
+		await reservationPage.loadingIcon.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => {
+			// Loading icon may not appear if submission is very fast
+		});
 
 		// Verify "Cancel Request" button appears (proves reservation was accepted)
 		await reservationPage.cancelRequestButton.waitFor({ state: 'visible', timeout: 15_000 });

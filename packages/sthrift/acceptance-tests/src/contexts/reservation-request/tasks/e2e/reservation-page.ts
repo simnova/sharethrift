@@ -13,7 +13,7 @@ export class ReservationPage {
 
 	calendarCell(dateStr: string) { return this.page.locator(`td[title="${dateStr}"]`).first(); }
 
-	async isCalendarCellDisabled(dateStr: string) {
+	isCalendarCellDisabled(dateStr: string) {
 		return this.calendarCell(dateStr).evaluate(
 			(el) => el.classList.contains('ant-picker-cell-disabled'),
 		);

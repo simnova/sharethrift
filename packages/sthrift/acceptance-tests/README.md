@@ -224,7 +224,7 @@ export class CreateListing implements Task {
   constructor(private details: ListingDetails) {}
 
   async performAs(actor: Actor): Promise<void> {
-    const { page } = BrowseTheWeb.as(actor);
+    const { page } = BrowseTheWeb.withActor(actor);
     await page.goto('/create-listing');
     await page.getByPlaceholder('Title').fill(this.details.title);
     await page.getByPlaceholder('Description').fill(this.details.description);

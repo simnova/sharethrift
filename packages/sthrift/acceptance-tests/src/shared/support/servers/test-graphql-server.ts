@@ -2,7 +2,10 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { applyMiddleware } from 'graphql-middleware';
 import depthLimit from 'graphql-depth-limit';
-import type { ApplicationServices, ApplicationServicesFactory } from '@sthrift/application-services';
+import type {
+	ApplicationServices,
+	ApplicationServicesFactory,
+} from '@sthrift/application-services';
 import { combinedSchema } from '@sthrift/graphql';
 
 interface GraphContext {
@@ -16,7 +19,9 @@ export class GraphQLTestServer {
 	private server: ApolloServer<GraphContext> | null = null;
 	private url: string | null = null;
 
-	constructor(private readonly applicationServicesFactory?: ApplicationServicesFactory) {}
+	constructor(
+		private readonly applicationServicesFactory?: ApplicationServicesFactory,
+	) {}
 
 	async start(port = 0): Promise<string> {
 		if (this.server) {
@@ -35,15 +40,16 @@ export class GraphQLTestServer {
 		const { url } = await startStandaloneServer(this.server, {
 			listen: { port },
 			context: async ({ req }) => {
-
 				const authHeader = req.headers.authorization ?? undefined;
 
-const applicationServices = this.applicationServicesFactory
+				const applicationServices = this.applicationServicesFactory
 					? await this.applicationServicesFactory.forRequest(authHeader)
 					: undefined;
 
 				if (!applicationServices) {
-					throw new Error('ApplicationServicesFactory required for test server');
+					throw new Error(
+						'ApplicationServicesFactory required for test server',
+					);
 				}
 
 				return {

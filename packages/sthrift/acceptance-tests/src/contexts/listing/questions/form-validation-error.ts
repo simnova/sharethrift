@@ -18,7 +18,7 @@ export class FormValidationError extends Question<Promise<string>> {
 	override async answeredBy(actor: AnswersQuestions & UsesAbilities): Promise<string> {
 		// Try to use Playwright page (E2E level)
 		try {
-			const { page } = BrowseTheWeb.as(actor as UsesAbilities);
+			const { page } = BrowseTheWeb.withActor(actor as UsesAbilities);
 
 			if (this.type === 'field' && this.fieldName) {
 				const errorEl = page.locator('.ant-form-item-explain-error').first();

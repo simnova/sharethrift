@@ -1,9 +1,9 @@
 import { Ability, type Actor, type UsesAbilities } from '@serenity-js/core';
-import type { Browser, BrowserContext, Page } from '@playwright/test';
+import type { BrowserContext, Page } from '@playwright/test';
 
 // Per-actor browser ability registry — supports multi-actor E2E scenarios.
 // Falls back to the last-created instance for backward compatibility with
-// tasks that call BrowseTheWeb.as(actor) before the actor ability map is accessible.
+// tasks that call BrowseTheWeb.withActor(actor) before the actor ability map is accessible.
 const actorBrowserMap = new Map<string, BrowseTheWeb>();
 let fallbackInstance: BrowseTheWeb | undefined;
 
@@ -26,7 +26,7 @@ export class BrowseTheWeb extends Ability {
 		return this;
 	}
 
-	static as(actor: UsesAbilities): BrowseTheWeb {
+	static withActor(actor: UsesAbilities): BrowseTheWeb {
 		// Try actor-specific lookup first
 		const actorName = 'name' in actor ? (actor as Actor).name : undefined;
 		if (actorName) {

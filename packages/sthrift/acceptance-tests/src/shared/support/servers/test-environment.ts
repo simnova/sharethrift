@@ -12,7 +12,7 @@ let mongoConnectionString: string | undefined;
 // and NODE_EXTRA_CA_CERTS (set in the test:e2e npm script for Node.js).
 const globalStateDir = join(homedir(), '.portless');
 
-export async function initTestEnvironment(): Promise<void> {
+export function initTestEnvironment() {
 	if (proxyPort) return;
 
 	// Ensure the global portless proxy is running with HTTPS

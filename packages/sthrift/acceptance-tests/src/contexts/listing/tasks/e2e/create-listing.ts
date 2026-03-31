@@ -13,7 +13,7 @@ export class CreateListing extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		const { page } = BrowseTheWeb.as(actor);
+		const { page } = BrowseTheWeb.withActor(actor);
 		const listingPage = new ListingPage(page);
 
 		await page.goto('/create-listing', { waitUntil: 'domcontentloaded' });
@@ -47,7 +47,9 @@ export class CreateListing extends Task {
 			endDate.setDate(today.getDate() + 30);
 
 			const startCell = listingPage.calendarCell(this.formatDate(startDate));
-			await startCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => {});
+			await startCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => {
+				// Cell may not exist if date is not available
+			});
 			if (await startCell.isVisible()) {
 				await startCell.click();
 			}
@@ -57,7 +59,9 @@ export class CreateListing extends Task {
 				await listingPage.nextMonthButton.click();
 				endCell = listingPage.calendarCell(this.formatDate(endDate));
 			}
-			await endCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => {});
+			await endCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => {
+				// Cell may not exist if date is not available
+			});
 			if (await endCell.isVisible()) {
 				await endCell.click();
 			}
@@ -94,7 +98,9 @@ export class CreateListing extends Task {
 		await submitButton.click();
 
 		// Verify button enters loading state during submission
-		await listingPage.loadingButton.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => {});
+		await listingPage.loadingButton.waitFor({ state: 'visible', timeout: 5_000 }).catch(() => {
+			// Button may not show loading state if submission is very fast
+		});
 
 		// Wait for the success modal to appear
 		const expectedModalText = isDraft ? 'Draft saved!' : 'Your listing is live!';
@@ -199,7 +205,9 @@ export class CreateListing extends Task {
 			await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
 		}
 
-		await page.waitForLoadState('networkidle').catch(() => {});
+		await page.waitForLoadState('networkidle').catch(() => {
+			// Network idle may not occur if page is very responsive
+		});
 	}
 
 	override toString = () => `creates listing "${this.details.title}" (e2e)`;

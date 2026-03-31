@@ -48,7 +48,7 @@ export class ListingPage {
 	get loadingButton() { return this.page.locator('.ant-btn-loading').first(); }
 
 	// --- Helper to detect server-side mutation errors in network traffic ---
-	async listenForMutationError(mutationName: string): Promise<() => string | undefined> {
+	listenForMutationError(mutationName: string): Promise<() => string | undefined> {
 		let serverError: string | undefined;
 
 		const listener = async (resp: import('@playwright/test').Response) => {
@@ -68,9 +68,9 @@ export class ListingPage {
 		};
 
 		this.page.on('response', listener);
-		return () => {
+		return Promise.resolve(() => {
 			this.page.off('response', listener);
 			return serverError;
-		};
+		});
 	}
 }
