@@ -4,8 +4,8 @@ import type { CreateReservationRequestInput, ReservationRequestResponse } from '
 export abstract class ApiReservationRequestSession extends ApiSession {
 	context = 'reservation';
 
-	constructor(apiUrl: string) {
-		super(apiUrl);
+	constructor(apiUrl: string, authToken?: string) {
+		super(apiUrl, authToken);
 		this.registerOperations();
 	}
 

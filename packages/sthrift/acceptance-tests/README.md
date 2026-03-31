@@ -1,35 +1,18 @@
 # ShareThrift Acceptance Tests
 
-Cucumber Screenplay pattern acceptance tests for the ShareThrift domain, implementing multi-level testing strategy.
+Cucumber Screenplay pattern acceptance tests for the ShareThrift domain, implementing a multi-level testing strategy.
 
 ## Architecture
 
-This package implements the **Cucumber Screenplay Pattern** following **industry best practices** from Facebook, Google, and Aslak Hellesøy:
+This package implements the **Cucumber Screenplay Pattern** following **industry best practices** from Aslak Hellesøy's assembly approach:
 
-### Industry Standard Approach (Facebook/Google)
+### Test Levels
 
-We use **two test levels** that align with **React Testing Library** philosophy:
-
-| Level | What It Tests | Speed | Industry Equivalent |
-|-------|---------------|-------|---------------------|
-| **Domain** | Pure business logic | ⚡ Milliseconds | Unit tests |
-| **Session** | API contracts (mocked) | 🏃 Sub-second | Component/Integration tests |
-
-**Key Insight**: Industry leaders (Facebook, Google, Netflix) use **component testing**, NOT full browser E2E for most UI tests.
-
-### Why No E2E/DOM Tests?
-
-Following **Kent C. Dodds** (React Testing Library creator):
-
-> "The more your tests resemble the way your software is used, the more confidence they can give you."
-
-**But also**:
-
-❌ **Full E2E with browser** (Playwright/Cypress) = Slow, flaky, expensive
-✅ **Component tests** (React Testing Library) = Fast, reliable, maintainable
-✅ **Session/API tests** (Our approach) = Even faster, no DOM needed
-
-For UI testing, use React Testing Library in the UI package, not Screenplay E2E tests.
+| Level | What It Tests | Speed | Stack |
+|-------|---------------|-------|-------|
+| **Domain** | Pure business logic | ⚡ Milliseconds | In-memory aggregates |
+| **Session** | API contracts (GraphQL/MongoDB) | 🏃 Sub-second | Apollo TestServer + MongoMemoryServer |
+| **E2E** | Full user experience | 🐢 Seconds | Playwright → Vite UI → GraphQL → MongoDB |
 
 ### Key Concept: Cumulative Assemblies
 
@@ -37,14 +20,14 @@ For UI testing, use React Testing Library in the UI package, not Screenplay E2E 
 
 ```
 Domain Assembly:     [Domain]
-GraphQL Assembly:    [GraphQL] → [Domain]
-DOM Assembly:        [DOM] → [GraphQL] → [Domain]
+Session Assembly:    [GraphQL/MongoDB] → [Domain]
+E2E Assembly:        [Playwright] → [Vite UI] → [GraphQL] → [MongoDB] → [Domain]
 ```
 
 This allows you to:
 - Get fast feedback during development (Domain assembly)
-- Test API contracts without UI (GraphQL assembly)  
-- Verify full user experience (DOM assembly)
+- Test API contracts without UI (Session assembly)
+- Verify full user experience through a real browser (E2E assembly)
 - Build features incrementally, adding layers as you go
 - Use faster layers for test setup even in slower assemblies
 
@@ -60,8 +43,7 @@ acceptance-tests/
 │       └── book-listing.feature
 ├── src/
 │   ├── abilities/              # Actor capabilities (shared across levels)
-│   │   ├── CreateListingAbility.ts
-│   │   ├── BrowseTheWeb.ts
+│   │   ├── BrowseTheWeb.ts     # Playwright Page wrapper (E2E)
 │   │   └── CallAnApi.ts
 │   ├── questions/              # Assertions/queries (shared across levels)
 │   │   ├── ListingStatus.ts
@@ -70,79 +52,66 @@ acceptance-tests/
 │   │   ├── domain/            # Direct domain calls
 │   │   │   ├── CreateListing.ts
 │   │   │   └── SearchListings.ts
-│   │   ├── graphql/           # GraphQL mutations/queries
+│   │   ├── session/           # GraphQL mutations/queries
 │   │   │   ├── CreateListing.ts
 │   │   │   └── SearchListings.ts
-│   │   └── dom/               # Browser interactions
+│   │   └── e2e/               # Playwright browser interactions
 │   │       ├── CreateListing.ts
 │   │       └── SearchListings.ts
 │   ├── step-definitions/       # Map Gherkin to tasks (shared)
 │   │   ├── listing.steps.ts
 │   │   └── reservation.steps.ts
 │   └── support/                # Test infrastructure
-│       ├── serenity.config.ts
-│       └── world.ts
+│       ├── hooks.ts
+│       ├── world.ts
+│       └── servers/
+│           ├── test-graphql-server.ts
+│           ├── test-oauth2-server.ts
+│           └── test-vite-server.ts
 └── reports/                    # Test results and HTML reports
 ```
 
 ## Running Tests
 
-### Fast Tests (Recommended - Industry Standard)
+### Quick Tests (Recommended for Development)
 
 ```bash
-# Run all acceptance tests (domain + session)
-pnpm test          # ~0.6 seconds total
+# Run all acceptance tests
+pnpm test
 
 # Or individually:
-pnpm test:domain   # Pure business logic (0.3s)
-pnpm test:session  # API contracts with mocked backend (0.3s)
+pnpm test:domain           # Pure business logic (milliseconds)
+pnpm test:session:graphql  # Session + GraphQL backend (sub-second)
 ```
 
-**These are the ONLY tests you need for acceptance testing!** ✅
-
-### UI Component Tests (Use React Testing Library Instead)
-
-For UI testing, follow industry standards:
+### E2E Tests (Full Stack Verification)
 
 ```bash
-# In the UI package (not here):
-cd apps/ui-sharethrift
-pnpm test  # Uses React Testing Library
+# Full end-to-end with Playwright browser
+pnpm test:e2e
 ```
 
-**Why?**
-- ✅ Industry standard (Facebook, Google, Airbnb all use this)
-- ✅ Fast (milliseconds per test)
-- ✅ No browser overhead
-- ✅ Tests components like users interact with them
-- ✅ Maintained by Kent C. Dodds & team
-
-**Why NOT full E2E here?**
-- ❌ Slow (seconds per test)
-- ❌ Flaky (browser issues, timing problems)
-- ❌ Expensive (requires infrastructure)
-- ❌ Not what industry leaders do for most tests
-
-### When To Use E2E
-
-Only for **critical user flows** in CI/CD (outside this package):
-- Login flow
-- Checkout/payment
-- Core business transactions
-
-Use tools like **Playwright** or **Cypress** sparingly, in a separate E2E test suite.
+E2E tests start the following infrastructure automatically:
+- **MongoMemoryServer** for persistence
+- **Apollo TestServer** for GraphQL
+- **Mock OAuth2 server** for authentication (auto-approves, issues real JWTs)
+- **Vite dev server** serving the UI application
+- **Chromium browser** via Playwright
 
 ### Development Workflow
 
 ```bash
 # During development: run fast tests constantly
-pnpm test:fast
+pnpm test:domain
 
 # Run specific feature with domain tasks (fastest)
 cucumber-js features/listing/create-listing.feature --world-parameters '{"tasks":"domain"}'
 
-# Run with session tasks (mocked GraphQL)
-cucumber-js features/listing/create-listing.feature --world-parameters '{"tasks":"graphql"}'
+# Run with session tasks (GraphQL)
+cucumber-js features/listing/create-listing.feature --world-parameters '{"tasks":"session","session":"graphql"}'
+
+# Run with E2E tasks (full browser)
+cucumber-js features/listing/create-listing.feature --world-parameters '{"tasks":"e2e"}'
 
 # Run with specific tag
 cucumber-js --tags @wip --world-parameters '{"tasks":"domain"}'
@@ -194,9 +163,9 @@ Then('the listing should be in draft status', async (actor: Actor) => {
 });
 ```
 
-### 3. Implement Tasks (Three Times - One Per Level)
+### 3. Implement Tasks (Per Level)
 
-**src/tasks/domain/CreateListing.ts** (Fast)
+**src/tasks/domain/CreateListing.ts** (Fast - direct domain calls)
 ```typescript
 import { Task, Actor } from '@serenity-js/core';
 import { CreateListingAbility } from '../../abilities';
@@ -217,7 +186,7 @@ export class CreateListing implements Task {
 }
 ```
 
-**src/tasks/graphql/CreateListing.ts** (Medium)
+**src/tasks/session/CreateListing.ts** (Medium - GraphQL mutations)
 ```typescript
 import { Task, Actor } from '@serenity-js/core';
 import { CallAnApi } from '../../abilities';
@@ -242,11 +211,10 @@ export class CreateListing implements Task {
 }
 ```
 
-**src/tasks/dom/CreateListing.ts** (Slow)
+**src/tasks/e2e/CreateListing.ts** (Full - Playwright browser interactions)
 ```typescript
 import { Task, Actor } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../abilities';
-import { Click, Fill, Press } from '@serenity-js/web';
 
 export class CreateListing implements Task {
   static with(details: ListingDetails) {
@@ -256,14 +224,12 @@ export class CreateListing implements Task {
   constructor(private details: ListingDetails) {}
 
   async performAs(actor: Actor): Promise<void> {
-    await actor.attemptsTo(
-      Click.on('#create-listing-button'),
-      Fill.in('#title', this.details.title),
-      Fill.in('#description', this.details.description),
-      Fill.in('#category', this.details.category),
-      Fill.in('#location', this.details.location),
-      Press.submit()
-    );
+    const { page } = BrowseTheWeb.as(actor);
+    await page.goto('/create-listing');
+    await page.getByPlaceholder('Title').fill(this.details.title);
+    await page.getByPlaceholder('Description').fill(this.details.description);
+    // ... fill remaining fields
+    await page.getByRole('button', { name: 'Publish Listing' }).click();
   }
 
   toString = () => `creates a listing via UI`;
@@ -272,24 +238,28 @@ export class CreateListing implements Task {
 
 ## How Level Switching Works
 
-The **ActorWorld** in `src/support/world.ts` dynamically loads tasks based on the `--world-parameters` flag:
+The **World** in `src/support/world.ts` dynamically selects tasks based on the `--world-parameters` flag:
 
 ```typescript
-export class ActorWorld extends SerenityWorld {
-  private tasksLevel: 'domain' | 'graphql' | 'dom';
+type TaskLevel = 'domain' | 'session' | 'e2e';
 
-  constructor(options: IWorldOptions<WorldParameters>) {
-    super(options);
-    this.tasksLevel = options.parameters?.tasks || 'domain';
-  }
-
-  async loadTask(taskName: string) {
-    // Dynamically import from correct directory
-    const module = await import(`../tasks/${this.tasksLevel}/${taskName}.ts`);
-    return module[taskName];
+// Step definitions switch on the task level:
+function getCreateListingTask(taskLevel: TaskLevel) {
+  switch (taskLevel) {
+    case 'domain': return DomainCreateListing;
+    case 'session': return SessionCreateListing;
+    case 'e2e': return E2eCreateListing;
   }
 }
 ```
+
+For E2E tests, the World automatically:
+1. Starts MongoMemoryServer + GraphQL server
+2. Starts a mock OAuth2 server (auto-approves auth, issues real JWTs)
+3. Starts a Vite dev server serving the UI
+4. Launches a Chromium browser via Playwright
+5. Creates a fresh browser context + page per scenario
+6. Gives each actor the `BrowseTheWeb` ability
 
 ## Benefits
 
@@ -298,32 +268,32 @@ export class ActorWorld extends SerenityWorld {
 - ✅ Step definitions: Written once, map to tasks
 - ✅ Questions: Written once, verify outcomes
 - ✅ Abilities: Written once, actor capabilities
-- 🔄 Tasks: **Two implementations** (session vs dom)
-  - Both implement same interface
+- 🔄 Tasks: **Three implementations** (domain, session, e2e)
+  - All implement the same interface
   - Swappable via `--world-parameters '{"tasks":"..."}'`
 
 ### Speed vs Coverage (Following Aslak's Assembly Approach)
 - **Domain**: Pure business logic, milliseconds, run constantly
-- **Session**: Mocked API layer, sub-second, run on every commit
-- **DOM**: Real browser + UI, seconds, run before merge or nightly
+- **Session**: GraphQL/MongoDB integration, sub-second, run on every commit
+- **E2E**: Real browser + full stack, seconds, run before merge
 
 ### Incremental Development
 - ✅ Build features **domain-first** (fastest feedback)
-- ✅ Add session/GraphQL tasks when API stabilizes
-- ✅ Add DOM tasks only for critical user journeys
+- ✅ Add session tasks when API stabilizes
+- ✅ Add E2E tasks for critical user journeys
 - ✅ Same `.feature` files work across all assemblies
 
 ### Debugging
 - Domain tests fail → Business logic bug
-- GraphQL tests fail → API contract bug
-- DOM tests fail → UI/UX bug
+- Session tests fail → API contract / persistence bug
+- E2E tests fail → UI/UX or integration bug
 
 ## Migration Path
 
 1. **Week 1-2**: Implement domain tests for core workflows (Create Listing, Book Reservation)
-2. **Week 3-4**: Add GraphQL layer tests
-3. **Week 5-6**: Implement DOM tests for critical paths
-4. **Week 7-8**: Gradually replace Storybook tests with Screenplay tests
+2. **Week 3-4**: Add session (GraphQL/MongoDB) layer tests
+3. **Week 5-6**: Implement E2E tests for critical user paths via Playwright
+4. **Week 7-8**: Expand E2E coverage to additional user journeys
 
 ## CI/CD Integration
 
@@ -335,28 +305,21 @@ export class ActorWorld extends SerenityWorld {
   displayName: 'Run Fast Tests (Domain + Session)'
   inputs:
     command: custom
-    customCommand: 'run test:fast --filter @sthrift/acceptance-tests'
+    customCommand: 'run test --filter @sthrift/acceptance-tests'
 
-# DOM tests: Run on PRs and main branch (requires UI app running)
+# E2E tests: Run on PRs and main branch (full browser stack)
 - task: Npm@1
-  displayName: 'Start UI Application'
+  displayName: 'Run E2E Tests (Playwright)'
   inputs:
     command: custom
-    customCommand: 'run dev --filter @app/ui-sharethrift'
-  condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
-
-- task: Npm@1
-  displayName: 'Run DOM Tests (Full E2E)'
-  inputs:
-    command: custom
-    customCommand: 'run test:dom --filter @sthrift/acceptance-tests'
+    customCommand: 'run test:e2e --filter @sthrift/acceptance-tests'
   condition: or(eq(variables['Build.Reason'], 'PullRequest'), eq(variables['Build.SourceBranch'], 'refs/heads/main'))
   timeoutInMinutes: 10
 ```
 
 **Strategy**:
 - ✅ Every commit: Domain + Session tests (sub-second)
-- ✅ Pull Requests: Add DOM tests (full stack verification)
+- ✅ Pull Requests: Add E2E tests (full stack verification via Playwright)
 - ✅ Main branch: Complete suite with reporting
 
 ## References
@@ -377,27 +340,16 @@ From Aslak's design recommendations:
 > - `dom` for tasks that use the DOM
 > - `session` for tasks that use a `Session`"
 
-A **Session** represents a user having an interactive session with your system. Your **production UI code** should use the same Session interface, preventing network implementation details from bleeding into UI code.
+We extend this with three levels: **domain** (direct aggregate calls), **session** (GraphQL/MongoDB), and **e2e** (Playwright browser).
 
-**Two Session implementations:**
-- **HttpSession**: Real fetch/WebSocket/HTTP calls (used in production UI and some tests)
-- **DomainSession**: Direct function calls to domain layer (used only in tests for speed)
+### Our Assembly Configuration
 
-### Why Two Implementations?
-
-This creates **four assembly configurations** (we currently use three):
-
-| Assembly | Tasks | Session | Our Implementation | Speed |
-|----------|-------|---------|-------------------|-------|
-| Domain | session | DomainSession | `domain/` tasks | ⚡ Milliseconds |
-| HTTP-Domain | session | HttpSession | *(future)* | 🏃 Fast |
-| DOM-Domain | dom | DomainSession | *(not recommended)* | 🐢 Slow |
-| **DOM-HTTP** | **dom** | **HttpSession** | **`dom/` tasks** | **🐌 Slowest (E2E)** |
-
-We simplified by:
-- Using **MockGraphQL** as our DomainSession (mocked responses)
-- Keeping DOM tests for real E2E only
-- Skipping DOM-Domain (component testing) in favor of session tests
+| Assembly | Tasks | Backend | Speed |
+|----------|-------|---------|-------|
+| Domain | domain | In-memory aggregates | ⚡ Milliseconds |
+| Session (GraphQL) | session | Apollo TestServer | 🏃 Sub-second |
+| Session (MongoDB) | session | MongoMemoryServer | 🏃 Sub-second |
+| **E2E** | **e2e** | **Playwright → Vite → GraphQL → MongoDB** | **🐢 Seconds** |
 
 ### Force Better Scenarios
 

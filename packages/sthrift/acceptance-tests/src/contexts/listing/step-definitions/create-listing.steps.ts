@@ -1,18 +1,24 @@
 import { Given, When, Then, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
+import { Ensure, equals } from '@serenity-js/assertions';
 import type { ShareThriftWorld } from '../../../world.ts';
+import { resolveActorName } from '../../../shared/support/domain-test-helpers.ts';
 import type { ListingDetails } from '../tasks/domain/create-listing.ts';
-import { CreateListing as DomCreateListing } from '../tasks/dom/create-listing.ts';
+import type { ListingNotes } from '../abilities/listing-types.ts';
+import { CreateListing as E2eCreateListing } from '../tasks/e2e/create-listing.ts';
 import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.ts';
 import { CreateListing as DomainCreateListing } from '../tasks/domain/create-listing.ts';
-import  { ListingStatus } from '../questions/listing-status.ts';
-import  { ListingTitle } from '../questions/listing-title.ts';
-import  { FormValidationError } from '../questions/form-validation-error.ts';
+import { ListingStatus } from '../questions/listing-status.ts';
+import { ListingTitle } from '../questions/listing-title.ts';
+import { FormValidationError } from '../questions/form-validation-error.ts';
+
+// Track last actor used in When steps so Then steps can reference them without hardcoding
+let lastActorName = 'Alice';
 
 function getCreateListingTask(level: string) {
 	switch (level) {
-		case 'dom':
-			return DomCreateListing;
+		case 'e2e':
+			return E2eCreateListing;
 		case 'session':
 			return SessionCreateListing;
 		default:
@@ -23,8 +29,9 @@ function getCreateListingTask(level: string) {
 Given(
 	'{word} is an authenticated user',
 	function (this: ShareThriftWorld, actorName: string) {
+		lastActorName = actorName;
 		actorCalled(actorName);
-		},
+	},
 );
 
 Given(
@@ -32,7 +39,7 @@ Given(
 	async function (this: ShareThriftWorld, actorName: string, title: string) {
 		const actor = actorCalled(actorName);
 
-		const CreateListing = getCreateListingTask(this.level);
+		const CreateListing = getCreateListingTask(this.setupLevel);
 
 		await actor.attemptsTo(
 			CreateListing.with({
@@ -49,24 +56,30 @@ Given(
 When(
 	'{word} creates a listing with:',
 	async function (this: ShareThriftWorld, actorName: string, dataTable: DataTable) {
+		lastActorName = actorName;
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
 		const CreateListing = getCreateListingTask(this.level);
 
-		// Execute the task
 		await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
-
 	},
 );
 
 When(
 	'{word} attempts to create a listing with:',
 	async function (this: ShareThriftWorld, actorName: string, dataTable: DataTable) {
+		lastActorName = actorName;
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
 		const CreateListing = getCreateListingTask(this.level);
+
+		// Clear notes from any previous scenario to prevent state leakage
+		await actor.attemptsTo(
+			notes<ListingNotes>().set('lastListingId', undefined as unknown as string),
+			notes<ListingNotes>().set('lastValidationError', undefined as unknown as string),
+		);
 
 		try {
 			await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
@@ -76,7 +89,6 @@ When(
 				notes<{lastValidationError: string}>().set('lastValidationError', errorMessage),
 			);
 		}
-
 	},
 );
 
@@ -85,11 +97,9 @@ Then(
 	async function (this: ShareThriftWorld, actorName: string, expectedStatus: string) {
 		const actor = actorCalled(actorName);
 
-		const status = await actor.answer(ListingStatus.of());
-		if (status !== expectedStatus) {
-			throw new Error(`Expected listing status "${expectedStatus}" but got "${status}"`);
-		}
-
+		await actor.attemptsTo(
+			Ensure.that(ListingStatus.of(), equals(expectedStatus)),
+		);
 	},
 );
 
@@ -97,23 +107,33 @@ Then(
 	'{word} sees the listing title as {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedTitle: string) {
 		const actor = actorCalled(actorName);
-		const title = await actor.answer(ListingTitle.displayed());
-		if (title !== expectedTitle) {
-			throw new Error(`Expected listing title "${expectedTitle}" but got "${title}"`);
-		}
 
+		await actor.attemptsTo(
+			Ensure.that(ListingTitle.displayed(), equals(expectedTitle)),
+		);
 	},
 );
 
 Then(
 	'the listing should have a daily rate of {string}',
-	async function (this: ShareThriftWorld, _expectedRate: string) {
-		// Daily rate is not yet tracked in the domain model.
-		// This step will need implementation once the domain adds rate support.
-		const actor = actorCalled('Alice');
-		const status = await actor.answer(ListingStatus.of());
-		if (!status) {
+	async function (this: ShareThriftWorld, expectedRate: string) {
+		const actor = actorCalled(lastActorName);
+
+		// Verify listing was created and is in the expected state
+		const listingId = await actor.answer(notes<ListingNotes>().get('lastListingId'));
+		if (!listingId) {
 			throw new Error('Expected a listing to exist before checking its daily rate');
+		}
+
+		// Verify listing is in draft status (confirms the full creation path worked)
+		await actor.attemptsTo(
+			Ensure.that(ListingStatus.of(), equals('draft')),
+		);
+
+		// TODO: Verify actual daily rate value once domain model exposes it via notes.
+		// For now, confirm the rate was provided in the input and listing was created successfully.
+		if (!expectedRate) {
+			throw new Error('Expected rate must be provided');
 		}
 	},
 );
@@ -121,19 +141,51 @@ Then(
 Then(
 	'{word} should see a listing error for {string}',
 	async function (this: ShareThriftWorld, actorName: string, fieldName: string) {
-		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
+		// Check stored validation error from task execution (domain/session levels)
+		let storedError: string | undefined;
 		try {
-			const storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
-			if (storedError) {
-				return;
-			}
+			storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
 		} catch {
 			// No error in notes
 		}
+
+		if (storedError) {
+			// Verify the error is related to the field: either mentions the field name,
+			// or is a known validation error pattern (e.g., "Wrong raw value type" for missing required fields)
+			const lowerError = storedError.toLowerCase();
+			const lowerField = fieldName.toLowerCase();
+			const isFieldMentioned = lowerError.includes(lowerField);
+			const isValidationPattern = /wrong raw value type|cannot be empty|required|missing|invalid/i.test(storedError);
+
+			if (!isFieldMentioned && !isValidationPattern) {
+				throw new Error(
+					`Expected a validation error related to "${fieldName}", but got an unrecognized error: "${storedError}"`,
+				);
+			}
+
+			// Also confirm the listing was NOT created
+			let listingId: string | undefined;
+			try {
+				listingId = await actor.answer(notes<ListingNotes>().get('lastListingId'));
+			} catch {
+				// expected
+			}
+			if (listingId) {
+				throw new Error(
+					`Expected listing creation to be blocked by "${fieldName}" validation, ` +
+					`but a listing was created with id: ${listingId}`,
+				);
+			}
+
+			return;
+		}
+
+		// E2E level: check DOM for field-specific error
 		const error = await actor.answer(FormValidationError.forField(fieldName));
-		if (!error) {
+		if (!error || error.trim().length === 0) {
 			throw new Error(`Expected a validation error for "${fieldName}" but none was found`);
 		}
 	},
@@ -142,43 +194,69 @@ Then(
 Then(
 	'{word} should see a listing error {string}',
 	async function (this: ShareThriftWorld, actorName: string, expectedMessage: string) {
-		// Map pronouns to actual actor names
-		const resolvedActorName = /^(she|he|they)$/.test(actorName) ? 'Alice' : actorName;
+		const resolvedActorName = resolveActorName(actorName);
 		const actor = actorCalled(resolvedActorName);
 
-		// Check if actor has a stored validation error from task execution
+		// Check stored validation error from task execution (domain/session levels)
+		let storedError: string | undefined;
 		try {
-			const storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
-			if (storedError) {
-				if (!storedError.includes(expectedMessage)) {
-					throw new Error(`Expected error message "${expectedMessage}", but got: "${storedError}"`);
-				}
-				return;
-			}
+			storedError = await actor.answer(notes<{lastValidationError?: string}>().get('lastValidationError'));
 		} catch {
-			// No error stored - check DOM instead
+			// No error stored
 		}
 
-		// For DOM tests, try to get error from form UI
+		if (storedError) {
+			if (!storedError.includes(expectedMessage)) {
+				throw new Error(`Expected error message "${expectedMessage}", but got: "${storedError}"`);
+			}
+			return;
+		}
+
+		// E2E level: check DOM for error message
 		const error = await actor.answer(FormValidationError.displayed());
 
-		if (!error?.includes(expectedMessage)) {
-			throw new Error(`Expected error message "${expectedMessage}", but got: "${error || 'none'}"`);
+		if (!error || error.trim().length === 0) {
+			throw new Error(
+				`Expected error message "${expectedMessage}", but no validation error was found. ` +
+				'Ensure the validation step actually triggered an error.',
+			);
+		}
+
+		if (!error.includes(expectedMessage)) {
+			throw new Error(`Expected error message "${expectedMessage}", but got: "${error}"`);
 		}
 	},
 );
 
 Then('no listing should be created', async function (this: ShareThriftWorld) {
-	const actor = actorCalled('Alice');
-	// If the listing creation errored (as expected), there should be a validation error in notes
-	// and no lastListingId set.
+	const actor = actorCalled(lastActorName);
+
+	// Verify there was a validation error stored
+	let hasValidationError = false;
 	try {
-		const listingId = await actor.answer(notes<{ lastListingId?: string }>().get('lastListingId'));
-		if (listingId) {
-			throw new Error('Expected no listing to be created, but one was');
-		}
+		const storedError = await actor.answer(notes<{ lastValidationError?: string }>().get('lastValidationError'));
+		hasValidationError = !!storedError;
 	} catch {
-		// No listing ID in notes — this is the expected state
+		// No error stored
+	}
+
+	// Verify no listing ID was stored
+	let listingId: string | undefined;
+	try {
+		listingId = await actor.answer(notes<{ lastListingId?: string }>().get('lastListingId'));
+	} catch {
+		// No listing ID — expected
+	}
+
+	if (listingId) {
+		throw new Error(`Expected no listing to be created, but one was created with id: ${listingId}`);
+	}
+
+	if (!hasValidationError) {
+		throw new Error(
+			'Expected a validation error to prevent listing creation, but no error was captured. ' +
+			'The test may be passing without actually validating the scenario.',
+		);
 	}
 });
 
@@ -186,23 +264,21 @@ Then('no listing should be created', async function (this: ShareThriftWorld) {
 Then(
 	'the listing should be in {word} status',
 	async function (this: ShareThriftWorld, expectedStatus: string) {
-		const actor = actorCalled('Alice');
+		const actor = actorCalled(lastActorName);
 
-		const status = await actor.answer(ListingStatus.of());
-		if (status !== expectedStatus) {
-			throw new Error(`Expected listing status "${expectedStatus}" but got "${status}"`);
-		}
+		await actor.attemptsTo(
+			Ensure.that(ListingStatus.of(), equals(expectedStatus)),
+		);
 	},
 );
 
 Then(
 	'the listing title should be {string}',
 	async function (this: ShareThriftWorld, expectedTitle: string) {
-		const actor = actorCalled('Alice');
+		const actor = actorCalled(lastActorName);
 
-		const title = await actor.answer(ListingTitle.displayed());
-		if (title !== expectedTitle) {
-			throw new Error(`Expected listing title "${expectedTitle}" but got "${title}"`);
-		}
+		await actor.attemptsTo(
+			Ensure.that(ListingTitle.displayed(), equals(expectedTitle)),
+		);
 	},
 );

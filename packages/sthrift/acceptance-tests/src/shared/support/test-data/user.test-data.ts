@@ -61,6 +61,7 @@ function createMockAdminRole(overrides?: Partial<{ id: string; roleName: string 
 }
 
 const aliceId = generateObjectId();
+const bobId = generateObjectId();
 const adminId = generateObjectId();
 
 export const users = new Map<string, UserEntityReference>([
@@ -78,6 +79,37 @@ export const users = new Map<string, UserEntityReference>([
 				profile: {
 					firstName: 'Alice',
 					lastName: 'Smith',
+					aboutMe: '',
+					location: {
+						address1: '',
+						address2: null,
+						city: '',
+						state: '',
+						country: '',
+						zipCode: '',
+					},
+					billing: {},
+				},
+			},
+			createdAt: new Date(),
+			updatedAt: new Date(),
+			schemaVersion: '1.0.0',
+		} as PersonalUserEntityReference,
+	],
+	[
+		bobId,
+		{
+			id: bobId,
+			userType: 'personal-user',
+			isBlocked: false,
+			hasCompletedOnboarding: true,
+			account: {
+				accountType: 'email',
+				email: 'bob@example.com',
+				username: 'bob',
+				profile: {
+					firstName: 'Bob',
+					lastName: 'Jones',
 					aboutMe: '',
 					location: {
 						address1: '',

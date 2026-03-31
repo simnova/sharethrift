@@ -1,7 +1,7 @@
 import { Ability } from '@serenity-js/core';
 import type { Session, OperationInput, OperationResult } from './session.ts';
 
-// Routes operations to context-specific sessions
+// Routes operations to context-specific sessions (e.g., 'listing:create' → listing session)
 export class MultiContextSession extends Ability implements Session {
 	private readonly sessions = new Map<string, Session>();
 

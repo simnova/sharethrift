@@ -27,6 +27,7 @@ const meta: Meta<typeof CreateListing> = {
 			'Vehicles & Transportation',
 		],
 		isLoading: false,
+		submissionStatus: 'idle',
 		onSubmit: () => undefined,
 		onCancel: () => undefined,
 		uploadedImages: [],

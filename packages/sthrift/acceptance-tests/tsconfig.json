@@ -3,16 +3,11 @@
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": ".",
-		"jsx": "react-jsx",
-		"erasableSyntaxOnly": false,
-		"paths": {
-			"@ui-sharethrift/*": ["../../apps/ui-sharethrift/src/*"]
-		}
+		"erasableSyntaxOnly": false
 	},
 	"include": [
 		"src/**/*",
-		"features/**/*",
-		"../../apps/ui-sharethrift/src/**/*"
+		"features/**/*"
 	],
 	"exclude": [
 		"node_modules",

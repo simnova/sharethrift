@@ -1,13 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { getSession } from '../../../../shared/abilities/session.ts';
 import { ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../../shared/support/domain-test-helpers.ts';
-import type { ListingDetails, CreateItemListingInput, ItemListingResponse } from '../../abilities/listing-types.ts';
-
-interface ListingNotes {
-	lastListingId: string;
-	lastListingTitle: string;
-	lastListingStatus: string;
-}
+import type { ListingDetails, ListingNotes, CreateItemListingInput, ItemListingResponse } from '../../abilities/listing-types.ts';
 
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
@@ -21,7 +15,7 @@ export class CreateListing extends Task {
 	async performAs(actor: Actor): Promise<void> {
 		const session = getSession(actor, 'listing');
 
-		// Convert isDraft string from feature file to boolean (isDraft: false = Active)
+		// isDraft false → draft false (Active)
 		const isDraft = !(this.details.isDraft === 'false' || this.details.isDraft === false);
 
 		const listing = await session.execute<CreateItemListingInput, ItemListingResponse>('listing:create', {
@@ -34,6 +28,38 @@ export class CreateListing extends Task {
 			images: [],
 			isDraft,
 		});
+
+		// Validate the response contains expected data
+		if (!listing.id) {
+			throw new Error('Session listing:create returned a listing without an id');
+		}
+		if (listing.title !== this.details.title) {
+			throw new Error(
+				`Session listing:create returned title "${listing.title}", expected "${this.details.title}"`,
+			);
+		}
+
+		const expectedState = isDraft ? 'Draft' : 'Active';
+		if (listing.state !== expectedState) {
+			throw new Error(
+				`Session listing:create returned state "${listing.state}", expected "${expectedState}"`,
+			);
+		}
+
+		// Re-query to verify persistence
+		const persisted = await session.execute<{ id: string }, ItemListingResponse | null>('listing:getById', {
+			id: listing.id,
+		});
+		if (!persisted) {
+			throw new Error(
+				`Listing ${listing.id} was not found on re-query — session backend did not persist the listing`,
+			);
+		}
+		if (persisted.title !== this.details.title) {
+			throw new Error(
+				`Re-queried listing title "${persisted.title}" does not match created title "${this.details.title}"`,
+			);
+		}
 
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listing.id),

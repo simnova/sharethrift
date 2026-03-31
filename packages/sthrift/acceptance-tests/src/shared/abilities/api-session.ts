@@ -11,12 +11,15 @@ interface ApiResponseData {
 export class ApiSession extends Ability implements Session {
 	private readonly operationHandlers = new Map<string, ApiOperationHandler>();
 
-	constructor(private readonly apiUrl: string) {
+	constructor(
+		private readonly apiUrl: string,
+		private readonly authToken?: string,
+	) {
 		super();
 	}
 
-	static at(apiUrl: string): ApiSession {
-		return new ApiSession(apiUrl);
+	static at(apiUrl: string, authToken?: string): ApiSession {
+		return new ApiSession(apiUrl, authToken);
 	}
 
 	registerOperation(
@@ -43,19 +46,23 @@ export class ApiSession extends Ability implements Session {
 		query: string,
 		variables: Record<string, unknown>,
 	): Promise<ApiResponseData> {
+		const headers: Record<string, string> = {
+			'Content-Type': 'application/json',
+		};
+		if (this.authToken) {
+			headers['Authorization'] = `Bearer ${this.authToken}`;
+		}
+
 		const response = await fetch(this.apiUrl, {
 			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
+			headers,
 			body: JSON.stringify({ query, variables }),
 		});
 
 		const result = (await response.json()) as ApiResponseData;
 
-		// Handle GraphQL errors (these come with 200 OK or 400 Bad Request)
+		// GraphQL errors may come with 200 OK
 		if (result.errors && Array.isArray(result.errors)) {
-			// Extract meaningful error message from GraphQL errors
 			const errorMessage = result.errors
 				.map((err: { message?: string }) => err.message ?? 'Unknown error')
 				.join('; ');

@@ -9,11 +9,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 DEFAULT_BASE_BRANCH = "origin/main"
 
-# Global tags — applied to the entire repo
+# Global tags
 GLOBAL_TAGS = ["default", "ts-conventions"]
 
-# Scoped rules — applied to specific package directories
-# Each entry maps a tag to the directory it should be applied to.
+# Scoped rules (tag → directory mapping)
 SCOPED_TAGS: list[tuple[str, str]] = [
     ("ddd-domain", "packages/sthrift/domain"),
     ("ddd-graphql", "packages/sthrift/graphql"),
@@ -21,7 +20,7 @@ SCOPED_TAGS: list[tuple[str, str]] = [
     ("react-conventions", "apps/ui-sharethrift"),
 ]
 
-# Friendly labels for each tag (used in terminal output)
+# Tag labels for terminal output
 TAG_LABELS: dict[str, str] = {
     "ddd-domain": "DDD boundaries (domain)",
     "ddd-graphql": "DDD boundaries (graphql)",
@@ -61,8 +60,8 @@ def build_base_cmd(args: argparse.Namespace) -> list[str]:
     if args.diff:
         try:
             safe_base = validate_git_ref(args.base)
-            # Safe: input validated against whitelist regex, then quoted with shlex.quote()
-            cmd.extend(["--diff", f"git diff {shlex.quote(safe_base)}"])  # noqa: S603
+            # Validated + quoted for shell safety. noqa: S603
+            cmd.extend(["--diff", f"git diff {shlex.quote(safe_base)}"])
         except ValueError as e:
             print(f"✘ {e}")
             sys.exit(1)
@@ -71,16 +70,12 @@ def build_base_cmd(args: argparse.Namespace) -> list[str]:
 
 
 def run_sourcery(cmd: list[str], label: str) -> int:
-    """Run a Sourcery command, print its label, return the exit code.
-
-    Uses list-based subprocess.run() which is safe from shell injection.
-    All user input is validated via validate_git_ref() before being included.
-    """
+    """Run Sourcery command (list-based, no shell injection)."""
     print(f"\n{'─' * 60}")
     print(f"  {label}")
     print(f"{'─' * 60}\n")
     try:
-        # Validate command list: all elements must be strings from our code or validated input
+        # Prevent command injection - validate all args are strings
         if not all(isinstance(arg, str) for arg in cmd):
             raise TypeError("All command arguments must be strings")
         proc = subprocess.run(cmd, cwd=REPO_ROOT)  # noqa: S603

@@ -198,7 +198,7 @@ pnpm run test:all         # Full test suite with coverage
 # Acceptance Tests (Serenity.js)
 pnpm run test:acceptance:domain          # Domain layer
 pnpm run test:acceptance:session:graphql  # Session integration with GraphQL
-pnpm run test:acceptance:dom:graphql     # DOM integration with GraphQL
+pnpm run test:acceptance:e2e             # Full E2E with Playwright
 pnpm run test:acceptance:all             # All acceptance tests
 
 # Quality Checks
@@ -330,20 +330,18 @@ All packages use **strict TypeScript configuration**:
    - Location: `packages/sthrift/acceptance-tests/`
    - Test levels:
      - **domain**: Direct domain layer testing
-     - **session**: In-process session management
-     - **dom**: DOM/UI integration
+     - **session**: GraphQL/MongoDB session management
+     - **e2e**: Full end-to-end with Playwright browser
    - Backends:
-     - **Domain**: Pure domain aggregates
-     - **GraphQL**: GraphQL resolver layer
-     - **MongoDB**: Full persistence stack
+     - **GraphQL**: GraphQL resolver layer (mock app services)
+     - **MongoDB**: Full persistence stack (MongoMemoryServer)
 
    Example test matrix:
    ```
-   Domain (domain) → Domain backend
-   Session + Domain (session:domain) → Domain backend
+   Domain (domain) → In-memory aggregates
    Session + GraphQL (session:graphql) → GraphQL backend
-   DOM + Domain (dom:domain) → Domain backend
-   DOM + GraphQL (dom:graphql) → GraphQL backend
+   Session + MongoDB (session:mongodb) → MongoDB backend
+   E2E (e2e) → Playwright browser → Vite UI → GraphQL → MongoDB
    ```
 
 ### Acceptance Test Pattern (Serenity.js)
@@ -453,13 +451,13 @@ Located in: `apps/docs/docs/decisions/`
 ### Running Acceptance Tests
 
 ```bash
-# All tests across all 5-tier matrix
+# All acceptance tests
 pnpm run test:acceptance:all
 
-# Specific level + backend
+# Specific level
 pnpm run test:acceptance:domain          # Pure domain
 pnpm run test:acceptance:session:graphql # Session + GraphQL
-pnpm run test:acceptance:dom:graphql     # DOM + GraphQL
+pnpm run test:acceptance:e2e             # Full E2E with Playwright
 ```
 
 ## 🎯 Key Principles

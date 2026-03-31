@@ -22,6 +22,9 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 ) => {
 	const navigate = useNavigate();
 	const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+	const [submissionStatus, setSubmissionStatus] = useState<
+		'idle' | 'success' | 'error'
+	>('idle');
 
 	// Static list of available categories for item listings
 	const categories = useMemo(
@@ -47,20 +50,6 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 	>(
 		HomeCreateListingContainerCreateItemListingDocument,
 		{
-			onCompleted: (data) => {
-				const isDraft = data.createItemListing.listing?.state === 'Draft';
-				message.success(
-					isDraft
-						? 'Listing saved as draft!'
-						: 'Listing published successfully!',
-				);
-
-				// Don't navigate automatically - let user choose from modal
-			},
-			onError: (error) => {
-				console.error('Error creating listing:', error);
-				message.error('Failed to create listing. Please try again.');
-			},
 			// Refetch listings to update the cache
 			refetchQueries: ['GetListings'],
 		},
@@ -88,9 +77,33 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 			isDraft,
 		};
 
-		await createItemListing({
-			variables: { input },
-		});
+		setSubmissionStatus('idle');
+
+		try {
+			const result = await createItemListing({
+				variables: { input },
+			});
+			const mutationResult = result.data?.createItemListing;
+			const status = mutationResult?.status;
+
+			if (!status?.success) {
+				setSubmissionStatus('error');
+				message.error(status?.errorMessage ?? 'Failed to create listing. Please try again.');
+				return;
+			}
+
+			setSubmissionStatus('success');
+			const savedAsDraft = mutationResult?.listing?.state === 'Draft';
+			message.success(
+				savedAsDraft
+					? 'Listing saved as draft!'
+					: 'Listing published successfully!',
+			);
+		} catch (error) {
+			console.error('Error creating listing:', error);
+			setSubmissionStatus('error');
+			message.error('Failed to create listing. Please try again.');
+		}
 	};
 
 	const handleCancel = () => {
@@ -121,6 +134,7 @@ export const CreateListingContainer: React.FC<CreateListingContainerProps> = (
 		<CreateListing
 			categories={categories}
 			isLoading={isCreating}
+			submissionStatus={submissionStatus}
 			onSubmit={handleSubmit}
 			onCancel={handleCancel}
 			uploadedImages={uploadedImages}
