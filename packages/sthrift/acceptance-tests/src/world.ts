@@ -28,7 +28,7 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		super(options);
 		this.tasksLevel = options.parameters?.tasks || 'domain';
 		this.sessionType = options.parameters?.session || 'graphql';
-		this.apiUrl = options.parameters?.apiUrl || 'http://localhost:4000/graphql';
+		this.apiUrl = options.parameters?.apiUrl || '';
 	}
 
 	async init(): Promise<void> {
@@ -58,8 +58,8 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		));
 	}
 
-	cleanup(): void {
-		// Don't close the shared browser session — it's reused across scenarios.
+	async cleanup(): Promise<void> {
+		// Reuse the same authenticated browser session across scenarios for the same user.
 	}
 
 	get level(): TaskLevel {

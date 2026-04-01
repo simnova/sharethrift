@@ -39,10 +39,10 @@ export class CreateListing extends Task {
 			);
 		}
 
-		const expectedState = isDraft ? 'Draft' : 'Active';
-		if (listing.state !== expectedState) {
+		const expectedState = isDraft ? 'draft' : 'active';
+		if (this.normalizeStatus(listing.state) !== expectedState) {
 			throw new Error(
-				`Session listing:create returned state "${listing.state}", expected "${expectedState}"`,
+				`Session listing:create returned state "${listing.state}", expected a normalized state of "${expectedState}"`,
 			);
 		}
 
@@ -64,7 +64,7 @@ export class CreateListing extends Task {
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listing.id),
 			notes<ListingNotes>().set('lastListingTitle', listing.title),
-			notes<ListingNotes>().set('lastListingStatus', listing.state.toLowerCase()),
+			notes<ListingNotes>().set('lastListingStatus', this.normalizeStatus(listing.state)),
 		);
 
 	}
@@ -75,6 +75,11 @@ export class CreateListing extends Task {
 
 	private calculateEndDate(): Date {
 		return new Date(Date.now() + ONE_DAY_MS * DEFAULT_SHARING_PERIOD_DAYS);
+	}
+
+	private normalizeStatus(status: ItemListingResponse['state']): string {
+		const normalized = status.toLowerCase();
+		return normalized === 'published' ? 'active' : normalized;
 	}
 
 	override toString = () => `creates listing "${this.details.title}" (session)`;

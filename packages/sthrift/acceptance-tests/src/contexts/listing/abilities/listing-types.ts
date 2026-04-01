@@ -33,7 +33,7 @@ export interface ItemListingResponse {
 	description: string;
 	category: string;
 	location: string;
-	state: 'draft' | 'published';
+	state: 'Draft' | 'Active';
 	sharingPeriodStart: Date;
 	sharingPeriodEnd: Date;
 	images: string[];

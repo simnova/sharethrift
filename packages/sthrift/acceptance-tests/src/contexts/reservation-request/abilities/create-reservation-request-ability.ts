@@ -1,6 +1,6 @@
 import { Ability } from '@serenity-js/core';
 import { Domain } from '@sthrift/domain';
-import { makeReservationRequestProps, makeListingReference, makeSharerUser, ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../shared/support/domain-test-helpers.ts';
+import { makeReservationRequestProps, makeListingReference, makeSharerUser } from '../../../shared/support/domain-test-helpers.ts';
 import { reservationRequests } from '../../../shared/support/test-data/reservation-request.test-data.ts';
 
 type Passport = Domain.Passport;

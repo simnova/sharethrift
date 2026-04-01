@@ -73,6 +73,7 @@ async function getListingIdFromOwner(ownerName: string): Promise<string> {
 Given(
 	'{word} has created a listing with:',
 	async function (this: ShareThriftWorld, actorName: string, dataTable: DataTable) {
+		lastActorName = actorName;
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
@@ -87,6 +88,7 @@ Given(
 When(
 	'{word} creates a reservation request for {word}\'s listing with:',
 	async function (this: ShareThriftWorld, reserver: string, owner: string, dataTable: DataTable) {
+		lastActorName = reserver;
 		const actor = actorCalled(reserver);
 		const data = dataTable.rowsHash();
 
@@ -110,6 +112,7 @@ When(
 When(
 	'{word} attempts to create a reservation request with:',
 	async function (this: ShareThriftWorld, actorName: string, dataTable: DataTable) {
+		lastActorName = actorName;
 		const actor = actorCalled(actorName);
 		const data = dataTable.rowsHash();
 
@@ -342,6 +345,7 @@ Then(
 Given(
 	'{word} has already created a reservation request for {word}\'s listing with:',
 	async function (this: ShareThriftWorld, reserver: string, owner: string, dataTable: DataTable) {
+		lastActorName = reserver;
 		const actor = actorCalled(reserver);
 		const data = dataTable.rowsHash();
 
@@ -365,6 +369,7 @@ Given(
 When(
 	'{word} attempts to create another reservation request for the same listing with:',
 	async function (this: ShareThriftWorld, actorName: string, dataTable: DataTable) {
+		lastActorName = actorName;
 		const actor = actorCalled(actorName);
 		const data = dataTable.rowsHash();
 

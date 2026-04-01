@@ -56,9 +56,22 @@ export class BrowseTheWeb extends Ability {
 		return this.context;
 	}
 
+	async closePageOnly(): Promise<void> {
+		if (!this.page.isClosed()) {
+			await this.page.close();
+		}
+		this.detach();
+	}
+
 	async close(): Promise<void> {
-		await this.page.close();
+		if (!this.page.isClosed()) {
+			await this.page.close();
+		}
 		await this.context.close();
+		this.detach();
+	}
+
+	private detach(): void {
 		if (this.actorName) {
 			actorBrowserMap.delete(this.actorName);
 		}

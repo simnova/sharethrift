@@ -17,7 +17,7 @@ export class CreateListing extends Task {
 		const listingPage = new ListingPage(page);
 
 		await page.goto('/create-listing', { waitUntil: 'domcontentloaded' });
-		await page.waitForURL('**/create-listing', { timeout: 15_000 });
+		await page.waitForURL('**/create-listing', { timeout: 15_000, waitUntil: 'commit' });
 		await this.ensureCreateListingFormReady(page, listingPage);
 
 		if (this.details.title) {
@@ -176,9 +176,16 @@ export class CreateListing extends Task {
 		try {
 			await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
 		} catch {
-			await page.reload({ waitUntil: 'domcontentloaded' });
-			await page.waitForURL('**/create-listing', { timeout: 15_000 });
-			await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
+			await page.goto('/', { waitUntil: 'domcontentloaded' });
+			await page.waitForLoadState('networkidle').catch(() => undefined);
+			await listingPage.homeCreateListingButton.waitFor({ state: 'visible', timeout: 15_000 });
+			await listingPage.homeCreateListingButton.click();
+			await page.waitForURL('**/create-listing', { timeout: 15_000, waitUntil: 'commit' });
+			try {
+				await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
+			} catch {
+				throw new Error(`Create listing form did not render. Current URL: ${page.url()}`);
+			}
 		}
 
 		await page.waitForLoadState('networkidle').catch(() => {

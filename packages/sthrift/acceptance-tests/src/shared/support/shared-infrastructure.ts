@@ -1,4 +1,4 @@
-import { chromium, type Browser } from '@playwright/test';
+import { chromium, type Browser, type BrowserContext } from '@playwright/test';
 import { BrowseTheWeb } from '../abilities/browse-the-web.ts';
 import { GraphQLTestServer, MongoDBTestServer, TestOAuth2Server, TestViteServer, TestApiServer, initTestEnvironment, cleanupTestEnvironment, setMongoConnectionString } from './servers/index.ts';
 import { createTestApplicationServicesFactory, createRealApplicationServicesFactory } from './application-services/index.ts';
@@ -10,6 +10,8 @@ import type { SessionType } from '../../world.ts';
 const isDeployedE2E = process.env['E2E_DEPLOYED'] === 'true';
 const deployedApiUrl = process.env['E2E_API_URL'];
 const deployedUiUrl = process.env['E2E_UI_URL'];
+const deployedIgnoreHttpsErrors = process.env['E2E_IGNORE_HTTPS_ERRORS'] === 'true';
+const skipDeployedUiLogin = process.env['E2E_SKIP_UI_LOGIN'] === 'true';
 
 // Shared infrastructure — persists across scenarios within a single test run
 let mongoDBServer: MongoDBTestServer | undefined;
@@ -22,6 +24,7 @@ let apiUrl: string | undefined;
 let accessToken: string | undefined;
 let browser: Browser | undefined;
 let browserBaseUrl: string | undefined;
+let authenticatedBrowserContext: BrowserContext | undefined;
 let browseTheWeb: BrowseTheWeb | undefined;
 
 export interface InfrastructureState {
@@ -34,8 +37,19 @@ export function getState(): InfrastructureState {
 	return { apiUrl, accessToken, browseTheWeb };
 }
 
+export async function cleanupScenario(): Promise<void> {
+	// Reuse the same authenticated page for a user across scenarios.
+	// We only tear it down at the end of the run.
+}
+
 export async function stopAll(): Promise<void> {
-	if (browseTheWeb) { await browseTheWeb.close(); browseTheWeb = undefined; }
+	if (browseTheWeb) {
+		await browseTheWeb.close();
+		browseTheWeb = undefined;
+	} else if (authenticatedBrowserContext) {
+		await authenticatedBrowserContext.close();
+	}
+	authenticatedBrowserContext = undefined;
 	if (browser) { await browser.close(); browser = undefined; }
 	if (viteServer) { await viteServer.stop(); viteServer = undefined; }
 	if (apiServer) { await apiServer.stop(); apiServer = undefined; }
@@ -139,18 +153,14 @@ async function initLocalE2E(): Promise<void> {
 	}
 
 	if (!browser) {
-		browser = await chromium.launch({ headless: false });
+		browser = await chromium.launch({ headless: true });
 	}
 
-	if (!browseTheWeb && browser && browserBaseUrl) {
-		const context = await browser.newContext({
-			baseURL: browserBaseUrl,
-			ignoreHTTPSErrors: true,
-		});
-		const page = await context.newPage();
-		await performOAuth2Login(page);
-		browseTheWeb = BrowseTheWeb.using(page, context);
-	}
+	await ensureAuthenticatedBrowserContext({
+		baseURL: browserBaseUrl,
+		ignoreHTTPSErrors: true,
+		performLogin: true,
+	});
 }
 
 async function initDeployedE2E(): Promise<void> {
@@ -163,5 +173,41 @@ async function initDeployedE2E(): Promise<void> {
 
 	if (!browser) {
 		browser = await chromium.launch({ headless: true, args: ['--headless=new'] });
+	}
+
+	await ensureAuthenticatedBrowserContext({
+		baseURL: browserBaseUrl,
+		ignoreHTTPSErrors: deployedIgnoreHttpsErrors,
+		performLogin: !skipDeployedUiLogin,
+	});
+}
+
+async function ensureAuthenticatedBrowserContext(options: {
+	baseURL?: string;
+	ignoreHTTPSErrors: boolean;
+	performLogin: boolean;
+}): Promise<void> {
+	if (browseTheWeb || !browser || !options.baseURL) {
+		return;
+	}
+
+	if (!authenticatedBrowserContext) {
+		authenticatedBrowserContext = await browser.newContext({
+			baseURL: options.baseURL,
+			ignoreHTTPSErrors: options.ignoreHTTPSErrors,
+		});
+	}
+
+	const seedPage = await authenticatedBrowserContext.newPage();
+
+	try {
+		if (options.performLogin) {
+			await performOAuth2Login(seedPage);
+		}
+		browseTheWeb = BrowseTheWeb.using(seedPage, authenticatedBrowserContext);
+	} catch (error) {
+		await authenticatedBrowserContext.close().catch(() => undefined);
+		authenticatedBrowserContext = undefined;
+		throw error;
 	}
 }

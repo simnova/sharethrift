@@ -17,6 +17,7 @@ export class ListingPage {
 	get locationInput() { return this.page.getByPlaceholder('Enter location'); }
 	get categorySelect() { return this.page.getByRole('combobox').first(); }
 	categoryOption(name: string) { return this.page.getByTitle(name, { exact: true }); }
+	get homeCreateListingButton() { return this.page.getByRole('button', { name: /Create a Listing/i }).first(); }
 	get saveDraftButton() { return this.page.getByRole('button', { name: /Save as Draft/i }); }
 	get publishButton() { return this.page.getByRole('button', { name: /Publish Listing/i }); }
 	get firstValidationError() { return this.page.locator('.ant-form-item-explain-error').first(); }
