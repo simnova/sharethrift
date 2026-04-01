@@ -2,6 +2,7 @@ packages:
   - "apps/*"
   - "packages/cellix/*"
   - "packages/sthrift/*"
+  - "packages/sthrift-verification/*"
 
 catalog:
   '@azure/functions': 4.8.0
