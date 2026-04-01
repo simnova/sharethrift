@@ -84,6 +84,18 @@ ignore:
         expires: '2026-09-12T00:00:00.000Z'
         created: '2026-03-12T00:00:00.000Z'
 
+  'SNYK-JS-LODASH-15869619':
+    - '* > lodash@4.17.23':
+        reason: 'No fixed version is available for lodash. The remaining occurrences are in Docusaurus, CyberSource/node-jose, and a UI import that only uses lodash/merge; the vulnerable omit, unset, and template APIs are not used in this repo.'
+        expires: '2026-07-01T00:00:00.000Z'
+        created: '2026-04-01T00:00:00.000Z'
+
+  'SNYK-JS-LODASH-15869625':
+    - '* > lodash@4.17.23':
+        reason: 'No fixed version is available for lodash. The remaining occurrences are in Docusaurus, CyberSource/node-jose, and a UI import that only uses lodash/merge; the vulnerable omit, unset, and template APIs are not used in this repo.'
+        expires: '2026-07-01T00:00:00.000Z'
+        created: '2026-04-01T00:00:00.000Z'
+
 # Snyk Code exclusions for local development tooling
 exclude:
   code:
