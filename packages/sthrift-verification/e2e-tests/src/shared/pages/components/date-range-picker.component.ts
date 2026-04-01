@@ -24,27 +24,37 @@ export class DateRangePicker {
 		);
 	}
 
+	private async waitForCalendarCell(dateStr: string) {
+		const cell = this.calendarCell(dateStr);
+
+		try {
+			await cell.waitFor({ state: 'visible', timeout: 3_000 });
+		} catch {
+			throw new Error(
+				`Expected calendar cell for "${dateStr}" to be visible before selecting the date range.`,
+			);
+		}
+
+		return cell;
+	}
+
 	async selectDateRange(startDate: Date, endDate: Date): Promise<void> {
 		await this.rangePicker.click();
 
 		const startStr = formatDate(startDate);
 		const endStr = formatDate(endDate);
 
-		const startCell = this.calendarCell(startStr);
-		await startCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => { /* cell not available */ });
-		if (await startCell.isVisible()) {
-			await startCell.click();
-		}
+		const startCell = await this.waitForCalendarCell(startStr);
+		await startCell.click();
 
 		let endCell = this.calendarCell(endStr);
 		if (!(await endCell.isVisible({ timeout: 1_000 }).catch(() => false))) {
 			await this.nextMonthButton.click();
-			endCell = this.calendarCell(endStr);
+			endCell = await this.waitForCalendarCell(endStr);
+		} else {
+			endCell = await this.waitForCalendarCell(endStr);
 		}
-		await endCell.waitFor({ state: 'visible', timeout: 3_000 }).catch(() => { /* cell not available */ });
-		if (await endCell.isVisible()) {
-			await endCell.click();
-		}
+		await endCell.click();
 	}
 }
 
