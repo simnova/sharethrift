@@ -1,0 +1,35 @@
+{
+	"name": "@sthrift-verification/e2e-tests",
+	"version": "1.0.0",
+	"description": "Cucumber Screenplay E2E tests for ShareThrift (Playwright browser tests)",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test:e2e": "NODE_EXTRA_CA_CERTS=$HOME/.portless/ca.pem LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' cucumber-js --format json:./reports/cucumber-report-e2e.json",
+		"playwright:install": "playwright install chromium",
+		"clean": "rimraf dist reports target"
+	},
+	"dependencies": {
+		"@cucumber/cucumber": "^12.7.0",
+		"@serenity-js/assertions": "^3.37.2",
+		"@serenity-js/console-reporter": "^3.37.2",
+		"@serenity-js/core": "^3.37.2",
+		"@serenity-js/cucumber": "^3.37.2",
+		"@serenity-js/serenity-bdd": "^3.37.2",
+		"std-env": "^4.0.0"
+	},
+	"devDependencies": {
+		"@cellix/service-mongoose": "workspace:*",
+		"@cellix/typescript-config": "workspace:*",
+		"@cucumber/messages": "^32.2.0",
+		"@playwright/test": "^1.52.0",
+		"@sthrift/application-services": "workspace:*",
+		"@sthrift/domain": "workspace:*",
+		"@types/node": "^24.6.1",
+		"mongodb": "^6.15.0",
+		"mongodb-memory-server": "^10.2.0",
+		"rimraf": "^6.0.1",
+		"tsx": "^4.20.3",
+		"typescript": "^5.4.5"
+	}
+}

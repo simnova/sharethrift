@@ -1,0 +1,20 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"test:e2e": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "cucumber.js"],
+			"outputs": ["reports/**"]
+		},
+		"test:e2e:deployed": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "cucumber.js"],
+			"outputs": ["reports/**"]
+		},
+		"test:all": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "cucumber.js"],
+			"outputs": ["reports/**"]
+		}
+	}
+}
