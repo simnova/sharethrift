@@ -13,7 +13,6 @@ const skipDeployedUiLogin = process.env['E2E_SKIP_UI_LOGIN'] === 'true';
 
 // Shared infrastructure — persists across scenarios within a single test run
 let mongoDBServer: MongoDBTestServer | undefined;
-let mongoSeeded = false;
 let oauth2Server: TestOAuth2Server | undefined;
 let apiServer: TestApiServer | undefined;
 let viteServer: TestViteServer | undefined;
@@ -50,7 +49,6 @@ export async function stopAll(): Promise<void> {
 	apiUrl = undefined;
 	browserBaseUrl = undefined;
 	accessToken = undefined;
-	mongoSeeded = false;
 	cleanupTestEnvironment();
 }
 
@@ -69,7 +67,6 @@ async function initLocalE2E(): Promise<void> {
 		mongoDBServer = new MongoDBTestServer();
 		await mongoDBServer.start();
 		setMongoConnectionString(mongoDBServer.getConnectionString());
-		mongoSeeded = true;
 	}
 
 	if (!oauth2Server) {
