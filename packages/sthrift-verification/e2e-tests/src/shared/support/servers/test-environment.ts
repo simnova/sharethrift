@@ -1,40 +1,23 @@
 import { execFileSync } from 'node:child_process';
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
-import { homedir } from 'node:os';
 import { getPortlessPath } from './resolve-portless.ts';
 
-let proxyPort: number | undefined;
+let proxyInitialized = false;
 let mongoConnectionString: string | undefined;
 
-// Use the global portless proxy — same as `pnpm run dev`.
-// The CA is trusted via `portless trust` (system keychain for browsers)
-// and NODE_EXTRA_CA_CERTS (set in the test:e2e npm script for Node.js).
-const globalStateDir = join(homedir(), '.portless');
-
 export function initTestEnvironment() {
-	if (proxyPort) return;
+	if (proxyInitialized) return;
 
-	// Ensure the global portless proxy is running with HTTPS
-	execFileSync(getPortlessPath(), ['proxy', 'start', '--https'], {
+	// Ensure the global portless proxy is running (HTTPS on port 443 by default)
+	execFileSync(getPortlessPath(), ['proxy', 'start'], {
 		timeout: 15_000,
 		stdio: 'pipe',
 	});
 
-	try {
-		proxyPort = Number.parseInt(readFileSync(join(globalStateDir, 'proxy.port'), 'utf-8').trim(), 10);
-	} catch {
-		proxyPort = 1355;
-	}
-}
-
-export function getProxyPort(): number {
-	if (!proxyPort) throw new Error('Test environment not initialized. Call initTestEnvironment() first.');
-	return proxyPort;
+	proxyInitialized = true;
 }
 
 export function buildUrl(hostname: string, path = ''): string {
-	return `https://${hostname}:${getProxyPort()}${path}`;
+	return `https://${hostname}${path}`;
 }
 
 export function setMongoConnectionString(connStr: string): void {
@@ -48,6 +31,6 @@ export function getMongoConnectionString(): string {
 
 export function cleanupTestEnvironment(): void {
 	// Don't stop the global portless proxy — it's shared with `pnpm run dev`
-	proxyPort = undefined;
+	proxyInitialized = false;
 	mongoConnectionString = undefined;
 }

@@ -114,6 +114,9 @@ importers:
       knip:
         specifier: ^5.61.1
         version: 5.88.1(@types/node@24.12.0)(typescript@5.8.3)
+      portless:
+        specifier: 0.9.1
+        version: 0.9.1
       rimraf:
         specifier: ^6.0.1
         version: 6.1.3
@@ -9782,6 +9785,12 @@ packages:
   pngjs@7.0.0:
     resolution: {integrity: sha512-LKWqWJRhstyYo9pGvgor/ivk2w94eSjE3RGVuzLGlr3NmD8bf7RcYGze1mNdEHRP6TRP6rMuDHk5t44hnTRyow==}
     engines: {node: '>=14.19.0'}
+
+  portless@0.9.1:
+    resolution: {integrity: sha512-wrRtHnzsco4yvfUYLXco6G0DclUtBuHea2vD8pW8DZlSAdEavOX/mXgvSAJjhwVBvUlGoj+Z7T6rAuWl5egb1w==}
+    engines: {node: '>=20'}
+    os: [darwin, linux, win32]
+    hasBin: true
 
   posix-character-classes@0.1.1:
     resolution: {integrity: sha512-xTgYBc3fuo7Yt7JbiuFxSYGToMoz8fLoE6TC9Wx1P/u+LfeThMOAqmuyECnlBaaJb+u1m9hHiXUEtwW4OzfUJg==}
@@ -22911,6 +22920,8 @@ snapshots:
       fsevents: 2.3.2
 
   pngjs@7.0.0: {}
+
+  portless@0.9.1: {}
 
   posix-character-classes@0.1.1: {}
 

@@ -15,14 +15,14 @@ setupEnvironment();
 // biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 const port = Number(process.env['PORT'] ?? 4000);
 
-const BASE_URL = process.env['BASE_URL'] ?? 'https://mock-auth.sharethrift.localhost:1355';
+const BASE_URL = process.env['BASE_URL'] ?? 'https://mock-auth.sharethrift.localhost';
 
 // Extract host from BASE_URL
 const baseUrlHost = new URL(BASE_URL).hostname;
 
-// Derive the UI base URL from the proxy port so redirect URIs adapt to dynamic ports
-const baseUrlPort = new URL(BASE_URL).port || '1355';
-const uiBaseUrl = `https://sharethrift.localhost:${baseUrlPort}`;
+// Derive the UI base URL from the proxy origin so redirect URIs adapt automatically
+const baseUrlOrigin = new URL(BASE_URL);
+const uiBaseUrl = `${baseUrlOrigin.protocol}//sharethrift.localhost${baseUrlOrigin.port ? `:${baseUrlOrigin.port}` : ''}`;
 
 const allowedRedirectUris = new Set([
 	'http://localhost:3000/auth-redirect-user',

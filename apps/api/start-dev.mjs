@@ -1,15 +1,14 @@
 import { spawn } from 'node:child_process';
 
-const envPort = process.env.PORT;
+const port = process.env.PORT;
 
-if (!envPort) {
+if (!port) {
 	console.error(
-		'PORT environment variable is not set. Ensure portless (or your dev environment) is running and has injected a port.',
+		'PORT environment variable is not set. Ensure portless (or your dev environment) is running.',
 	);
 	process.exit(1);
 }
 
-const port = envPort;
 const child = spawn('func', ['start', '--typescript', '--port', port], { stdio: 'inherit' });
 child.on('exit', (code, signal) => {
 	process.exitCode = signal ? 1 : (code ?? 1);
