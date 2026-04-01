@@ -1,5 +1,5 @@
 import { type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
-import { BrowseTheWeb } from '../abilities/browse-the-web.ts';
+import type { BrowseTheWeb } from '../abilities/browse-the-web.ts';
 
 export class ShareThriftCast implements Cast {
 	constructor(

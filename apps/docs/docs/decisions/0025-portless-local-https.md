@@ -41,7 +41,7 @@ The original solution used `mkcert` to generate a wildcard certificate stored in
 
 **Negative**
 
-- Requires a one-time global install: `pnpm install -g portless`
+- Installed as a root workspace `devDependency` — no global install required
 - `func start` and Docusaurus do not respect the `PORT` environment variable injected by portless; thin `start-dev.mjs` wrapper scripts are required to read `process.env.PORT` and pass `--port` explicitly
 - On macOS, bare `localhost` resolves to `::1` (IPv6), but portless connects via `127.0.0.1` (IPv4); Docusaurus must be started with `--host 127.0.0.1` to avoid a Bad Gateway error
 - `portless proxy start --https` silently no-ops if the proxy is already running in HTTP mode; a `dev-cleanup.mjs` script is needed to run `portless proxy stop` and kill zombie processes before each dev session
@@ -65,11 +65,13 @@ The original solution used `mkcert` to generate a wildcard certificate stored in
 
 Chosen option: **portless**
 
-`portless` eliminates the entire certificate lifecycle (generation, installation, `.gitignore` entries, CI detection guards) and replaces the custom `local-https-proxy.js` with a zero-config daemon. All services become reachable via `https://<name>.sharethrift.localhost:1355`, a single consistent pattern. The old multi-port layout is replaced by one port and named subdomains that will remain standard throughout the developer lifecycle.
+`portless` eliminates the entire certificate lifecycle (generation, installation, `.gitignore` entries, CI detection guards) and replaces the custom `local-https-proxy.js` with a zero-config daemon. All services become reachable via `https://<name>.sharethrift.localhost`, a single consistent pattern. The old multi-port layout is replaced by named subdomains that will remain standard throughout the developer lifecycle.
+
+As of portless 0.9.x, HTTPS on port 443 is the default (auto-elevates with `sudo`), `--port` and `--host` are auto-injected for Vite/Storybook/Astro, and the state directory moved to `/tmp/portless/`.
 
 ## More Information
 
 - [portless on npm](https://www.npmjs.com/package/portless)
 - [portless docs](https://port1355.dev/)
 - [mkcert repo](https://github.com/FiloSottile/mkcert)
-- `apps/api/start-dev.mjs`, `apps/docs/start-dev.mjs` — wrapper scripts that pass `PORT` to tools that require an explicit `--port` flag
+- `apps/docs/start-dev.mjs` — wrapper script that reads `HOST` from the environment (injected by portless)
