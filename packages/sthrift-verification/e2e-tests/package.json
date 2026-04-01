@@ -6,8 +6,6 @@
 	"type": "module",
 	"scripts": {
 		"test:e2e": "NODE_EXTRA_CA_CERTS=$HOME/.portless/ca.pem LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' cucumber-js --format json:./reports/cucumber-report-e2e.json",
-		"test:e2e:deployed": "E2E_DEPLOYED=true LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' cucumber-js --format json:./reports/cucumber-report-e2e-deployed.json",
-		"test:all": "pnpm run test:e2e",
 		"playwright:install": "playwright install chromium",
 		"clean": "rimraf dist reports target"
 	},
