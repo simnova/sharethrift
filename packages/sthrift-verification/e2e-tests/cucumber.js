@@ -8,7 +8,7 @@ export default {
 	paths: ['src/contexts/**/features/**/*.feature'],
 	import: [
 		'src/world.ts',
-		'src/step-definitions/**/*.ts',
+		'src/contexts/**/step-definitions/**/*.steps.ts',
 		'src/shared/support/**/*.ts',
 	],
 	format: [

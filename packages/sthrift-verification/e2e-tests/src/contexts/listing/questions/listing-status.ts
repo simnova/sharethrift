@@ -1,6 +1,5 @@
 import { Question, type Actor, type AnswersQuestions, type UsesAbilities, notes } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
-import { getSession } from '../../../shared/abilities/session.ts';
 import { ListingPage } from '../../../shared/pages/listing.page.ts';
 
 export class ListingStatus extends Question<Promise<string>> {
@@ -22,16 +21,10 @@ export class ListingStatus extends Question<Promise<string>> {
 
 	private async resolveStatus(actor: AnswersQuestions & UsesAbilities): Promise<string> {
 		const listingTitle = await this.readNote(actor, 'lastListingTitle');
-		const listingId = await this.readNote(actor, 'lastListingId');
 
 		const pageStatus = await this.readStatusFromPage(actor, listingTitle);
 		if (pageStatus) {
 			return this.normalizeStatus(pageStatus);
-		}
-
-		const sessionStatus = await this.readStatusFromSession(actor, listingId);
-		if (sessionStatus) {
-			return this.normalizeStatus(sessionStatus);
 		}
 
 		const notedStatus = await this.readNote(actor, 'lastListingStatus');
@@ -55,20 +48,6 @@ export class ListingStatus extends Question<Promise<string>> {
 			const statusTag = listingPage.statusTagInRow(listingTitle);
 			await statusTag.waitFor({ state: 'visible', timeout: 3_000 });
 			return (await statusTag.textContent())?.trim() || undefined;
-		} catch {
-			return undefined;
-		}
-	}
-
-	private async readStatusFromSession(actor: AnswersQuestions & UsesAbilities, listingId?: string): Promise<string | undefined> {
-		if (!listingId) {
-			return undefined;
-		}
-
-		try {
-			const session = getSession(actor as unknown as Actor, 'listing');
-			const listing = await session.execute<{ id: string }, { state?: string } | null>('listing:getById', { id: listingId });
-			return listing?.state ? String(listing.state) : undefined;
 		} catch {
 			return undefined;
 		}

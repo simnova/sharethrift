@@ -2,25 +2,14 @@ import { Given, When, Then, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
 import { Ensure, equals } from '@serenity-js/assertions';
 import type { ShareThriftWorld } from '../../../world.ts';
-import { resolveActorName } from '../../../shared/support/domain-test-helpers.ts';
-import type { ListingDetails } from '../tasks/e2e/create-listing.ts';
-import type { ListingNotes } from '../abilities/listing-types.ts';
-import { CreateListing as E2eCreateListing } from '../tasks/e2e/create-listing.ts';
-import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.ts';
+import { resolveActorName } from '../../../shared/support/test-helpers.ts';
+import type { ListingDetails, ListingNotes } from '../types.ts';
+import { CreateListing } from '../tasks/create-listing.ts';
 import { ListingStatus } from '../questions/listing-status.ts';
 import { ListingTitle } from '../questions/listing-title.ts';
 import { FormValidationError } from '../questions/form-validation-error.ts';
 
 let lastActorName = 'Alice';
-
-function getCreateListingTask(level: string) {
-	switch (level) {
-		case 'session':
-			return SessionCreateListing;
-		default:
-			return E2eCreateListing;
-	}
-}
 
 Given(
 	'{word} is an authenticated user',
@@ -34,8 +23,6 @@ Given(
 	'{word} has created a draft listing titled {string}',
 	async function (this: ShareThriftWorld, actorName: string, title: string) {
 		const actor = actorCalled(actorName);
-
-		const CreateListing = getCreateListingTask(this.setupLevel);
 
 		await actor.attemptsTo(
 			CreateListing.with({
@@ -55,8 +42,6 @@ When(
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
 
-		const CreateListing = getCreateListingTask(this.level);
-
 		await actor.attemptsTo(CreateListing.with(details as unknown as ListingDetails));
 	},
 );
@@ -67,8 +52,6 @@ When(
 		lastActorName = actorName;
 		const actor = actorCalled(actorName);
 		const details = dataTable.rowsHash();
-
-		const CreateListing = getCreateListingTask(this.level);
 
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', undefined as unknown as string),

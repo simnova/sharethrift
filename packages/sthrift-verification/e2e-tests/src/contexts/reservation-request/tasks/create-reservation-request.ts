@@ -1,8 +1,8 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
-import { BrowseTheWeb } from '../../../../shared/abilities/browse-the-web.ts';
-import type { CreateReservationRequestInput, ReservationRequestNotes } from '../../abilities/reservation-request-types.ts';
-import { ReservationPage } from '../../../../shared/pages/reservation.page.ts';
-import { formatDate } from '../../../../shared/pages/components/date-range-picker.component.ts';
+import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
+import type { CreateReservationRequestInput, ReservationRequestNotes } from '../types.ts';
+import { ReservationPage } from '../../../shared/pages/reservation.page.ts';
+import { formatDate } from '../../../shared/pages/components/date-range-picker.component.ts';
 
 export class CreateReservationRequest extends Task {
 	static with(input: CreateReservationRequestInput) {

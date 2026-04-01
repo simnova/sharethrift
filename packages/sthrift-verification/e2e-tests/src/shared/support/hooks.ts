@@ -7,30 +7,17 @@ import fs from 'node:fs';
 import { type ShareThriftWorld, stopSharedServers } from '../../world.ts';
 import { BrowseTheWeb } from '../abilities/browse-the-web.ts';
 
-let lastTestConfig: string | undefined;
 
 setDefaultTimeout(120_000);
 
-Before(async function (this: IWorld<{ tasks?: string }>) {
-	const world = this as IWorld<{ tasks?: string }> & ShareThriftWorld;
-
-	const testConfig = 'e2e:browser';
-
-	if (lastTestConfig !== testConfig) {
-		lastTestConfig = testConfig;
-
-		if (!isAgent) {
-			console.log('\n🌐 E2E tests with BROWSER backend');
-			console.log('  • Listing Context');
-			console.log('  • Reservation Request Context\n');
-		}
-	}
+Before(async function (this: IWorld) {
+	const world = this as IWorld & ShareThriftWorld;
 
 	await world.init();
 });
 
-After(async function (this: IWorld<{ tasks?: string }>, { result, pickle }: ITestCaseHookParameter) {
-	const world = this as IWorld<{ tasks?: string }> & ShareThriftWorld;
+After(async function (this: IWorld, { result, pickle }: ITestCaseHookParameter) {
+	const world = this as IWorld & ShareThriftWorld;
 
 	// Capture screenshot on failure for E2E tests
 	if (result?.status === Status.FAILED) {

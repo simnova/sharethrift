@@ -1,7 +1,16 @@
-import { Task, type Actor, notes } from '@serenity-js/core';
-import { BrowseTheWeb } from '../../../../shared/abilities/browse-the-web.ts';
-import type { ListingDetails, ListingNotes } from '../../abilities/listing-types.ts';
-import { ListingPage } from '../../../../shared/pages/listing.page.ts';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import { type Actor, Task, notes } from '@serenity-js/core';
+
+import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
+import { ListingPage } from '../../../shared/pages/listing.page.ts';
+import type { ListingDetails, ListingNotes } from '../types.ts';
+
+const TEST_IMAGE_PATH = path.resolve(
+	path.dirname(fileURLToPath(import.meta.url)),
+	'../../../shared/fixtures/test-image.png',
+);
 
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
@@ -53,6 +62,13 @@ export class CreateListing extends Task {
 
 		const isDraft = !(this.details.isDraft === 'false' || this.details.isDraft === false);
 
+		// Upload a test image when publishing (required for non-draft listings)
+		if (!isDraft) {
+			await listingPage.imageUploadInput.setInputFiles(TEST_IMAGE_PATH);
+			// Wait for the image preview to render
+			await page.locator('img[src^="data:image"]').first().waitFor({ state: 'visible', timeout: 5_000 });
+		}
+
 		const hasMissingRequired = !this.details.title;
 
 		if (hasMissingRequired) {
@@ -72,8 +88,8 @@ export class CreateListing extends Task {
 		// Click the appropriate submit button
 		const submitButton = isDraft ? listingPage.saveDraftButton : listingPage.publishButton;
 
-		// Listen for server-side validation errors in the GraphQL response
-		const getServerError = await listingPage.listenForMutationError('createItemListing');
+		// Intercept the GraphQL mutation response to capture listing ID and errors
+		const getMutationResult = await listingPage.listenForMutationResponse('createItemListing');
 
 		await submitButton.click();
 
@@ -104,13 +120,13 @@ export class CreateListing extends Task {
 		).then((handle) => handle.jsonValue() as Promise<{ kind: 'success' } | { kind: 'error'; message: string }>);
 
 		// Check for server-side errors
-		const serverError = getServerError();
+		const mutationResult = getMutationResult();
 		if (submissionOutcome.kind === 'error') {
 			throw new Error(submissionOutcome.message);
 		}
 
-		if (serverError) {
-			throw new Error(serverError);
+		if (mutationResult.error) {
+			throw new Error(mutationResult.error);
 		}
 
 		await listingPage.modal.waitFor({ state: 'visible', timeout: 5_000 });
@@ -153,17 +169,9 @@ export class CreateListing extends Task {
 			);
 		}
 
-		// Extract listing ID from the row link
-		const listingLink = listingPage.listingLinkInRow(this.details.title);
-		let listingId = 'e2e-unknown';
-		const hasLink = await listingLink.isVisible({ timeout: 2_000 }).catch(() => false);
-		if (hasLink) {
-			const href = await listingLink.getAttribute('href');
-			const match = href?.match(/\/listing\/([^/]+)/);
-			if (match?.[1]) {
-				listingId = match[1];
-			}
-		}
+		// Extract listing ID from the GraphQL mutation response
+		const listing = mutationResult.data?.listing as Record<string, unknown> | undefined;
+		const listingId = String(listing?.id ?? 'e2e-unknown');
 
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listingId),

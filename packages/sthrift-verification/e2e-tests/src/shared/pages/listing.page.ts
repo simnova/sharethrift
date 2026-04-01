@@ -17,6 +17,7 @@ export class ListingPage {
 	get locationInput() { return this.page.getByPlaceholder('Enter location'); }
 	get categorySelect() { return this.page.getByRole('combobox').first(); }
 	categoryOption(name: string) { return this.page.getByTitle(name, { exact: true }); }
+	get imageUploadInput() { return this.page.locator('input[type="file"][accept="image/*"]').first(); }
 	get homeCreateListingButton() { return this.page.getByRole('button', { name: /Create a Listing/i }).first(); }
 	get saveDraftButton() { return this.page.getByRole('button', { name: /Save as Draft/i }); }
 	get publishButton() { return this.page.getByRole('button', { name: /Publish Listing/i }); }
@@ -41,16 +42,13 @@ export class ListingPage {
 		return this.listingRowByTitle(title).locator('.ant-tag').first();
 	}
 
-	listingLinkInRow(title: string) {
-		return this.listingRowByTitle(title).locator('a[href*="/listing/"]').first();
-	}
-
 	// --- Loading indicator ---
 	get loadingButton() { return this.page.locator('.ant-btn-loading').first(); }
 
-	// --- Helper to detect server-side mutation errors in network traffic ---
-	listenForMutationError(mutationName: string): Promise<() => string | undefined> {
+	// --- Helper to intercept a GraphQL mutation response ---
+	listenForMutationResponse(mutationName: string): Promise<() => { error?: string; data?: Record<string, unknown> }> {
 		let serverError: string | undefined;
+		let mutationData: Record<string, unknown> | undefined;
 
 		const listener = async (resp: import('@playwright/test').Response) => {
 			if (resp.request().method() !== 'POST') return;
@@ -61,8 +59,11 @@ export class ListingPage {
 				const entries = Array.isArray(json) ? json : [json];
 				for (const entry of entries) {
 					const result = entry?.data?.[mutationName];
-					if (result?.status?.success === false) {
-						serverError = result.status.errorMessage ?? `${mutationName} failed`;
+					if (result) {
+						mutationData = result as Record<string, unknown>;
+						if (result?.status?.success === false) {
+							serverError = result.status.errorMessage ?? `${mutationName} failed`;
+						}
 					}
 				}
 			} catch { /* non-JSON response */ }
@@ -71,7 +72,7 @@ export class ListingPage {
 		this.page.on('response', listener);
 		return Promise.resolve(() => {
 			this.page.off('response', listener);
-			return serverError;
+			return { error: serverError, data: mutationData };
 		});
 	}
 }

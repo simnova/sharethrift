@@ -6,25 +6,12 @@ import { clearMockListings } from './shared/support/test-data/listing.test-data.
 import { clearMockReservationRequests } from './shared/support/test-data/reservation-request.test-data.ts';
 import * as infra from './shared/support/shared-infrastructure.ts';
 
-export type TaskLevel = 'e2e' | 'session';
-export type SessionType = 'graphql' | 'mongodb';
-
-export interface WorldParameters {
-	tasks: 'e2e';
-	apiUrl?: string;
-}
-
 export async function stopSharedServers(): Promise<void> {
 	await infra.stopAll();
 }
 
-export class ShareThriftWorld extends World<WorldParameters> {
-	private apiUrl: string;
-
-	constructor(options: IWorldOptions<WorldParameters>) {
-		super(options);
-		this.apiUrl = options.parameters?.apiUrl || '';
-	}
+export class ShareThriftWorld extends World {
+	private apiUrl = '';
 
 	async init(): Promise<void> {
 		await infra.ensureE2EServers();
@@ -47,14 +34,6 @@ export class ShareThriftWorld extends World<WorldParameters> {
 
 	async cleanup(): Promise<void> {
 		// Reuse the same authenticated browser session across scenarios for the same user.
-	}
-
-	get level(): TaskLevel {
-		return 'e2e';
-	}
-
-	get setupLevel(): TaskLevel {
-		return 'session';
 	}
 }
 
