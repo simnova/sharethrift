@@ -1,6 +1,18 @@
-import { Question, type Actor, type AnswersQuestions, type UsesAbilities, notes } from '@serenity-js/core';
-import { getSession } from '../../../shared/abilities/session.ts';
+import {
+	type Actor,
+	type AnswersQuestions,
+	notes,
+	Question,
+	type UsesAbilities,
+} from '@serenity-js/core';
+import { GraphQLClient } from '../../../shared/abilities/graphql-client.ts';
 import { CreateListingAbility } from '../abilities/create-listing-ability.ts';
+
+const GET_LISTING_QUERY = `
+	query GetListing($id: ObjectID!) {
+		itemListing(id: $id) { id title }
+	}
+`;
 
 export class ListingTitle extends Question<Promise<string>> {
 	constructor() {
@@ -11,19 +23,23 @@ export class ListingTitle extends Question<Promise<string>> {
 		return new ListingTitle();
 	}
 
-	override answeredBy(actor: AnswersQuestions & UsesAbilities): Promise<string> {
+	override answeredBy(
+		actor: AnswersQuestions & UsesAbilities,
+	): Promise<string> {
 		return this.resolveTitle(actor);
 	}
 
 	override toString = () => 'listing title';
 
-	private async resolveTitle(actor: AnswersQuestions & UsesAbilities): Promise<string> {
+	private async resolveTitle(
+		actor: AnswersQuestions & UsesAbilities,
+	): Promise<string> {
 		const notedTitle = await this.readNote(actor, 'lastListingTitle');
 		const listingId = await this.readNote(actor, 'lastListingId');
 
-		const sessionTitle = await this.readTitleFromSession(actor, listingId);
-		if (sessionTitle) {
-			return sessionTitle;
+		const apiTitle = await this.readTitleFromApi(actor, listingId);
+		if (apiTitle) {
+			return apiTitle;
 		}
 
 		const domainTitle = this.readTitleFromDomain(actor);
@@ -40,29 +56,44 @@ export class ListingTitle extends Question<Promise<string>> {
 		return notedTitle;
 	}
 
-	private async readTitleFromSession(actor: AnswersQuestions & UsesAbilities, listingId?: string): Promise<string | undefined> {
+	private async readTitleFromApi(
+		actor: AnswersQuestions & UsesAbilities,
+		listingId?: string,
+	): Promise<string | undefined> {
 		if (!listingId) {
 			return undefined;
 		}
 
 		try {
-			const session = getSession(actor as unknown as Actor, 'listing');
-			const listing = await session.execute<{ id: string }, { title?: string } | null>('listing:getById', { id: listingId });
+			const graphql = GraphQLClient.as(actor as unknown as Actor);
+			const response = await graphql.execute(GET_LISTING_QUERY, {
+				id: listingId,
+			});
+			const listing = response.data.itemListing as
+				| Record<string, unknown>
+				| undefined;
 			return listing?.title ? String(listing.title) : undefined;
 		} catch {
 			return undefined;
 		}
 	}
 
-	private readTitleFromDomain(actor: AnswersQuestions & UsesAbilities): string | undefined {
+	private readTitleFromDomain(
+		actor: AnswersQuestions & UsesAbilities,
+	): string | undefined {
 		try {
-			return CreateListingAbility.as(actor as unknown as Actor).getCreatedListing()?.title;
+			return CreateListingAbility.as(
+				actor as unknown as Actor,
+			).getCreatedListing()?.title;
 		} catch {
 			return undefined;
 		}
 	}
 
-	private async readNote(actor: AnswersQuestions & UsesAbilities, key: 'lastListingId' | 'lastListingTitle'): Promise<string | undefined> {
+	private async readNote(
+		actor: AnswersQuestions & UsesAbilities,
+		key: 'lastListingId' | 'lastListingTitle',
+	): Promise<string | undefined> {
 		try {
 			return await actor.answer(notes<Record<typeof key, string>>().get(key));
 		} catch {

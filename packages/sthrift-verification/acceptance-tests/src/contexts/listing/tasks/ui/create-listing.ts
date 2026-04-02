@@ -1,6 +1,12 @@
-import { Task, type Actor, notes } from '@serenity-js/core';
-import type { ListingDetails, ListingNotes } from '../../abilities/listing-types.ts';
+import { type Actor, notes, Task } from '@serenity-js/core';
+import { ListingPage } from '@sthrift-verification/shared/pages';
 import { CreateListingAbility } from '../../abilities/create-listing-ability.ts';
+import type {
+	ListingDetails,
+	ListingNotes,
+} from '../../abilities/listing-types.ts';
+
+const noop = () => undefined;
 
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
@@ -8,16 +14,19 @@ export class CreateListing extends Task {
 	}
 
 	private constructor(private readonly details: ListingDetails) {
-		super(`renders create listing UI "${details.title}"`);
+		super(`fills and submits create listing form "${details.title}"`);
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		// 1. Perform domain validation first (same behavior as domain level)
 		const isDraft = !(
 			this.details.isDraft === 'false' || this.details.isDraft === false
 		);
 		const state = isDraft ? 'draft' : 'active';
 
+		// 1. Render and interact with UI via page object
+		await this.interactWithUI(isDraft);
+
+		// 2. Domain validation (source of truth for test assertions)
 		const ability = CreateListingAbility.as(actor);
 		ability.createDraftListing({
 			title: this.details.title,
@@ -34,62 +43,6 @@ export class CreateListing extends Task {
 			);
 		}
 
-		// 2. Render UI components for code coverage
-		const { ensureJsdom, cleanupJsdom } = await import(
-			'../../../../shared/support/ui/jsdom-setup.ts'
-		);
-		const { renderForCoverage } = await import(
-			'../../../../shared/support/ui/react-render.tsx'
-		);
-
-		ensureJsdom();
-
-		// Render the CreateListing presentational component
-		const { CreateListing: CreateListingComponent } = await import(
-			'@apps/ui-sharethrift/src/components/layouts/app/pages/create-listing/components/create-listing.tsx'
-		);
-
-		const { cleanup } = await renderForCoverage(
-			CreateListingComponent as React.ComponentType<Record<string, unknown>>,
-			{
-				categories: [
-					this.details.category ?? 'Other',
-					'Electronics',
-					'Sports',
-				],
-				isLoading: false,
-				submissionStatus: 'idle' as const,
-				onSubmit: () => {},
-				onCancel: () => {},
-				uploadedImages: [],
-				onImageAdd: () => {},
-				onImageRemove: () => {},
-				onViewListing: () => {},
-				onViewDraft: () => {},
-				onModalClose: () => {},
-			},
-			{ withRouter: true },
-		);
-
-		cleanup();
-
-		// Also render the shared ListingForm from ui-components for coverage
-		const { ListingForm } = await import('@sthrift/ui-components');
-		const { cleanup: cleanup2 } = await renderForCoverage(
-			ListingForm as React.ComponentType<Record<string, unknown>>,
-			{
-				categories: [this.details.category ?? 'Other', 'Electronics'],
-				isLoading: false,
-				maxCharacters: 2000,
-				handleFormSubmit: () => {},
-				onCancel: () => {},
-			},
-			{ withRouter: false },
-		);
-
-		cleanup2();
-		cleanupJsdom();
-
 		// 3. Store values in notes for assertion steps
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listing.id),
@@ -98,6 +51,101 @@ export class CreateListing extends Task {
 		);
 	}
 
+	private async interactWithUI(isDraft: boolean): Promise<void> {
+		const { ensureJsdom, cleanupJsdom } = await import(
+			'../../../../shared/support/ui/jsdom-setup.ts'
+		);
+		ensureJsdom();
+
+		try {
+			const React = await import('react');
+			const { createElement } = React;
+			globalThis.React = React;
+			const { render, cleanup, act } = await import('@testing-library/react');
+			const { MemoryRouter } = await import('react-router-dom');
+			const { JsdomPageAdapter } = await import(
+				'@sthrift-verification/shared/pages/jsdom'
+			);
+
+			// Render the full CreateListing page component
+			const { CreateListing: CreateListingComponent } = await import(
+				'@apps/ui-sharethrift/src/components/layouts/app/pages/create-listing/components/create-listing.tsx'
+			);
+
+			const { container } = render(
+				createElement(
+					MemoryRouter,
+					null,
+					createElement(
+						CreateListingComponent as React.ComponentType<
+							Record<string, unknown>
+						>,
+						{
+							categories: [
+								...new Set([
+									this.details.category ?? 'Other',
+									'Electronics',
+									'Sports',
+								]),
+							],
+							isLoading: false,
+							submissionStatus: 'idle' as const,
+							onSubmit: noop,
+							onCancel: noop,
+							uploadedImages: [],
+							onImageAdd: noop,
+							onImageRemove: noop,
+							onViewListing: noop,
+							onViewDraft: noop,
+							onModalClose: noop,
+						},
+					),
+				),
+			);
+
+			// Use shared page object for form interactions
+			const page = new ListingPage(new JsdomPageAdapter(container));
+
+			await act(async () => {
+				await page.fillForm({
+					title: this.details.title,
+					description: this.details.description,
+					location: this.details.location,
+					category: this.details.category,
+				});
+			});
+
+			await act(async () => {
+				if (isDraft) {
+					await page.clickSaveDraft();
+				} else {
+					await page.clickPublish();
+				}
+			});
+
+			// Also render the shared ListingForm standalone for ui-components coverage
+			const { ListingForm } = await import('@sthrift/ui-components');
+			render(
+				createElement(
+					ListingForm as React.ComponentType<Record<string, unknown>>,
+					{
+						categories: [
+							...new Set([this.details.category ?? 'Other', 'Electronics']),
+						],
+						isLoading: false,
+						maxCharacters: 2000,
+						handleFormSubmit: noop,
+						onCancel: noop,
+					},
+				),
+			);
+
+			cleanup();
+		} finally {
+			cleanupJsdom();
+		}
+	}
+
 	override toString = () =>
-		`renders create listing UI "${this.details.title}"`;
+		`fills and submits create listing form "${this.details.title}"`;
 }

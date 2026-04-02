@@ -1,8 +1,16 @@
 import { type Actor, Question } from '@serenity-js/core';
 
-import { getSession } from '../../../shared/abilities/session.ts';
+import { GraphQLClient } from '../../../shared/abilities/graphql-client.ts';
 
-export class GetReservationRequestCountForListing extends Question<Promise<number>> {
+const GET_RESERVATION_COUNT_QUERY = `
+	query GetReservationRequestsForListing($listingId: ObjectID!) {
+		queryActiveByListingId(listingId: $listingId) { id }
+	}
+`;
+
+export class GetReservationRequestCountForListing extends Question<
+	Promise<number>
+> {
 	static forListing(listingId: string) {
 		return new GetReservationRequestCountForListing(listingId);
 	}
@@ -11,11 +19,12 @@ export class GetReservationRequestCountForListing extends Question<Promise<numbe
 		super(`count of reservation requests for listing "${listingId}"`);
 	}
 
-	answeredBy(actor: Actor): Promise<number> {
-		const session = getSession(actor, 'reservation');
-		return session.execute<{ listingId: string }, number>(
-			'reservation:getCountForListing',
-			{ listingId: this.listingId },
-		);
+	async answeredBy(actor: Actor): Promise<number> {
+		const graphql = GraphQLClient.as(actor);
+		const response = await graphql.execute(GET_RESERVATION_COUNT_QUERY, {
+			listingId: this.listingId,
+		});
+		const items = response.data.queryActiveByListingId as unknown[];
+		return Array.isArray(items) ? items.length : 0;
 	}
 }

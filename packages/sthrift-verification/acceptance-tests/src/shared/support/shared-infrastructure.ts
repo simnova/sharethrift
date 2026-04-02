@@ -1,7 +1,6 @@
 import { GraphQLTestServer, MongoDBTestServer } from './servers/index.ts';
-import { createTestApplicationServicesFactory, createRealApplicationServicesFactory } from './application-services/index.ts';
+import { createRealApplicationServicesFactory } from './application-services/index.ts';
 import { apiSettings } from './local-settings.ts';
-import type { SessionType } from '../../world.ts';
 
 // Shared infrastructure — persists across scenarios within a single test run
 let mongoDBServer: MongoDBTestServer | undefined;
@@ -45,21 +44,12 @@ async function ensureMongoDBServer(options?: { port?: number; dbName?: string })
 	return mongoDBServer;
 }
 
-export async function ensureSessionServers(sessionType: SessionType): Promise<void> {
+export async function ensureApiServers(): Promise<void> {
 	if (graphQLServer) return;
 
-	if (sessionType === 'graphql') {
-		const testFactory = createTestApplicationServicesFactory();
-		graphQLServer = new GraphQLTestServer(testFactory);
-		await graphQLServer.start();
-		apiUrl = graphQLServer.getUrl();
-	}
-
-	if (sessionType === 'mongodb') {
-		const mongo = await ensureMongoDBServer();
-		const realFactory = createRealApplicationServicesFactory(mongo.getServiceMongoose());
-		graphQLServer = new GraphQLTestServer(realFactory);
-		await graphQLServer.start();
-		apiUrl = graphQLServer.getUrl();
-	}
+	const mongo = await ensureMongoDBServer();
+	const realFactory = createRealApplicationServicesFactory(mongo.getServiceMongoose());
+	graphQLServer = new GraphQLTestServer(realFactory);
+	await graphQLServer.start();
+	apiUrl = graphQLServer.getUrl();
 }

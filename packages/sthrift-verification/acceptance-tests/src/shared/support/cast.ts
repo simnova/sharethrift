@@ -1,38 +1,17 @@
-import { type Cast, type Actor, TakeNotes, Notepad } from '@serenity-js/core';
+import { type Actor, type Cast, Notepad, TakeNotes } from '@serenity-js/core';
 import { listingAbilities } from '../../contexts/listing/abilities/index.ts';
-import { GraphQLListingSession } from '../../contexts/listing/abilities/graphql-listing-session.ts';
-import { MongoListingSession } from '../../contexts/listing/abilities/mongo-listing-session.ts';
 import { reservationRequestAbilities } from '../../contexts/reservation-request/abilities/index.ts';
-import { GraphQLReservationRequestSession } from '../../contexts/reservation-request/abilities/graphql-reservation-request-session.ts';
-import { MongoReservationRequestSession } from '../../contexts/reservation-request/abilities/mongo-reservation-request-session.ts';
-import { MultiContextSession } from '../abilities/multi-context-session.ts';
-import type { TaskLevel, SessionType } from '../../world.ts';
+import type { TaskLevel } from '../../world.ts';
+import { GraphQLClient } from '../abilities/graphql-client.ts';
 
 export class ShareThriftCast implements Cast {
 	constructor(
 		private readonly tasksLevel: TaskLevel,
-		private readonly sessionType: SessionType,
 		private readonly apiUrl: string,
 	) {}
 
-	private createMultiContextSession(): MultiContextSession {
-		const multiSession = new MultiContextSession();
-
-		if (this.sessionType === 'mongodb') {
-			multiSession.registerSession('listing', new MongoListingSession(this.apiUrl));
-			multiSession.registerSession('reservation', new MongoReservationRequestSession(this.apiUrl));
-		} else {
-			multiSession.registerSession('listing', new GraphQLListingSession(this.apiUrl));
-			multiSession.registerSession('reservation', new GraphQLReservationRequestSession(this.apiUrl));
-		}
-
-		return multiSession;
-	}
-
 	prepare(actor: Actor): Actor {
-		if (this.tasksLevel === 'domain' || this.tasksLevel === 'ui') {
-			// UI tests use domain abilities for setup steps (e.g., "has created a listing")
-			// and store results in notes; UI rendering happens in UI-specific tasks
+		if (this.tasksLevel === 'ui') {
 			return actor.whoCan(
 				TakeNotes.using(Notepad.empty()),
 				...listingAbilities.create(),
@@ -40,9 +19,10 @@ export class ShareThriftCast implements Cast {
 			);
 		}
 
+		// api level: full stack via GraphQL → app-services → domain → persistence (MongoDB)
 		return actor.whoCan(
 			TakeNotes.using(Notepad.empty()),
-			this.createMultiContextSession(),
+			GraphQLClient.at(this.apiUrl),
 		);
 	}
 }

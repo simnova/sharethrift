@@ -113,8 +113,7 @@ export function ensureJsdom(): void {
 		(import.meta as { env: Record<string, string> }).env = {};
 	}
 
-	// Suppress React error boundary warnings in console during acceptance tests
-	// These are expected since antd components may partially fail to render in jsdom
+	// Suppress noisy console output from antd/React during acceptance tests
 	const originalConsoleError = console.error;
 	console.error = (...args: unknown[]) => {
 		const message = String(args[0] ?? '');
@@ -122,11 +121,31 @@ export function ensureJsdom(): void {
 			message.includes('Consider adding an error boundary') ||
 			message.includes('An error occurred in the <') ||
 			message.includes('Error: Uncaught') ||
-			message.includes('Warning: Can not find FormContext')
+			message.includes('Warning: Can not find FormContext') ||
+			message.includes('Encountered two children with the same key') ||
+			message.includes('act()')
 		) {
 			return; // Suppress expected rendering warnings
 		}
 		originalConsoleError.apply(console, args);
+	};
+
+	const originalConsoleLog = console.log;
+	console.log = (...args: unknown[]) => {
+		const message = String(args[0] ?? '');
+		if (message.includes('Validation failed:')) {
+			return; // Suppress antd form validation output
+		}
+		originalConsoleLog.apply(console, args);
+	};
+
+	const originalConsoleWarn = console.warn;
+	console.warn = (...args: unknown[]) => {
+		const message = String(args[0] ?? '');
+		if (message.includes('Encountered two children with the same key')) {
+			return;
+		}
+		originalConsoleWarn.apply(console, args);
 	};
 
 	initialized = true;

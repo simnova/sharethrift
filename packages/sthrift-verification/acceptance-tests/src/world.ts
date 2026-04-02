@@ -2,16 +2,13 @@ import { setWorldConstructor, World, type IWorldOptions } from '@cucumber/cucumb
 import { engage } from '@serenity-js/core';
 import './shared/support/hooks.ts';
 import { ShareThriftCast } from './shared/support/cast.ts';
-import { clearMockListings } from './shared/support/test-data/listing.test-data.ts';
-import { clearMockReservationRequests } from './shared/support/test-data/reservation-request.test-data.ts';
+import { clearMockListings, clearMockReservationRequests } from '@sthrift-verification/shared/test-data';
 import * as infra from './shared/support/shared-infrastructure.ts';
 
-export type TaskLevel = 'domain' | 'session' | 'ui';
-export type SessionType = 'graphql' | 'mongodb';
+export type TaskLevel = 'api' | 'ui';
 
 export interface WorldParameters {
 	tasks: TaskLevel;
-	session?: SessionType;
 }
 
 export async function stopSharedServers(): Promise<void> {
@@ -20,24 +17,17 @@ export async function stopSharedServers(): Promise<void> {
 
 export class ShareThriftWorld extends World<WorldParameters> {
 	private readonly tasksLevel: TaskLevel;
-	private readonly sessionType: SessionType;
 	private apiUrl: string;
 
 	constructor(options: IWorldOptions<WorldParameters>) {
 		super(options);
-		this.tasksLevel = options.parameters?.tasks || 'domain';
-		this.sessionType = options.parameters?.session || 'graphql';
+		this.tasksLevel = options.parameters?.tasks || 'api';
 		this.apiUrl = '';
 	}
 
 	async init(): Promise<void> {
-		if (this.tasksLevel === 'session') {
-			await infra.ensureSessionServers(this.sessionType);
-		}
-
-		if (this.tasksLevel === 'ui') {
-			// jsdom setup is done lazily in UI tasks via dynamic imports
-			// No server infrastructure needed for UI tests
+		if (this.tasksLevel === 'api') {
+			await infra.ensureApiServers();
 		}
 
 		const { apiUrl } = infra.getState();
@@ -49,15 +39,11 @@ export class ShareThriftWorld extends World<WorldParameters> {
 		clearMockReservationRequests();
 		clearMockListings();
 
-		engage(new ShareThriftCast(
-			this.tasksLevel,
-			this.sessionType,
-			this.apiUrl,
-		));
+		engage(new ShareThriftCast(this.tasksLevel, this.apiUrl));
 	}
 
 	async cleanup(): Promise<void> {
-		// No cleanup needed for domain/session tests
+		// No cleanup needed
 	}
 
 	get level(): TaskLevel {

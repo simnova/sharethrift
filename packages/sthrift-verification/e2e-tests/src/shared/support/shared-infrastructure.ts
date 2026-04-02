@@ -1,7 +1,7 @@
 import { chromium, type Browser, type BrowserContext } from '@playwright/test';
 import { BrowseTheWeb } from '../abilities/browse-the-web.ts';
 import { MongoDBTestServer, TestOAuth2Server, TestViteServer, TestApiServer, initTestEnvironment, cleanupTestEnvironment, setMongoConnectionString } from './servers/index.ts';
-import { defaultActor } from './test-data/test-actors.ts';
+import { defaultActor } from '@sthrift-verification/shared/test-data';
 import { performOAuth2Login } from './oauth2-login.ts';
 import { apiSettings } from './local-settings.ts';
 

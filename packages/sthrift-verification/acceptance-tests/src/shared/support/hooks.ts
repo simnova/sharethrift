@@ -8,21 +8,19 @@ let lastTestConfig: string | undefined;
 
 setDefaultTimeout(120_000);
 
-Before(async function (this: IWorld<{ session?: string; tasks?: string }>) {
-	const world = this as IWorld<{ session?: string; tasks?: string }> & ShareThriftWorld;
+Before(async function (this: IWorld<{ tasks?: string }>) {
+	const world = this as IWorld<{ tasks?: string }> & ShareThriftWorld;
 
-	const sessionType = this.parameters?.session ?? 'domain';
-	const testConfig = `${world.level}:${sessionType}`;
+	const testConfig = world.level;
 
 	if (lastTestConfig !== testConfig) {
 		lastTestConfig = testConfig;
 
 		if (!isAgent) {
-			const levelIcon = world.level === 'session' ? '📡' : '⚡';
+			const levelIcon = world.level === 'api' ? '📡' : '🖥️';
 			const testLevelStr = world.level.toUpperCase();
-			const backendStr = String(sessionType).toUpperCase();
 
-			console.log(`\n${levelIcon} ${testLevelStr} tests with ${backendStr} backend`);
+			console.log(`\n${levelIcon} ${testLevelStr} tests`);
 			console.log('  • Listing Context');
 			console.log('  • Reservation Request Context\n');
 		}
@@ -31,8 +29,8 @@ Before(async function (this: IWorld<{ session?: string; tasks?: string }>) {
 	await world.init();
 });
 
-After(async function (this: IWorld<{ session?: string; tasks?: string }>) {
-	const world = this as IWorld<{ session?: string; tasks?: string }> & ShareThriftWorld;
+After(async function (this: IWorld<{ tasks?: string }>) {
+	const world = this as IWorld<{ tasks?: string }> & ShareThriftWorld;
 	await world.cleanup();
 });
 

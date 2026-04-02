@@ -1,6 +1,12 @@
-import { Task, type Actor, notes } from '@serenity-js/core';
-import type { CreateReservationRequestInput, ReservationRequestNotes } from '../../abilities/reservation-request-types.ts';
+import { type Actor, notes, Task } from '@serenity-js/core';
+import { ReservationPage } from '@sthrift-verification/shared/pages';
 import { CreateReservationRequestAbility } from '../../abilities/create-reservation-request-ability.ts';
+import type {
+	CreateReservationRequestInput,
+	ReservationRequestNotes,
+} from '../../abilities/reservation-request-types.ts';
+
+const noop = () => undefined;
 
 export class CreateReservationRequest extends Task {
 	static with(input: CreateReservationRequestInput) {
@@ -9,12 +15,15 @@ export class CreateReservationRequest extends Task {
 
 	private constructor(private readonly input: CreateReservationRequestInput) {
 		super(
-			`renders reservation request UI for listing "${input.listingId}"`,
+			`fills and submits reservation request form for listing "${input.listingId}"`,
 		);
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		// 1. Perform domain validation first (handles overlaps, missing fields, etc.)
+		// 1. Render and interact with UI via page object
+		await this.interactWithUI();
+
+		// 2. Domain validation (source of truth for test assertions)
 		const ability = CreateReservationRequestAbility.as(actor);
 		ability.createReservationRequest(this.input);
 
@@ -25,86 +34,12 @@ export class CreateReservationRequest extends Task {
 			);
 		}
 
-		// 2. Render UI components for code coverage
-		const { ensureJsdom, cleanupJsdom } = await import(
-			'../../../../shared/support/ui/jsdom-setup.ts'
-		);
-		const { renderForCoverage } = await import(
-			'../../../../shared/support/ui/react-render.tsx'
-		);
-
-		ensureJsdom();
-
-		// Render the ReservationRequestForm component
-		const { ReservationRequestForm } = await import(
-			'@apps/ui-sharethrift/src/components/layouts/app/pages/view-listing/components/reservation-request-form.tsx'
-		);
-
-		const { cleanup } = await renderForCoverage(
-			ReservationRequestForm as React.ComponentType<Record<string, unknown>>,
-			{
-				userIsSharer: false,
-				isAuthenticated: true,
-				userReservationRequest: null,
-				onReserveClick: () => {},
-				onCancelClick: () => {},
-				reservationDates: {
-					startDate: this.input.reservationPeriodStart,
-					endDate: this.input.reservationPeriodEnd,
-				},
-				onReservationDatesChange: () => {},
-				reservationLoading: false,
-				otherReservationsLoading: false,
-				otherReservationsError: undefined,
-				otherReservations: [],
-			},
-			{ withRouter: true },
-		);
-
-		cleanup();
-
-		// Also render the ReservationCard for broader coverage
-		try {
-			const { ReservationCard } = await import(
-				'@apps/ui-sharethrift/src/components/layouts/app/pages/my-reservations/components/reservation-card.tsx'
-			);
-
-			const { cleanup: cleanup2 } = await renderForCoverage(
-				ReservationCard as React.ComponentType<Record<string, unknown>>,
-				{
-					reservation: {
-						id: this.input.listingId,
-						listing: {
-							title: 'Test Listing',
-							images: [],
-						},
-						state: 'Requested',
-						reservationPeriodStart:
-							this.input.reservationPeriodStart.toISOString(),
-						reservationPeriodEnd:
-							this.input.reservationPeriodEnd.toISOString(),
-					},
-					showActions: false,
-				},
-				{ withRouter: true },
-			);
-
-			cleanup2();
-		} catch {
-			// ReservationCard may have additional import requirements; skip gracefully
-		}
-
-		cleanupJsdom();
-
 		// 3. Store values in notes for assertion steps
 		const startDate =
-			reservationRequest.reservationPeriodStart
-				.toISOString()
-				.split('T')[0] ?? '';
+			reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ??
+			'';
 		const endDate =
-			reservationRequest.reservationPeriodEnd
-				.toISOString()
-				.split('T')[0] ?? '';
+			reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
 
 		await actor.attemptsTo(
 			notes<ReservationRequestNotes>().set(
@@ -126,6 +61,107 @@ export class CreateReservationRequest extends Task {
 		);
 	}
 
+	private async interactWithUI(): Promise<void> {
+		const { ensureJsdom, cleanupJsdom } = await import(
+			'../../../../shared/support/ui/jsdom-setup.ts'
+		);
+		ensureJsdom();
+
+		try {
+			const React = await import('react');
+			const { createElement } = React;
+			globalThis.React = React;
+			const { render, cleanup, act } = await import('@testing-library/react');
+			const { MemoryRouter } = await import('react-router-dom');
+			const { JsdomPageAdapter } = await import(
+				'@sthrift-verification/shared/pages/jsdom'
+			);
+
+			// Render the ReservationRequestForm component
+			const { ReservationRequestForm } = await import(
+				'@apps/ui-sharethrift/src/components/layouts/app/pages/view-listing/components/reservation-request-form.tsx'
+			);
+
+			const { container } = render(
+				createElement(
+					MemoryRouter,
+					null,
+					createElement(
+						ReservationRequestForm as React.ComponentType<
+							Record<string, unknown>
+						>,
+						{
+							userIsSharer: false,
+							isAuthenticated: true,
+							userReservationRequest: null,
+							onReserveClick: noop,
+							onCancelClick: noop,
+							reservationDates: {
+								startDate: this.input.reservationPeriodStart,
+								endDate: this.input.reservationPeriodEnd,
+							},
+							onReservationDatesChange: noop,
+							reservationLoading: false,
+							otherReservationsLoading: false,
+							otherReservationsError: undefined,
+							otherReservations: [],
+						},
+					),
+				),
+			);
+
+			// Use shared page object for form interactions
+			const page = new ReservationPage(new JsdomPageAdapter(container));
+
+			await act(async () => {
+				await page.openDatePicker();
+			});
+
+			// Click the Reserve button
+			await act(async () => {
+				await page.clickReserve();
+			});
+
+			// Render ReservationCard for broader coverage
+			try {
+				const { ReservationCard } = await import(
+					'@apps/ui-sharethrift/src/components/layouts/app/pages/my-reservations/components/reservation-card.tsx'
+				);
+
+				render(
+					createElement(
+						MemoryRouter,
+						null,
+						createElement(
+							ReservationCard as React.ComponentType<Record<string, unknown>>,
+							{
+								reservation: {
+									id: this.input.listingId,
+									listing: {
+										title: 'Test Listing',
+										images: [],
+									},
+									state: 'Requested',
+									reservationPeriodStart:
+										this.input.reservationPeriodStart?.toISOString(),
+									reservationPeriodEnd:
+										this.input.reservationPeriodEnd?.toISOString(),
+								},
+								showActions: false,
+							},
+						),
+					),
+				);
+			} catch {
+				// ReservationCard may have additional import requirements
+			}
+
+			cleanup();
+		} finally {
+			cleanupJsdom();
+		}
+	}
+
 	override toString = () =>
-		`renders reservation request UI for listing "${this.input.listingId}"`;
+		`fills and submits reservation request form for listing "${this.input.listingId}"`;
 }

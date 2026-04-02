@@ -1,7 +1,7 @@
 import { Ability } from '@serenity-js/core';
 import { Domain } from '@sthrift/domain';
 import { makeReservationRequestProps, makeListingReference, makeSharerUser } from '../../../shared/support/domain-test-helpers.ts';
-import { reservationRequests } from '../../../shared/support/test-data/reservation-request.test-data.ts';
+import { reservationRequests } from '@sthrift-verification/shared/test-data';
 
 type Passport = Domain.Passport;
 type ReservationRequestProps = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps;
