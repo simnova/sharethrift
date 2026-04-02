@@ -4,3 +4,6 @@ reports/
 target/
 *.log
 .portless/
+.c8-output/
+coverage/
+coverage-c8

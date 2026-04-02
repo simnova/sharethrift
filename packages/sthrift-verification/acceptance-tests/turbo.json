@@ -25,6 +25,11 @@
 			"dependsOn": ["^build"],
 			"inputs": ["src/**", "cucumber.js"],
 			"outputs": ["reports/**"]
+		},
+		"test:ui": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "cucumber.js"],
+			"outputs": ["reports/**"]
 		}
 	}
 }

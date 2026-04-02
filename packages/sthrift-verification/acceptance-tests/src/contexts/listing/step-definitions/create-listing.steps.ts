@@ -7,6 +7,7 @@ import type { ListingDetails } from '../tasks/domain/create-listing.ts';
 import type { ListingNotes } from '../abilities/listing-types.ts';
 import { CreateListing as SessionCreateListing } from '../tasks/session/create-listing.ts';
 import { CreateListing as DomainCreateListing } from '../tasks/domain/create-listing.ts';
+import { CreateListing as UICreateListing } from '../tasks/ui/create-listing.ts';
 import { ListingStatus } from '../questions/listing-status.ts';
 import { ListingTitle } from '../questions/listing-title.ts';
 
@@ -17,6 +18,8 @@ function getCreateListingTask(level: string) {
 	switch (level) {
 		case 'session':
 			return SessionCreateListing;
+		case 'ui':
+			return UICreateListing;
 		default:
 			return DomainCreateListing;
 	}

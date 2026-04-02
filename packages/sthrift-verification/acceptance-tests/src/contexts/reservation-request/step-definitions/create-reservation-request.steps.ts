@@ -5,8 +5,10 @@ import type { ShareThriftWorld } from '../../../world.ts';
 import { makeTestUserData, resolveActorName } from '../../../shared/support/domain-test-helpers.ts';
 import { CreateListing as SessionCreateListing } from '../../listing/tasks/session/create-listing.ts';
 import { CreateListing as DomainCreateListing, type CreateListingInput } from '../../listing/tasks/domain/create-listing.ts';
+import { CreateListing as UICreateListing } from '../../listing/tasks/ui/create-listing.ts';
 import { CreateReservationRequest as SessionCreateReservationRequest } from '../tasks/session/create-reservation-request.ts';
 import { CreateReservationRequest as DomainCreateReservationRequest } from '../tasks/domain/create-reservation-request.ts';
+import { CreateReservationRequest as UICreateReservationRequest } from '../tasks/ui/create-reservation-request.ts';
 import { GetReservationRequestCountForListing } from '../questions/get-reservation-request-count-for-listing.ts';
 import { DomainGetReservationRequestCountForListing } from '../questions/domain-get-reservation-request-count-for-listing.ts';
 import type { CreateReservationRequestInput, ReservationRequestNotes } from '../abilities/reservation-request-types.ts';
@@ -17,6 +19,8 @@ function getCreateListingTask(level: string) {
 	switch (level) {
 		case 'session':
 			return SessionCreateListing;
+		case 'ui':
+			return UICreateListing;
 		default:
 			return DomainCreateListing;
 	}
@@ -26,6 +30,8 @@ function getCreateReservationRequestTask(level: string) {
 	switch (level) {
 		case 'session':
 			return SessionCreateReservationRequest;
+		case 'ui':
+			return UICreateReservationRequest;
 		default:
 			return DomainCreateReservationRequest;
 	}
@@ -317,7 +323,7 @@ Then(
 	async function (this: ShareThriftWorld) {
 		const actor = actorCalled(lastActorName);
 		const listingId = await getListingIdFromOwner('Bob');
-		const countQuestion = this.level === 'domain'
+		const countQuestion = this.level === 'domain' || this.level === 'ui'
 			? DomainGetReservationRequestCountForListing.forListing(listingId)
 			: GetReservationRequestCountForListing.forListing(listingId);
 

@@ -6,7 +6,7 @@ import { clearMockListings } from './shared/support/test-data/listing.test-data.
 import { clearMockReservationRequests } from './shared/support/test-data/reservation-request.test-data.ts';
 import * as infra from './shared/support/shared-infrastructure.ts';
 
-export type TaskLevel = 'domain' | 'session';
+export type TaskLevel = 'domain' | 'session' | 'ui';
 export type SessionType = 'graphql' | 'mongodb';
 
 export interface WorldParameters {
@@ -33,6 +33,11 @@ export class ShareThriftWorld extends World<WorldParameters> {
 	async init(): Promise<void> {
 		if (this.tasksLevel === 'session') {
 			await infra.ensureSessionServers(this.sessionType);
+		}
+
+		if (this.tasksLevel === 'ui') {
+			// jsdom setup is done lazily in UI tasks via dynamic imports
+			// No server infrastructure needed for UI tests
 		}
 
 		const { apiUrl } = infra.getState();

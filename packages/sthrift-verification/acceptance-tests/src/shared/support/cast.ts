@@ -30,7 +30,9 @@ export class ShareThriftCast implements Cast {
 	}
 
 	prepare(actor: Actor): Actor {
-		if (this.tasksLevel === 'domain') {
+		if (this.tasksLevel === 'domain' || this.tasksLevel === 'ui') {
+			// UI tests use domain abilities for setup steps (e.g., "has created a listing")
+			// and store results in notes; UI rendering happens in UI-specific tasks
 			return actor.whoCan(
 				TakeNotes.using(Notepad.empty()),
 				...listingAbilities.create(),
