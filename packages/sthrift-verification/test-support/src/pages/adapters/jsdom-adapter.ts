@@ -5,7 +5,46 @@
  * This module is loaded dynamically (after jsdom setup), so static imports are safe.
  */
 import { fireEvent } from '@testing-library/react';
-import type { ElementHandle, PageAdapter } from '../page-adapter.ts';
+import type {
+	ElementHandle,
+	PageAdapter,
+	PageNavigationWaitUntil,
+	PageUrlMatcher,
+} from '../page-adapter.ts';
+
+function getGlobalDocument(container: Element): Document {
+	return container.ownerDocument ?? document;
+}
+
+function findLabelControl(
+	container: Element,
+	text: string,
+): Element | null {
+	const doc = getGlobalDocument(container);
+	const labels = Array.from(container.querySelectorAll('label'));
+	const matchingLabel = labels.find((label) =>
+		(label.textContent ?? '').includes(text),
+	);
+
+	if (matchingLabel) {
+		const forId = matchingLabel.getAttribute('for');
+		if (forId) {
+			return doc.getElementById(forId);
+		}
+
+		const wrappedControl = matchingLabel.querySelector(
+			'input, textarea, select, [role="textbox"], [role="combobox"], [role="checkbox"]',
+		);
+		if (wrappedControl) {
+			return wrappedControl;
+		}
+	}
+
+	const ariaMatch = container.querySelector(
+		`[aria-label="${text}"], [aria-label*="${text}"]`,
+	);
+	return ariaMatch;
+}
 
 class JsdomElementHandle implements ElementHandle {
 	constructor(private readonly el: Element | null) {}
@@ -24,6 +63,18 @@ class JsdomElementHandle implements ElementHandle {
 		return Promise.resolve();
 	}
 
+	check(): Promise<void> {
+		if (this.el instanceof HTMLInputElement) {
+			fireEvent.click(this.el, { target: { checked: true } });
+			return Promise.resolve();
+		}
+
+		if (this.el) {
+			fireEvent.click(this.el);
+		}
+		return Promise.resolve();
+	}
+
 	textContent(): Promise<string | null> {
 		return Promise.resolve(this.el?.textContent ?? null);
 	}
@@ -34,6 +85,11 @@ class JsdomElementHandle implements ElementHandle {
 
 	isVisible(): Promise<boolean> {
 		return Promise.resolve(this.el !== null);
+	}
+
+	waitFor(_options?: { state?: 'visible' | 'hidden' | 'attached' | 'detached'; timeout?: number }): Promise<void> {
+		// No-op in jsdom — elements are immediately available after render.
+		return Promise.resolve();
 	}
 
 	querySelector(selector: string): Promise<ElementHandle | null> {
@@ -61,6 +117,10 @@ export class JsdomPageAdapter implements PageAdapter {
 		return new JsdomElementHandle(el);
 	}
 
+	getByLabel(text: string): ElementHandle {
+		return new JsdomElementHandle(findLabelControl(this.container, text));
+	}
+
 	getByRole(role: string, options?: { name?: string | RegExp }): ElementHandle {
 		const candidates = Array.from(
 			this.container.querySelectorAll(`[role="${role}"], ${role}`),
@@ -71,6 +131,7 @@ export class JsdomPageAdapter implements PageAdapter {
 			button: 'button',
 			textbox: 'input[type="text"], input:not([type]), textarea',
 			combobox: 'select, [role="combobox"]',
+			checkbox: 'input[type="checkbox"], [role="checkbox"]',
 			table: 'table',
 		};
 		const semanticSelector = semanticMap[role];
@@ -104,6 +165,14 @@ export class JsdomPageAdapter implements PageAdapter {
 		return new JsdomElementHandle(el);
 	}
 
+	locatorAll(selector: string): Promise<ElementHandle[]> {
+		return Promise.resolve(
+			Array.from(this.container.querySelectorAll(selector)).map(
+				(el) => new JsdomElementHandle(el),
+			),
+		);
+	}
+
 	getByText(
 		text: string | RegExp,
 		options?: { selector?: string },
@@ -123,5 +192,33 @@ export class JsdomPageAdapter implements PageAdapter {
 			}
 		}
 		return new JsdomElementHandle(null);
+	}
+
+	async goto(
+		url: string,
+		_options?: { timeout?: number; waitUntil?: PageNavigationWaitUntil },
+	): Promise<void> {
+		if (typeof window !== 'undefined') {
+			window.history.pushState({}, '', url);
+		}
+	}
+
+	waitForURL(
+		_url: PageUrlMatcher,
+		_options?: { timeout?: number; waitUntil?: PageNavigationWaitUntil },
+	): Promise<void> {
+		// No-op in jsdom — shared auth pages are exercised through Playwright.
+		return Promise.resolve();
+	}
+
+	url(): string {
+		if (typeof window !== 'undefined') {
+			return window.location.href;
+		}
+		return 'about:blank';
+	}
+
+	waitForTimeout(_timeout: number): Promise<void> {
+		return Promise.resolve();
 	}
 }

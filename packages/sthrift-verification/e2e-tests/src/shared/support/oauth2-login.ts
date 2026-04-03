@@ -1,8 +1,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { Page } from '@playwright/test';
-import { LoginPage } from '../pages/login.page.ts';
-import { OnboardingPage } from '../pages/onboarding.page.ts';
+import {
+	LoginPage,
+	OnboardingPage,
+} from '@sthrift-verification/test-support/pages';
+import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
 
 function loadTestCredentials(): { username: string; password: string } {
 	// Load defaults from .env.test, overridable by actual environment variables
@@ -30,15 +33,16 @@ function loadTestCredentials(): { username: string; password: string } {
 // profile, terms) before the app is ready for test scenarios.
 export async function performOAuth2Login(page: Page): Promise<void> {
 	const { username, password } = loadTestCredentials();
-	const loginPage = new LoginPage(page);
+	const pageAdapter = new PlaywrightPageAdapter(page);
+	const loginPage = new LoginPage(pageAdapter);
 
 	await loginPage.goto();
 	await loginPage.login(username, password);
 	await loginPage.waitForRedirectComplete();
 
 	// Complete post-login onboarding if redirected to signup
-	if (page.url().includes('/signup')) {
-		const onboardingPage = new OnboardingPage(page);
+	if (pageAdapter.url().includes('/signup')) {
+		const onboardingPage = new OnboardingPage(pageAdapter);
 		await onboardingPage.completeOnboarding();
 	}
 }

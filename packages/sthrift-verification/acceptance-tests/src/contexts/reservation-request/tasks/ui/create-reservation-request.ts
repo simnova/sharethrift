@@ -1,10 +1,18 @@
+import '../../../../shared/support/ui/setup-jsdom.ts';
 import { type Actor, notes, Task } from '@serenity-js/core';
+import { render, cleanup, act } from '@testing-library/react';
+import * as React from 'react';
+import { MemoryRouter } from 'react-router-dom';
 import { ReservationPage } from '@sthrift-verification/test-support/pages';
+import { JsdomPageAdapter } from '@sthrift-verification/test-support/pages/jsdom';
+import { ReservationCard } from '@apps/ui-sharethrift/src/components/layouts/app/pages/my-reservations/components/reservation-card.tsx';
+import { ReservationRequestForm } from '@apps/ui-sharethrift/src/components/layouts/app/pages/view-listing/components/reservation-request-form.tsx';
 import { CreateReservationRequestAbility } from '../../abilities/create-reservation-request-ability.ts';
 import type {
 	CreateReservationRequestInput,
 	ReservationRequestNotes,
 } from '../../abilities/reservation-request-types.ts';
+import { cleanupJsdom } from '../../../../shared/support/ui/jsdom-setup.ts';
 
 const noop = () => undefined;
 
@@ -62,31 +70,15 @@ export class CreateReservationRequest extends Task {
 	}
 
 	private async interactWithUI(): Promise<void> {
-		const { ensureJsdom, cleanupJsdom } = await import(
-			'../../../../shared/support/ui/jsdom-setup.ts'
-		);
-		ensureJsdom();
+		globalThis.React = React;
 
 		try {
-			const React = await import('react');
-			const { createElement } = React;
-			globalThis.React = React;
-			const { render, cleanup, act } = await import('@testing-library/react');
-			const { MemoryRouter } = await import('react-router-dom');
-			const { JsdomPageAdapter } = await import(
-				'@sthrift-verification/test-support/pages/jsdom'
-			);
-
 			// Render the ReservationRequestForm component
-			const { ReservationRequestForm } = await import(
-				'@apps/ui-sharethrift/src/components/layouts/app/pages/view-listing/components/reservation-request-form.tsx'
-			);
-
 			const { container } = render(
-				createElement(
+				React.createElement(
 					MemoryRouter,
 					null,
-					createElement(
+					React.createElement(
 						ReservationRequestForm as React.ComponentType<
 							Record<string, unknown>
 						>,
@@ -123,38 +115,30 @@ export class CreateReservationRequest extends Task {
 			});
 
 			// Render ReservationCard for broader coverage
-			try {
-				const { ReservationCard } = await import(
-					'@apps/ui-sharethrift/src/components/layouts/app/pages/my-reservations/components/reservation-card.tsx'
-				);
-
-				render(
-					createElement(
-						MemoryRouter,
-						null,
-						createElement(
-							ReservationCard as React.ComponentType<Record<string, unknown>>,
-							{
-								reservation: {
-									id: this.input.listingId,
-									listing: {
-										title: 'Test Listing',
-										images: [],
-									},
-									state: 'Requested',
-									reservationPeriodStart:
-										this.input.reservationPeriodStart?.toISOString(),
-									reservationPeriodEnd:
-										this.input.reservationPeriodEnd?.toISOString(),
+			render(
+				React.createElement(
+					MemoryRouter,
+					null,
+					React.createElement(
+						ReservationCard as React.ComponentType<Record<string, unknown>>,
+						{
+							reservation: {
+								id: this.input.listingId,
+								listing: {
+									title: 'Test Listing',
+									images: [],
 								},
-								showActions: false,
+								state: 'Requested',
+								reservationPeriodStart:
+									this.input.reservationPeriodStart?.toISOString(),
+								reservationPeriodEnd:
+									this.input.reservationPeriodEnd?.toISOString(),
 							},
-						),
+							showActions: false,
+						},
 					),
-				);
-			} catch {
-				// ReservationCard may have additional import requirements
-			}
+				),
+			);
 
 			cleanup();
 		} finally {

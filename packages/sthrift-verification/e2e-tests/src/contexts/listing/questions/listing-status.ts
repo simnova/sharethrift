@@ -1,6 +1,7 @@
-import { Question, type Actor, type AnswersQuestions, type UsesAbilities, notes } from '@serenity-js/core';
+import { Question, type AnswersQuestions, type UsesAbilities, notes } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
-import { ListingPage } from '../../../shared/pages/listing.page.ts';
+import { ListingPage } from '@sthrift-verification/test-support/pages';
+import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
 
 export class ListingStatus extends Question<Promise<string>> {
 	constructor() {
@@ -44,8 +45,11 @@ export class ListingStatus extends Question<Promise<string>> {
 
 		try {
 			const { page } = BrowseTheWeb.withActor(actor);
-			const listingPage = new ListingPage(page);
-			const statusTag = listingPage.statusTagInRow(listingTitle);
+			const listingPage = new ListingPage(new PlaywrightPageAdapter(page));
+			const statusTag = await listingPage.statusTagInRow(listingTitle);
+			if (!statusTag) {
+				return undefined;
+			}
 			await statusTag.waitFor({ state: 'visible', timeout: 3_000 });
 			return (await statusTag.textContent())?.trim() || undefined;
 		} catch {

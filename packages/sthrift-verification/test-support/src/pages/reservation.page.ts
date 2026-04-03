@@ -11,6 +11,10 @@ export class ReservationPage {
 		return this.adapter.locator('.ant-picker-range');
 	}
 
+	get disabledPicker(): ElementHandle {
+		return this.adapter.locator('.ant-picker-range.ant-picker-disabled');
+	}
+
 	get reserveButton(): ElementHandle {
 		return this.adapter.getByRole('button', { name: /Reserve/i });
 	}
@@ -31,8 +35,22 @@ export class ReservationPage {
 		return this.adapter.locator('.ant-picker-header-next-btn');
 	}
 
+	get skeleton(): ElementHandle {
+		return this.adapter.locator('.ant-skeleton');
+	}
+
 	calendarCell(dateStr: string): ElementHandle {
 		return this.adapter.locator(`td[title="${dateStr}"]`);
+	}
+
+	async isDisabled(): Promise<boolean> {
+		const className = await this.rangePicker.getAttribute('class');
+		return className?.includes('ant-picker-disabled') ?? false;
+	}
+
+	async isCalendarCellDisabled(dateStr: string): Promise<boolean> {
+		const className = await this.calendarCell(dateStr).getAttribute('class');
+		return className?.includes('ant-picker-cell-disabled') ?? false;
 	}
 
 	async clickReserve(): Promise<void> {
@@ -45,6 +63,28 @@ export class ReservationPage {
 
 	async openDatePicker(): Promise<void> {
 		await this.rangePicker.click();
+	}
+
+	async selectDateRange(startDate: Date, endDate: Date): Promise<void> {
+		await this.openDatePicker();
+
+		const startStr = formatDate(startDate);
+		const endStr = formatDate(endDate);
+
+		const startCell = this.calendarCell(startStr);
+		await startCell.waitFor({ state: 'visible', timeout: 5_000 });
+		await startCell.click();
+
+		let endCell = this.calendarCell(endStr);
+		try {
+			await endCell.waitFor({ state: 'visible', timeout: 1_000 });
+		} catch {
+			await this.nextMonthButton.click();
+			endCell = this.calendarCell(endStr);
+			await endCell.waitFor({ state: 'visible', timeout: 5_000 });
+		}
+
+		await endCell.click();
 	}
 }
 

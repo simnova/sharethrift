@@ -1,15 +1,22 @@
-import type { Page } from '@playwright/test';
+import type { PageAdapter } from './page-adapter.ts';
 
 /**
- * Page object for the login page (/login).
- * Covers the OAuth2 login form with email, password, and login button.
+ * Shared login page object backed by the universal page adapter.
  */
 export class LoginPage {
-	constructor(private readonly page: Page) {}
+	constructor(private readonly page: PageAdapter) {}
 
-	get emailInput() { return this.page.getByLabel('Email'); }
-	get passwordInput() { return this.page.getByLabel('Password'); }
-	get personalLoginButton() { return this.page.getByRole('button', { name: 'Personal Login' }); }
+	get emailInput() {
+		return this.page.getByLabel('Email');
+	}
+
+	get passwordInput() {
+		return this.page.getByLabel('Password');
+	}
+
+	get personalLoginButton() {
+		return this.page.getByRole('button', { name: 'Personal Login' });
+	}
 
 	async goto(): Promise<void> {
 		await this.page.goto('/login', { waitUntil: 'networkidle' });

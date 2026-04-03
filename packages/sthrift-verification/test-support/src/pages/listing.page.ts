@@ -58,6 +58,11 @@ export class ListingPage {
 		return this.adapter.locator('.ant-message-error, [role="alert"]');
 	}
 
+	// --- Loading indicator ---
+	get loadingButton(): ElementHandle {
+		return this.adapter.locator('.ant-btn-loading');
+	}
+
 	// --- Success modal ---
 	get modal(): ElementHandle {
 		return this.adapter.locator('.ant-modal');
@@ -69,6 +74,16 @@ export class ListingPage {
 
 	get viewListingButton(): ElementHandle {
 		return this.adapter.getByRole('button', { name: /View Listing/i });
+	}
+
+	// --- My Listings table ---
+	listingTitleCell(title: string): ElementHandle {
+		return this.adapter.getByText(title, { selector: 'table' });
+	}
+
+	async statusTagInRow(title: string): Promise<ElementHandle | null> {
+		const row = await this.listingRowByTitle(title);
+		return row ? row.querySelector('.ant-tag') : null;
 	}
 
 	// --- Helper methods ---
@@ -107,5 +122,19 @@ export class ListingPage {
 
 	async clickPublish(): Promise<void> {
 		await this.publishButton.click();
+	}
+
+	private async listingRowByTitle(title: string): Promise<ElementHandle | null> {
+		const table = this.adapter.getByRole('table');
+		const rows = await table.querySelectorAll('tr');
+
+		for (const row of rows) {
+			const text = await row.textContent();
+			if (text?.includes(title)) {
+				return row;
+			}
+		}
+
+		return null;
 	}
 }

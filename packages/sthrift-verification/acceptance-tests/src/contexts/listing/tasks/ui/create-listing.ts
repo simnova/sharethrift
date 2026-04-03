@@ -1,10 +1,18 @@
+import '../../../../shared/support/ui/setup-jsdom.ts';
 import { type Actor, notes, Task } from '@serenity-js/core';
+import { render, cleanup, act } from '@testing-library/react';
+import * as React from 'react';
+import { MemoryRouter } from 'react-router-dom';
+import { ListingForm } from '@sthrift/ui-components';
+import { CreateListing as CreateListingComponent } from '@apps/ui-sharethrift/src/components/layouts/app/pages/create-listing/components/create-listing.tsx';
 import { ListingPage } from '@sthrift-verification/test-support/pages';
+import { JsdomPageAdapter } from '@sthrift-verification/test-support/pages/jsdom';
 import { CreateListingAbility } from '../../abilities/create-listing-ability.ts';
 import type {
 	ListingDetails,
 	ListingNotes,
 } from '../../abilities/listing-types.ts';
+import { cleanupJsdom } from '../../../../shared/support/ui/jsdom-setup.ts';
 
 const noop = () => undefined;
 
@@ -52,31 +60,15 @@ export class CreateListing extends Task {
 	}
 
 	private async interactWithUI(isDraft: boolean): Promise<void> {
-		const { ensureJsdom, cleanupJsdom } = await import(
-			'../../../../shared/support/ui/jsdom-setup.ts'
-		);
-		ensureJsdom();
+		globalThis.React = React;
 
 		try {
-			const React = await import('react');
-			const { createElement } = React;
-			globalThis.React = React;
-			const { render, cleanup, act } = await import('@testing-library/react');
-			const { MemoryRouter } = await import('react-router-dom');
-			const { JsdomPageAdapter } = await import(
-				'@sthrift-verification/test-support/pages/jsdom'
-			);
-
 			// Render the full CreateListing page component
-			const { CreateListing: CreateListingComponent } = await import(
-				'@apps/ui-sharethrift/src/components/layouts/app/pages/create-listing/components/create-listing.tsx'
-			);
-
 			const { container } = render(
-				createElement(
+				React.createElement(
 					MemoryRouter,
 					null,
-					createElement(
+					React.createElement(
 						CreateListingComponent as React.ComponentType<
 							Record<string, unknown>
 						>,
@@ -124,9 +116,8 @@ export class CreateListing extends Task {
 			});
 
 			// Also render the shared ListingForm standalone for ui-components coverage
-			const { ListingForm } = await import('@sthrift/ui-components');
 			render(
-				createElement(
+				React.createElement(
 					ListingForm as React.ComponentType<Record<string, unknown>>,
 					{
 						categories: [
