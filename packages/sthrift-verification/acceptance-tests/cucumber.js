@@ -5,7 +5,7 @@ const terminalFormat = isAgent
 	: 'progress-bar';
 
 export default {
-	paths: ['src/contexts/**/features/**/*.feature'],
+	paths: ['../test-support/src/scenarios/feature-files/**/*.feature'],
 	import: [
 		'src/world.ts',
 		'src/step-definitions/**/*.ts',

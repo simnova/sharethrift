@@ -1,5 +1,5 @@
 import { type Actor, notes, Task } from '@serenity-js/core';
-import { ListingPage } from '@sthrift-verification/shared/pages';
+import { ListingPage } from '@sthrift-verification/test-support/pages';
 import { CreateListingAbility } from '../../abilities/create-listing-ability.ts';
 import type {
 	ListingDetails,
@@ -64,7 +64,7 @@ export class CreateListing extends Task {
 			const { render, cleanup, act } = await import('@testing-library/react');
 			const { MemoryRouter } = await import('react-router-dom');
 			const { JsdomPageAdapter } = await import(
-				'@sthrift-verification/shared/pages/jsdom'
+				'@sthrift-verification/test-support/pages/jsdom'
 			);
 
 			// Render the full CreateListing page component

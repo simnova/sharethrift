@@ -1,5 +1,5 @@
 import { type Actor, notes, Task } from '@serenity-js/core';
-import { ReservationPage } from '@sthrift-verification/shared/pages';
+import { ReservationPage } from '@sthrift-verification/test-support/pages';
 import { CreateReservationRequestAbility } from '../../abilities/create-reservation-request-ability.ts';
 import type {
 	CreateReservationRequestInput,
@@ -74,7 +74,7 @@ export class CreateReservationRequest extends Task {
 			const { render, cleanup, act } = await import('@testing-library/react');
 			const { MemoryRouter } = await import('react-router-dom');
 			const { JsdomPageAdapter } = await import(
-				'@sthrift-verification/shared/pages/jsdom'
+				'@sthrift-verification/test-support/pages/jsdom'
 			);
 
 			// Render the ReservationRequestForm component

@@ -1188,9 +1188,9 @@ importers:
       '@cucumber/messages':
         specifier: ^32.2.0
         version: 32.2.0
-      '@sthrift-verification/shared':
+      '@sthrift-verification/test-support':
         specifier: workspace:*
-        version: link:../shared
+        version: link:../test-support
       '@sthrift/application-services':
         specifier: workspace:*
         version: link:../../sthrift/application-services
@@ -1321,9 +1321,9 @@ importers:
       '@playwright/test':
         specifier: ^1.52.0
         version: 1.58.2
-      '@sthrift-verification/shared':
+      '@sthrift-verification/test-support':
         specifier: workspace:*
-        version: link:../shared
+        version: link:../test-support
       '@sthrift/application-services':
         specifier: workspace:*
         version: link:../../sthrift/application-services
@@ -1349,7 +1349,7 @@ importers:
         specifier: ^5.4.5
         version: 5.8.3
 
-  packages/sthrift-verification/shared:
+  packages/sthrift-verification/test-support:
     dependencies:
       '@playwright/test':
         specifier: '>=1.40.0'

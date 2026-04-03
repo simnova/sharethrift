@@ -25,7 +25,7 @@
 		"@playwright/test": "^1.52.0",
 		"@sthrift/application-services": "workspace:*",
 		"@sthrift/domain": "workspace:*",
-		"@sthrift-verification/shared": "workspace:*",
+		"@sthrift-verification/test-support": "workspace:*",
 		"@types/node": "^24.6.1",
 		"mongodb": "^6.15.0",
 		"mongodb-memory-server": "^10.2.0",

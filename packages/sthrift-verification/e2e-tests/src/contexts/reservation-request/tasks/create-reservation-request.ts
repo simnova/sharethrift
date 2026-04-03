@@ -20,6 +20,9 @@ export class CreateReservationRequest extends Task {
 		await page.goto(`/listing/${this.input.listingId}`);
 		await page.waitForLoadState('networkidle');
 
+		// Wait for all GraphQL queries to resolve (skeleton disappears)
+		await page.locator('.ant-skeleton').waitFor({ state: 'hidden', timeout: 15_000 });
+
 		await reservationPage.datePicker.rangePicker.waitFor({ state: 'visible', timeout: 10_000 });
 
 		if (await reservationPage.datePicker.isDisabled) {

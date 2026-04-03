@@ -1,7 +1,7 @@
 import { MongoMemoryReplSet } from 'mongodb-memory-server';
 import { MongoClient, ObjectId } from 'mongodb';
 import { ServiceMongoose } from '@cellix/service-mongoose';
-import { getAllMockAccountPlans, getAllMockUsers } from '@sthrift-verification/shared/test-data';
+import { getAllMockAccountPlans, getAllMockUsers } from '@sthrift-verification/test-support/test-data';
 
 const MONGO_BINARY_VERSION = '7.0.14';
 const DEFAULT_DB_NAME = 'sharethrift-test';

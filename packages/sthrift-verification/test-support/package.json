@@ -1,5 +1,5 @@
 {
-	"name": "@sthrift-verification/shared",
+	"name": "@sthrift-verification/test-support",
 	"version": "1.0.0",
 	"description": "Shared test utilities: universal page objects, test data, and helpers for acceptance and e2e tests",
 	"private": true,

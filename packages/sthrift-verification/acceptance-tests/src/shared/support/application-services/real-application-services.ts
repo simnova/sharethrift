@@ -11,7 +11,7 @@ import type {
 } from '@cellix/service-token-validation';
 import type { MessagingService } from '@cellix/service-messaging-base';
 import type { PaymentService } from '@cellix/service-payment-base';
-import { defaultActor } from '@sthrift-verification/shared/test-data';
+import { defaultActor } from '@sthrift-verification/test-support/test-data';
 
 function createMockTokenValidation(): TokenValidation {
 	return {

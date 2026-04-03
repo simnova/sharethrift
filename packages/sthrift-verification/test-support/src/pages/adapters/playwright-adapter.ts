@@ -54,12 +54,11 @@ export class PlaywrightPageAdapter implements PageAdapter {
 	}
 
 	getByRole(role: string, options?: { name?: string | RegExp }): ElementHandle {
-		// Playwright's getByRole expects AriaRole type
-		const ariaRole = role as import('@playwright/test').AriaRole;
+		const roleOptions = options?.name ? { name: options.name } : undefined;
 		return new PlaywrightElementHandle(
 			this.page.getByRole(
-				ariaRole,
-				options ? { name: options.name } : undefined,
+				role as Parameters<PlaywrightPage['getByRole']>[0],
+				roleOptions,
 			),
 		);
 	}

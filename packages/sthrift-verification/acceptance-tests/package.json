@@ -40,7 +40,7 @@
 		"@sthrift/graphql": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
 		"@sthrift/ui-components": "workspace:*",
-		"@sthrift-verification/shared": "workspace:*",
+		"@sthrift-verification/test-support": "workspace:*",
 		"@testing-library/react": "^16.3.2",
 		"@types/graphql-depth-limit": "^1.1.6",
 		"@types/jsdom": "^21.1.7",
