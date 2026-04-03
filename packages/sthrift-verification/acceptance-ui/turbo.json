@@ -1,0 +1,15 @@
+{
+	"extends": ["//"],
+	"tasks": {
+		"test": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "cucumber.js"],
+			"outputs": ["reports/**"]
+		},
+		"test:coverage": {
+			"dependsOn": ["^build"],
+			"inputs": ["src/**", "cucumber.js", ".c8rc.json"],
+			"outputs": ["reports/**", "coverage-c8/**", ".c8-output/**"]
+		}
+	}
+}
