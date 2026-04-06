@@ -1,6 +1,23 @@
 import { VOString } from '@lucaspaganini/value-objects';
 import { DomainSeedwork } from '@cellix/domain-seedwork';
 
+// --- FAKE: test coverage pipeline ---
+export function formatDisplayName(firstName: string, lastName: string, maxLength = 50): string {
+	const full = `${firstName.trim()} ${lastName.trim()}`;
+	if (full.length <= maxLength) {
+		return full;
+	}
+	return `${full.substring(0, maxLength - 1)}…`;
+}
+
+export function isValidPostalCode(code: string, country: 'US' | 'CA' = 'US'): boolean {
+	if (country === 'CA') {
+		return /^[A-Za-z]\d[A-Za-z] ?\d[A-Za-z]\d$/.test(code);
+	}
+	return /^\d{5}(-\d{4})?$/.test(code);
+}
+// --- END FAKE ---
+
 /* Regex Source: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address */
 const EMAIL_PATTERN =
 	/^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;

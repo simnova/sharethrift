@@ -39,32 +39,20 @@ function mergeLcovFiles() {
     fs.mkdirSync(outputDir, { recursive: true });
   }
   
-  // Find all lcov.info files
+  // Find acceptance test lcov.info files
   const lcovFiles = [];
   
-  function findLcovFiles(dir) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      
-      if (entry.isDirectory()) {
-        if (entry.name !== 'node_modules' && entry.name !== '.git') {
-          findLcovFiles(fullPath);
-        }
-      } else if (entry.name === 'lcov.info' && fullPath.includes('/coverage/')) {
-        lcovFiles.push(fullPath);
-      }
+  // Only include coverage from acceptance test packages
+  const acceptanceDirs = [
+    'packages/sthrift-verification/acceptance-api',
+    'packages/sthrift-verification/acceptance-ui',
+  ];
+  
+  for (const dir of acceptanceDirs) {
+    const lcovPath = path.join(rootDir, dir, 'coverage', 'lcov.info');
+    if (fs.existsSync(lcovPath)) {
+      lcovFiles.push(lcovPath);
     }
-  }
-  
-  // Search in apps and packages directories
-  const searchDirs = ['apps', 'packages'].filter(dir => 
-    fs.existsSync(path.join(rootDir, dir))
-  );
-  
-  for (const dir of searchDirs) {
-    findLcovFiles(path.join(rootDir, dir));
   }
   
   console.log(`Found ${lcovFiles.length} LCOV files:`);

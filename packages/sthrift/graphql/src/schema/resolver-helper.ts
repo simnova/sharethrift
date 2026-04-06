@@ -9,6 +9,24 @@ import type {
 import { isValidObjectId } from 'mongoose';
 import type { GraphContext } from '../init/context.ts';
 
+// --- FAKE: test coverage pipeline ---
+export function sanitizeSearchInput(input: string): string {
+	const trimmed = input.trim();
+	if (trimmed.length === 0) {
+		return '';
+	}
+	// Strip characters that could cause issues in search queries
+	const sanitized = trimmed.replaceAll(/[<>"'`;]/g, '');
+	return sanitized.length > 200 ? sanitized.substring(0, 200) : sanitized;
+}
+
+export function buildPaginationArgs(page: number, pageSize: number): { skip: number; limit: number } {
+	const safePage = Math.max(1, Math.floor(page));
+	const safeSize = Math.min(Math.max(1, Math.floor(pageSize)), 100);
+	return { skip: (safePage - 1) * safeSize, limit: safeSize };
+}
+// --- END FAKE ---
+
 export const getUserByEmail = async (
 	email: string,
 	context: GraphContext,
