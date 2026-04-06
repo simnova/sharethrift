@@ -1,12 +1,10 @@
 import type { IWorld, ITestCaseHookParameter } from '@cucumber/cucumber';
 import { After, AfterAll, Before, Status, setDefaultTimeout } from '@cucumber/cucumber';
-import { isAgent } from 'std-env';
 import path from 'node:path';
 import fs from 'node:fs';
 
 import { type ShareThriftWorld, stopSharedServers } from '../../world.ts';
 import { BrowseTheWeb } from '../abilities/browse-the-web.ts';
-
 
 setDefaultTimeout(120_000);
 
@@ -42,6 +40,6 @@ After(async function (this: IWorld, { result, pickle }: ITestCaseHookParameter) 
 	await world.cleanup();
 });
 
-AfterAll(async function () {
+AfterAll(async () => {
 	await stopSharedServers();
 });

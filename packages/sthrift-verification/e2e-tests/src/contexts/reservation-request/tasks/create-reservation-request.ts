@@ -1,8 +1,12 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
+import {
+	type E2EReservationPage,
+	ReservationPage,
+	formatDate,
+} from '@sthrift-verification/test-support/pages';
+import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
 import type { CreateReservationRequestInput, ReservationRequestNotes } from '../types.ts';
-import { ReservationPage } from '../../../shared/pages/reservation.page.ts';
-import { formatDate } from '../../../shared/pages/components/date-range-picker.component.ts';
 
 export class CreateReservationRequest extends Task {
 	static with(input: CreateReservationRequestInput) {
@@ -15,18 +19,20 @@ export class CreateReservationRequest extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const { page } = BrowseTheWeb.withActor(actor);
-		const reservationPage = new ReservationPage(page);
+		const reservationPage: E2EReservationPage = new ReservationPage(
+			new PlaywrightPageAdapter(page),
+		);
 
-		await page.goto(`/listing/${this.input.listingId}`);
-		await page.waitForLoadState('networkidle');
+		await page.goto(`/listing/${this.input.listingId}`, { waitUntil: 'domcontentloaded' });
 
-		await reservationPage.datePicker.rangePicker.waitFor({ state: 'visible', timeout: 10_000 });
+		// Wait for all GraphQL queries to resolve (skeleton disappears)
+		await reservationPage.skeleton.waitFor({ state: 'hidden', timeout: 15_000 });
 
-		if (await reservationPage.datePicker.isDisabled) {
+		await reservationPage.rangePicker.waitFor({ state: 'visible', timeout: 10_000 });
+
+		if (await reservationPage.isDisabled()) {
 			throw new Error('Reservation period overlaps with existing active reservation requests');
 		}
-
-		await reservationPage.datePicker.rangePicker.click();
 
 		const hasStart = this.input.reservationPeriodStart instanceof Date;
 		const hasEnd = this.input.reservationPeriodEnd instanceof Date;
@@ -37,23 +43,32 @@ export class CreateReservationRequest extends Task {
 			throw new Error(`Required field missing: ${missing}`);
 		}
 
+		await reservationPage.openDatePicker();
+
 		const startDateStr = formatDate(this.input.reservationPeriodStart);
 		const endDateStr = formatDate(this.input.reservationPeriodEnd);
 
-		const startCell = reservationPage.datePicker.calendarCell(startDateStr);
+		const startCell = reservationPage.calendarCell(startDateStr);
 		await startCell.waitFor({ state: 'visible', timeout: 5_000 });
 
-		if (await reservationPage.datePicker.isCalendarCellDisabled(startDateStr)) {
+		if (await reservationPage.isCalendarCellDisabled(startDateStr)) {
 			await page.keyboard.press('Escape');
 			throw new Error('Reservation period overlaps with existing active reservation requests');
 		}
 
 		await startCell.click();
 
-		const endCell = reservationPage.datePicker.calendarCell(endDateStr);
+		let endCell = reservationPage.calendarCell(endDateStr);
+		try {
+			await endCell.waitFor({ state: 'visible', timeout: 1_000 });
+		} catch {
+			await reservationPage.nextMonthButton.click();
+			endCell = reservationPage.calendarCell(endDateStr);
+		}
+
 		await endCell.waitFor({ state: 'visible', timeout: 5_000 });
 
-		if (await reservationPage.datePicker.isCalendarCellDisabled(endDateStr)) {
+		if (await reservationPage.isCalendarCellDisabled(endDateStr)) {
 			await page.keyboard.press('Escape');
 			throw new Error('Reservation period overlaps with existing active reservation requests');
 		}
@@ -61,7 +76,9 @@ export class CreateReservationRequest extends Task {
 		await endCell.click();
 
 		const dateSelectionError = await reservationPage.overlapErrorMessage
-			.textContent({ timeout: 2_000 }).catch(() => null);
+			.waitFor({ state: 'visible', timeout: 500 })
+			.then(() => reservationPage.overlapErrorMessage.textContent())
+			.catch(() => null);
 		if (dateSelectionError) {
 			throw new Error('Reservation period overlaps with existing active reservation requests');
 		}
@@ -88,7 +105,7 @@ export class CreateReservationRequest extends Task {
 		}
 
 		// Verify date picker is disabled after reservation
-		await reservationPage.datePicker.disabledPicker.waitFor({ state: 'visible', timeout: 5_000 });
+		await reservationPage.disabledPicker.waitFor({ state: 'visible', timeout: 5_000 });
 
 		await actor.attemptsTo(
 			notes<ReservationRequestNotes>().set('lastReservationRequestId', this.input.listingId),

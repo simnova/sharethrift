@@ -1,0 +1,33 @@
+{
+	"all": true,
+	"reporter": ["lcov"],
+	"reportsDirectory": "coverage",
+	"tempDirectory": ".c8-output",
+	"src": [
+		"../../../packages/sthrift/application-services/src",
+		"../../../packages/sthrift/data-sources-mongoose-models/src",
+		"../../../packages/sthrift/domain/src",
+		"../../../packages/sthrift/graphql/src",
+		"../../../packages/sthrift/persistence/src"
+	],
+	"exclude": [
+		"cucumber.js",
+		"src/**",
+		"**/node_modules/**",
+		"**/arch-unit-tests/**",
+		"**/*.test.*",
+		"**/*.spec.*",
+		"**/*.stories.*",
+		"**/*.d.ts",
+		"**/dist/**/*.map",
+		"**/packages/sthrift-verification/**",
+		"**/packages/cellix/test-utils/**",
+		"**/packages/cellix/vitest-config/**",
+		"coverage/**",
+		"coverage-c8/**",
+		"coverage-vitest/**",
+		".c8-output/**",
+		"**/generated.tsx"
+	],
+	"excludeNodeModules": false
+}

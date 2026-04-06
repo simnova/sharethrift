@@ -1,0 +1,48 @@
+{
+	"name": "@sthrift-verification/acceptance-api",
+	"version": "1.0.0",
+	"description": "Cucumber Screenplay acceptance tests for the ShareThrift API path",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"test": "LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' cucumber-js --format json:./reports/cucumber-report-api.json",
+		"test:coverage": "LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' c8 --clean --allowExternal --reports-dir=coverage --reporter=lcov --reporter=html -- cucumber-js --format json:./reports/cucumber-report-api.json",
+		"test:coverage:report": "c8 report --allowExternal --temp-directory=.c8-output --reports-dir=coverage --reporter=lcov --reporter=html --exclude='**/node_modules/**' --exclude='**/*.d.ts' --exclude='**/*.stories.*' --exclude='**/generated.*'",
+		"clean": "rimraf dist reports target coverage coverage-c8 coverage-vitest .c8-output"
+	},
+	"dependencies": {
+		"@cucumber/cucumber": "^12.7.0",
+		"@serenity-js/assertions": "^3.37.2",
+		"@serenity-js/console-reporter": "^3.37.2",
+		"@serenity-js/core": "^3.37.2",
+		"@serenity-js/cucumber": "^3.37.2",
+		"@serenity-js/serenity-bdd": "^3.37.2",
+		"graphql": "^16.12.0",
+		"std-env": "^4.0.0"
+	},
+	"devDependencies": {
+		"@apollo/server": "^5.5.0",
+		"@cellix/service-messaging-base": "workspace:*",
+		"@cellix/service-mongoose": "workspace:*",
+		"@cellix/service-payment-base": "workspace:*",
+		"@cellix/service-token-validation": "workspace:*",
+		"@cellix/typescript-config": "workspace:*",
+		"@cucumber/messages": "^32.2.0",
+		"@sthrift/application-services": "workspace:*",
+		"@sthrift/context-spec": "workspace:*",
+		"@sthrift/domain": "workspace:*",
+		"@sthrift/graphql": "workspace:*",
+		"@sthrift/persistence": "workspace:*",
+		"@sthrift-verification/test-support": "workspace:*",
+		"@types/graphql-depth-limit": "^1.1.6",
+		"@types/node": "^24.6.1",
+		"c8": "^11.0.0",
+		"graphql-depth-limit": "^1.1.0",
+		"graphql-middleware": "^6.1.35",
+		"mongodb": "^6.15.0",
+		"mongodb-memory-server": "^10.2.0",
+		"rimraf": "^6.0.1",
+		"tsx": "^4.20.3",
+		"typescript": "^5.4.5"
+	}
+}

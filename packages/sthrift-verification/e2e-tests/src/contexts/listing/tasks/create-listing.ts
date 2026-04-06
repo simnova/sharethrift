@@ -4,7 +4,11 @@ import { fileURLToPath } from 'node:url';
 import { type Actor, Task, notes } from '@serenity-js/core';
 
 import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
-import { ListingPage } from '../../../shared/pages/listing.page.ts';
+import {
+	type E2EListingPage,
+	ListingPage,
+} from '@sthrift-verification/test-support/pages';
+import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
 import type { ListingDetails, ListingNotes } from '../types.ts';
 
 const TEST_IMAGE_PATH = path.resolve(
@@ -23,38 +27,41 @@ export class CreateListing extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const { page } = BrowseTheWeb.withActor(actor);
-		const listingPage = new ListingPage(page);
+		const listingPage: E2EListingPage = new ListingPage(
+			new PlaywrightPageAdapter(page),
+		);
 
 		await page.goto('/create-listing', { waitUntil: 'domcontentloaded' });
 		await page.waitForURL('**/create-listing', { timeout: 15_000, waitUntil: 'commit' });
 		await this.ensureCreateListingFormReady(page, listingPage);
 
-		if (this.details.title) {
-			await listingPage.titleInput.fill(this.details.title);
-		}
+		await listingPage.fillForm({
+			title: this.details.title,
+			description: this.details.description,
+			category: this.details.category,
+			location: this.details.location,
+		});
 
-		if (this.details.description) {
-			await listingPage.descriptionInput.fill(this.details.description);
-		}
-
-		if (this.details.category) {
-			await listingPage.categorySelect.click();
-			await listingPage.categoryOption(this.details.category).click();
-		}
-
-		if (this.details.location) {
-			await listingPage.locationInput.fill(this.details.location);
-		}
-
-		// Fill sharing period
-		if (await listingPage.datePicker.rangePicker.isVisible()) {
+		// Fill sharing period using the Ant Design date picker
+		const rangePickerVisible = await page.locator('.ant-picker-range').isVisible();
+		if (rangePickerVisible) {
 			const today = new Date();
 			const startDate = new Date(today);
 			startDate.setDate(today.getDate() + 1);
 			const endDate = new Date(today);
 			endDate.setDate(today.getDate() + 30);
 
-			await listingPage.datePicker.selectDateRange(startDate, endDate);
+			await page.locator('.ant-picker-range').click();
+			const startStr = startDate.toISOString().split('T')[0] ?? '';
+			const endStr = endDate.toISOString().split('T')[0] ?? '';
+			await page.locator(`td[title="${startStr}"]`).first().click();
+			// Navigate to next month if end date not visible
+			const endCell = page.locator(`td[title="${endStr}"]`).first();
+			if (!(await endCell.isVisible({ timeout: 1_000 }).catch(() => false))) {
+				await page.locator('.ant-picker-header-next-btn').last().click();
+			}
+			await endCell.waitFor({ state: 'visible', timeout: 3_000 });
+			await endCell.click();
 			await page.keyboard.press('Escape');
 		}
 
@@ -64,18 +71,17 @@ export class CreateListing extends Task {
 
 		// Upload a test image when publishing (required for non-draft listings)
 		if (!isDraft) {
-			await listingPage.imageUploadInput.setInputFiles(TEST_IMAGE_PATH);
-			// Wait for the image preview to render
+			await page.locator('input[type="file"][accept="image/*"]').first().setInputFiles(TEST_IMAGE_PATH);
 			await page.locator('img[src^="data:image"]').first().waitFor({ state: 'visible', timeout: 5_000 });
 		}
 
 		const hasMissingRequired = !this.details.title;
 
 		if (hasMissingRequired) {
-			await listingPage.publishButton.click();
+			await listingPage.clickPublish();
 
 			const validationError = await listingPage.firstValidationError
-				.textContent({ timeout: 3_000 })
+				.textContent()
 				.catch(() => null);
 
 			if (validationError) {
@@ -89,7 +95,7 @@ export class CreateListing extends Task {
 		const submitButton = isDraft ? listingPage.saveDraftButton : listingPage.publishButton;
 
 		// Intercept the GraphQL mutation response to capture listing ID and errors
-		const getMutationResult = await listingPage.listenForMutationResponse('createItemListing');
+		const getMutationResult = await this.listenForMutationResponse(page, 'createItemListing');
 
 		await submitButton.click();
 
@@ -130,7 +136,6 @@ export class CreateListing extends Task {
 		}
 
 		await listingPage.modal.waitFor({ state: 'visible', timeout: 5_000 });
-		await listingPage.modal.getByText(expectedModalText).waitFor({ state: 'visible', timeout: 5_000 });
 
 		const modalContent = await listingPage.modal.textContent();
 		if (!modalContent?.includes(expectedModalText)) {
@@ -145,7 +150,7 @@ export class CreateListing extends Task {
 
 		// Verify actual page navigation occurred
 		await page.waitForURL('**/my-listings**', { timeout: 10_000 });
-		await page.waitForLoadState('networkidle');
+		await page.waitForLoadState('domcontentloaded');
 
 		// Read listing title from the table DOM
 		const listingTitleCell = listingPage.listingTitleCell(this.details.title);
@@ -159,7 +164,12 @@ export class CreateListing extends Task {
 		}
 
 		// Read listing status from the table row
-		const statusTag = listingPage.statusTagInRow(this.details.title);
+		const statusTag = await listingPage.statusTagInRow(this.details.title);
+		if (!statusTag) {
+			throw new Error(
+				`Listing status not found in table for "${this.details.title}"`,
+			);
+		}
 		await statusTag.waitFor({ state: 'visible', timeout: 5_000 });
 		const domStatus = await statusTag.textContent();
 
@@ -170,7 +180,9 @@ export class CreateListing extends Task {
 		}
 
 		// Extract listing ID from the GraphQL mutation response
-		const listing = mutationResult.data?.listing as Record<string, unknown> | undefined;
+		const listing = mutationResult.data?.listing as
+			| Record<string, unknown>
+			| undefined;
 		const listingId = String(listing?.id ?? 'e2e-unknown');
 
 		await actor.attemptsTo(
@@ -180,7 +192,10 @@ export class CreateListing extends Task {
 		);
 	}
 
-	private async ensureCreateListingFormReady(page: BrowseTheWeb['page'], listingPage: ListingPage): Promise<void> {
+	private async ensureCreateListingFormReady(
+		page: BrowseTheWeb['page'],
+		listingPage: E2EListingPage,
+	): Promise<void> {
 		try {
 			await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
 		} catch {
@@ -198,6 +213,36 @@ export class CreateListing extends Task {
 
 		await page.waitForLoadState('networkidle').catch(() => {
 			// Network idle may not occur if page is very responsive
+		});
+	}
+
+	private listenForMutationResponse(page: BrowseTheWeb['page'], mutationName: string): Promise<() => { error: string | undefined; data: Record<string, unknown> | undefined }> {
+		let serverError: string | undefined;
+		let mutationData: Record<string, unknown> | undefined;
+
+		const listener = async (resp: import('@playwright/test').Response) => {
+			if (resp.request().method() !== 'POST') return;
+			try {
+				const postData = resp.request().postData();
+				if (!postData?.toLowerCase().includes(mutationName.toLowerCase())) return;
+				const json = await resp.json();
+				const entries = Array.isArray(json) ? json : [json];
+				for (const entry of entries) {
+					const result = entry?.data?.[mutationName];
+					if (result) {
+						mutationData = result as Record<string, unknown>;
+						if (result?.status?.success === false) {
+							serverError = result.status.errorMessage ?? `${mutationName} failed`;
+						}
+					}
+				}
+			} catch { /* non-JSON response */ }
+		};
+
+		page.on('response', listener);
+		return Promise.resolve(() => {
+			page.off('response', listener);
+			return { error: serverError, data: mutationData };
 		});
 	}
 

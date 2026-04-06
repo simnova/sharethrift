@@ -60,8 +60,12 @@ sharethrift/
 │   │   ├── rest/            # REST API adapters
 │   │   ├── persistence/     # MongoDB persistence layer
 │   │   ├── application-services/  # Orchestration services
-│   │   ├── ui-components/   # Shared React components
-│   │   └── acceptance-tests/     # BDD acceptance tests (Serenity.js)
+│   │   └── ui-components/   # Shared React components
+│   └── sthrift-verification/ # Verification packages and shared test support
+│       ├── acceptance-api/   # API-path acceptance tests (Serenity.js)
+│       ├── acceptance-ui/    # UI-path acceptance tests (Serenity.js + jsdom)
+│       ├── e2e-tests/        # Browser confidence tests (Playwright)
+│       └── test-support/     # Shared features, pages, test data
 │   └── cellix/              # Seedwork abstractions (shared across projects)
 │       ├── domain-seedwork/           # DDD base classes
 │       ├── event-bus-seedwork-node/   # Event bus abstractions
@@ -327,28 +331,26 @@ All packages use **strict TypeScript configuration**:
 
 3. **Acceptance Tests / BDD** (Top)
    - Framework: Serenity.js + Cucumber (Gherkin)
-   - Location: `packages/sthrift/acceptance-tests/`
-   - Test levels:
-     - **domain**: Direct domain layer testing
-     - **session**: GraphQL/MongoDB session management
-     - **e2e**: Full end-to-end with Playwright browser
-   - Backends:
-     - **GraphQL**: GraphQL resolver layer (mock app services)
-     - **MongoDB**: Full persistence stack (MongoMemoryServer)
+   - Locations:
+     - `packages/sthrift-verification/acceptance-api/`
+     - `packages/sthrift-verification/acceptance-ui/`
+   - Shared features/pages/test data:
+     - `packages/sthrift-verification/test-support/`
+   - Browser confidence tests:
+     - `packages/sthrift-verification/e2e-tests/`
 
    Example test matrix:
    ```
-   Domain (domain) → In-memory aggregates
-   Session + GraphQL (session:graphql) → GraphQL backend
-   Session + MongoDB (session:mongodb) → MongoDB backend
-   E2E (e2e) → Playwright browser → Vite UI → GraphQL → MongoDB
+   Acceptance API → GraphQL backend → application services → domain → MongoDB
+   Acceptance UI → jsdom-rendered UI components + shared page objects
+   E2E → Playwright browser → Vite UI → GraphQL → MongoDB
    ```
 
 ### Acceptance Test Pattern (Serenity.js)
 
 **File Structure**:
 ```
-acceptance-tests/
+acceptance-api/ or acceptance-ui/
 ├── src/
 │   ├── step-definitions/     # Gherkin step implementations
 │   ├── support/              # Hooks, configuration, world setup
@@ -358,9 +360,11 @@ acceptance-tests/
 │   ├── contexts/             # Test context setup
 │   │   ├── listing/          # Listing context (abilities, tasks, sessions)
 │   │   └── reservation-request/
-│   └── features/             # Gherkin feature files (.feature)
+│   └── features/             # Optional local feature files (.feature)
 └── test:* scripts run scenarios
 ```
+
+Shared feature files live in `packages/sthrift-verification/test-support/src/scenarios/feature-files/`.
 
 **Key Patterns**:
 - **Abilities**: Actor capabilities registered in Cast
@@ -426,8 +430,8 @@ Located in: `apps/docs/docs/decisions/`
 4. **Create repository interface** (abstraction)
 5. **Implement UnitOfWork** for consistency coordination
 6. **Define permissions** (`{entity}.{role}.passport.ts`)
-7. **Create acceptance tests** in `acceptance-tests/src/contexts/{context-name}/`
-8. **Add to Cast** in acceptance test world setup
+7. **Create acceptance tests** in `acceptance-api/src/contexts/{context-name}/` and/or `acceptance-ui/src/contexts/{context-name}/`
+8. **Add to Cast** in the relevant acceptance package world setup
 9. **Implement GraphQL resolver** in `packages/sthrift/graphql/`
 10. **Implement MongoDB adapter** in `packages/sthrift/persistence/`
 
@@ -442,11 +446,11 @@ Located in: `apps/docs/docs/decisions/`
 
 ### Adding a New Acceptance Test
 
-1. **Write feature file** (Gherkin) in `acceptance-tests/src/features/`
-2. **Implement step definitions** in `acceptance-tests/src/step-definitions/`
+1. **Write feature file** (Gherkin) in `test-support/src/scenarios/feature-files/`
+2. **Implement step definitions** in `acceptance-api/src/step-definitions/` and/or `acceptance-ui/src/step-definitions/`
 3. **Create abilities/tasks** if needed
 4. **Set up world context** in hooks
-5. **Run tests**: `pnpm run test:acceptance:domain` (or appropriate level)
+5. **Run tests**: `pnpm run test:acceptance:api` and/or `pnpm run test:acceptance:ui`
 
 ### Running Acceptance Tests
 
@@ -454,10 +458,10 @@ Located in: `apps/docs/docs/decisions/`
 # All acceptance tests
 pnpm run test:acceptance:all
 
-# Specific level
-pnpm run test:acceptance:domain          # Pure domain
-pnpm run test:acceptance:session:graphql # Session + GraphQL
-pnpm run test:acceptance:e2e             # Full E2E with Playwright
+# Specific package
+pnpm run test:acceptance:api             # API-path acceptance tests
+pnpm run test:acceptance:ui              # UI-path acceptance tests
+pnpm run test:e2e                        # Full E2E with Playwright
 ```
 
 ## 🎯 Key Principles

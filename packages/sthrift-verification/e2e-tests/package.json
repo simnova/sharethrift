@@ -5,7 +5,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"test:e2e": "NODE_EXTRA_CA_CERTS=/tmp/portless/ca.pem LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' cucumber-js --format json:./reports/cucumber-report-e2e.json",
+		"test:e2e": "NODE_EXTRA_CA_CERTS=${HOME}/.portless/ca.pem LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' cucumber-js --format json:./reports/cucumber-report-e2e.json",
 		"playwright:install": "playwright install chromium",
 		"clean": "rimraf dist reports target"
 	},
@@ -25,6 +25,7 @@
 		"@playwright/test": "^1.52.0",
 		"@sthrift/application-services": "workspace:*",
 		"@sthrift/domain": "workspace:*",
+		"@sthrift-verification/test-support": "workspace:*",
 		"@types/node": "^24.6.1",
 		"mongodb": "^6.15.0",
 		"mongodb-memory-server": "^10.2.0",

@@ -1,6 +1,10 @@
 import { Question, type AnswersQuestions, type UsesAbilities, notes } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
-import { ListingPage } from '../../../shared/pages/listing.page.ts';
+import {
+	type E2EListingPage,
+	ListingPage,
+} from '@sthrift-verification/test-support/pages';
+import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
 
 export class ListingTitle extends Question<Promise<string>> {
 	constructor() {
@@ -41,7 +45,9 @@ export class ListingTitle extends Question<Promise<string>> {
 
 		try {
 			const { page } = BrowseTheWeb.withActor(actor);
-			const listingPage = new ListingPage(page);
+			const listingPage: E2EListingPage = new ListingPage(
+				new PlaywrightPageAdapter(page),
+			);
 			const titleCell = listingPage.listingTitleCell(listingTitle);
 			await titleCell.waitFor({ state: 'visible', timeout: 3_000 });
 			return (await titleCell.textContent())?.trim() || undefined;

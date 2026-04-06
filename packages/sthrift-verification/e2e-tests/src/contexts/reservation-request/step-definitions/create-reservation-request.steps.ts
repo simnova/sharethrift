@@ -61,8 +61,8 @@ When(
 		const data = dataTable.rowsHash();
 
 		const listingId = await getListingIdFromOwner(owner);
-		const startDate = data['reservationPeriodStart'];
-		const endDate = data['reservationPeriodEnd'];
+		const startDate = data.reservationPeriodStart;
+		const endDate = data.reservationPeriodEnd;
 
 		await actor.attemptsTo(
 			CreateReservationRequest.with({
@@ -89,8 +89,8 @@ When(
 		);
 
 		try {
-			const startDate = data['reservationPeriodStart'];
-			const endDate = data['reservationPeriodEnd'];
+			const startDate = data.reservationPeriodStart;
+			const endDate = data.reservationPeriodEnd;
 
 			const listingId = await getListingIdFromOwner('Bob');
 
@@ -309,8 +309,8 @@ Given(
 		const data = dataTable.rowsHash();
 
 		const listingId = await getListingIdFromOwner(owner);
-		const startDate = data['reservationPeriodStart'];
-		const endDate = data['reservationPeriodEnd'];
+		const startDate = data.reservationPeriodStart;
+		const endDate = data.reservationPeriodEnd;
 
 		await actor.attemptsTo(
 			CreateReservationRequest.with({
@@ -336,8 +336,8 @@ When(
 
 		try {
 			const listingId = await getListingIdFromOwner('Bob');
-			const startDate = data['reservationPeriodStart'];
-			const endDate = data['reservationPeriodEnd'];
+			const startDate = data.reservationPeriodStart;
+			const endDate = data.reservationPeriodEnd;
 
 			await actor.attemptsTo(
 				CreateReservationRequest.with({

@@ -1,0 +1,30 @@
+{
+	"all": true,
+	"reporter": ["lcov"],
+	"reportsDirectory": "coverage",
+	"tempDirectory": ".c8-output",
+	"src": [
+		"../../../apps/ui-sharethrift/src",
+		"../../../packages/sthrift/ui-components/src"
+	],
+	"exclude": [
+		"cucumber.js",
+		"src/**",
+		"**/node_modules/**",
+		"**/arch-unit-tests/**",
+		"**/*.test.*",
+		"**/*.spec.*",
+		"**/*.stories.*",
+		"**/*.d.ts",
+		"**/dist/**/*.map",
+		"**/packages/sthrift-verification/**",
+		"**/packages/cellix/test-utils/**",
+		"**/packages/cellix/vitest-config/**",
+		"coverage/**",
+		"coverage-c8/**",
+		"coverage-vitest/**",
+		".c8-output/**",
+		"**/generated.tsx"
+	],
+	"excludeNodeModules": false
+}

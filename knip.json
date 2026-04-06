@@ -48,7 +48,11 @@
 			"entry": ["src/index.ts"],
 			"project": ["src/**/*.{ts,tsx}"]
 		},
-		"packages/sthrift-verification/acceptance-tests": {
+		"packages/sthrift-verification/acceptance-api": {
+			"entry": ["src/world.ts", "src/step-definitions/**/*.ts"],
+			"project": ["src/**/*.{ts,mjs,js}"]
+		},
+		"packages/sthrift-verification/acceptance-ui": {
 			"entry": ["src/world.ts", "src/step-definitions/**/*.ts"],
 			"project": ["src/**/*.{ts,mjs,js}"]
 		},
@@ -70,7 +74,8 @@
 		"packages/cellix/server-payment-seedwork",
 		"packages/cellix/arch-unit-tests",
 		"packages/sthrift-verification/arch-unit-tests",
-		"packages/sthrift-verification/acceptance-tests",
+		"packages/sthrift-verification/acceptance-api",
+		"packages/sthrift-verification/acceptance-ui",
 		"packages/sthrift-verification/e2e-tests",
 		"packages/sthrift/ui-components",
 		"apps/server-messaging-mock",

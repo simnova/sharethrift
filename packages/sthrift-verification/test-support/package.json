@@ -1,0 +1,30 @@
+{
+	"name": "@sthrift-verification/test-support",
+	"version": "1.0.0",
+	"description": "Shared test utilities: universal page objects, test data, and helpers for acceptance and e2e tests",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./test-data": "./src/test-data/index.ts",
+		"./pages": "./src/pages/index.ts",
+		"./pages/jsdom": "./src/pages/adapters/jsdom-adapter.ts",
+		"./pages/playwright": "./src/pages/adapters/playwright-adapter.ts"
+	},
+	"dependencies": {
+		"@sthrift/domain": "workspace:*",
+		"@sthrift/application-services": "workspace:*"
+	},
+	"devDependencies": {
+		"@cellix/typescript-config": "workspace:*",
+		"@types/node": "^24.6.1",
+		"typescript": "^5.4.5"
+	},
+	"peerDependencies": {
+		"@playwright/test": ">=1.40.0",
+		"@testing-library/react": ">=16.0.0",
+		"jsdom": ">=24.0.0"
+	},
+	"peerDependenciesMeta": {
+		"jsdom": { "optional": true }
+	}
+}
