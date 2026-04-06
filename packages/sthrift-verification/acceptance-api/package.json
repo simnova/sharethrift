@@ -6,8 +6,8 @@
 	"type": "module",
 	"scripts": {
 		"test": "LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' cucumber-js --format json:./reports/cucumber-report-api.json",
-		"test:coverage": "LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' c8 --clean --allowExternal --reports-dir=coverage --reporter=lcov --reporter=html -- cucumber-js --format json:./reports/cucumber-report-api.json",
-		"test:coverage:report": "c8 report --allowExternal --temp-directory=.c8-output --reports-dir=coverage --reporter=lcov --reporter=html --exclude='**/node_modules/**' --exclude='**/*.d.ts' --exclude='**/*.stories.*' --exclude='**/generated.*'",
+		"test:coverage": "LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm' c8 --allowExternal -- cucumber-js --format json:./reports/cucumber-report-api.json",
+		"test:coverage:report": "c8 report --allowExternal",
 		"clean": "rimraf dist reports target coverage coverage-c8 coverage-vitest .c8-output"
 	},
 	"dependencies": {

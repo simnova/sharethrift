@@ -1,6 +1,6 @@
 {
 	"all": true,
-	"reporter": ["lcov"],
+	"reporter": ["lcov", "html"],
 	"reportsDirectory": "coverage",
 	"tempDirectory": ".c8-output",
 	"src": [
