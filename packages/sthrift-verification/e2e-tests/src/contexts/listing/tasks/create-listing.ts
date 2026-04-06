@@ -180,10 +180,10 @@ export class CreateListing extends Task {
 		}
 
 		// Extract listing ID from the GraphQL mutation response
-		const listing = mutationResult.data?.['listing'] as
+		const listing = mutationResult.data?.listing as
 			| Record<string, unknown>
 			| undefined;
-		const listingId = String(listing?.['id'] ?? 'e2e-unknown');
+		const listingId = String(listing?.id ?? 'e2e-unknown');
 
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listingId),

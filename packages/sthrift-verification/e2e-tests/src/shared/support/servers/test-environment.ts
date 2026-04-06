@@ -13,7 +13,7 @@ export function initTestEnvironment() {
 	execFileSync(getPortlessPath(), ['proxy', 'start'], {
 		timeout: 15_000,
 		stdio: 'pipe',
-		env: { ...process.env, PORTLESS_STATE_DIR: `${process.env['HOME']}/.portless` },
+		env: { ...process.env, PORTLESS_STATE_DIR: `${process.env.HOME}/.portless` },
 	});
 
 	proxyInitialized = true;

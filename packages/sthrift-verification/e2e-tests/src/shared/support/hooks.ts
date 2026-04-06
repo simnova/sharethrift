@@ -40,6 +40,6 @@ After(async function (this: IWorld, { result, pickle }: ITestCaseHookParameter) 
 	await world.cleanup();
 });
 
-AfterAll(async function () {
+AfterAll(async () => {
 	await stopSharedServers();
 });

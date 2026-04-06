@@ -1,7 +1,6 @@
 import {
 	setWorldConstructor,
 	World,
-	type IWorldOptions,
 } from '@cucumber/cucumber';
 import { engage } from '@serenity-js/core';
 import {
@@ -18,10 +17,6 @@ export async function stopSharedServers(): Promise<void> {
 
 export class ShareThriftApiWorld extends World {
 	private apiUrl = '';
-
-	constructor(options: IWorldOptions) {
-		super(options);
-	}
 
 	async init(): Promise<void> {
 		await infra.ensureApiServers();

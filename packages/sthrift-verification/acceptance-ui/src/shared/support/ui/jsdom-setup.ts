@@ -61,10 +61,10 @@ export function ensureJsdom(): void {
 	// Mock matchMedia (required by antd responsive components)
 	const matchMediaMock = () => ({
 		matches: false,
-		addListener: () => {},
-		removeListener: () => {},
-		addEventListener: () => {},
-		removeEventListener: () => {},
+		addListener: () => undefined,
+		removeListener: () => undefined,
+		addEventListener: () => undefined,
+		removeEventListener: () => undefined,
 		dispatchEvent: () => false,
 		media: '',
 		onchange: null,
@@ -74,16 +74,16 @@ export function ensureJsdom(): void {
 
 	// Mock ResizeObserver (required by antd)
 	globalThis.ResizeObserver = class ResizeObserver {
-		observe() {}
-		unobserve() {}
-		disconnect() {}
+		observe() { /* no-op */ }
+		unobserve() { /* no-op */ }
+		disconnect() { /* no-op */ }
 	} as unknown as typeof ResizeObserver;
 
 	// Mock IntersectionObserver
 	globalThis.IntersectionObserver = class IntersectionObserver {
-		observe() {}
-		unobserve() {}
-		disconnect() {}
+		observe() { /* no-op */ }
+		unobserve() { /* no-op */ }
+		disconnect() { /* no-op */ }
 		root = null;
 		rootMargin = '';
 		thresholds = [] as number[];
@@ -96,8 +96,8 @@ export function ensureJsdom(): void {
 	}
 
 	// Mock scroll and selection APIs
-	window.scrollTo = () => {};
-	globalThis.scrollTo = () => {};
+	window.scrollTo = () => undefined;
+	globalThis.scrollTo = () => undefined;
 	window.getSelection = () => null as unknown as Selection;
 
 	// Mock requestAnimationFrame (not always present in jsdom)

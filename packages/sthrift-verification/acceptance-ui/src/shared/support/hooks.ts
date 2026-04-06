@@ -1,7 +1,7 @@
 import type { IWorld } from '@cucumber/cucumber';
 import { After, Before, setDefaultTimeout } from '@cucumber/cucumber';
 import { isAgent } from 'std-env';
-import { type ShareThriftUiWorld } from '../../world.ts';
+import type { ShareThriftUiWorld } from '../../world.ts';
 
 let printedSuiteHeader = false;
 

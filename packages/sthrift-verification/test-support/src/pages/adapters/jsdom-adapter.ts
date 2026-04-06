@@ -194,13 +194,14 @@ export class JsdomPageAdapter implements PageAdapter {
 		return new JsdomElementHandle(null);
 	}
 
-	async goto(
+	goto(
 		url: string,
 		_options?: { timeout?: number; waitUntil?: PageNavigationWaitUntil },
 	): Promise<void> {
 		if (typeof window !== 'undefined') {
 			window.history.pushState({}, '', url);
 		}
+		return Promise.resolve();
 	}
 
 	waitForURL(

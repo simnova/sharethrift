@@ -32,8 +32,6 @@ export async function renderForCoverage<P extends Record<string, unknown>>(
 	const container = document.createElement('div');
 	document.body.appendChild(container);
 
-	let root: Root | undefined;
-
 	const withRouter = options?.withRouter ?? true;
 
 	let element: ReactElement;
@@ -49,7 +47,7 @@ export async function renderForCoverage<P extends Record<string, unknown>>(
 		element = componentElement;
 	}
 
-	root = createRoot(container);
+	const root: Root = createRoot(container);
 	root.render(element);
 
 	// Allow React to flush the render

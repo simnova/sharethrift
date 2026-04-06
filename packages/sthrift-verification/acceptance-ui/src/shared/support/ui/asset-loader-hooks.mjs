@@ -29,7 +29,7 @@ export async function resolve(specifier, context, nextResolve) {
 	return nextResolve(specifier);
 }
 
-export async function load(url, context, nextLoad) {
+export function load(url, context, nextLoad) {
 	if (ASSET_PATTERN.test(url)) {
 		return {
 			format: 'module',

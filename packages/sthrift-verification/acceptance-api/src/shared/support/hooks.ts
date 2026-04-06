@@ -25,6 +25,6 @@ After(async function (this: IWorld) {
 	await world.cleanup();
 });
 
-AfterAll(async function () {
+AfterAll(async () => {
 	await stopSharedServers();
 });

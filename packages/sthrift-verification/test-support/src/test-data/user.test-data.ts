@@ -64,7 +64,7 @@ const aliceId = generateObjectId();
 const bobId = generateObjectId();
 const adminId = generateObjectId();
 
-export const users = new Map<string, UserEntityReference>([
+const users = new Map<string, UserEntityReference>([
 	[
 		aliceId,
 		{
