@@ -1,6 +1,7 @@
 import { Task, type Actor, notes } from '@serenity-js/core';
 import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
 import {
+	type E2EReservationPage,
 	ReservationPage,
 	formatDate,
 } from '@sthrift-verification/test-support/pages';
@@ -18,10 +19,11 @@ export class CreateReservationRequest extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const { page } = BrowseTheWeb.withActor(actor);
-		const reservationPage = new ReservationPage(new PlaywrightPageAdapter(page));
+		const reservationPage: E2EReservationPage = new ReservationPage(
+			new PlaywrightPageAdapter(page),
+		);
 
-		await page.goto(`/listing/${this.input.listingId}`);
-		await page.waitForLoadState('networkidle');
+		await page.goto(`/listing/${this.input.listingId}`, { waitUntil: 'domcontentloaded' });
 
 		// Wait for all GraphQL queries to resolve (skeleton disappears)
 		await reservationPage.skeleton.waitFor({ state: 'hidden', timeout: 15_000 });
@@ -74,7 +76,8 @@ export class CreateReservationRequest extends Task {
 		await endCell.click();
 
 		const dateSelectionError = await reservationPage.overlapErrorMessage
-			.textContent()
+			.waitFor({ state: 'visible', timeout: 500 })
+			.then(() => reservationPage.overlapErrorMessage.textContent())
 			.catch(() => null);
 		if (dateSelectionError) {
 			throw new Error('Reservation period overlaps with existing active reservation requests');

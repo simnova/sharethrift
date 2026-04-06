@@ -4,7 +4,10 @@ import { fileURLToPath } from 'node:url';
 import { type Actor, Task, notes } from '@serenity-js/core';
 
 import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
-import { ListingPage } from '@sthrift-verification/test-support/pages';
+import {
+	type E2EListingPage,
+	ListingPage,
+} from '@sthrift-verification/test-support/pages';
 import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
 import type { ListingDetails, ListingNotes } from '../types.ts';
 
@@ -24,27 +27,20 @@ export class CreateListing extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const { page } = BrowseTheWeb.withActor(actor);
-		const listingPage = new ListingPage(new PlaywrightPageAdapter(page));
+		const listingPage: E2EListingPage = new ListingPage(
+			new PlaywrightPageAdapter(page),
+		);
 
 		await page.goto('/create-listing', { waitUntil: 'domcontentloaded' });
 		await page.waitForURL('**/create-listing', { timeout: 15_000, waitUntil: 'commit' });
 		await this.ensureCreateListingFormReady(page, listingPage);
 
-		if (this.details.title) {
-			await listingPage.fillTitle(this.details.title);
-		}
-
-		if (this.details.description) {
-			await listingPage.fillDescription(this.details.description);
-		}
-
-		if (this.details.category) {
-			await listingPage.selectCategory(this.details.category);
-		}
-
-		if (this.details.location) {
-			await listingPage.fillLocation(this.details.location);
-		}
+		await listingPage.fillForm({
+			title: this.details.title,
+			description: this.details.description,
+			category: this.details.category,
+			location: this.details.location,
+		});
 
 		// Fill sharing period using the Ant Design date picker
 		const rangePickerVisible = await page.locator('.ant-picker-range').isVisible();
@@ -154,7 +150,7 @@ export class CreateListing extends Task {
 
 		// Verify actual page navigation occurred
 		await page.waitForURL('**/my-listings**', { timeout: 10_000 });
-		await page.waitForLoadState('networkidle');
+		await page.waitForLoadState('domcontentloaded');
 
 		// Read listing title from the table DOM
 		const listingTitleCell = listingPage.listingTitleCell(this.details.title);
@@ -196,7 +192,10 @@ export class CreateListing extends Task {
 		);
 	}
 
-	private async ensureCreateListingFormReady(page: BrowseTheWeb['page'], listingPage: ListingPage): Promise<void> {
+	private async ensureCreateListingFormReady(
+		page: BrowseTheWeb['page'],
+		listingPage: E2EListingPage,
+	): Promise<void> {
 		try {
 			await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
 		} catch {

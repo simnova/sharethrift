@@ -5,7 +5,10 @@ import * as React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { ListingForm } from '@sthrift/ui-components';
 import { CreateListing as CreateListingComponent } from '@apps/ui-sharethrift/src/components/layouts/app/pages/create-listing/components/create-listing.tsx';
-import { ListingPage } from '@sthrift-verification/test-support/pages';
+import {
+	ListingPage,
+	type UiListingPage,
+} from '@sthrift-verification/test-support/pages';
 import { JsdomPageAdapter } from '@sthrift-verification/test-support/pages/jsdom';
 import { CreateListingAbility } from '../../abilities/create-listing-ability.ts';
 import type {
@@ -96,7 +99,9 @@ export class CreateListing extends Task {
 			);
 
 			// Use shared page object for form interactions
-			const page = new ListingPage(new JsdomPageAdapter(container));
+			const page: UiListingPage = new ListingPage(
+				new JsdomPageAdapter(container),
+			);
 
 			await act(async () => {
 				await page.fillForm({

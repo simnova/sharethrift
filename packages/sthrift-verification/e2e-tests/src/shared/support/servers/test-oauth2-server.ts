@@ -41,18 +41,6 @@ export class TestOAuth2Server extends PortlessServer {
 		};
 	}
 
-	override async isAlreadyRunning(): Promise<boolean> {
-		try {
-			const controller = new AbortController();
-			const timeout = setTimeout(() => controller.abort(), 3_000);
-			const res = await fetch(this.probeUrl, { signal: controller.signal });
-			clearTimeout(timeout);
-			return res.ok;
-		} catch {
-			return false;
-		}
-	}
-
 	getUrl(): string {
 		return buildUrl('mock-auth.sharethrift.localhost');
 	}
@@ -84,4 +72,3 @@ export class TestOAuth2Server extends PortlessServer {
 		return data.access_token;
 	}
 }
-

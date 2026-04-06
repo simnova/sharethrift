@@ -61,39 +61,45 @@ export async function ensureE2EServers(): Promise<void> {
 }
 
 async function initLocalE2E(): Promise<void> {
-	await initTestEnvironment();
+	initTestEnvironment();
 
-	if (!mongoDBServer) {
-		mongoDBServer = new MongoDBTestServer();
-		await mongoDBServer.start();
-		setMongoConnectionString(mongoDBServer.getConnectionString());
+	// Phase 1: Start MongoDB and OAuth2 in parallel (no interdependency)
+	mongoDBServer ??= new MongoDBTestServer();
+	oauth2Server ??= new TestOAuth2Server({
+		testUser: {
+			email: defaultActor.email,
+			given_name: defaultActor.givenName,
+			family_name: defaultActor.familyName,
+		},
+	});
+	const mongo = mongoDBServer;
+	const oauth2 = oauth2Server;
+	const phase1: Promise<void>[] = [];
+	if (!mongo.isRunning()) {
+		phase1.push(mongo.start().then(() => setMongoConnectionString(mongo.getConnectionString())));
 	}
-
-	if (!oauth2Server) {
-		oauth2Server = new TestOAuth2Server({
-			testUser: {
-				email: defaultActor.email,
-				given_name: defaultActor.givenName,
-				family_name: defaultActor.familyName,
-			},
-		});
-		await oauth2Server.start();
+	if (!oauth2.isRunning()) {
+		phase1.push(oauth2.start());
 	}
+	if (phase1.length > 0) await Promise.all(phase1);
 
-	if (!apiServer) {
-		apiServer = new TestApiServer();
-		await apiServer.start();
-		apiUrl = apiServer.getUrl();
+	// Phase 2: Start API (needs MongoDB conn string), Vite (independent), and generate token (needs OAuth2) in parallel
+	apiServer ??= new TestApiServer();
+	viteServer ??= new TestViteServer();
+	const api = apiServer;
+	const vite = viteServer;
+	const phase2: Promise<void>[] = [];
+	if (!api.isRunning()) {
+		phase2.push(api.start().then(() => { apiUrl = api.getUrl(); }));
 	}
-
+	if (!vite.isRunning()) {
+		phase2.push(vite.start());
+	}
 	if (!accessToken) {
-		accessToken = await oauth2Server.generateAccessToken(apiSettings.userPortalOidcAudience);
+		phase2.push(oauth2.generateAccessToken(apiSettings.userPortalOidcAudience).then((token) => { accessToken = token; }));
 	}
+	if (phase2.length > 0) await Promise.all(phase2);
 
-	if (!viteServer) {
-		viteServer = new TestViteServer();
-		await viteServer.start();
-	}
 	browserBaseUrl = viteServer.getUrl();
 
 	if (!apiUrl) {

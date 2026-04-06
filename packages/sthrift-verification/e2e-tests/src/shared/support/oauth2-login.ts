@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import type { Page } from '@playwright/test';
 import {
+	type E2ELoginPage,
+	type E2EOnboardingPage,
 	LoginPage,
 	OnboardingPage,
 } from '@sthrift-verification/test-support/pages';
@@ -34,7 +36,7 @@ function loadTestCredentials(): { username: string; password: string } {
 export async function performOAuth2Login(page: Page): Promise<void> {
 	const { username, password } = loadTestCredentials();
 	const pageAdapter = new PlaywrightPageAdapter(page);
-	const loginPage = new LoginPage(pageAdapter);
+	const loginPage: E2ELoginPage = new LoginPage(pageAdapter);
 
 	await loginPage.goto();
 	await loginPage.login(username, password);
@@ -42,7 +44,7 @@ export async function performOAuth2Login(page: Page): Promise<void> {
 
 	// Complete post-login onboarding if redirected to signup
 	if (pageAdapter.url().includes('/signup')) {
-		const onboardingPage = new OnboardingPage(pageAdapter);
+		const onboardingPage: E2EOnboardingPage = new OnboardingPage(pageAdapter);
 		await onboardingPage.completeOnboarding();
 	}
 }
