@@ -12,6 +12,7 @@ import type {
 	PageUrlMatcher,
 } from '../page-adapter.ts';
 
+
 function getGlobalDocument(container: Element): Document {
 	return container.ownerDocument ?? document;
 }
