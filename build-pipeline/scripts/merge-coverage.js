@@ -1,11 +1,35 @@
 #!/usr/bin/env node
 
 import fs from 'node:fs';
-import path, { dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import path from 'node:path';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const INCLUDED_PACKAGE_DIRS = [
+  'packages/sthrift-verification/acceptance-api',
+  'packages/sthrift-verification/acceptance-ui',
+  'apps/api',
+  'apps/docs',
+  'packages/cellix/api-services-spec',
+  'packages/cellix/arch-unit-tests',
+  'packages/cellix/domain-seedwork',
+  'packages/cellix/event-bus-seedwork-node',
+  'packages/cellix/mongoose-seedwork',
+  'packages/cellix/server-messaging-seedwork',
+  'packages/cellix/server-mongodb-memory-seedwork',
+  'packages/cellix/server-oauth2-seedwork',
+  'packages/cellix/server-payment-seedwork',
+  'packages/cellix/service-blob-storage',
+  'packages/cellix/service-messaging-base',
+  'packages/cellix/service-messaging-mock',
+  'packages/cellix/service-messaging-twilio',
+  'packages/cellix/service-mongoose',
+  'packages/cellix/service-otel',
+  'packages/cellix/service-payment-base',
+  'packages/cellix/service-payment-cybersource',
+  'packages/cellix/service-payment-mock',
+  'packages/cellix/service-sendgrid',
+  'packages/cellix/service-token-validation',
+  'packages/cellix/test-utils',
+];
 
 /**
  * Simple LCOV merger that combines multiple lcov.info files
@@ -39,33 +63,9 @@ function mergeLcovFiles() {
     fs.mkdirSync(outputDir, { recursive: true });
   }
   
-  // Find all lcov.info files
-  const lcovFiles = [];
-  
-  function findLcovFiles(dir) {
-    const entries = fs.readdirSync(dir, { withFileTypes: true });
-    
-    for (const entry of entries) {
-      const fullPath = path.join(dir, entry.name);
-      
-      if (entry.isDirectory()) {
-        if (entry.name !== 'node_modules' && entry.name !== '.git') {
-          findLcovFiles(fullPath);
-        }
-      } else if (entry.name === 'lcov.info' && fullPath.includes('/coverage/')) {
-        lcovFiles.push(fullPath);
-      }
-    }
-  }
-  
-  // Search in apps and packages directories
-  const searchDirs = ['apps', 'packages'].filter(dir => 
-    fs.existsSync(path.join(rootDir, dir))
-  );
-  
-  for (const dir of searchDirs) {
-    findLcovFiles(path.join(rootDir, dir));
-  }
+  const lcovFiles = INCLUDED_PACKAGE_DIRS
+    .map((packageDir) => path.join(rootDir, packageDir, 'coverage', 'lcov.info'))
+    .filter((lcovPath) => fs.existsSync(lcovPath));
   
   console.log(`Found ${lcovFiles.length} LCOV files:`);
   lcovFiles.forEach(file => console.log(`  - ${file}`));
