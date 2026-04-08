@@ -13,7 +13,6 @@ export const App: React.FC<AppProps> = () => {
 			<Route path="/*" element={<AppRoutes />} />
 			<Route path="/login" element={<AdminLogin />} />
 			<Route path="/auth-redirect" element={<AuthRedirect />} />
-			<Route path="/auth-redirect-admin" element={<AuthRedirect />} />
 		</Routes>
 	);
 };

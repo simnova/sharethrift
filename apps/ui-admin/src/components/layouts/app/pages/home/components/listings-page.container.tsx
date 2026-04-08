@@ -9,7 +9,6 @@ import {
 	ListingsPageContainerGetListingsDocument,
 	type ItemListing,
 } from '../../../../../../generated.tsx';
-import { useCreateListingNavigation } from '../../../../../shared/hooks/use-create-listing-navigation.ts';
 import { ListingsPage } from './listings-page.tsx';
 
 interface ListingsPageContainerProps {
@@ -64,8 +63,6 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 	const handleListingClick = (listing: UIItemListing) => {
 		navigate(`/listing/${listing.id}`);
 	};
-
-	const handleCreateListingClick = useCreateListingNavigation();
 
 	const handlePageChange = (page: number) => {
 		setCurrentPage(page);
@@ -124,7 +121,6 @@ export const ListingsPageContainer: React.FC<ListingsPageContainerProps> = ({
 					totalListings={totalListings}
 					onListingClick={handleListingClick}
 					onPageChange={handlePageChange}
-					onCreateListingClick={handleCreateListingClick}
 				/>
 			}
 		/>

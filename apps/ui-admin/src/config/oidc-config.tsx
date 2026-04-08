@@ -12,7 +12,7 @@ const {
 const adminAuthority = VITE_B2C_ADMIN_AUTHORITY ?? VITE_B2C_AUTHORITY ?? '';
 const adminClientId = VITE_B2C_ADMIN_CLIENTID ?? VITE_B2C_CLIENTID ?? '';
 const adminRedirectUri =
-	VITE_B2C_ADMIN_REDIRECT_URI ?? VITE_B2C_REDIRECT_URI ?? '';
+	VITE_B2C_REDIRECT_URI ?? VITE_B2C_ADMIN_REDIRECT_URI ?? '';
 const adminScope = VITE_B2C_ADMIN_SCOPE ?? VITE_B2C_SCOPE;
 
 export const oidcConfig = {

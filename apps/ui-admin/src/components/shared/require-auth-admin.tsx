@@ -6,7 +6,7 @@ import { AppContainerCurrentUserDocument } from '../../generated.tsx';
 
 const { VITE_B2C_ADMIN_REDIRECT_URI, VITE_B2C_REDIRECT_URI } = import.meta.env;
 const adminRedirectUri =
-	VITE_B2C_ADMIN_REDIRECT_URI ?? VITE_B2C_REDIRECT_URI ?? '';
+	VITE_B2C_REDIRECT_URI ?? VITE_B2C_ADMIN_REDIRECT_URI ?? '';
 
 interface RequireAuthAdminProps {
 	children: JSX.Element;

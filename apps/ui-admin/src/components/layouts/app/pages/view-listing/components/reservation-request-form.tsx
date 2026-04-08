@@ -249,7 +249,7 @@ export const ReservationRequestForm: React.FC<ReservationRequestFormProps> = ({
 									<Button
 										type="primary"
 										style={{ width: '100%' }}
-										onClick={() => navigate('/signup/select-account-type')}
+										onClick={() => navigate('/login')}
 									>
 										Log in to Reserve
 									</Button>

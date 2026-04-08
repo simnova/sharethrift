@@ -6,10 +6,19 @@ import { TitleFilter } from './admin-listings-table.title-filter';
 import { StatusFilter } from './admin-listings-table.status-filter';
 import { StatusTag } from './admin-listings-table.status-tag';
 import { formatDate } from './admin-listings-table.utils';
-import type { MyListingData } from '../../../my-listings/components/my-listings-dashboard.types';
+
+export interface AdminListingTableRow {
+  id: string;
+  title: string;
+  image?: string | null;
+  createdAt?: string | null;
+  reservationPeriod?: string | null;
+  status: string;
+  pendingRequestsCount: number;
+}
 
 interface AdminListingsTableProps {
-  readonly data: ReadonlyArray<MyListingData>;
+  readonly data: ReadonlyArray<AdminListingTableRow>;
   readonly searchText: string;
   readonly statusFilters: ReadonlyArray<string>;
   readonly sorter: { readonly field: string | null; readonly order: 'ascend' |  'descend' | null };
@@ -19,7 +28,7 @@ interface AdminListingsTableProps {
   readonly loading?: boolean;
   onSearch: (value: string) => void;
   onStatusFilter: (checkedValues: string[]) => void;
-  onTableChange: TableProps<MyListingData>['onChange'];
+  onTableChange: TableProps<AdminListingTableRow>['onChange'];
   onPageChange: (page: number) => void;
   onAction: (action: string, listingId: string) => void;
 }
@@ -45,7 +54,7 @@ export function AdminListingsTable({
   let reservationPeriodSortOrder: 'ascend' | 'descend' | null = null;
   if (sorter?.field === 'reservationPeriod') reservationPeriodSortOrder = sorter.order === 'ascend' ? 'ascend' : 'descend';
 
-  const columns: TableProps<MyListingData>['columns'] = [
+  const columns: TableProps<AdminListingTableRow>['columns'] = [
     {
       title: 'Listing',
       dataIndex: 'title',
@@ -61,7 +70,7 @@ export function AdminListingsTable({
         />
       ),
       filterIcon: (filtered: boolean) => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
-      render: (title: string, record: MyListingData) => (
+      render: (title: string, record: AdminListingTableRow) => (
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <Image
             src={record.image ?? ''}
@@ -105,7 +114,7 @@ export function AdminListingsTable({
       title: 'Actions',
       key: 'actions',
       width: 240,
-      render: (_: unknown, record: MyListingData) => (
+      render: (_: unknown, record: AdminListingTableRow) => (
         <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-start' }}>
           <Button type="link" size="small" onClick={() => onAction('view', record.id)}>
             View

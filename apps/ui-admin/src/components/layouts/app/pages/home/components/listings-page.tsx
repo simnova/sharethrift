@@ -1,6 +1,5 @@
-import { EnvironmentFilled, PlusOutlined } from '@ant-design/icons';
+import { EnvironmentFilled } from '@ant-design/icons';
 import { ListingsGrid, SearchBar } from '@sthrift/ui-components';
-import { Button } from 'antd';
 import type { ItemListing } from '../../../../../../generated.tsx';
 import { CategoryFilterContainer } from './category-filter.container.tsx';
 import { HeroSectionContainer } from './hero-section.container.tsx';
@@ -19,7 +18,6 @@ interface ListingsPageProps {
 	totalListings: number;
 	onListingClick: (listing: UIItemListing) => void;
 	onPageChange: (page: number) => void;
-	onCreateListingClick: () => void;
 }
 
 export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
@@ -35,7 +33,6 @@ export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 	totalListings,
 	onListingClick,
 	onPageChange,
-	onCreateListingClick,
 }) => {
 	return (
 		<div>
@@ -66,14 +63,6 @@ export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 							onSearchChange={onSearchChange}
 							onSearch={onSearch}
 						/>
-						{/* Create listing button */}
-						<Button
-							type="primary"
-							className={styles['createListing']}
-							onClick={onCreateListingClick}
-						>
-							Create a Listing
-						</Button>
 					</div>
 
 					{!isAuthenticated && <h1 style={{ margin: '0' }}>Today's Picks</h1>}
@@ -114,43 +103,6 @@ export const ListingsPage: React.FC<Readonly<ListingsPageProps>> = ({
 					/>
 				</div>
 			</div>
-
-			{/* Mobile Create Listing Overlay Button */}
-			<button
-				type="button"
-				className="mobile-create-overlay"
-				onClick={onCreateListingClick}
-				style={{
-					position: 'fixed',
-					bottom: '20px',
-					right: '20px',
-					width: '56px',
-					height: '56px',
-					borderRadius: '50%',
-					backgroundColor: 'var(--color-primary, #1890ff)',
-					border: 'none',
-					color: 'white',
-					display: 'flex',
-					alignItems: 'center',
-					justifyContent: 'center',
-					cursor: 'pointer',
-					boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-					transition: 'all 0.3s ease',
-					zIndex: 1000,
-				}}
-				onMouseEnter={(e) => {
-					e.currentTarget.style.backgroundColor =
-						'var(--color-secondary, #3F8176)';
-					e.currentTarget.style.transform = 'scale(1.1)';
-				}}
-				onMouseLeave={(e) => {
-					e.currentTarget.style.backgroundColor =
-						'var(--color-primary, #1890ff)';
-					e.currentTarget.style.transform = 'scale(1)';
-				}}
-			>
-				<PlusOutlined style={{ fontSize: '24px' }} />
-			</button>
 		</div>
 	);
 };

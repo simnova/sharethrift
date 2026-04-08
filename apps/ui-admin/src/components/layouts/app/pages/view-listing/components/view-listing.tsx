@@ -5,28 +5,17 @@ import { LeftOutlined } from '@ant-design/icons';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';
-import type {
-	ItemListing,
-	ViewListingActiveReservationRequestForListingQuery,
-} from '../../../../../../generated.tsx';
+import type { ItemListing } from '../../../../../../generated.tsx';
 
 interface ViewListingProps {
 	listing: ItemListing;
-	userIsSharer: boolean;
-	isAuthenticated: boolean;
 	currentUserId?: string | null;
-	userReservationRequest:
-		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
-		| null;
 	sharedTimeAgo?: string;
 }
 
 export const ViewListing: React.FC<ViewListingProps> = ({
 	listing,
-	userIsSharer,
-	isAuthenticated,
 	currentUserId,
-	userReservationRequest,
 	sharedTimeAgo,
 }) => {
 	// Mock sharer info (since ItemListing.sharer is just an ID)
@@ -139,20 +128,16 @@ export const ViewListing: React.FC<ViewListingProps> = ({
 								className="listing-gallery-responsive"
 							/>
 						</Col>
-					{/* Right: Info/Form */}
-					<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
-						<ListingInformationContainer
-							listing={listing}
-							userIsSharer={userIsSharer}
-							isAuthenticated={isAuthenticated}
-							userReservationRequest={userReservationRequest}
-							className="listing-info-responsive"
-						/>
-					</Col>
+						{/* Right: Listing details */}
+						<Col xs={24} md={12} style={{ marginTop: 0, paddingTop: 0 }}>
+							<ListingInformationContainer
+								listing={listing}
+								className="listing-info-responsive"
+							/>
+						</Col>
 					</Row>
 				</Col>
 			</Row>
-			{/* TODO: Add login modal here for unauthenticated users attempting to reserve a listing. */}
 		</>
 	);
 };

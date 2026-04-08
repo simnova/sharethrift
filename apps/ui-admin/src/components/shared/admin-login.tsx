@@ -2,8 +2,9 @@ import { Form, Input, Button, Card, Typography, Grid } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
-import { Footer, Header } from '@sthrift/ui-components';
+import { Footer } from '@sthrift/ui-components';
 import heroImg from '@sthrift/ui-components/src/assets/hero/hero-small.png';
+import { AdminHeader } from './admin-header.tsx';
 
 const { Title } = Typography;
 const { useBreakpoint } = Grid;
@@ -48,7 +49,7 @@ export const AdminLogin: React.FC = () => {
 				flexDirection: 'column',
 			}}
 		>
-			<Header
+			<AdminHeader
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={handleOnLogin}
 				onLogout={() => navigate('/')}
@@ -164,14 +165,14 @@ export const AdminLogin: React.FC = () => {
 										loading={submitting}
 										disabled={submitting}
 									>
-										Admin Login
+										Log In
 									</Button>
 								</Form.Item>
 
 								<div
 									style={{
 										display: 'flex',
-										justifyContent: 'space-between',
+										justifyContent: 'flex-start',
 										marginTop: '1rem',
 									}}
 								>
@@ -181,13 +182,6 @@ export const AdminLogin: React.FC = () => {
 										style={{ padding: 0 }}
 									>
 										← Back to Home
-									</Button>
-									<Button
-										type="link"
-										onClick={() => navigate('/forgot-password')}
-										style={{ padding: 0 }}
-									>
-										Forgot password?
 									</Button>
 								</div>
 							</Form>

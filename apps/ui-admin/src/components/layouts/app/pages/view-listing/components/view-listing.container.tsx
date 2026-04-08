@@ -3,7 +3,6 @@ import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useParams } from 'react-router-dom';
 import {
 	type ItemListing,
-	ViewListingActiveReservationRequestForListingDocument,
 	ViewListingCurrentUserDocument,
 	ViewListingDocument,
 } from '../../../../../../generated.tsx';
@@ -50,36 +49,21 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 
 	const reserverId = currentUserData?.currentUser?.id ?? '';
 
-	const skip = !reserverId || !listingId;
-	const {
-		data: userReservationData,
-		loading: userReservationLoading,
-	} = useQuery(ViewListingActiveReservationRequestForListingDocument, {
-		variables: { listingId: listingId ?? '', reserverId },
-		skip,
-	});
-
 	const sharedTimeAgo = listingData?.itemListing?.createdAt
 		? computeTimeAgo(listingData.itemListing.createdAt)
 		: undefined;
 
-	const userIsSharer = false;
 	return (
 		<ComponentQueryLoader
-			loading={userReservationLoading || listingLoading || currentUserLoading}
+			loading={listingLoading || currentUserLoading}
 			error={listingError}
 			errorComponent={<div>Error loading listing.</div>}
 			hasData={listingData?.itemListing}
 			hasDataComponent={
 				<ViewListing
 					listing={listingData?.itemListing as ItemListing}
-					userIsSharer={userIsSharer}
-					isAuthenticated={props.isAuthenticated}
 					currentUserId={reserverId}
 					sharedTimeAgo={sharedTimeAgo}
-					userReservationRequest={
-						userReservationData?.myActiveReservationForListing
-					}
 				/>
 			}
 		/>

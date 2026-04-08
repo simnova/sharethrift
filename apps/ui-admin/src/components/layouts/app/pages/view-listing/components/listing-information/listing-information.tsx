@@ -1,48 +1,15 @@
 import Row from 'antd/es/row';
 import Col from 'antd/es/col';
-import type { ViewListingActiveReservationRequestForListingQuery, ItemListing, ViewListingQueryActiveByListingIdQuery } from '../../../../../../../generated.tsx';
-import { ReservationRequestForm } from '../reservation-request-form.js';
+import type { ItemListing } from '../../../../../../../generated.tsx';
 
 interface ListingInformationProps {
 	listing: ItemListing;
-	userIsSharer: boolean;
-	isAuthenticated: boolean;
-	userReservationRequest:
-		| ViewListingActiveReservationRequestForListingQuery['myActiveReservationForListing']
-		| null;
-	onReserveClick?: () => void;
-	onLoginClick?: () => void;
-	onSignUpClick?: () => void;
-	onCancelClick?: () => void;
 	className?: string;
-	reservationDates?: {
-		startDate: Date | null;
-		endDate: Date | null;
-	};
-	onReservationDatesChange?: (dates: {
-		startDate: Date | null;
-		endDate: Date | null;
-	}) => void;
-	reservationLoading?: boolean;
-	otherReservationsLoading?: boolean;
-	otherReservationsError?: Error;
-	otherReservations?: ViewListingQueryActiveByListingIdQuery['queryActiveByListingId'];
 }
 
 export const ListingInformation: React.FC<ListingInformationProps> = ({
 	listing,
-	onReserveClick,
-	onCancelClick,
 	className = '',
-	userIsSharer,
-	isAuthenticated,
-	userReservationRequest,
-	reservationDates,
-	onReservationDatesChange,
-	reservationLoading = false,
-	otherReservationsLoading = false,
-	otherReservationsError,
-	otherReservations,
 }) => {
 	if (listing.state !== 'Active') {
 		return (
@@ -125,19 +92,35 @@ export const ListingInformation: React.FC<ListingInformationProps> = ({
 				</Row>
 			</Col>
 			<Col span={24}>
-				<ReservationRequestForm
-					userIsSharer={userIsSharer}
-					isAuthenticated={isAuthenticated}
-					userReservationRequest={userReservationRequest}
-					onReserveClick={onReserveClick}
-					onCancelClick={onCancelClick}
-					reservationDates={reservationDates}
-					onReservationDatesChange={onReservationDatesChange}
-					reservationLoading={reservationLoading}
-					otherReservationsLoading={otherReservationsLoading}
-					otherReservationsError={otherReservationsError}
-					otherReservations={otherReservations}
-				/>
+				<div
+					style={{
+						padding: '16px 18px',
+						borderRadius: '12px',
+						backgroundColor: 'rgba(232, 229, 220, 0.55)',
+						border: '1px solid rgba(92, 138, 138, 0.25)',
+					}}
+				>
+					<div
+						style={{
+							fontWeight: 700,
+							marginBottom: 6,
+							color: 'var(--color-message-text)',
+						}}
+					>
+						Admin view only
+					</div>
+					<div
+						style={{
+							fontSize: '14px',
+							lineHeight: 1.5,
+							color: 'var(--color-message-text)',
+						}}
+					>
+						Reservations are disabled in the admin portal. Admins can review
+						listing details here, but borrower and sharer actions stay in the
+						main user portal.
+					</div>
+				</div>
 			</Col>
 		</Row>
 	);

@@ -1,10 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, within, userEvent, waitFor } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { AdminListingsTable } from './admin-listings-table';
-import type { MyListingData } from '../../../my-listings/components/my-listings-dashboard.types';
+import {
+	AdminListingsTable,
+	type AdminListingTableRow,
+} from './admin-listings-table';
 
-const mockListings: MyListingData[] = [
+const mockListings: AdminListingTableRow[] = [
 	{
 		id: '1',
 		title: 'Camping Tent',
@@ -342,4 +344,3 @@ export const WithLongTitle: Story = {
 		}, { timeout: 3000 });
 	},
 };
-
