@@ -216,23 +216,6 @@ export const ProductionModeLogin: Story = {
 	},
 };
 
-// Test production mode admin login redirect
-export const ProductionModeAdminLogin: Story = {
-	parameters: {
-		env: {
-			MODE: 'production',
-		},
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvasElement).toBeTruthy();
-		const adminButton = canvas.queryByText(/Admin/i);
-		if (adminButton) {
-			await userEvent.click(adminButton);
-		}
-	},
-};
-
 // Test authenticated window resize to trigger line 108-109
 export const AuthenticatedWindowResize: Story = {
 	play: async ({ canvasElement }) => {

@@ -3,9 +3,8 @@ import { useEffect, type JSX } from 'react';
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
 
-const { VITE_B2C_ADMIN_REDIRECT_URI, VITE_B2C_REDIRECT_URI } = import.meta.env;
-const adminRedirectUri =
-	VITE_B2C_REDIRECT_URI ?? VITE_B2C_ADMIN_REDIRECT_URI ?? '';
+const { VITE_B2C_ADMIN_REDIRECT_URI } = import.meta.env;
+const adminRedirectUri = VITE_B2C_ADMIN_REDIRECT_URI ?? '';
 
 interface RequireAuthProps {
 	children: JSX.Element;
