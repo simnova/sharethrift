@@ -142,8 +142,6 @@ export const PopulateUserFromField = (fieldName: string) => {
 	};
 };
 
-export const PopulatePersonalUserFromField = PopulateUserFromField;
-
 export const PopulateAdminUserFromField = (fieldName: string) => {
 	return async (parent: any, _: unknown, context: GraphContext) => {
 		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
