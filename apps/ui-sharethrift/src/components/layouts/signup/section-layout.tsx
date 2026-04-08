@@ -1,4 +1,4 @@
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import { Footer, Header } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
 import { HandleLogout } from '../../shared/handle-logout.ts';
@@ -7,27 +7,22 @@ import { useCreateListingNavigation } from '../../shared/hooks/use-create-listin
 import { Card } from 'antd';
 
 export const SectionLayout: React.FC = () => {
+	const navigate = useNavigate();
 	const auth = useAuth();
 	const apolloClient = useApolloClient();
 
-	const isProduction = import.meta.env.MODE === 'production';
-
 	const handleOnLogin = () => {
-		if (isProduction) {
-			globalThis.location.href = '/auth-redirect-user';
-		} else {
-			auth.signinRedirect();
-		}
+		navigate('/login');
 	};
 
 	const handleOnSignUp = () => {
-        auth.signinRedirect({ extraQueryParams: { option: "signup" } });
+		auth.signinRedirect({ extraQueryParams: { option: 'signup' } });
 	};
 
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-        HandleLogout(auth, apolloClient, globalThis.location.origin);
+		HandleLogout(auth, apolloClient, globalThis.location.origin);
 	};
 
 	return (

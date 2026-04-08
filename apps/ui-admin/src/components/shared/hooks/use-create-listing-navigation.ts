@@ -7,13 +7,12 @@ export function useCreateListingNavigation() {
 	const auth = useAuth();
 
 	return useCallback(() => {
- 		if (!auth.isAuthenticated) {
- 			// Store the intended destination for after login
- 			sessionStorage.setItem('redirectTo', '/create-listing');
- 			navigate('/auth-redirect');
- 		} else {
- 			navigate('/create-listing');
- 		}
- 	}, [auth.isAuthenticated, navigate]);
-
+		if (!auth.isAuthenticated) {
+			// Store the intended destination for after login
+			globalThis.sessionStorage.setItem('redirectTo', '/create-listing');
+			navigate('/login');
+		} else {
+			navigate('/create-listing');
+		}
+	}, [auth.isAuthenticated, navigate]);
 }

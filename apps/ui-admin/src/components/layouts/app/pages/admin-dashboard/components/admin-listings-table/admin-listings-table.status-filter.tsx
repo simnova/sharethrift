@@ -2,6 +2,7 @@ import type React from 'react';
 import { Checkbox } from 'antd';
 
 const STATUS_OPTIONS = [
+  { label: 'Active', value: 'Active' },
   { label: 'Blocked', value: 'Blocked' },
 ];
 
@@ -27,4 +28,3 @@ export const StatusFilter: React.FC<StatusFilterProps> = ({ statusFilters, onSta
     </div>
   );
 };
-

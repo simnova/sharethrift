@@ -110,24 +110,6 @@ const userUnionResolvers: Resolvers = {
 		) => {
 			requireAuthentication(context);
 
-			// Permission check: Only admins with canViewAllUsers can view all users
-			const {verifiedUser} = context.applicationServices;
-			const jwt = verifiedUser?.verifiedJwt;
-			if (!jwt?.email) {
-				throw new Error('Email not found in verified JWT');
-			}
-
-			const currentAdmin =
-				await context.applicationServices.User.AdminUser.queryByEmail({
-					email: jwt.email,
-				});
-
-			if (!currentAdmin?.role?.permissions?.userPermissions?.canViewAllUsers) {
-				throw new Error(
-					'Forbidden: Only admins with canViewAllUsers permission can access this query',
-				);
-			}
-
 			// Determine which user types to fetch based on filter
 			const userTypeFilter = args.userTypeFilter
 				? [...args.userTypeFilter]

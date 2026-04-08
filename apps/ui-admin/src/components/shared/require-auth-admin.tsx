@@ -1,9 +1,12 @@
+import { useQuery } from '@apollo/client/react';
 import { useEffect, type JSX } from 'react';
 import { hasAuthParams, useAuth } from 'react-oidc-context';
 import { Navigate } from 'react-router-dom';
-import { useUserIsAdmin } from './hooks/use-user-is-admin.ts';
+import { AppContainerCurrentUserDocument } from '../../generated.tsx';
 
-const { VITE_B2C_REDIRECT_URI } = import.meta.env;
+const { VITE_B2C_ADMIN_REDIRECT_URI, VITE_B2C_REDIRECT_URI } = import.meta.env;
+const adminRedirectUri =
+	VITE_B2C_ADMIN_REDIRECT_URI ?? VITE_B2C_REDIRECT_URI ?? '';
 
 interface RequireAuthAdminProps {
 	children: JSX.Element;
@@ -13,8 +16,17 @@ interface RequireAuthAdminProps {
 
 export const RequireAuthAdmin: React.FC<RequireAuthAdminProps> = (props) => {
 	const auth = useAuth();
-	const { isAdmin, loading: adminLoading } = useUserIsAdmin();
 	const redirectPath = props.redirectPath ?? '/';
+	const {
+		data: currentUserData,
+		loading: adminLoading,
+		error: adminError,
+	} = useQuery(AppContainerCurrentUserDocument, {
+		skip: !auth.isAuthenticated,
+	});
+	const isAdmin =
+		currentUserData?.currentUserAndCreateIfNotExists?.__typename ===
+		'AdminUser';
 
 	// automatically sign-in
 	useEffect(() => {
@@ -26,10 +38,16 @@ export const RequireAuthAdmin: React.FC<RequireAuthAdminProps> = (props) => {
 			!auth.isLoading &&
 			!auth.error
 		) {
-			globalThis.sessionStorage.setItem(
-				'redirectTo',
-				`${location.pathname}${location.search}`,
+			const currentPath = `${globalThis.location.pathname}${globalThis.location.search}`;
+			const hasRedirectTarget = Boolean(
+				globalThis.sessionStorage.getItem('redirectTo'),
 			);
+			const isAuthEntryPath =
+				currentPath === '/login' || currentPath.startsWith('/auth-redirect');
+
+			if (!hasRedirectTarget && !isAuthEntryPath) {
+				globalThis.sessionStorage.setItem('redirectTo', currentPath);
+			}
 
 			auth.signinRedirect();
 		}
@@ -47,7 +65,7 @@ export const RequireAuthAdmin: React.FC<RequireAuthAdminProps> = (props) => {
 	useEffect(() => {
 		return auth.events.addAccessTokenExpiring(() => {
 			auth.signinSilent({
-				redirect_uri: VITE_B2C_REDIRECT_URI ?? '',
+				redirect_uri: adminRedirectUri,
 			});
 		});
 	}, [auth.events, auth.signinSilent]);
@@ -75,6 +93,21 @@ export const RequireAuthAdmin: React.FC<RequireAuthAdminProps> = (props) => {
 				}}
 			>
 				<div>Checking admin permissions...</div>
+			</div>
+		);
+	}
+
+	if (adminError) {
+		return (
+			<div
+				style={{
+					minHeight: '100vh',
+					display: 'flex',
+					alignItems: 'center',
+					justifyContent: 'center',
+				}}
+			>
+				<div>Unable to verify admin permissions.</div>
 			</div>
 		);
 	}

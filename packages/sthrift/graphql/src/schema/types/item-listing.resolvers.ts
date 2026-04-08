@@ -22,7 +22,9 @@ const itemListingResolvers: Resolvers = {
 				page: args.page,
 				pageSize: args.pageSize,
 				...(args.searchText ? { searchText: args.searchText } : {}),
-				...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
+				...(args.statusFilters?.length
+					? { statusFilters: [...args.statusFilters] }
+					: {}),
 			};
 
 			if (args.sorter) {
@@ -53,7 +55,9 @@ const itemListingResolvers: Resolvers = {
 				page: args.page,
 				pageSize: args.pageSize,
 				...(args.searchText ? { searchText: args.searchText } : {}),
-				...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
+				...(args.statusFilters?.length
+					? { statusFilters: [...args.statusFilters] }
+					: {}),
 			};
 
 			if (args.sorter) {

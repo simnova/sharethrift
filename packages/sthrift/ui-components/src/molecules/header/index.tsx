@@ -1,7 +1,5 @@
 import type React from 'react';
-import { Layout, Button, Dropdown } from 'antd';
-import type { MenuProps } from 'antd';
-import { DownOutlined } from '@ant-design/icons';
+import { Layout, Button } from 'antd';
 import styles from './index.module.css';
 import '../../styles/theme.css';
 import logoIcon from '../../assets/logo/logo-icon.svg';
@@ -25,18 +23,7 @@ export const Header: React.FC<HeaderProps> = ({
 	onLogout,
 	onCreateListing,
 }) => {
-	const loginMenuItems: MenuProps['items'] = [
-		{
-			key: 'personal',
-			label: 'Personal Login',
-			onClick: onLogin,
-		},
-		...(onAdminLogin ? [{
-			key: 'admin',
-			label: 'Admin Login',
-			onClick: onAdminLogin,
-		}] : []),
-	];
+	const handleLoginClick = onLogin ?? onAdminLogin;
 
 	return (
 		<AntHeader className={styles.header}>
@@ -62,14 +49,13 @@ export const Header: React.FC<HeaderProps> = ({
 							Sign Up
 						</Button>
 						<span className={styles.divider}>|</span>
-						<Dropdown menu={{ items: loginMenuItems }} trigger={['click']}>
-							<Button
-								type="link"
-								className={styles.authButton ?? ''}
-							>
-								Log In <DownOutlined />
-							</Button>
-						</Dropdown>
+						<Button
+							type="link"
+							className={styles.authButton ?? ''}
+							onClick={handleLoginClick}
+						>
+							Log In
+						</Button>
 					</>
 				) : (
 					<Button

@@ -40,7 +40,6 @@ describe('ItemListing queryPaged', () => {
 		expect(mockGetPaged).toHaveBeenCalledWith({
 			page: 1,
 			pageSize: 20,
-			statusFilters: ['Blocked'],
 		});
 	});
 
@@ -56,7 +55,6 @@ describe('ItemListing queryPaged', () => {
 			page: 1,
 			pageSize: 10,
 			searchText: 'test search',
-			statusFilters: ['Blocked'],
 		});
 	});
 
@@ -102,7 +100,6 @@ describe('ItemListing queryPaged', () => {
 			page: 1,
 			pageSize: 10,
 			sorter: { field: 'createdAt', order: 'descend' },
-			statusFilters: ['Blocked'],
 		});
 	});
 
@@ -149,21 +146,18 @@ describe('ItemListing queryPaged', () => {
 		expect(result).toEqual(expectedResult);
 	});
 
-	it('should use default admin statusFilters when no sharerId and no explicit filters', async () => {
+	it('should not include statusFilters when no explicit filters are provided', async () => {
 		const query = queryPaged(mockDataSources);
 		await query({
 			page: 1,
 			pageSize: 10,
 		});
 
-		expect(mockGetPaged).toHaveBeenCalledWith(
-			expect.objectContaining({
-				statusFilters: ['Blocked'],
-			}),
-		);
+		const callArgs = mockGetPaged.mock.calls[0][0];
+		expect(callArgs.statusFilters).toBeUndefined();
 	});
 
-	it('should not include default statusFilters when sharerId is provided', async () => {
+	it('should not include statusFilters when sharerId is provided', async () => {
 		const query = queryPaged(mockDataSources);
 		await query({
 			page: 1,

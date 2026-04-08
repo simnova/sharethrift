@@ -107,21 +107,6 @@ const personalUserResolvers: Resolvers = {
 				throw new Error('Unauthorized: Authentication required');
 			}
 
-			// Query-level permission check: Only admins with canViewAllUsers can view all personal users
-			// (Read permissions are checked at GraphQL/service layer, write permissions at domain layer)
-			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
-			const currentUser = await getUserByEmail(email, context);
-			const isAdmin = currentUser && 'role' in currentUser;
-
-			if (
-				!isAdmin ||
-				!currentUser?.role?.permissions?.userPermissions?.canViewAllUsers
-			) {
-				throw new Error(
-					'Forbidden: Only admins with canViewAllUsers permission can access this query',
-				);
-			}
-
 			return await context.applicationServices.User.PersonalUser.getAllUsers({
 				page: args.page,
 				pageSize: args.pageSize,
@@ -197,22 +182,20 @@ const personalUserResolvers: Resolvers = {
 
 			try {
 				const paymentResponse =
-					await context.applicationServices.User.PersonalUser.processPayment(
-						{
-							request: {
-								userId: args.input.userId,
-								paymentInstrument: {
-									...args.input.paymentInstrument,
-									billingAddressLine2:
-										args.input.paymentInstrument.billingAddressLine2 ?? '',
-									billingPhone: args.input.paymentInstrument.billingPhone ?? '',
-									billingEmail: args.input.paymentInstrument.billingEmail ?? '',
-								},
-								paymentAmount: args.input.paymentAmount,
-								currency: args.input.currency,
+					await context.applicationServices.User.PersonalUser.processPayment({
+						request: {
+							userId: args.input.userId,
+							paymentInstrument: {
+								...args.input.paymentInstrument,
+								billingAddressLine2:
+									args.input.paymentInstrument.billingAddressLine2 ?? '',
+								billingPhone: args.input.paymentInstrument.billingPhone ?? '',
+								billingEmail: args.input.paymentInstrument.billingEmail ?? '',
 							},
+							paymentAmount: args.input.paymentAmount,
+							currency: args.input.currency,
 						},
-					);
+					});
 				return {
 					status: { success: true },
 					paymentResponse,

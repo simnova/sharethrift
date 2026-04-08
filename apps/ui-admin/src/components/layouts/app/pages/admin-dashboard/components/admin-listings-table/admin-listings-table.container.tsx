@@ -15,9 +15,7 @@ export function AdminListings(): React.JSX.Element {
 	const [page, setPage] = useState(1);
 	const pageSize = 6;
 	const [searchText, setSearchText] = useState('');
-	const [statusFilters, setStatusFilters] = useState<string[]>([
-		'Blocked',
-	]);
+	const [statusFilters, setStatusFilters] = useState<string[]>([]);
 	const [sorter, setSorter] = useState<{
 		field: string | null;
 		order: 'ascend' | 'descend' | null;
@@ -30,7 +28,7 @@ export function AdminListings(): React.JSX.Element {
 				page,
 				pageSize,
 				searchText: searchText || undefined,
-				statusFilters,
+				statusFilters: statusFilters.length > 0 ? statusFilters : undefined,
 				sorter:
 					sorter.field && sorter.order
 						? { field: sorter.field, order: sorter.order }
@@ -161,4 +159,3 @@ export function AdminListings(): React.JSX.Element {
 		/>
 	);
 }
-

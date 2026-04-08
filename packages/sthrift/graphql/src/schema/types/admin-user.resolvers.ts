@@ -107,21 +107,6 @@ const adminUserResolvers: Resolvers = {
 				throw new Error('Unauthorized: Authentication required');
 			}
 
-			// Query-level permission check: Only admins with canViewAllUsers can view all admin users
-			// (Read permissions are checked at GraphQL/service layer, write permissions at domain layer)
-			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
-			const currentUser = await getUserByEmail(email, context);
-			const isAdmin = currentUser && 'role' in currentUser;
-
-			if (
-				!isAdmin ||
-				!currentUser?.role?.permissions?.userPermissions?.canViewAllUsers
-			) {
-				throw new Error(
-					'Forbidden: Only admins with canViewAllUsers permission can access this query',
-				);
-			}
-
 			return await context.applicationServices.User.AdminUser.getAllUsers({
 				page: args.page,
 				pageSize: args.pageSize,

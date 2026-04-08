@@ -1,3 +1,4 @@
+// biome-ignore-all lint/complexity/useLiteralKeys: process.env uses indexed access to satisfy TS4111 in this package
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -12,37 +13,43 @@ import { setupEnvironment } from './setup-environment.js';
 // Setup environment variables before using them
 setupEnvironment();
 
-// biome-ignore lint/complexity/useLiteralKeys: Required for env var access
 const port = Number(process.env['PORT'] ?? 4000);
 
-const BASE_URL = process.env['BASE_URL'] ?? 'https://mock-auth.sharethrift.localhost';
+const BASE_URL =
+	process.env['BASE_URL'] ?? 'https://mock-auth.sharethrift.localhost';
 
 // Extract host from BASE_URL
 const baseUrlHost = new URL(BASE_URL).hostname;
 
-// Derive the UI base URL from the proxy origin so redirect URIs adapt automatically
+// Derive the UI base URLs from the proxy origin so redirect URIs adapt automatically
 const baseUrlOrigin = new URL(BASE_URL);
-const uiBaseUrl = `${baseUrlOrigin.protocol}//sharethrift.localhost${baseUrlOrigin.port ? `:${baseUrlOrigin.port}` : ''}`;
+const buildUiBaseUrl = (hostname: string) =>
+	`${baseUrlOrigin.protocol}//${hostname}${baseUrlOrigin.port ? `:${baseUrlOrigin.port}` : ''}`;
+const userUiBaseUrl = buildUiBaseUrl('sharethrift.localhost');
+const adminUiBaseUrl = buildUiBaseUrl('admin.sharethrift.localhost');
 
 const allowedRedirectUris = new Set([
 	'http://localhost:3000/auth-redirect-user',
 	'http://localhost:3000/auth-redirect-admin',
-	`${uiBaseUrl}/auth-redirect-user`,
-	`${uiBaseUrl}/auth-redirect-admin`,
+	'http://localhost:3000/auth-redirect',
+	`${userUiBaseUrl}/auth-redirect-user`,
+	`${userUiBaseUrl}/auth-redirect-admin`,
+	`${adminUiBaseUrl}/auth-redirect`,
+	`${adminUiBaseUrl}/auth-redirect-admin`,
 ]);
 
 const allowedRedirectUri =
-	process.env['ALLOWED_REDIRECT_URI'] ||
-	`${uiBaseUrl}/auth-redirect-user`;
+	process.env['ALLOWED_REDIRECT_URI'] || `${userUiBaseUrl}/auth-redirect-user`;
 
 const redirectUriToAudience = new Map([
 	['http://localhost:3000/auth-redirect-user', 'user-portal'],
 	['http://localhost:3000/auth-redirect-admin', 'admin-portal'],
-	[`${uiBaseUrl}/auth-redirect-user`, 'user-portal'],
-	[`${uiBaseUrl}/auth-redirect-admin`, 'admin-portal'],
+	['http://localhost:3000/auth-redirect', 'admin-portal'],
+	[`${userUiBaseUrl}/auth-redirect-user`, 'user-portal'],
+	[`${userUiBaseUrl}/auth-redirect-admin`, 'admin-portal'],
+	[`${adminUiBaseUrl}/auth-redirect`, 'admin-portal'],
+	[`${adminUiBaseUrl}/auth-redirect-admin`, 'admin-portal'],
 ]);
-
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

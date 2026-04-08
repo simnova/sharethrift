@@ -175,10 +175,18 @@ export const AdminLogin: React.FC = () => {
 										marginTop: '1rem',
 									}}
 								>
-									<Button type="link" onClick={handleBack} style={{ padding: 0 }}>
+									<Button
+										type="link"
+										onClick={handleBack}
+										style={{ padding: 0 }}
+									>
 										← Back to Home
 									</Button>
-									<Button type="link" onClick={() => navigate('/forgot-password')} style={{ padding: 0 }}>
+									<Button
+										type="link"
+										onClick={() => navigate('/forgot-password')}
+										style={{ padding: 0 }}
+									>
 										Forgot password?
 									</Button>
 								</div>

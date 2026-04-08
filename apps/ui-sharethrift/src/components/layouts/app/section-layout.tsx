@@ -18,7 +18,7 @@ export const SectionLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
-    const apolloClient = useApolloClient();
+	const apolloClient = useApolloClient();
 
 	// Map nav keys to routes as defined in index.tsx
 	const routeMap = {
@@ -40,7 +40,7 @@ export const SectionLayout: React.FC = () => {
 			return undefined;
 		}
 		const found = (Object.entries(routeMap) as [string, string][]).find(
-			([, r]) => path === r || path.startsWith(`${r}/`)
+			([, r]) => path === r || path.startsWith(`${r}/`),
 		);
 		return found?.[0] ?? 'home';
 	};
@@ -78,14 +78,8 @@ export const SectionLayout: React.FC = () => {
 		return () => window.removeEventListener('resize', handleResize);
 	}, [auth.isAuthenticated]);
 
-	const isProduction = import.meta.env.MODE === 'production';
-
 	const handleOnLogin = () => {
-		if (isProduction) {
-			globalThis.location.href = '/auth-redirect-user';
-		} else {
-			navigate('/login');
-		}
+		navigate('/login');
 	};
 
 	const handleOnSignUp = () => {

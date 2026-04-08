@@ -83,12 +83,12 @@ export const PersonalLogin: React.FC = () => {
 						}}
 					>
 						<Card
-						style={{
-							maxWidth: 500,
-							width: '100%',
-							backgroundColor: 'rgba(232, 229, 220, 0.85)',
-							backdropFilter: 'blur(10px)',
-							border: '1px solid rgba(255, 255, 255, 0.3)',
+							style={{
+								maxWidth: 500,
+								width: '100%',
+								backgroundColor: 'rgba(232, 229, 220, 0.85)',
+								backdropFilter: 'blur(10px)',
+								border: '1px solid rgba(255, 255, 255, 0.3)',
 								borderRadius: '12px',
 								padding: '32px',
 								boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
@@ -181,17 +181,25 @@ export const PersonalLogin: React.FC = () => {
 										marginTop: '1rem',
 									}}
 								>
-									<Button type="link" onClick={handleBack} style={{ padding: 0 }}>
+									<Button
+										type="link"
+										onClick={handleBack}
+										style={{ padding: 0 }}
+									>
 										← Back to Home
 									</Button>
-									<Button type="link" onClick={() => navigate('/forgot-password')} style={{ padding: 0 }}>
+									<Button
+										type="link"
+										onClick={() => navigate('/forgot-password')}
+										style={{ padding: 0 }}
+									>
 										Forgot password?
 									</Button>
 								</div>
 							</Form>
 
 							<Divider style={{ margin: '24px 0' }}>or</Divider>
-                            <br />
+							<br />
 							<Button
 								size="large"
 								onClick={handleOnSignUp}
@@ -205,7 +213,7 @@ export const PersonalLogin: React.FC = () => {
 									color: '#fff',
 								}}
 							>
-							Sign Up
+								Sign Up
 							</Button>
 						</Card>
 					</div>

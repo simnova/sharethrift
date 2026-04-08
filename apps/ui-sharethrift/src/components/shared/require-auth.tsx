@@ -25,14 +25,28 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 			!auth.isLoading &&
 			!auth.error
 		) {
-			globalThis.sessionStorage.setItem(
-				'redirectTo',
-				`${location.pathname}${location.search}`,
+			const currentPath = `${globalThis.location.pathname}${globalThis.location.search}`;
+			const hasRedirectTarget = Boolean(
+				globalThis.sessionStorage.getItem('redirectTo'),
 			);
+			const isAuthEntryPath =
+				currentPath === '/login' || currentPath.startsWith('/auth-redirect');
+
+			if (!hasRedirectTarget && !isAuthEntryPath) {
+				globalThis.sessionStorage.setItem('redirectTo', currentPath);
+			}
 
 			auth.signinRedirect();
 		}
-	}, [auth.isAuthenticated, auth.activeNavigator, auth.isLoading, auth.signinRedirect, auth.error, props.forceLogin, auth]);
+	}, [
+		auth.isAuthenticated,
+		auth.activeNavigator,
+		auth.isLoading,
+		auth.signinRedirect,
+		auth.error,
+		props.forceLogin,
+		auth,
+	]);
 
 	// automatically refresh token
 	useEffect(() => {
@@ -59,7 +73,11 @@ export const RequireAuth: React.FC<RequireAuthProps> = (props) => {
 		result = props.children;
 	} else if (auth.error) {
 		result = <Navigate to={redirectPath} replace />;
-	} else if (!auth.isLoading && !auth.activeNavigator && props.forceLogin !== true) {
+	} else if (
+		!auth.isLoading &&
+		!auth.activeNavigator &&
+		props.forceLogin !== true
+	) {
 		// If not loading, not in the middle of auth flow, and not forcing login redirect
 		result = <Navigate to={redirectPath} replace />;
 	} else {
