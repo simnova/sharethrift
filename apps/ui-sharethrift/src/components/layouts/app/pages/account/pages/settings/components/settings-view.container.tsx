@@ -231,7 +231,7 @@ function SettingsViewLoader() {
 
 	return (
 		<ComponentQueryLoader
-			loading={userLoading || updateLoading}
+			loading={updateLoading}
 			error={errorMessage}
 			hasData={userData}
 			hasDataComponent={
