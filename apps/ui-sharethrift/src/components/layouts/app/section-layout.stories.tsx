@@ -91,21 +91,6 @@ export const NavigationInteraction: Story = {
 	},
 };
 
-export const AdminUserView: Story = {
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		// For admin users, verify admin dashboard link might be present
-		// Note: This depends on the useUserIsAdmin hook returning true
-		const navigation = canvasElement.querySelector('nav');
-		expect(navigation).toBeInTheDocument();
-
-		// Basic verification that navigation renders
-		const homeLink = await canvas.findByText('Home');
-		expect(homeLink).toBeInTheDocument();
-	},
-};
-
 export const ResponsiveLayout: Story = {
 	parameters: {
 		viewport: {

@@ -14,17 +14,7 @@ export const SectionLayout: React.FC = () => {
 
 	const handleOnLogin = () => {
 		if (isProduction) {
-			globalThis.sessionStorage.setItem('loginPortalType', 'UserPortal');
 			globalThis.location.href = '/auth-redirect-user';
-		} else {
-			auth.signinRedirect();
-		}
-	};
-
-	const handleOnAdminLogin = () => {
-		if (isProduction) {
-			globalThis.sessionStorage.setItem('loginPortalType', 'AdminPortal');
-			globalThis.location.href = '/auth-redirect-admin';
 		} else {
 			auth.signinRedirect();
 		}
@@ -53,7 +43,6 @@ export const SectionLayout: React.FC = () => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={handleOnLogin}
-				onAdminLogin={handleOnAdminLogin}
 				onSignUp={handleOnSignUp}
 				onLogout={handleLogOut}
 				onCreateListing={handleCreateListing}

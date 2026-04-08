@@ -40,7 +40,9 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		id: request.id,
 		title: request.listing?.title || 'Unknown',
 		image: request.listing?.images?.[0] || null,
-		requestedBy: `@${request.reserver?.account?.username || 'unknown'}`,
+		requestedBy: request.reserver?.__typename === 'PersonalUser'
+			? `@${request.reserver.account?.username || 'unknown'}`
+			: '@unknown',
 		requestedOn: request.createdAt?.toISOString(),
 		reservationPeriod: request.reservationPeriodStart && request.reservationPeriodEnd
 			? `${request.reservationPeriodStart.toISOString().split('T')[0]} to ${request.reservationPeriodEnd.toISOString().split('T')[0]}`

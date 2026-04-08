@@ -20,7 +20,5 @@ export const oidcConfig = {
 			globalThis.location.pathname = redirectToPath;
 			globalThis.sessionStorage.removeItem('redirectTo');
 		}
-		// Clear the portal type after successful login
-		globalThis.sessionStorage.removeItem('loginPortalType');
 	},
 };

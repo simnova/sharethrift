@@ -1,0 +1,8 @@
+query AppContainerCurrentUser {
+  currentUserAndCreateIfNotExists {
+    ... on AdminUser {
+      id
+      userType
+    }
+  }
+}

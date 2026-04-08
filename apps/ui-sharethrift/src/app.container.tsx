@@ -18,11 +18,9 @@ export const AppContainer: FC = () => {
   }
 
   const user = data?.currentUserAndCreateIfNotExists;
-  const userId = user?.id;
+  const userId = user?.__typename === 'PersonalUser' ? user.id : undefined;
   const hasCompletedOnboarding =
-    user?.userType === 'personal-user'
-      ? (user as { hasCompletedOnboarding?: boolean }).hasCompletedOnboarding ?? false
-      : true; // Admins and other types don't need onboarding
+    (user?.__typename === 'PersonalUser' && user.hasCompletedOnboarding) ?? false;
 
   return (
     <ComponentQueryLoader

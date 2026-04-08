@@ -6,7 +6,6 @@ import { useState } from 'react';
 import {
 	HomeAccountSettingsViewContainerCurrentUserDocument,
 	HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
-	HomeAccountSettingsViewContainerUpdateAdminUserDocument,
 } from '../../../../../../../../generated.tsx';
 import { SettingsView } from '../pages/settings-view.tsx';
 import type {
@@ -32,17 +31,6 @@ function SettingsViewLoader() {
 				message.error(msg);
 			},
 		});
-
-	const [
-		updateAdminUserMutation,
-		{ loading: updateAdminLoading, error: updateAdminError },
-	] = useMutation(HomeAccountSettingsViewContainerUpdateAdminUserDocument, {
-		onError: (err) => {
-			console.error('[SettingsView] admin update mutation error', err);
-			const msg = err?.message || 'Update failed';
-			message.error(msg);
-		},
-	});
 
 	const [isSavingSection, setIsSavingSection] = useState(false);
 
@@ -138,67 +126,6 @@ function SettingsViewLoader() {
 		return false;
 	};
 
-	const handleAdminUserSave = async (
-		section: EditableSection,
-		values: SectionFormValues,
-		user: CurrentUserSettingsQueryData['currentUser'],
-	) => {
-		if (updateAdminLoading) {
-			setIsSavingSection(false);
-			return;
-		}
-
-		if (section === 'plan' || section === 'billing') {
-			message.info('Admin users cannot edit plan or billing information');
-			setIsSavingSection(false);
-			return;
-		}
-
-		try {
-			const base = user.account.profile;
-			const nextProfile = buildNextProfile(section, values, base);
-			const username =
-				section === 'profile'
-					? (values['username'] ?? user.account.username)
-					: user.account.username;
-
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const { billing: _billing, ...adminProfile } = nextProfile;
-
-			const result = await updateAdminUserMutation({
-				variables: {
-					input: {
-						id: user.id,
-						account: {
-							username,
-							profile: adminProfile,
-						},
-					},
-				},
-				refetchQueries: [
-					{ query: HomeAccountSettingsViewContainerCurrentUserDocument },
-				],
-			});
-
-			if (!result.data?.adminUserUpdate?.status?.success) {
-				throw new Error(
-					result.data?.adminUserUpdate?.status?.errorMessage ??
-						'Admin user update failed',
-				);
-			}
-
-			message.success('Updated successfully');
-		} catch (err: unknown) {
-			console.error('[SettingsView] admin update mutation error', err);
-			const msg =
-				err instanceof Error ? err.message : 'Admin user update failed';
-			message.error(msg);
-			throw err;
-		} finally {
-			setIsSavingSection(false);
-		}
-	};
-
 	const handlePersonalUserSave = async (
 		section: EditableSection,
 		values: SectionFormValues,
@@ -261,11 +188,7 @@ function SettingsViewLoader() {
 
 		if (handlePasswordChange(section)) return;
 
-		if (user.userType === 'admin-user') {
-			await handleAdminUserSave(section, values, user);
-		} else {
-			await handlePersonalUserSave(section, values, user);
-		}
+		await handlePersonalUserSave(section, values, user);
 	};
 
 	const handleChangePassword = () => {
@@ -298,17 +221,17 @@ function SettingsViewLoader() {
 			country: user.account.profile.location.country ?? '',
 			zipCode: user.account.profile.location.zipCode ?? '',
 		},
-		billing: user.userType === 'personal-user' && 'billing' in user.account.profile
+		billing: 'billing' in user.account.profile
 			? user.account.profile.billing
 			: undefined,
 		createdAt: user.createdAt,
 	};
 
-	const errorMessage = userError ?? updateError ?? updateAdminError;
+	const errorMessage = userError ?? updateError;
 
 	return (
 		<ComponentQueryLoader
-			loading={userLoading || updateLoading || updateAdminLoading}
+			loading={userLoading || updateLoading}
 			error={errorMessage}
 			hasData={userData}
 			hasDataComponent={

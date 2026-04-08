@@ -25,7 +25,8 @@ interface ReservationCardProps {
 const getSharerDisplay = (
 	reservation: ReservationRequestFieldsFragment,
 ): string => {
-	const username = reservation.reserver?.account?.username;
+	const reserver = reservation.reserver;
+	const username = reserver?.__typename === 'PersonalUser' ? reserver.account?.username : undefined;
 	return username ? `@${username}` : 'Unknown';
 };
 

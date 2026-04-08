@@ -6,19 +6,14 @@ import { AuthProvider } from 'react-oidc-context';
 import { oidcConfig } from './config/oidc-config.tsx';
 import { ApolloConnection } from './components/shared/apollo-connection.tsx';
 import { AppContainer } from './app.container.tsx';
-import { oidcConfigAdmin } from './config/oidc-config-admin.tsx';
 import '@ant-design/v5-patch-for-react-19';
-
-// Determine which OAuth config to use based on session storage
-const portalType = globalThis.sessionStorage.getItem("loginPortalType");
-const selectedConfig = portalType === "AdminPortal" ? oidcConfigAdmin : oidcConfig;
 
 const rootElement = document.getElementById('root');
 if (rootElement) {
 	createRoot(rootElement).render(
 		<StrictMode>
 			<BrowserRouter>
-				<AuthProvider {...selectedConfig}>
+				<AuthProvider {...oidcConfig}>
 					<ApolloConnection>
 						<AppContainer />
 					</ApolloConnection>

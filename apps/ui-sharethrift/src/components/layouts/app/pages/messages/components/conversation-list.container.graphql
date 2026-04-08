@@ -1,8 +1,5 @@
 query HomeConversationListContainerCurrentUser {
 	currentUser {
-		... on AdminUser {
-			id
-		}
 		... on PersonalUser {
 			id
 		}
@@ -29,30 +26,10 @@ fragment HomeConversationListContainerConversationFields on Conversation {
 				}
 			}
 		}
-		... on AdminUser {
-			id
-			account {
-				username
-				profile {
-					firstName
-					lastName
-				}
-			}
-		}
 	}
 
 	reserver {
 		... on PersonalUser {
-			id
-			account {
-				username
-				profile {
-					firstName
-					lastName
-				}
-			}
-		}
-		... on AdminUser {
 			id
 			account {
 				username

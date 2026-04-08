@@ -415,6 +415,106 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
+  apps/ui-admin:
+    dependencies:
+      '@ant-design/icons':
+        specifier: ^6.1.0
+        version: 6.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@ant-design/v5-patch-for-react-19':
+        specifier: ^1.0.3
+        version: 1.0.3(antd@5.29.3(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      '@apollo/client':
+        specifier: ^4.0.7
+        version: 4.1.6(graphql-ws@6.0.7(graphql@16.13.1)(ws@8.19.0))(graphql@16.13.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
+      '@sthrift/ui-components':
+        specifier: workspace:*
+        version: link:../../packages/sthrift/ui-components
+      antd:
+        specifier: ^5.27.1
+        version: 5.29.3(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      crypto-hash:
+        specifier: ^3.1.0
+        version: 3.1.0
+      dayjs:
+        specifier: ^1.11.18
+        version: 1.11.20
+      graphql:
+        specifier: ^16.11.0
+        version: 16.13.1
+      lodash:
+        specifier: ^4.17.23
+        version: 4.17.23
+      react:
+        specifier: ^19.1.1
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.2.4(react@19.2.4)
+      react-oidc-context:
+        specifier: ^3.3.0
+        version: 3.3.1(oidc-client-ts@3.5.0)(react@19.2.4)
+      react-router-dom:
+        specifier: ^7.12.0
+        version: 7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      rxjs:
+        specifier: ^7.8.2
+        version: 7.8.2
+    devDependencies:
+      '@cellix/arch-unit-tests':
+        specifier: workspace:*
+        version: link:../../packages/cellix/arch-unit-tests
+      '@cellix/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/cellix/typescript-config
+      '@cellix/vitest-config':
+        specifier: workspace:*
+        version: link:../../packages/cellix/vitest-config
+      '@eslint/js':
+        specifier: ^9.30.1
+        version: 9.39.4
+      '@graphql-typed-document-node/core':
+        specifier: ^3.2.0
+        version: 3.2.0(graphql@16.13.1)
+      '@types/lodash':
+        specifier: ^4.17.20
+        version: 4.17.24
+      '@types/react':
+        specifier: ^19.1.9
+        version: 19.2.14
+      '@types/react-dom':
+        specifier: ^19.1.7
+        version: 19.2.3(@types/react@19.2.14)
+      '@vitejs/plugin-react':
+        specifier: ^4.7.0
+        version: 4.7.0(vite@7.3.2(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 4.0.18(@vitest/browser@4.0.18(vite@7.3.2(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vitest@4.0.18))(vitest@4.0.18)
+      eslint:
+        specifier: ^9.30.1
+        version: 9.39.4(jiti@2.6.1)
+      eslint-plugin-react-hooks:
+        specifier: ^5.2.0
+        version: 5.2.0(eslint@9.39.4(jiti@2.6.1))
+      eslint-plugin-react-refresh:
+        specifier: ^0.4.20
+        version: 0.4.26(eslint@9.39.4(jiti@2.6.1))
+      globals:
+        specifier: ^16.3.0
+        version: 16.5.0
+      typescript:
+        specifier: ~5.8.3
+        version: 5.8.3
+      typescript-eslint:
+        specifier: ^8.35.1
+        version: 8.57.1(eslint@9.39.4(jiti@2.6.1))(typescript@5.8.3)
+      vite:
+        specifier: 'catalog:'
+        version: 7.3.2(@types/node@24.12.0)(jiti@2.6.1)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vitest:
+        specifier: 'catalog:'
+        version: 4.0.18(@opentelemetry/api@1.9.0)(@types/node@24.12.0)(@vitest/browser-playwright@4.0.18)(jiti@2.6.1)(jsdom@26.1.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+
   apps/ui-sharethrift:
     dependencies:
       '@ant-design/icons':

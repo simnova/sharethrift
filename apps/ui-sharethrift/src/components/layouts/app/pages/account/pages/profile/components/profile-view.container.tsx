@@ -33,11 +33,10 @@ export const ProfileViewContainer: React.FC = () => {
 	};
 
 	const currentUser = userQueryData?.currentUser;
-	const { account, createdAt } = currentUser || {};
-
-	if (!currentUser) {
+	if (!currentUser || currentUser.__typename !== 'PersonalUser') {
 		return null;
 	}
+	const { account, createdAt } = currentUser;
 
 	const profileUser = {
 		id: currentUser.id,

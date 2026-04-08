@@ -1,4 +1,4 @@
-import { Form, Input, Button, Card, Typography, Space, Divider, Grid } from 'antd';
+import { Form, Input, Button, Card, Typography, Divider, Grid } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
@@ -13,7 +13,7 @@ interface LoginFormData {
 	password: string;
 }
 
-export const LoginSelection: React.FC = () => {
+export const PersonalLogin: React.FC = () => {
 	const [form] = Form.useForm();
 	const [submitting, setSubmitting] = useState(false);
 	const navigate = useNavigate();
@@ -21,16 +21,10 @@ export const LoginSelection: React.FC = () => {
 	const screens = useBreakpoint();
 	const isMobile = !screens.md;
 
-	const handleLogin = (_values: LoginFormData, isAdmin: boolean) => {
+	const handleLogin = (_values: LoginFormData) => {
 		setSubmitting(true);
 		try {
-			// Store the portal type for OAuth config selection
-			globalThis.sessionStorage.setItem(
-				'loginPortalType',
-				isAdmin ? 'AdminPortal' : 'UserPortal'
-			);
-			// Force page reload to apply new OAuth config
-			globalThis.location.href = isAdmin ? '/auth-redirect-admin' : '/auth-redirect-user';
+			globalThis.location.href = '/auth-redirect-user';
 		} finally {
 			setSubmitting(false);
 		}
@@ -45,15 +39,7 @@ export const LoginSelection: React.FC = () => {
 	};
 
 	const handleOnLogin = () => {
-		// Redirect to user portal auth
-		globalThis.sessionStorage.setItem('loginPortalType', 'UserPortal');
 		globalThis.location.href = '/auth-redirect-user';
-	};
-
-	const handleOnAdminLogin = () => {
-		// Redirect to admin portal auth
-		globalThis.sessionStorage.setItem('loginPortalType', 'AdminPortal');
-		globalThis.location.href = '/auth-redirect-admin';
 	};
 
 	return (
@@ -69,7 +55,6 @@ export const LoginSelection: React.FC = () => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={handleOnLogin}
-				onAdminLogin={handleOnAdminLogin}
 				onLogout={() => navigate('/')}
 				onSignUp={handleOnSignUp}
 				onCreateListing={() => navigate('/login')}
@@ -131,9 +116,7 @@ export const LoginSelection: React.FC = () => {
 							<Form
 								form={form}
 								layout="vertical"
-								onFinish={(values) =>
-									handleLogin(values, false)
-								}
+								onFinish={handleLogin}
 								autoComplete="off"
 							>
 								<Form.Item
@@ -174,53 +157,21 @@ export const LoginSelection: React.FC = () => {
 								</Form.Item>
 
 								<Form.Item style={{ marginTop: '2rem' }}>
-									<Space
+									<Button
+										type="primary"
+										htmlType="submit"
+										size={isMobile ? 'middle' : 'large'}
 										style={{
 											width: '100%',
-											justifyContent: 'center',
-											gap: isMobile ? '8px' : '12px',
+											height: isMobile ? '36px' : '38px',
+											fontSize: isMobile ? '14px' : '16px',
+											fontWeight: 600,
 										}}
+										loading={submitting}
+										disabled={submitting}
 									>
-										<Button
-											type="default"
-											size={isMobile ? 'middle' : 'large'}
-											style={{
-												width: isMobile ? '140px' : '180px',
-												height: isMobile ? '36px' : '38px',
-												fontSize: isMobile ? '14px' : '16px',
-												fontWeight: 600,
-											}}
-											loading={submitting}
-											disabled={submitting}
-											onClick={() => {
-												form.validateFields().then(
-													(values) => {
-														handleLogin(
-															values,
-															true
-														);
-													}
-												);
-											}}
-										>
-											Admin Login
-										</Button>
-										<Button
-											type="primary"
-											htmlType="submit"
-											size={isMobile ? 'middle' : 'large'}
-											style={{
-												width: isMobile ? '140px' : '180px',
-												height: isMobile ? '36px' : '38px',
-												fontSize: isMobile ? '14px' : '16px',
-												fontWeight: 600,
-											}}
-											loading={submitting}
-											disabled={submitting}
-										>
-											Personal Login
-										</Button>
-									</Space>
+										Log In
+									</Button>
 								</Form.Item>
 
 								<div

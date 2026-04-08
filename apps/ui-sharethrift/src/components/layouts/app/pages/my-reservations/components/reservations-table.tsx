@@ -92,7 +92,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			key: 'sharer',
 			render: (reserver: ReservationRequestFieldsFragment['reserver']) => (
 				<span className={classes.tableText}>
-					{reserver?.account?.username
+					{reserver?.__typename === 'PersonalUser' && reserver.account?.username
 						? `@${reserver.account.username}`
 						: 'Unknown'}
 				</span>

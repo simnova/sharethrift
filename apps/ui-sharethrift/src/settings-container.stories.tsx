@@ -4,7 +4,6 @@ import { SettingsViewContainer } from "./components/layouts/app/pages/account/pa
 import {
 	HomeAccountSettingsViewContainerCurrentUserDocument,
 	HomeAccountSettingsViewContainerUpdatePersonalUserDocument,
-	HomeAccountSettingsViewContainerUpdateAdminUserDocument,
 } from "./generated.tsx";
 import { withMockApolloClient, withMockRouter } from "./test-utils/storybook-decorators.tsx";
 
@@ -41,42 +40,6 @@ const mockPersonalUser = {
 		},
 		settings: {
 			__typename: "PersonalUserAccountSettings",
-			notificationsEnabled: true,
-			emailUpdatesEnabled: true,
-			darkModeEnabled: false,
-			language: "en-US",
-		},
-	},
-};
-
-const mockAdminUser = {
-	__typename: "AdminUser",
-	id: "507f1f77bcf86cd799439100",
-	userType: "admin-user",
-	createdAt: "2024-01-01T00:00:00Z",
-	updatedAt: "2025-08-08T12:00:00Z",
-	account: {
-		__typename: "AdminUserAccount",
-		accountType: "admin",
-		email: "admin@example.com",
-		username: "admin_user",
-		profile: {
-			__typename: "AdminUserAccountProfile",
-			firstName: "Admin",
-			lastName: "User",
-			aboutMe: "Admin about me",
-			location: {
-				__typename: "AdminUserAccountProfileLocation",
-				address1: "456 Admin Street",
-				address2: "",
-				city: "New York",
-				state: "NY",
-				country: "United States",
-				zipCode: "10001",
-			},
-		},
-		settings: {
-			__typename: "AdminUserAccountSettings",
 			notificationsEnabled: true,
 			emailUpdatesEnabled: true,
 			darkModeEnabled: false,
@@ -139,52 +102,6 @@ export const Loading: Story = {
 		const loadingText = canvas.queryByText(/Loading/i);
 		if (loadingText) {
 			expect(loadingText).toBeInTheDocument();
-		}
-	},
-};
-
-export const AdminUser: Story = {
-	parameters: {
-		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: HomeAccountSettingsViewContainerCurrentUserDocument,
-					},
-					result: {
-						data: {
-							currentUser: mockAdminUser,
-						},
-					},
-				},
-				{
-					request: {
-						query: HomeAccountSettingsViewContainerUpdateAdminUserDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							adminUserUpdate: {
-								__typename: 'AdminUserMutationResult',
-								status: { success: true, errorMessage: null },
-								adminUser: {
-									__typename: 'AdminUser',
-									id: mockAdminUser.id,
-								},
-							},
-						},
-					},
-				},
-			],
-		},
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvasElement).toBeTruthy();
-		const firstName = canvas.queryByText(/Admin/i);
-		if (firstName) {
-			expect(firstName).toBeInTheDocument();
 		}
 	},
 };
@@ -319,36 +236,6 @@ export const PersonalUserUpdateSuccess: Story = {
 							},
 						},
 					},
-				},
-			],
-		},
-	},
-	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
-	},
-};
-
-export const AdminUserUpdateError: Story = {
-	parameters: {
-		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: HomeAccountSettingsViewContainerCurrentUserDocument,
-					},
-					result: {
-						data: {
-							currentUser: mockAdminUser,
-						},
-					},
-				},
-				{
-					request: {
-						query: HomeAccountSettingsViewContainerUpdateAdminUserDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					error: new Error("Failed to update admin user"),
 				},
 			],
 		},
@@ -552,50 +439,6 @@ export const PlanSaveInteraction: Story = {
 	},
 };
 
-export const AdminUserBillingAttempt: Story = {
-	parameters: {
-		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: HomeAccountSettingsViewContainerCurrentUserDocument,
-					},
-					result: {
-						data: {
-							currentUser: mockAdminUser,
-						},
-					},
-				},
-			],
-		},
-	},
-	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
-	},
-};
-
-export const AdminUserPlanAttempt: Story = {
-	parameters: {
-		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: HomeAccountSettingsViewContainerCurrentUserDocument,
-					},
-					result: {
-						data: {
-							currentUser: mockAdminUser,
-						},
-					},
-				},
-			],
-		},
-	},
-	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
-	},
-};
-
 export const UpdateFailedResponse: Story = {
 	parameters: {
 		apolloClient: {
@@ -619,40 +462,6 @@ export const UpdateFailedResponse: Story = {
 					result: {
 						data: {
 							personalUserUpdate: null,
-						},
-					},
-				},
-			],
-		},
-	},
-	play: async ({ canvasElement }) => {
-		await expect(canvasElement).toBeTruthy();
-	},
-};
-
-export const AdminUpdateFailedResponse: Story = {
-	parameters: {
-		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: HomeAccountSettingsViewContainerCurrentUserDocument,
-					},
-					result: {
-						data: {
-							currentUser: mockAdminUser,
-						},
-					},
-				},
-				{
-					request: {
-						query: HomeAccountSettingsViewContainerUpdateAdminUserDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							adminUserUpdate: null,
 						},
 					},
 				},
