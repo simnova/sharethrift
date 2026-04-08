@@ -32,7 +32,12 @@ export abstract class PortlessServer {
 
 		this.process = spawn(getPortlessPath(), this.spawnArgs, {
 			cwd: this.cwd,
-			env: { ...process.env, PORTLESS_STATE_DIR: `${process.env.HOME}/.portless`, ...this.extraEnv },
+			env: {
+				...process.env,
+				PORTLESS_PORT: '1355',
+				PORTLESS_STATE_DIR: `${process.env.HOME}/.portless`,
+				...this.extraEnv,
+			},
 			stdio: ['ignore', 'pipe', 'pipe'],
 		});
 		this.startedByUs = true;

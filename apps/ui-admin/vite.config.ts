@@ -6,7 +6,7 @@ export default defineConfig(() => {
     plugins: [react()],
     server: {
       port: Number(process.env.PORT) || undefined,
-      open: 'https://admin.sharethrift.localhost',
+      open: 'https://admin.sharethrift.localhost:1355',
     },
   };
 });
