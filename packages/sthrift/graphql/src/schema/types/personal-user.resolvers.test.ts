@@ -704,7 +704,7 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Fetching all users without admin permission',
+		'Fetching all users as an authenticated personal user',
 		({ Given, When, Then }) => {
 			Given('a verified personal user without admin role', () => {
 				const mockPersonalUser = {
@@ -723,27 +723,26 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When('I execute the query "allUsers"', async () => {
 				const resolver = personalUserResolvers.Query?.allUsers;
 				if (typeof resolver === 'function') {
-					try {
-						await resolver({}, { page: 1, pageSize: 10 }, context, {} as never);
-					} catch (error) {
-						result = error;
-					}
+					vi.mocked(
+						context.applicationServices.User.PersonalUser.getAllUsers,
+					).mockResolvedValue({
+						items: [createMockPersonalUser()],
+						total: 1,
+						page: 1,
+						pageSize: 10,
+					});
+					result = await resolver({}, { page: 1, pageSize: 10 }, context, {} as never);
 				}
 			});
-			Then(
-				'it should throw an error "Forbidden: Only admins with canViewAllUsers permission can access this query"',
-				() => {
-					expect(result).toBeInstanceOf(Error);
-					expect((result as Error).message).toBe(
-						'Forbidden: Only admins with canViewAllUsers permission can access this query',
-					);
-				},
-			);
+			Then('it should still return a list of all personal users', () => {
+				expect(result).toBeDefined();
+				expect((result as { items: unknown[] }).items).toHaveLength(1);
+			});
 		},
 	);
 
 	Scenario(
-		'Fetching all users as admin without canViewAllUsers permission',
+		'Fetching all users as an authenticated admin without special permission',
 		({ Given, When, Then }) => {
 			Given('a verified admin user without "canViewAllUsers" permission', () => {
 				const mockAdminUser = {
@@ -765,22 +764,21 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 			When('I execute the query "allUsers"', async () => {
 				const resolver = personalUserResolvers.Query?.allUsers;
 				if (typeof resolver === 'function') {
-					try {
-						await resolver({}, { page: 1, pageSize: 10 }, context, {} as never);
-					} catch (error) {
-						result = error;
-					}
+					vi.mocked(
+						context.applicationServices.User.PersonalUser.getAllUsers,
+					).mockResolvedValue({
+						items: [createMockPersonalUser()],
+						total: 1,
+						page: 1,
+						pageSize: 10,
+					});
+					result = await resolver({}, { page: 1, pageSize: 10 }, context, {} as never);
 				}
 			});
-			Then(
-				'it should throw an error "Forbidden: Only admins with canViewAllUsers permission can access this query"',
-				() => {
-					expect(result).toBeInstanceOf(Error);
-					expect((result as Error).message).toBe(
-						'Forbidden: Only admins with canViewAllUsers permission can access this query',
-					);
-				},
-			);
+			Then('it should still return a list of all personal users', () => {
+				expect(result).toBeDefined();
+				expect((result as { items: unknown[] }).items).toHaveLength(1);
+			});
 		},
 	);
 

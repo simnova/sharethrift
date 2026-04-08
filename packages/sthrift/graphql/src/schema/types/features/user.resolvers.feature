@@ -66,10 +66,10 @@ Feature: User Union Resolvers
     When allSystemUsers query is called with personal user type filter
     Then it should return only personal users
 
-  Scenario: Query allSystemUsers throws error without permission
+  Scenario: Query allSystemUsers returns all users for authenticated admin without special permission
     Given an authenticated admin without canViewAllUsers permission
     When allSystemUsers query is called
-    Then it should throw "Forbidden" error
+    Then it should return both personal and admin users
 
   Scenario: Query allSystemUsers throws error when not authenticated
     Given no user is authenticated

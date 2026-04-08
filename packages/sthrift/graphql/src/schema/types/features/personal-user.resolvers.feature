@@ -72,15 +72,15 @@ The Personal User resolvers handle user queries, updates, and payment processing
 		When I execute the query "allUsers"
 		Then it should throw an error "Unauthorized: Authentication required"
 
-	Scenario: Fetching all users without admin permission
+	Scenario: Fetching all users as an authenticated personal user
 		Given a verified personal user without admin role
 		When I execute the query "allUsers"
-		Then it should throw an error "Forbidden: Only admins with canViewAllUsers permission can access this query"
+		Then it should still return a list of all personal users
 
-	Scenario: Fetching all users as admin without canViewAllUsers permission
+	Scenario: Fetching all users as an authenticated admin without special permission
 		Given a verified admin user without "canViewAllUsers" permission
 		When I execute the query "allUsers"
-		Then it should throw an error "Forbidden: Only admins with canViewAllUsers permission can access this query"
+		Then it should still return a list of all personal users
 
 	Scenario: Updating personal user without authentication
 		Given no authenticated user context

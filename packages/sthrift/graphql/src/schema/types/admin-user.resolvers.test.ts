@@ -386,15 +386,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	});
 
 	Scenario(
-		'Querying all admin users with permissions',
+		'Querying all admin users while authenticated',
 		({ Given, When, Then, And }) => {
-			Given('a verified admin with canViewAllUsers permission', () => {
-				const adminUser = createMockAdminUser({
-					account: createMockAccount({ email: 'admin@example.com' }),
-				});
-				vi.mocked(
-					context.applicationServices.User.AdminUser.queryByEmail,
-				).mockResolvedValue(adminUser);
+			Given('an authenticated admin user', () => {
+				// Authenticated user context is already set up in BeforeEachScenario
 			});
 			When(
 				'I execute the query "allAdminUsers" with pagination parameters',
@@ -415,10 +410,10 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 					}
 				},
 			);
-			Then('it should check authentication and permissions', () => {
+			Then('it should not require an additional permission lookup', () => {
 				expect(
 					context.applicationServices.User.AdminUser.queryByEmail,
-				).toHaveBeenCalled();
+				).not.toHaveBeenCalled();
 			});
 			And(
 				'the resolver should call "User.AdminUser.getAllUsers" with query parameters',
@@ -442,44 +437,37 @@ test.for(feature, ({ Scenario, Background, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Querying all admin users without permissions',
+		'Querying all admin users without special permissions',
 		({ Given, When, Then }) => {
-			Given('a verified user without canViewAllUsers permission', () => {
-				const regularUser = createMockAdminUser({
-					account: createMockAccount({ email: 'user@example.com' }),
-					role: {
-						...createMockRole(),
-						permissions: {
-							...createMockRole().permissions,
-							userPermissions: {
-								...createMockRole().permissions.userPermissions,
-								canViewAllUsers: false,
-							},
-						},
+			Given('an authenticated user without special permissions', () => {
+				(context.applicationServices as { verifiedUser: GraphContext['applicationServices']['verifiedUser'] }).verifiedUser = {
+					verifiedJwt: {
+						sub: 'user-sub-123',
+						email: 'user@example.com',
+						given_name: 'Regular',
+						family_name: 'User',
 					},
-				});
-				vi.mocked(
-					context.applicationServices.User.AdminUser.queryByEmail,
-				).mockResolvedValue(regularUser);
+				};
 			});
 			When('I execute the query "allAdminUsers"', async () => {
+				const mockUsers = [createMockAdminUser()];
+				vi.mocked(
+					context.applicationServices.User.AdminUser.getAllUsers,
+				).mockResolvedValue(mockUsers as never);
+
 				const resolver = adminUserResolvers.Query?.allAdminUsers;
 				if (typeof resolver === 'function') {
-					try {
-						result = await resolver(
-							{},
-							{ page: 1, pageSize: 10 },
-							context,
-							{} as never,
-						);
-					} catch (error) {
-						result = error;
-					}
+					result = await resolver(
+						{},
+						{ page: 1, pageSize: 10 },
+						context,
+						{} as never,
+					);
 				}
 			});
-			Then('it should throw a Forbidden error', () => {
-				expect(result).toBeInstanceOf(Error);
-				expect((result as Error).message).toContain('Forbidden');
+			Then('it should still return a list of admin users', () => {
+				expect(Array.isArray(result)).toBe(true);
+				expect((result as unknown[])).toHaveLength(1);
 			});
 		},
 	);

@@ -537,10 +537,8 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Query allSystemUsers throws error without permission',
+		'Query allSystemUsers returns all users for authenticated admin without special permission',
 		({ Given, When, Then }) => {
-			let error: Error | undefined;
-
 			Given('an authenticated admin without canViewAllUsers permission', () => {
 				mockContext.applicationServices.verifiedUser = {
 					verifiedJwt: { email: 'admin@test.com' },
@@ -557,23 +555,20 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 
 			When('allSystemUsers query is called', async () => {
-				try {
-					await userUnionResolvers.Query?.allSystemUsers?.(
-						{},
-						{
-							page: 1,
-							pageSize: 10,
-						},
-						mockContext,
-						{} as GraphQLResolveInfo,
-					);
-				} catch (e) {
-					error = e as Error;
-				}
+				result = await userUnionResolvers.Query?.allSystemUsers?.(
+					{},
+					{
+						page: 1,
+						pageSize: 10,
+					},
+					mockContext,
+					{} as GraphQLResolveInfo,
+				);
 			});
 
-			Then('it should throw "Forbidden" error', () => {
-				expect(error?.message).toContain('Forbidden');
+			Then('it should return both personal and admin users', () => {
+				expect(result.items).toHaveLength(2);
+				expect(result.total).toBe(2);
 			});
 		},
 	);

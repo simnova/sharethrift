@@ -10,6 +10,11 @@
 			"project": ["src/**/*.{ts,tsx}"],
 			"ignore": ["**/terms-communication-preferences.tsx", "**/applicant-id-context.tsx"]
 		},
+		"apps/ui-admin": {
+			"entry": ["src/main.tsx"],
+			"project": ["src/**/*.{ts,tsx}"],
+			"ignore": ["**/applicant-id-context.tsx"]
+		},
 		"apps/docs": {
 			"entry": ["src/**/*.{ts,tsx,js,jsx}"],
 			"project": ["src/**/*.{ts,tsx,js,jsx}"]

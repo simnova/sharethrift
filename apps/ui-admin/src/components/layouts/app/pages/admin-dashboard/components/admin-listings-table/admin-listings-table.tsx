@@ -7,7 +7,7 @@ import { StatusFilter } from './admin-listings-table.status-filter';
 import { StatusTag } from './admin-listings-table.status-tag';
 import { formatDate } from './admin-listings-table.utils';
 
-export interface AdminListingTableRow {
+interface AdminListingTableRow {
   id: string;
   title: string;
   image?: string | null;

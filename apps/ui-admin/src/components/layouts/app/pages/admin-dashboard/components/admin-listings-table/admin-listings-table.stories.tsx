@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn, within, userEvent, waitFor } from 'storybook/test';
+import type { ComponentProps } from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import {
-	AdminListingsTable,
-	type AdminListingTableRow,
-} from './admin-listings-table';
+import { AdminListingsTable } from './admin-listings-table';
+
+type AdminListingTableRow = ComponentProps<typeof AdminListingsTable>['data'][number];
 
 const mockListings: AdminListingTableRow[] = [
 	{

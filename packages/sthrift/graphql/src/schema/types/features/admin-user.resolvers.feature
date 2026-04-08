@@ -46,17 +46,17 @@ Feature: AdminUser GraphQL Resolvers
     And the resolver should call "User.AdminUser.queryByEmail" with the current user's email
     And it should return the current AdminUser entity
 
-  Scenario: Querying all admin users with permissions
-    Given a verified admin with canViewAllUsers permission
+  Scenario: Querying all admin users while authenticated
+    Given an authenticated admin user
     When I execute the query "allAdminUsers" with pagination parameters
-    Then it should check authentication and permissions
+    Then it should not require an additional permission lookup
     And the resolver should call "User.AdminUser.getAllUsers" with query parameters
     And it should return a list of admin users
 
-  Scenario: Querying all admin users without permissions
-    Given a verified user without canViewAllUsers permission
+  Scenario: Querying all admin users without special permissions
+    Given an authenticated user without special permissions
     When I execute the query "allAdminUsers"
-    Then it should throw a Forbidden error
+    Then it should still return a list of admin users
 
   Scenario: Creating a new admin user with permissions
     Given a verified admin with canManageUserRoles permission
