@@ -3,7 +3,7 @@ import { expect } from 'storybook/test';
 import {
 	ConversationBoxContainerConversationDocument,
 	HomeConversationListContainerConversationsByUserDocument,
-	HomeConversationListContainerCurrentUserDocument,
+	HomeConversationListContainerCurrentAdminUserDocument,
 } from '../../../../../../generated.tsx';
 import {
 	withMockApolloClient,
@@ -33,15 +33,15 @@ DefaultView.parameters = {
 		mocks: [
 			{
 				request: {
-					query: HomeConversationListContainerCurrentUserDocument,
+					query: HomeConversationListContainerCurrentAdminUserDocument,
 					variables: () => true,
 				},
 				maxUsageCount: Number.POSITIVE_INFINITY,
 				result: {
 					data: {
-						currentUser: {
-							__typename: 'PersonalUser',
-							id: '507f1f77bcf86cd799439011', // Alice
+						currentAdminUser: {
+							__typename: 'AdminUser',
+							id: '507f1f77bcf86cd799439099',
 						},
 					},
 				},

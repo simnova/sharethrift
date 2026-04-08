@@ -3,7 +3,7 @@ import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useParams } from 'react-router-dom';
 import {
 	type ItemListing,
-	ViewListingCurrentUserDocument,
+	ViewListingCurrentAdminUserDocument,
 	ViewListingDocument,
 } from '../../../../../../generated.tsx';
 import { ViewListing } from './view-listing.tsx';
@@ -41,13 +41,13 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 	});
 
 	const {
-		data: currentUserData,
-		loading: currentUserLoading,
-	} = useQuery(ViewListingCurrentUserDocument, {
+		data: currentAdminUserData,
+		loading: currentAdminUserLoading,
+	} = useQuery(ViewListingCurrentAdminUserDocument, {
 		skip: !props.isAuthenticated, // Skip if not authenticated
 	});
 
-	const reserverId = currentUserData?.currentUser?.id ?? '';
+	const reserverId = currentAdminUserData?.currentAdminUser?.id ?? '';
 
 	const sharedTimeAgo = listingData?.itemListing?.createdAt
 		? computeTimeAgo(listingData.itemListing.createdAt)
@@ -55,7 +55,7 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 
 	return (
 		<ComponentQueryLoader
-			loading={listingLoading || currentUserLoading}
+			loading={listingLoading || currentAdminUserLoading}
 			error={listingError}
 			errorComponent={<div>Error loading listing.</div>}
 			hasData={listingData?.itemListing}

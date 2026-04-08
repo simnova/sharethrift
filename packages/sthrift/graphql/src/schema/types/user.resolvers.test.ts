@@ -28,10 +28,6 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		userType: string;
 	};
 	let result: unknown;
-	let mockInvalidUserType: {
-		id: string;
-		userType: string;
-	};
 
 	BeforeEachScenario(() => {
 		mockAdminUser = {
@@ -49,11 +45,6 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			id: 'personal-id-456',
 			email: 'user@test.com',
 			userType: 'personal-user',
-		};
-
-		mockInvalidUserType = {
-			id: 'invalid-user-type',
-			userType: 'invalid-type',
 		};
 
 		// Initialize mockContext with mock data configured
@@ -101,13 +92,16 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	Scenario(
 		'Query currentUser returns authenticated user',
 		({ Given, When, Then }) => {
-			Given('a verified admin user is authenticated', () => {
+			Given('a verified personal user is authenticated', () => {
 				mockContext.applicationServices.verifiedUser = {
-					verifiedJwt: { email: 'admin@test.com' },
+					verifiedJwt: { email: 'user@test.com' },
 				} as { verifiedJwt: { email: string } };
 				vi.mocked(
 					mockContext.applicationServices.User.AdminUser.queryByEmail,
-				).mockResolvedValue(mockAdminUser);
+				).mockResolvedValue(null);
+				vi.mocked(
+					mockContext.applicationServices.User.PersonalUser.queryByEmail,
+				).mockResolvedValue(mockPersonalUser);
 			});
 
 			When('currentUser query is called', async () => {
@@ -120,8 +114,46 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 
 			Then('it should return the authenticated user', () => {
-				expect(result).toEqual(mockAdminUser);
+				expect(result).toEqual(mockPersonalUser);
 			});
+		},
+	);
+
+	Scenario(
+		'Query currentUser throws error for admin users',
+		({ Given, When, Then }) => {
+			let error: Error | undefined;
+
+			Given('a verified admin user is authenticated', () => {
+				mockContext.applicationServices.verifiedUser = {
+					verifiedJwt: { email: 'admin@test.com' },
+				} as { verifiedJwt: { email: string } };
+				vi.mocked(
+					mockContext.applicationServices.User.AdminUser.queryByEmail,
+				).mockResolvedValue(mockAdminUser);
+			});
+
+			When('currentUser query is called', async () => {
+				try {
+					await userUnionResolvers.Query?.currentUser?.(
+						{},
+						{},
+						mockContext,
+						{} as GraphQLResolveInfo,
+					);
+				} catch (e) {
+					error = e as Error;
+				}
+			});
+
+			Then(
+				'it should throw "Forbidden: Admin users cannot use currentUser. Use currentAdminUser instead."',
+				() => {
+					expect(error?.message).toBe(
+						'Forbidden: Admin users cannot use currentUser. Use currentAdminUser instead.',
+					);
+				},
+			);
 		},
 	);
 
@@ -164,10 +196,10 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				} as { verifiedJwt: { email: string } };
 				vi.mocked(
 					mockContext.applicationServices.User.AdminUser.queryByEmail,
-				).mockRejectedValue(new Error('Not found'));
+				).mockResolvedValue(null);
 				vi.mocked(
 					mockContext.applicationServices.User.PersonalUser.queryByEmail,
-				).mockRejectedValue(new Error('Not found'));
+				).mockResolvedValue(null);
 			});
 
 			When('currentUser query is called', async () => {
@@ -210,7 +242,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 					};
 					vi.mocked(
 						mockContext.applicationServices.User.AdminUser.queryByEmail,
-					).mockRejectedValue(new Error('Not found'));
+					).mockResolvedValue(null);
 					vi.mocked(
 						mockContext.applicationServices.User.PersonalUser.queryByEmail,
 					).mockResolvedValue(mockPersonalUser);
@@ -241,7 +273,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			const newUser = {
 				id: 'new-user-123',
 				email: 'newuser@test.com',
-				userType: 'personal-users',
+				userType: 'personal-user',
 			};
 
 			Given('a verified user is authenticated but not in database', () => {
@@ -260,10 +292,10 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				};
 				vi.mocked(
 					mockContext.applicationServices.User.AdminUser.queryByEmail,
-				).mockRejectedValue(new Error('Not found'));
+				).mockResolvedValue(null);
 				vi.mocked(
 					mockContext.applicationServices.User.PersonalUser.queryByEmail,
-				).mockRejectedValue(new Error('Not found'));
+				).mockResolvedValue(null);
 				mockContext.applicationServices.User.PersonalUser.createIfNotExists =
 					vi.fn().mockResolvedValue(newUser);
 			});
@@ -291,8 +323,10 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'Query currentUserAndCreateIfNotExists returns existing AdminUser',
+		'Query currentUserAndCreateIfNotExists throws error for admin users',
 		({ Given, When, Then }) => {
+			let error: Error | undefined;
+
 			Given('a verified admin user is authenticated', () => {
 				mockContext.applicationServices.verifiedUser = {
 					verifiedJwt: {
@@ -313,17 +347,26 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 			});
 
 			When('currentUserAndCreateIfNotExists query is called', async () => {
-				result = await userUnionResolvers.Query?.currentUserAndCreateIfNotExists?.(
-					{},
-					{},
-					mockContext,
-					{} as GraphQLResolveInfo,
-				);
+				try {
+					await userUnionResolvers.Query?.currentUserAndCreateIfNotExists?.(
+						{},
+						{},
+						mockContext,
+						{} as GraphQLResolveInfo,
+					);
+				} catch (e) {
+					error = e as Error;
+				}
 			});
 
-			Then('it should return the existing admin user', () => {
-				expect(result).toEqual(mockAdminUser);
-			});
+			Then(
+				'it should throw "Forbidden: Admin users cannot use currentUserAndCreateIfNotExists. Use currentAdminUser instead."',
+				() => {
+					expect(error?.message).toBe(
+						'Forbidden: Admin users cannot use currentUserAndCreateIfNotExists. Use currentAdminUser instead.',
+					);
+				},
+			);
 		},
 	);
 
@@ -376,10 +419,10 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				};
 				vi.mocked(
 					mockContext.applicationServices.User.AdminUser.queryByEmail,
-				).mockRejectedValue(new Error('Not found'));
+				).mockResolvedValue(null);
 				vi.mocked(
 					mockContext.applicationServices.User.PersonalUser.queryByEmail,
-				).mockRejectedValue(new Error('Not found'));
+				).mockResolvedValue(null);
 			});
 
 			And('the createIfNotExists operation fails', () => {
@@ -407,233 +450,11 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 		},
 	);
 
-	Scenario('Query userById returns AdminUser', ({ When, Then }) => {
-		When('userById query is called with an admin user ID', async () => {
-			vi.mocked(
-				mockContext.applicationServices.User.AdminUser.queryById,
-			).mockResolvedValue(mockAdminUser);
-			result = await userUnionResolvers.Query?.userById?.(
-				{},
-				{ id: 'admin-id-123' },
-				mockContext,
-				{} as GraphQLResolveInfo,
-			);
-		});
-
-		Then('it should return the AdminUser entity', () => {
-			expect(result).toEqual(mockAdminUser);
-		});
-	});
-
-	Scenario('Query userById returns PersonalUser', ({ When, Then }) => {
-		When('userById query is called with a personal user ID', async () => {
-			vi.mocked(
-				mockContext.applicationServices.User.AdminUser.queryById,
-			).mockRejectedValue(new Error('Not found'));
-			vi.mocked(
-				mockContext.applicationServices.User.PersonalUser.queryById,
-			).mockResolvedValue(mockPersonalUser);
-			result = await userUnionResolvers.Query?.userById?.(
-				{},
-				{ id: 'personal-id-456' },
-				mockContext,
-				{} as GraphQLResolveInfo,
-			);
-		});
-
-		Then('it should return the PersonalUser entity', () => {
-			expect(result).toEqual(mockPersonalUser);
-		});
-	});
-
-	Scenario(
-		'Query userById returns null when user not found',
-		({ When, Then }) => {
-			When('userById query is called with a non-existent ID', async () => {
-				vi.mocked(
-					mockContext.applicationServices.User.AdminUser.queryById,
-				).mockRejectedValue(new Error('Not found'));
-				vi.mocked(
-					mockContext.applicationServices.User.PersonalUser.queryById,
-				).mockRejectedValue(new Error('Not found'));
-				result = await userUnionResolvers.Query?.userById?.(
-					{},
-					{ id: 'nonexistent' },
-					mockContext,
-					{} as GraphQLResolveInfo,
-				);
-			});
-
-			Then('it should return null', () => {
-				expect(result).toBeNull();
-			});
-		},
-	);
-
-	Scenario(
-		'Query allSystemUsers returns all users for admin',
-		({ Given, When, Then }) => {
-			Given('an authenticated admin with canViewAllUsers permission', () => {
-				mockContext.applicationServices.verifiedUser = {
-					verifiedJwt: { email: 'admin@test.com' },
-				} as { verifiedJwt: { email: string } };
-				vi.mocked(
-					mockContext.applicationServices.User.AdminUser.queryByEmail,
-				).mockResolvedValue(mockAdminUser);
-			});
-
-			When('allSystemUsers query is called', async () => {
-				result = await userUnionResolvers.Query?.allSystemUsers?.(
-					{},
-					{
-						page: 1,
-						pageSize: 10,
-					},
-					mockContext,
-					{} as GraphQLResolveInfo,
-				);
-			});
-
-			Then('it should return both personal and admin users', () => {
-				expect(result.items).toHaveLength(2);
-				expect(result.total).toBe(2);
-			});
-		},
-	);
-
-	Scenario(
-		'Query allSystemUsers filters by user type',
-		({ Given, When, Then }) => {
-			Given('an authenticated admin with canViewAllUsers permission', () => {
-				mockContext.applicationServices.verifiedUser = {
-					verifiedJwt: { email: 'admin@test.com' },
-				} as { verifiedJwt: { email: string } };
-				vi.mocked(
-					mockContext.applicationServices.User.AdminUser.queryByEmail,
-				).mockResolvedValue(mockAdminUser);
-			});
-
-			When(
-				'allSystemUsers query is called with personal user type filter',
-				async () => {
-					result = await userUnionResolvers.Query?.allSystemUsers?.(
-						{},
-						{
-							page: 1,
-							pageSize: 10,
-							userTypeFilter: ['personal'],
-						},
-						mockContext,
-						{} as GraphQLResolveInfo,
-					);
-				},
-			);
-
-			Then('it should return only personal users', () => {
-				expect(result.items).toHaveLength(1);
-				expect(result.items[0]).toEqual(mockPersonalUser);
-			});
-		},
-	);
-
-	Scenario(
-		'Query allSystemUsers returns all users for authenticated admin without special permission',
-		({ Given, When, Then }) => {
-			Given('an authenticated admin without canViewAllUsers permission', () => {
-				mockContext.applicationServices.verifiedUser = {
-					verifiedJwt: { email: 'admin@test.com' },
-				};
-				const limitedAdmin = {
-					...mockAdminUser,
-					role: {
-						permissions: { userPermissions: { canViewAllUsers: false } },
-					},
-				};
-				vi.mocked(
-					mockContext.applicationServices.User.AdminUser.queryByEmail,
-				).mockResolvedValue(limitedAdmin);
-			});
-
-			When('allSystemUsers query is called', async () => {
-				result = await userUnionResolvers.Query?.allSystemUsers?.(
-					{},
-					{
-						page: 1,
-						pageSize: 10,
-					},
-					mockContext,
-					{} as GraphQLResolveInfo,
-				);
-			});
-
-			Then('it should return both personal and admin users', () => {
-				expect(result.items).toHaveLength(2);
-				expect(result.total).toBe(2);
-			});
-		},
-	);
-
-	Scenario(
-		'Query allSystemUsers throws error when not authenticated',
-		({ Given, When, Then }) => {
-			let error: Error | undefined;
-
-			Given('no user is authenticated', () => {
-				mockContext.applicationServices.verifiedUser = undefined;
-			});
-
-			When('allSystemUsers query is called', async () => {
-				try {
-					await userUnionResolvers.Query?.allSystemUsers?.(
-						{},
-						{
-							page: 1,
-							pageSize: 10,
-						},
-						mockContext,
-						{} as GraphQLResolveInfo,
-					);
-				} catch (e) {
-					error = e as Error;
-				}
-			});
-
-			Then('it should throw "Unauthorized: Authentication required"', () => {
-				expect(error?.message).toContain('Unauthorized');
-			});
-		},
-	);
-
-	Scenario(
-		'User union resolveType returns AdminUser',
-		({ Given, When, Then }) => {
-			Given('a user object with userType admin-user', () => {
-				result = { id: 'admin-id-123' , userType: 'admin-user'};
-				vi.mocked(
-					mockContext.applicationServices.User.User.queryById,
-				).mockResolvedValue(mockAdminUser);
-			});
-
-			When('__resolveType is called', async () => {
-				result = await userUnionResolvers.User?.__resolveType?.(
-					result,
-				);
-			});
-
-			Then('it should return "AdminUser"', () => {
-				expect(result).toBe('AdminUser');
-			});
-		},
-	);
-
 	Scenario(
 		'User union resolveType returns PersonalUser',
 		({ Given, When, Then }) => {
 			Given('a user object with userType personal-user', () => {
 				result = { id: 'personal-id-456', userType: 'personal-user' };
-				vi.mocked(
-					mockContext.applicationServices.User.User.queryById,
-				).mockResolvedValue(mockPersonalUser);
 			});
 
 			When('__resolveType is called', async () => {
@@ -659,9 +480,6 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 
 			When('__resolveType is called', async () => {
 				try {
-					vi.mocked(
-						mockContext.applicationServices.User.User.queryById,
-					).mockResolvedValue(mockInvalidUserType);
 					await userUnionResolvers.User?.__resolveType?.(result, mockContext);
 				} catch (e) {
 					error = e as Error;

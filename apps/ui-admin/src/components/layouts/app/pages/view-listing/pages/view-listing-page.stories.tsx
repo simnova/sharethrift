@@ -7,7 +7,7 @@ import {
 } from '../../../../../../test-utils/storybook-decorators.tsx';
 import {
 	ViewListingDocument,
-	ViewListingCurrentUserDocument,
+	ViewListingCurrentAdminUserDocument,
 	ViewListingActiveReservationRequestForListingDocument,
 } from '../../../../../../generated.tsx';
 
@@ -35,9 +35,9 @@ const mockListing = {
 };
 
 const mockCurrentUser = {
-	__typename: 'PersonalUser',
+	__typename: 'AdminUser',
 	id: 'user-2',
-	userType: 'personal-user',
+	userType: 'admin-user',
 };
 
 const meta: Meta<typeof ViewListing> = {
@@ -60,11 +60,11 @@ const meta: Meta<typeof ViewListing> = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -107,11 +107,11 @@ export const Loading: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},

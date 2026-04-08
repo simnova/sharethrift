@@ -60,28 +60,6 @@ The Personal User resolvers handle user queries, updates, and payment processing
 	# 	Then it should return a RefundResponse with status "FAILED"
 	# 	And include errorInformation with reason "PROCESSING_ERROR"
 
-	Scenario: Fetching all users with admin permission
-		Given a verified admin user with "canViewAllUsers" permission
-		And pagination parameters page 1 and pageSize 10
-		When I execute the query "allUsers"
-		Then it should call "User.PersonalUser.getAllUsers" with pagination parameters
-		And return a list of all personal users
-
-	Scenario: Fetching all users without authentication
-		Given no authenticated user context
-		When I execute the query "allUsers"
-		Then it should throw an error "Unauthorized: Authentication required"
-
-	Scenario: Fetching all users as an authenticated personal user
-		Given a verified personal user without admin role
-		When I execute the query "allUsers"
-		Then it should still return a list of all personal users
-
-	Scenario: Fetching all users as an authenticated admin without special permission
-		Given a verified admin user without "canViewAllUsers" permission
-		When I execute the query "allUsers"
-		Then it should still return a list of all personal users
-
 	Scenario: Updating personal user without authentication
 		Given no authenticated user context
 		When I execute the mutation "personalUserUpdate"
@@ -100,7 +78,7 @@ The Personal User resolvers handle user queries, updates, and payment processing
 	Scenario: Attempting to create personal user when logged in as admin
 		Given a verified admin user with email "admin@example.com"
 		When I execute the query "currentPersonalUserAndCreateIfNotExists"
-		Then it should throw an error "Admin users cannot use this query. Use currentUser instead."
+		Then it should throw an error "Forbidden: Admin users cannot use this query. Use currentAdminUser instead."
 
 	Scenario: Creating personal user without authentication
 		Given no authenticated user context

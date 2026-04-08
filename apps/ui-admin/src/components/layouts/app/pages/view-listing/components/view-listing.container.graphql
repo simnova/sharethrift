@@ -20,9 +20,6 @@ fragment ViewListingContainerListingFields on ItemListing {
 		... on PersonalUser {
 			id
 		}
-		... on AdminUser {
-			id
-		}
 	}
 }
 
@@ -32,16 +29,10 @@ query ViewListing($id: ObjectID!) {
 	}
 }
 
-query ViewListingCurrentUser {
-	currentUser {
-		... on PersonalUser {
-			id
-			userType
-		}
-		... on AdminUser {
-			id
-			userType
-		}
+query ViewListingCurrentAdminUser {
+	currentAdminUser {
+		id
+		userType
 	}
 }
 

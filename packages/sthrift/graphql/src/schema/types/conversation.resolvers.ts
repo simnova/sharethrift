@@ -6,11 +6,25 @@ import type {
 } from '../builder/generated.ts';
 import {
 	getUserByEmail,
+	PopulateConversationParticipantFromField,
 	PopulateItemListingFromField,
-	PopulateUserFromField,
 } from '../resolver-helper.ts';
 
 const conversation: Resolvers = {
+	ConversationParticipant: {
+		__resolveType(obj: { userType: string }): 'AdminUser' | 'PersonalUser' {
+			const userType = obj.userType?.toLowerCase();
+			if (userType === 'admin-user') {
+				return 'AdminUser';
+			}
+			if (userType === 'personal-user') {
+				return 'PersonalUser';
+			}
+			throw new Error(
+				`Unable to resolve ConversationParticipant union type. Invalid userType: ${JSON.stringify(obj)}`,
+			);
+		},
+	},
 	ConversationMessage: {
 		id: (parent) => parent.id,
 		authorId: (parent) => parent.authorId.valueOf(),
@@ -18,8 +32,8 @@ const conversation: Resolvers = {
 		messagingMessageId: (parent) => parent.messagingMessageId.valueOf(),
 	},
 	Conversation: {
-		sharer: PopulateUserFromField('sharer'),
-		reserver: PopulateUserFromField('reserver'),
+		sharer: PopulateConversationParticipantFromField('sharer'),
+		reserver: PopulateConversationParticipantFromField('reserver'),
 		listing: PopulateItemListingFromField('listing'),
 	},
 	Query: {

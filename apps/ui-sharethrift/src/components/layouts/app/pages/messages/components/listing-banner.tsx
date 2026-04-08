@@ -1,12 +1,12 @@
 import { Card, Typography, Avatar, Tag, Row, Col } from "antd";
 import { SwapOutlined, AppstoreAddOutlined } from "@ant-design/icons";
 import bikeListingImg from "@sthrift/ui-components/src/assets/item-images/bike-listing.png";
-import type { User } from "../../../../../../generated.tsx";
+import type { ConversationParticipant } from "../../../../../../generated.tsx";
 
 const imgRectangle26 = bikeListingImg;
 
 interface ListingBannerProps {
-  owner: User;
+  owner: ConversationParticipant;
 }
 
 export const ListingBanner: React.FC<ListingBannerProps> = (props) => {

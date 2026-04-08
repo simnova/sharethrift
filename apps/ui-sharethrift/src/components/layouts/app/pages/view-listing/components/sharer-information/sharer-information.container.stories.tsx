@@ -32,7 +32,7 @@ const meta: Meta<typeof SharerInformationContainer> = {
 					},
 					result: {
 						data: {
-							userById: mockUser,
+							personalUserById: mockUser,
 						},
 					},
 				},

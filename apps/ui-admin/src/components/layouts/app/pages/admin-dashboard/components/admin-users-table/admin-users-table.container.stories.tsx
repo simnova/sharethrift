@@ -6,7 +6,7 @@ import {
 	withMockRouter,
 } from '../../../../../../../test-utils/storybook-decorators.tsx';
 import {
-	AdminUsersTableContainerAllUsersDocument,
+	AdminUsersTableContainerAdminDashboardUsersDocument,
 	BlockUserDocument,
 	UnblockUserDocument,
 } from '../../../../../../../generated.tsx';
@@ -62,7 +62,7 @@ const meta: Meta<typeof AdminUsersTableContainer> = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: (vars: any) => {
 							// Accept any variables for this query
 							return vars.page !== undefined && vars.pageSize !== undefined;
@@ -71,7 +71,7 @@ const meta: Meta<typeof AdminUsersTableContainer> = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -142,13 +142,13 @@ export const Empty: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [],
 								total: 0,
@@ -172,7 +172,7 @@ export const Loading: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
@@ -203,13 +203,13 @@ export const WithBlockedUser: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -254,13 +254,13 @@ export const BlockUserError: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -292,13 +292,13 @@ export const ManyUsers: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: Array.from({ length: 10 }, (_, i) => ({
 									__typename: 'PersonalUser',
@@ -338,13 +338,13 @@ export const UnblockUserError: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -376,7 +376,7 @@ export const WithError: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
@@ -407,7 +407,7 @@ export const ViewProfileAction: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -419,7 +419,7 @@ export const ViewProfileAction: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -454,7 +454,7 @@ export const ViewReportAction: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -466,7 +466,7 @@ export const ViewReportAction: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -501,7 +501,7 @@ export const ArrayFieldSort: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -513,7 +513,7 @@ export const ArrayFieldSort: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -546,13 +546,13 @@ export const ArrayFieldSort: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -600,7 +600,7 @@ export const BlockUserAction: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -612,7 +612,7 @@ export const BlockUserAction: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -663,7 +663,7 @@ export const BlockUserAction: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -675,7 +675,7 @@ export const BlockUserAction: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -728,7 +728,7 @@ export const BlockUserSuccess: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -740,7 +740,7 @@ export const BlockUserSuccess: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -770,7 +770,7 @@ export const BlockUserSuccess: Story = {
 				},
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -782,7 +782,7 @@ export const BlockUserSuccess: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					newData: () => ({
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -820,7 +820,7 @@ export const UnblockUserSuccess: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -832,7 +832,7 @@ export const UnblockUserSuccess: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -862,7 +862,7 @@ export const UnblockUserSuccess: Story = {
 				},
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -874,7 +874,7 @@ export const UnblockUserSuccess: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					newData: () => ({
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -911,7 +911,7 @@ export const BlockUserMutationError: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -923,7 +923,7 @@ export const BlockUserMutationError: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -966,7 +966,7 @@ export const UnblockUserMutationError: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -978,7 +978,7 @@ export const UnblockUserMutationError: Story = {
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -1021,7 +1021,7 @@ export const DataTransformationWithNullValues: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1032,7 +1032,7 @@ export const DataTransformationWithNullValues: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -1071,7 +1071,7 @@ export const DataTransformationWithPartialAccountData: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1082,7 +1082,7 @@ export const DataTransformationWithPartialAccountData: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -1126,13 +1126,13 @@ export const BlockUserMutationNetworkError: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1164,13 +1164,13 @@ export const UnblockUserMutationNetworkError: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -1202,7 +1202,7 @@ export const SortingWithArrayField: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1213,7 +1213,7 @@ export const SortingWithArrayField: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1237,7 +1237,7 @@ export const SortingWithNullField: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1248,7 +1248,7 @@ export const SortingWithNullField: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1272,7 +1272,7 @@ export const SearchWithPageReset: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1283,7 +1283,7 @@ export const SearchWithPageReset: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[0]],
 								total: 1,
@@ -1307,7 +1307,7 @@ export const StatusFilterWithPageReset: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1318,7 +1318,7 @@ export const StatusFilterWithPageReset: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -1342,7 +1342,7 @@ export const TableChangeWithSorter: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1353,7 +1353,7 @@ export const TableChangeWithSorter: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1377,13 +1377,13 @@ export const FetchPolicyNetworkOnly: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1412,13 +1412,13 @@ export const BlockUserRefetchesData: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1463,13 +1463,13 @@ export const UnblockUserRefetchesData: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -1514,7 +1514,7 @@ export const PageSize50: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1525,7 +1525,7 @@ export const PageSize50: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: Array.from({ length: 50 }, (_, i) => ({
 									__typename: 'PersonalUser',
@@ -1570,7 +1570,7 @@ export const SortingByUsername: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1581,7 +1581,7 @@ export const SortingByUsername: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1616,7 +1616,7 @@ export const SortingByEmail: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1627,7 +1627,7 @@ export const SortingByEmail: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1662,7 +1662,7 @@ export const SortingByFirstName: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1673,7 +1673,7 @@ export const SortingByFirstName: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1708,7 +1708,7 @@ export const SortingByLastName: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1719,7 +1719,7 @@ export const SortingByLastName: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1754,7 +1754,7 @@ export const SortingByCreatedAt: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1765,7 +1765,7 @@ export const SortingByCreatedAt: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1800,7 +1800,7 @@ export const SortingByUserType: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1811,7 +1811,7 @@ export const SortingByUserType: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1846,7 +1846,7 @@ export const SortingByStatus: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1857,7 +1857,7 @@ export const SortingByStatus: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1892,7 +1892,7 @@ export const DescendingSort: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1903,7 +1903,7 @@ export const DescendingSort: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1939,7 +1939,7 @@ export const MultipleSortingInteractions: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1950,7 +1950,7 @@ export const MultipleSortingInteractions: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -1962,7 +1962,7 @@ export const MultipleSortingInteractions: Story = {
 				},
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -1973,7 +1973,7 @@ export const MultipleSortingInteractions: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -2013,7 +2013,7 @@ export const SearchWithSpecialCharacters: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -2024,7 +2024,7 @@ export const SearchWithSpecialCharacters: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[0]],
 								total: 1,
@@ -2053,7 +2053,7 @@ export const StatusFilterActive: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -2064,7 +2064,7 @@ export const StatusFilterActive: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[0]],
 								total: 1,
@@ -2089,7 +2089,7 @@ export const StatusFilterBlocked: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -2100,7 +2100,7 @@ export const StatusFilterBlocked: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -2125,7 +2125,7 @@ export const CombinedSearchAndFilter: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -2136,7 +2136,7 @@ export const CombinedSearchAndFilter: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[0]],
 								total: 1,
@@ -2166,7 +2166,7 @@ export const PaginationWithLargeDataset: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 2,
 							pageSize: 50,
@@ -2177,7 +2177,7 @@ export const PaginationWithLargeDataset: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: Array.from({ length: 50 }, (_, i) => ({
 									__typename: 'PersonalUser',
@@ -2226,13 +2226,13 @@ export const BlockUserWithConfirmation: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -2286,13 +2286,13 @@ export const UnblockUserWithConfirmation: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [mockUsers[1]],
 								total: 1,
@@ -2377,7 +2377,7 @@ export const HandleStatusFilterFunction: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -2388,7 +2388,7 @@ export const HandleStatusFilterFunction: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -2418,7 +2418,7 @@ export const HandleTableChangeFunction: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -2429,7 +2429,7 @@ export const HandleTableChangeFunction: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -2461,7 +2461,7 @@ export const HandleTableChangeArrayField: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -2472,7 +2472,7 @@ export const HandleTableChangeArrayField: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -2504,13 +2504,13 @@ export const ViewProfileActionInSwitch: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -2542,13 +2542,13 @@ export const ViewReportActionInSwitch: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -2580,13 +2580,13 @@ export const DataTransformationWithNullHandling: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -2628,13 +2628,13 @@ export const MutationErrorHandling: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -2674,13 +2674,13 @@ export const RefetchAfterMutation: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: mockUsers,
 								total: 2,
@@ -2708,13 +2708,13 @@ export const RefetchAfterMutation: Story = {
 				},
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: () => true,
 					},
 					maxUsageCount: Number.POSITIVE_INFINITY,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{

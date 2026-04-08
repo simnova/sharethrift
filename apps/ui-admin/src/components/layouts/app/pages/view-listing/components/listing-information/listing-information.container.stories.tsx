@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, waitFor, fn } from 'storybook/test';
 import { ListingInformationContainer } from './listing-information.container.tsx';
-import { HomeListingInformationCreateReservationRequestDocument,ViewListingActiveReservationRequestForListingDocument,ViewListingCurrentUserDocument,ViewListingQueryActiveByListingIdDocument } from '../../../../../../../generated.tsx';
+import { HomeListingInformationCreateReservationRequestDocument,ViewListingActiveReservationRequestForListingDocument,ViewListingCurrentAdminUserDocument,ViewListingQueryActiveByListingIdDocument } from '../../../../../../../generated.tsx';
 import { withMockApolloClient,
 withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
 
@@ -22,9 +22,9 @@ const mockListing = {
 };
 
 const mockCurrentUser = {
-	__typename: 'PersonalUser',
+	__typename: 'AdminUser',
 	id: 'user-2',
-	userType: 'personal',
+	userType: 'admin-user',
 };
 
 const meta: Meta<typeof ListingInformationContainer> = {
@@ -37,11 +37,11 @@ const meta: Meta<typeof ListingInformationContainer> = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -217,11 +217,11 @@ export const QueryLoadingState: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -257,11 +257,11 @@ export const QueryError: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -303,11 +303,11 @@ export const NoCurrentUser: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: null,
+							currentAdminUser: null,
 						},
 					},
 				},
@@ -352,11 +352,11 @@ export const MutationError: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -421,11 +421,11 @@ export const WithExistingOtherReservations: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -486,11 +486,11 @@ export const SkipQuery: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -524,11 +524,11 @@ export const SuccessfulReservation: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -705,11 +705,11 @@ export const MutationLoadingState: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -783,11 +783,11 @@ export const CacheFirstFetchPolicy: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -842,11 +842,11 @@ export const RefetchQueriesAfterSuccess: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -946,11 +946,11 @@ export const ResetDatesAfterSuccess: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1027,11 +1027,11 @@ export const CatchBlockErrorHandling: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1100,11 +1100,11 @@ export const SkipQueryEmptyListingId: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1145,11 +1145,11 @@ export const SkipQueryUndefinedListingId: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1250,11 +1250,11 @@ export const OnErrorCallbackTriggered: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1320,11 +1320,11 @@ export const OtherReservationsDataPassed: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1384,11 +1384,11 @@ export const CreateReservationMutationErrorHandling: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1435,11 +1435,11 @@ export const OnErrorCallbackInvoked: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1486,11 +1486,11 @@ export const CatchBlockErrorConsoleLog: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1537,11 +1537,11 @@ export const ResetDatesAfterMutationSuccess: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1612,11 +1612,11 @@ export const RefetchQueriesOnMutationSuccess: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1696,11 +1696,11 @@ export const SkipQueryBranch: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1733,11 +1733,11 @@ export const SkipQueryBranchUndefinedId: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1827,11 +1827,11 @@ export const HandleReserveClickCatchBlock: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -1917,11 +1917,11 @@ export const OnCompletedCallback: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -2030,11 +2030,11 @@ export const OnErrorCallback: Story = {
 			mocks: [
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},

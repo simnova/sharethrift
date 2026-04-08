@@ -10,14 +10,6 @@ type AdminUser implements MongoBase {
 	userIsAdmin: Boolean
 }
 
-#if admin list view is needed to display on UI
-type AdminUserPage {
-	items: [AdminUser!]!
-	total: Int!
-	page: Int!
-	pageSize: Int!
-}
-
 type AdminUserAccount {
 	accountType: String
 	email: String
@@ -85,19 +77,14 @@ type AdminUserMutationResult implements MutationResult {
 
 extend type Query {
 	# Admin User queries
-	adminUserById(id: ObjectID!): AdminUser
-	adminUserByEmail(email: String!): AdminUser
-	adminUserByUsername(username: String!): AdminUser
-	currentAdminUser: AdminUser
-
-	# The following code can be used to list all admin users in the database
-	allAdminUsers(
+	currentAdminUser: AdminUser!
+	adminDashboardUsers(
 		page: Int!
 		pageSize: Int!
 		searchText: String
 		statusFilters: [String!]
 		sorter: SorterInput
-	): AdminUserPage!
+	): PaginatedUsers!
 }
 
 extend type Mutation {

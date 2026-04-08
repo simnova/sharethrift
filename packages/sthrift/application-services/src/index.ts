@@ -98,9 +98,11 @@ export const buildApplicationServicesFactory = (
 						verifiedJwt.email,
 					);
 
-				if (adminUser) {
-					passport = Domain.PassportFactory.forAdminUser(adminUser);
+				if (!adminUser) {
+					throw new Error('Forbidden: Admin portal requires an admin user');
 				}
+
+				passport = Domain.PassportFactory.forAdminUser(adminUser);
 			}
 		}
 

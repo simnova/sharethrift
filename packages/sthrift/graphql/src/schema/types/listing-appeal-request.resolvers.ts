@@ -8,15 +8,16 @@ import type {
 	MutationUpdateListingAppealRequestStateArgs,
 } from '../builder/generated.ts';
 import {
-	PopulateUserFromField,
+	PopulateAdminUserFromField,
 	PopulateItemListingFromField,
+	PopulateUserFromField,
 } from '../resolver-helper.ts';
 
 const listingAppealRequestResolvers: Resolvers = {
 	ListingAppealRequest: {
 		user: PopulateUserFromField('user'),
 		listing: PopulateItemListingFromField('listing'),
-		blocker: PopulateUserFromField('blocker'),
+		blocker: PopulateAdminUserFromField('blocker'),
 	},
 	Query: {
 		getListingAppealRequest: async (

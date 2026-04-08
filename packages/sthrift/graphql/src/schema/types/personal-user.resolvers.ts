@@ -5,7 +5,6 @@ import type {
 	PersonalUserUpdateInput,
 	PersonalUserProcessPaymentInput,
 	Resolvers,
-	QueryAllUsersArgs,
 } from '../builder/generated.ts';
 import type {
 	PersonalUserUpdateCommand,
@@ -76,12 +75,12 @@ const personalUserResolvers: Resolvers = {
 				throw new Error('Unauthorized');
 			}
 
-			// Block admin users - they should use currentUser query instead
+			// Block admin users - they should use currentAdminUser instead
 			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
 			const existingUser = await getUserByEmail(email, context);
 			if (existingUser?.userType === 'admin-user') {
 				throw new Error(
-					'Admin users cannot use this query. Use currentUser instead.',
+					'Forbidden: Admin users cannot use this query. Use currentAdminUser instead.',
 				);
 			}
 
@@ -96,24 +95,6 @@ const personalUserResolvers: Resolvers = {
 						context.applicationServices.verifiedUser.verifiedJwt.family_name,
 				},
 			);
-		},
-		allUsers: async (
-			_parent: unknown,
-			args: QueryAllUsersArgs,
-			context: GraphContext,
-			_info: GraphQLResolveInfo,
-		) => {
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized: Authentication required');
-			}
-
-			return await context.applicationServices.User.PersonalUser.getAllUsers({
-				page: args.page,
-				pageSize: args.pageSize,
-				searchText: args.searchText || undefined,
-				statusFilters: args.statusFilters ? [...args.statusFilters] : undefined,
-				sorter: args.sorter || undefined,
-			});
 		},
 	},
 

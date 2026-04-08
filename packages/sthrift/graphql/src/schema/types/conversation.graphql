@@ -1,6 +1,8 @@
+union ConversationParticipant = PersonalUser | AdminUser
+
 type Conversation implements MongoBase {
-	sharer: User!
-	reserver: User!
+	sharer: ConversationParticipant!
+	reserver: ConversationParticipant!
 	listing: ItemListing!
 	messagingConversationId: String!
 	messages: [ConversationMessage!]!

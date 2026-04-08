@@ -1,8 +1,6 @@
-query AppContainerCurrentUser {
-  currentUserAndCreateIfNotExists {
-    ... on AdminUser {
-      id
-      userType
-    }
+query AppContainerCurrentAdminUser {
+  currentAdminUser {
+    id
+    userType
   }
 }

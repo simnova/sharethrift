@@ -1,7 +1,7 @@
 import { ConversationList } from './conversation-list.tsx';
 import { useQuery } from '@apollo/client/react';
 import {
-    HomeConversationListContainerCurrentUserDocument,
+	HomeConversationListContainerCurrentAdminUserDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	type Conversation,
 } from '../../../../../../generated.tsx';
@@ -24,10 +24,10 @@ export const ConversationListContainer: React.FC<
 	ConversationListContainerProps
 > = (props) => {
 	const {
-		data: currentUserData,
-		loading: currentUserLoading,
-		error: currentUserError,
-	} = useQuery(HomeConversationListContainerCurrentUserDocument);
+		data: currentAdminUserData,
+		loading: currentAdminUserLoading,
+		error: currentAdminUserError,
+	} = useQuery(HomeConversationListContainerCurrentAdminUserDocument);
 
 	const {
 		data: currentUserConversationsData,
@@ -35,9 +35,9 @@ export const ConversationListContainer: React.FC<
 		error: conversationsError,
 	} = useQuery(HomeConversationListContainerConversationsByUserDocument, {
 		variables: {
-			userId: currentUserData?.currentUser.id,
+			userId: currentAdminUserData?.currentAdminUser.id,
 		},
-		skip: !currentUserData?.currentUser.id,
+		skip: !currentAdminUserData?.currentAdminUser.id,
 	});
 
 	useEffect(() => {
@@ -58,17 +58,17 @@ export const ConversationListContainer: React.FC<
 
 	const errorMessage = getFirstErrorMessage(
 		conversationsError,
-		currentUserError,
+		currentAdminUserError,
 	);
 
 	return (
 		<ComponentQueryLoader
-			loading={loadingConversations || currentUserLoading}
+			loading={loadingConversations || currentAdminUserLoading}
 			hasData={
 				currentUserConversationsData?.conversationsByUser &&
-				currentUserData?.currentUser
+				currentAdminUserData?.currentAdminUser
 			}
-			error={conversationsError || currentUserError}
+			error={conversationsError || currentAdminUserError}
 			errorComponent={
 				<Result
 					status="error"

@@ -1,6 +1,6 @@
-union User = PersonalUser | AdminUser
+union User = PersonalUser
 
-type UserPage {
+type PaginatedUsers {
 	items: [User!]!
 	total: Int!
 	page: Int!
@@ -8,22 +8,9 @@ type UserPage {
 }
 
 extend type Query {
-	# Unified query - returns current user regardless of type
+	# Unified end-user query - excludes admin users
 	currentUser: User!
 
-	# Entry-point query - returns current authenticated user, auto-creating PersonalUser if first login (AdminUsers must be pre-created)
+	# Entry-point query - returns current authenticated end user, auto-creating PersonalUser if first login
 	currentUserAndCreateIfNotExists: User!
-
-	# Get any user by ID (PersonalUser or AdminUser)
-	userById(id: ObjectID!): User
-
-	# List all users (both PersonalUser and AdminUser) for admin dashboard
-	allSystemUsers(
-		page: Int!
-		pageSize: Int!
-		searchText: String
-		userTypeFilter: [String!] # ["personal", "admin"]
-		statusFilters: [String!]
-		sorter: SorterInput
-	): UserPage!
 }

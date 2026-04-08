@@ -1,11 +1,6 @@
-query HomeConversationListContainerCurrentUser {
-	currentUser {
-		... on AdminUser {
-			id
-		}
-		... on PersonalUser {
-			id
-		}
+query HomeConversationListContainerCurrentAdminUser {
+	currentAdminUser {
+		id
 	}
 }
 

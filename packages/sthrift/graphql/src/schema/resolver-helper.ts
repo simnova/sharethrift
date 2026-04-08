@@ -44,6 +44,29 @@ export const getUserByEmail = async (
 	return null;
 };
 
+export const requireCurrentAdminUser = async (
+	context: GraphContext,
+): Promise<Domain.Contexts.User.AdminUser.AdminUserEntityReference> => {
+	requireAuthentication(context);
+
+	const email = context.applicationServices.verifiedUser?.verifiedJwt?.email;
+	if (!email) {
+		throw new Error('Unauthorized: Email missing from verified JWT');
+	}
+
+	try {
+		const adminUser =
+			await context.applicationServices.User.AdminUser.queryByEmail({ email });
+		if (adminUser) {
+			return adminUser;
+		}
+	} catch {
+		// Treat lookup failures as missing admin access for resolver consumers.
+	}
+
+	throw new Error('Forbidden: Admin access required');
+};
+
 // Boolean check if the current viewer is an admin user
 export const currentViewerIsAdmin = async (
 	context: GraphContext,
@@ -54,13 +77,16 @@ export const currentViewerIsAdmin = async (
 		return false;
 	}
 
-	const currentUser = await getUserByEmail(currentUserEmail, context);
-	const isAdmin =
-		currentUser &&
-		'role' in currentUser &&
-		currentUser.userType === 'admin-user';
-
-	return !!isAdmin;
+	try {
+		const adminUser = await context.applicationServices.User.AdminUser.queryByEmail(
+			{
+				email: currentUserEmail,
+			},
+		);
+		return !!adminUser;
+	} catch {
+		return false;
+	}
 };
 
 /**
@@ -102,10 +128,38 @@ export const extractUserProfileFromJwt = (context: GraphContext): {
 };
 
 /**
- * Helper function to populate a User field (PersonalUser or AdminUser) by ID.
- * Used for GraphQL field resolvers that need to resolve User union types.
+ * Helper function to populate a unified User field by ID.
+ * User excludes admins and currently resolves to end-user types only.
  */
 export const PopulateUserFromField = (fieldName: string) => {
+	return async (parent: any, _: unknown, context: GraphContext) => {
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
+			return await context.applicationServices.User.PersonalUser.queryById({
+				id: parent[fieldName].id,
+			});
+		}
+		return parent[fieldName];
+	};
+};
+
+export const PopulatePersonalUserFromField = PopulateUserFromField;
+
+export const PopulateAdminUserFromField = (fieldName: string) => {
+	return async (parent: any, _: unknown, context: GraphContext) => {
+		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
+			return await context.applicationServices.User.AdminUser.queryById({
+				id: parent[fieldName].id,
+			});
+		}
+		return parent[fieldName];
+	};
+};
+
+/**
+ * Helper function to populate a participant field (PersonalUser or AdminUser) by ID.
+ * Used for GraphQL field resolvers that intentionally span both user and admin actors.
+ */
+export const PopulateConversationParticipantFromField = (fieldName: string) => {
 	return async (parent: any, _: unknown, context: GraphContext) => {
 		if (parent[fieldName] && isValidObjectId(parent[fieldName].id)) {
 			const userId = parent[fieldName].id;

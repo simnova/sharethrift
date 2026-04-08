@@ -9,7 +9,7 @@ export interface GetAllUsersCommand {
 	sorter?: { field: string; order: string } | undefined;
 }
 
-export interface PersonalUserPageResult {
+export interface PaginatedUsersResult {
 	items: Domain.Contexts.User.PersonalUser.PersonalUserEntityReference[];
 	total: number;
 	page: number;
@@ -19,7 +19,7 @@ export interface PersonalUserPageResult {
 export const getAllUsers = (datasources: DataSources) => {
 	return (
 		command: GetAllUsersCommand,
-	): Promise<PersonalUserPageResult> => {
+	): Promise<PaginatedUsersResult> => {
 		return datasources.readonlyDataSource.User.PersonalUser.PersonalUserReadRepo.getAllUsers(
 			{
 				page: command.page,

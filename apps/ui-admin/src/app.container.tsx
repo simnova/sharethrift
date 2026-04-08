@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 import { useQuery } from '@apollo/client/react';
-import { AppContainerCurrentUserDocument } from './generated.tsx';
+import { AppContainerCurrentAdminUserDocument } from './generated.tsx';
 import { App } from './app.tsx';
 import { ComponentQueryLoader } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
@@ -9,7 +9,7 @@ import { UserIdProvider } from './components/shared/user-context.tsx';
 export const AppContainer: FC = () => {
 	const auth = useAuth();
 
-	const { data, loading, error } = useQuery(AppContainerCurrentUserDocument, {
+	const { data, loading, error } = useQuery(AppContainerCurrentAdminUserDocument, {
 		skip: !auth.isAuthenticated,
 	});
 
@@ -17,9 +17,8 @@ export const AppContainer: FC = () => {
 		return <App isAuthenticated={false} />;
 	}
 
-	const user = data?.currentUserAndCreateIfNotExists;
-	const userId =
-		user && typeof user === 'object' && 'id' in user ? user.id : undefined;
+	const user = data?.currentAdminUser;
+	const userId = user?.id;
 
 	return (
 		<ComponentQueryLoader

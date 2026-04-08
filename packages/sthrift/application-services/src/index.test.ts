@@ -203,11 +203,9 @@ describe('Application Services Factory', () => {
 		);
 
 		const factory = buildApplicationServicesFactory(mockInfrastructureServices);
-		const services = await factory.forRequest('Bearer token-without-admin');
-
-		expect(services).toBeDefined();
-		expect(services.verifiedUser).not.toBeNull();
-		expect(services.verifiedUser?.verifiedJwt).toEqual(mockVerifiedJwt);
+		await expect(
+			factory.forRequest('Bearer token-without-admin'),
+		).rejects.toThrow('Forbidden: Admin portal requires an admin user');
 	});
 
 	it('should include hints in verifiedUser', async () => {

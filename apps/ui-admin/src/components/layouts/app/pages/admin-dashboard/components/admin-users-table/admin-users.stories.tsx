@@ -3,7 +3,7 @@ import { expect, within, userEvent, waitFor } from 'storybook/test';
 import { AdminUsers } from './admin-users.tsx';
 import { withMockApolloClient, withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
 import {
-	AdminUsersTableContainerAllUsersDocument,
+	AdminUsersTableContainerAdminDashboardUsersDocument,
 	BlockUserDocument,
 	UnblockUserDocument,
 } from '../../../../../../../generated.tsx';
@@ -17,7 +17,7 @@ const meta: Meta<typeof AdminUsers> = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -28,7 +28,7 @@ const meta: Meta<typeof AdminUsers> = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -212,7 +212,7 @@ export const UnblockUserModal: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -223,7 +223,7 @@ export const UnblockUserModal: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -419,7 +419,7 @@ export const UnblockModalConfirm: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -430,7 +430,7 @@ export const UnblockModalConfirm: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -497,7 +497,7 @@ export const WithNullDateRender: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -508,7 +508,7 @@ export const WithNullDateRender: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -546,7 +546,7 @@ export const WithInvalidDateRender: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -557,7 +557,7 @@ export const WithInvalidDateRender: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: [
 									{
@@ -609,7 +609,7 @@ export const MultipleUsers: Story = {
 			mocks: [
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 						variables: {
 							page: 1,
 							pageSize: 50,
@@ -620,7 +620,7 @@ export const MultipleUsers: Story = {
 					},
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								__typename: 'AdminUserSearchResults',
 								items: Array.from({ length: 10 }, (_, i) => ({
 									__typename: 'AdminUser',

@@ -47,17 +47,13 @@ export const SharerInformationContainer: React.FC<
 
 	if (loading) return <div>Loading...</div>;
 	if (error) return <div>Error loading sharer information</div>;
-	if (!data?.userById) return null;
+	if (!data?.personalUserById) return null;
 
-	// Extract profile information from PersonalUser
-	const userById = data.userById;
-	if (userById.__typename !== 'PersonalUser') return null;
-
-	const firstName = userById.account?.profile?.firstName ?? '';
-	const lastName = userById.account?.profile?.lastName ?? '';
+	const firstName = data.personalUserById.account?.profile?.firstName ?? '';
+	const lastName = data.personalUserById.account?.profile?.lastName ?? '';
 
 	const sharer = {
-		id: userById.id,
+		id: data.personalUserById.id,
 		name: `${firstName} ${lastName}`.trim(),
 	};
 

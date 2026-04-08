@@ -4,7 +4,7 @@ import { ComponentQueryLoader } from "@sthrift/ui-components";
 import { message } from "antd";
 import { useQuery, useMutation } from "@apollo/client/react";
 import {
-  AdminUsersTableContainerAllUsersDocument,
+  AdminUsersTableContainerAdminDashboardUsersDocument,
   BlockUserDocument,
   UnblockUserDocument,
 } from "../../../../../../../generated.tsx";
@@ -27,7 +27,7 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
   const pageSize = 50; // in BRD
 
   const { data, loading, error, refetch } = useQuery(
-    AdminUsersTableContainerAllUsersDocument,
+    AdminUsersTableContainerAdminDashboardUsersDocument,
     {
       variables: {
         page: currentPage,
@@ -64,7 +64,7 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
   });
 
   // Transform GraphQL data to match AdminUserData structure
-  const users = (data?.allUsers?.items ?? []).map((user) => ({
+  const users = (data?.adminDashboardUsers?.items ?? []).map((user) => ({
     id: user.id,
     username: user.account?.username ?? "N/A",
     firstName: user.account?.profile?.firstName ?? "N/A",
@@ -76,7 +76,7 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
     userType: user.userType ?? "unknown",
     reportCount: 0, // TODO: Add reportCount to GraphQL query once available
   }));
-  const total = data?.allUsers?.total ?? 0;
+  const total = data?.adminDashboardUsers?.total ?? 0;
 
   const handleSearch = (value: string) => {
     setSearchText(value);
@@ -144,7 +144,7 @@ export const AdminUsersTableContainer: React.FC<Readonly<AdminUsersTableContaine
   return (
     <ComponentQueryLoader
       loading={loading}
-      hasData={data?.allUsers}
+      hasData={data?.adminDashboardUsers}
       error={error}
       hasDataComponent={
         <AdminUsersTable

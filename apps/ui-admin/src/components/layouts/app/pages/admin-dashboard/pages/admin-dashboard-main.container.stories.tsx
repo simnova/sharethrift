@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
 import { AdminDashboardMain } from './admin-dashboard-main.tsx';
 import { withMockApolloClient,withMockRouter } from '../../../../../../test-utils/storybook-decorators.tsx';
-import { AdminListingsTableContainerAdminListingsDocument,AdminUsersTableContainerAllUsersDocument } from '../../../../../../generated.tsx';
+import { AdminListingsTableContainerAdminListingsDocument,AdminUsersTableContainerAdminDashboardUsersDocument } from '../../../../../../generated.tsx';
 
 const meta: Meta<typeof AdminDashboardMain> = {
 	title: 'Pages/AdminDashboardMain',
@@ -38,12 +38,12 @@ const meta: Meta<typeof AdminDashboardMain> = {
 				},
 				{
 					request: {
-						query: AdminUsersTableContainerAllUsersDocument,
+						query: AdminUsersTableContainerAdminDashboardUsersDocument,
 					},
 					variableMatcher: () => true,
 					result: {
 						data: {
-							allUsers: {
+							adminDashboardUsers: {
 								items: [
 									{
 										id: 'user-1',

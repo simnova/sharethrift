@@ -7,7 +7,7 @@ import {
 } from '../../../../../../test-utils/storybook-decorators.tsx';
 import {
 	ViewListingDocument,
-	ViewListingCurrentUserDocument,
+	ViewListingCurrentAdminUserDocument,
 	ViewListingActiveReservationRequestForListingDocument,
 } from '../../../../../../generated.tsx';
 
@@ -35,9 +35,9 @@ const mockListing = {
 };
 
 const mockCurrentUser = {
-	__typename: 'PersonalUser',
+	__typename: 'AdminUser',
 	id: 'user-2',
-	userType: 'personal-user',
+	userType: 'admin-user',
 };
 
 const meta: Meta<typeof ViewListingContainer> = {
@@ -61,11 +61,11 @@ const meta: Meta<typeof ViewListingContainer> = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -152,11 +152,11 @@ export const Loading: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -219,11 +219,11 @@ export const WithActiveReservation: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -274,11 +274,11 @@ export const UserIsSharer: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: {
+							currentAdminUser: {
 								__typename: 'PersonalUser',
 								id: 'user-1', // Same as sharer
 							},
@@ -342,11 +342,11 @@ export const DraftListing: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -383,11 +383,11 @@ export const InactiveListing: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -428,11 +428,11 @@ export const WithMultipleImages: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -480,11 +480,11 @@ export const LongDescription: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -532,11 +532,11 @@ export const ComputeTimeAgoRecentHours: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -584,11 +584,11 @@ export const ComputeTimeAgoDays: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -636,11 +636,11 @@ export const ComputeTimeAgoInvalidDate: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -688,11 +688,11 @@ export const NoCreatedAtDate: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -737,11 +737,11 @@ export const SkipReservationQueryNoListingId: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -775,11 +775,11 @@ export const SkipReservationQueryNoReserverId: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: null,
+							currentAdminUser: null,
 						},
 					},
 				},
@@ -814,11 +814,11 @@ export const CacheFirstFetchPolicy: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -863,7 +863,7 @@ export const CurrentUserLoadingState: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					delay: Infinity,
 				},
@@ -897,11 +897,11 @@ export const ReservationQueryLoadingState: Story = {
 				},
 				{
 					request: {
-						query: ViewListingCurrentUserDocument,
+						query: ViewListingCurrentAdminUserDocument,
 					},
 					result: {
 						data: {
-							currentUser: mockCurrentUser,
+							currentAdminUser: mockCurrentUser,
 						},
 					},
 				},
@@ -921,4 +921,3 @@ export const ReservationQueryLoadingState: Story = {
 		expect(loadingSpinner ?? canvasElement).toBeTruthy();
 	},
 };
-

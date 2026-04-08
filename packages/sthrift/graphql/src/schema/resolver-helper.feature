@@ -30,9 +30,9 @@ Feature: GraphQL Resolver Helper Functions
     When currentViewerIsAdmin is called
     Then it should return false
 
-  Scenario: PopulateUserFromField resolves AdminUser by ID
+  Scenario: PopulateConversationParticipantFromField resolves AdminUser by ID
     Given a parent object with a valid admin user ID field
-    When PopulateUserFromField resolver is called
+    When PopulateConversationParticipantFromField resolver is called
     Then it should return the AdminUser entity
 
   Scenario: PopulateUserFromField resolves PersonalUser by ID

@@ -1,11 +1,11 @@
-query AdminUsersTableContainerAllUsers(
+query AdminUsersTableContainerAdminDashboardUsers(
 	$page: Int!
 	$pageSize: Int!
 	$searchText: String
 	$statusFilters: [String!]
 	$sorter: SorterInput
 ) {
-	allUsers(
+	adminDashboardUsers(
 		page: $page
 		pageSize: $pageSize
 		searchText: $searchText
