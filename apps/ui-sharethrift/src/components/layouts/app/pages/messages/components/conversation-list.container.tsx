@@ -1,4 +1,4 @@
-import { ConversationList } from './conversation-list.tsx';
+import { ConversationList } from '@sthrift/ui-components';
 import { useQuery } from '@apollo/client/react';
 import {
     HomeConversationListContainerCurrentUserDocument,

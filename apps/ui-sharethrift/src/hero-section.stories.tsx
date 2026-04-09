@@ -1,4 +1,4 @@
-import { HeroSection } from './components/layouts/app/pages/home/components/hero-section.tsx';
+import { HeroSection } from '@sthrift/ui-components';
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within } from 'storybook/test';
 

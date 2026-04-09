@@ -1,6 +1,9 @@
-import { useQuery } from '@apollo/client/react';
-import { SharerInformationContainerDocument } from '../../../../../../../generated.tsx';
-import { SharerInformation } from './sharer-information.tsx';
+import { useMutation, useQuery } from '@apollo/client/react';
+import { useNavigate } from 'react-router-dom';
+import { SharerInformationContainerDocument, CreateConversationDocument,
+HomeConversationListContainerConversationsByUserDocument,
+type CreateConversationMutation, type CreateConversationMutationVariables } from '../../../../../../../generated.tsx';
+import { SharerInformation } from '@sthrift/ui-components';
 
 interface SharerInformationContainerProps {
 	sharerId: string;
@@ -15,6 +18,7 @@ interface SharerInformationContainerProps {
 export const SharerInformationContainer: React.FC<
 	SharerInformationContainerProps
 > = ({ sharerId, listingId, isOwner, sharedTimeAgo, className, currentUserId }) => {
+	const navigate = useNavigate();
 	const { data, loading, error } = useQuery(
 		SharerInformationContainerDocument,
 		{
@@ -22,8 +26,51 @@ export const SharerInformationContainer: React.FC<
 		},
 	);
 
-	// If sharerId looks like a name (contains spaces or letters), use it directly
-	// Otherwise, try to query for user data
+	const [createConversation, { loading: isCreating }] = useMutation<
+		CreateConversationMutation,
+		CreateConversationMutationVariables
+	>(CreateConversationDocument, {
+		refetchQueries: [
+			{
+				query: HomeConversationListContainerConversationsByUserDocument,
+				variables: { userId: currentUserId },
+			}
+		],
+		awaitRefetchQueries: true,
+		onCompleted: (data) => {
+			if (data.createConversation.status.success) {
+				navigate('/messages', {
+					state: {
+						selectedConversationId: data.createConversation.conversation?.id,
+					},
+					replace: false,
+				});
+			} else {
+				console.log('Failed to create conversation:', data.createConversation.status.errorMessage);
+			}
+		},
+		onError: (error) => {
+			console.error('Error creating conversation:', error);
+		},
+	});
+
+	const handleMessageSharer = async (sharerIdForConversation: string) => {
+		if (!currentUserId) return;
+		try {
+			await createConversation({
+				variables: {
+					input: {
+						listingId,
+						sharerId: sharerIdForConversation,
+						reserverId: currentUserId,
+					},
+				},
+			});
+		} catch (error) {
+			console.error('Failed to create conversation:', error);
+		}
+	};
+
 	const isNameOnly =
 		typeof sharerId === 'string' &&
 		(sharerId.includes(' ') || /^[a-zA-Z\s]+$/.test(sharerId));
@@ -36,11 +83,12 @@ export const SharerInformationContainer: React.FC<
 		return (
 			<SharerInformation
 				sharer={sharer}
-				listingId={listingId}
 				isOwner={isOwner}
 				sharedTimeAgo={sharedTimeAgo}
 				className={className}
 				currentUserId={currentUserId}
+				onMessageSharer={() => handleMessageSharer(sharerId)}
+				isMessageLoading={isCreating}
 			/>
 		);
 	}
@@ -60,11 +108,12 @@ export const SharerInformationContainer: React.FC<
 	return (
 		<SharerInformation
 			sharer={sharer}
-			listingId={listingId}
 			isOwner={isOwner}
 			sharedTimeAgo={sharedTimeAgo}
 			className={className}
 			currentUserId={currentUserId}
+			onMessageSharer={() => handleMessageSharer(sharer.id)}
+			isMessageLoading={isCreating}
 		/>
 	);
 };

@@ -7,7 +7,7 @@ import {
 	ConversationBoxContainerConversationDocument,
 	ConversationBoxContainerSendMessageDocument,
 } from '../../../../../../generated.tsx';
-import { ConversationBox } from './conversation-box.tsx';
+import { ConversationBox } from '@sthrift/ui-components';
 
 interface ConversationBoxContainerProps {
 	selectedConversationId: string;

@@ -1,26 +1,47 @@
 import { useState } from 'react';
-import type { Conversation } from '../../../../../../generated.tsx';
-import { MessageThread } from './index.ts';
-import { ListingBanner } from './listing-banner.tsx';
+import { MessageThread } from '../message-thread/index.tsx';
+import { ListingBanner } from '../listing-banner/index.tsx';
+
+interface ConversationMessage {
+	id: string;
+	messagingMessageId: string;
+	authorId: string;
+	content: string;
+	createdAt: string;
+}
+
+interface ConversationBoxData {
+	id: string;
+	sharer: {
+		id?: string;
+		account?: {
+			profile?: {
+				firstName?: string | null;
+			} | null;
+		} | null;
+	} | null;
+	messages?: ConversationMessage[] | null;
+}
 
 interface ConversationBoxProps {
-	data: Conversation;
+	data: ConversationBoxData;
 	currentUserId?: string;
 	onSendMessage: (content: string) => Promise<boolean>;
 	sendingMessage: boolean;
 }
 
+export type { ConversationBoxData };
+
 export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 	const [messageText, setMessageText] = useState('');
 
-	const currentUserId = props.currentUserId ?? props?.data?.sharer?.id;
+	const currentUserId = props.currentUserId ?? props?.data?.sharer?.id ?? '';
 
 	const handleSendMessage = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (props.sendingMessage) return; // Prevent duplicate submits while send is in flight
+		if (props.sendingMessage) return;
 		if (!messageText.trim()) return;
 
-		// Only clear input on successful send so users don't lose unsent content on error
 		const success = await props.onSendMessage(messageText);
 		if (success) {
 			setMessageText('');
@@ -30,7 +51,7 @@ export const ConversationBox: React.FC<ConversationBoxProps> = (props) => {
 	return (
 		<>
 			<div style={{ marginBottom: 24 }}>
-				<ListingBanner owner={props.data?.sharer} />
+				<ListingBanner owner={props.data?.sharer ?? {}} />
 			</div>
 
 			<div

@@ -1,13 +1,22 @@
 import { Card, Typography, Avatar, Tag, Row, Col } from "antd";
 import { SwapOutlined, AppstoreAddOutlined } from "@ant-design/icons";
-import bikeListingImg from "@sthrift/ui-components/src/assets/item-images/bike-listing.png";
-import type { ConversationParticipant } from "../../../../../../generated.tsx";
+import bikeListingImg from "../../assets/item-images/bike-listing.png";
 
 const imgRectangle26 = bikeListingImg;
 
-interface ListingBannerProps {
-  owner: ConversationParticipant;
+interface ListingBannerOwner {
+  account?: {
+    profile?: {
+      firstName?: string | null;
+    } | null;
+  } | null;
 }
+
+interface ListingBannerProps {
+  owner: ListingBannerOwner;
+}
+
+export type { ListingBannerOwner };
 
 export const ListingBanner: React.FC<ListingBannerProps> = (props) => {
   const period = "1 Month"; //todo

@@ -1,4 +1,4 @@
-import { HeroSection } from './hero-section.tsx';
+import { HeroSection } from '@sthrift/ui-components';
 
 interface HeroSectionContainerProps {
 	searchValue?: string;

@@ -2,7 +2,8 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within } from 'storybook/test';
 import { AuthProvider } from 'react-oidc-context';
 import { MemoryRouter } from 'react-router-dom';
-import { ApolloConnection } from './apollo-connection.tsx';
+import { ApolloConnection } from '@sthrift/ui-components';
+import { InMemoryCache } from '@apollo/client';
 
 // Mock environment variables
 const mockEnv = {
@@ -85,10 +86,17 @@ const ApolloContextTester = () => {
 	);
 };
 
+const mockConfig = {
+	blobStorageUrl: mockEnv.VITE_BLOB_STORAGE_CONFIG_URL,
+	functionEndpoint: mockEnv.VITE_FUNCTION_ENDPOINT,
+	isProduction: false,
+	cache: new InMemoryCache(),
+};
+
 export const WithAuthenticatedUser: Story = {
 	name: 'With Authenticated User',
 	render: () => (
-		<ApolloConnection>
+		<ApolloConnection config={mockConfig}>
 			<ApolloContextTester />
 		</ApolloConnection>
 	),
@@ -103,7 +111,7 @@ export const WithAuthenticatedUser: Story = {
 export const WithoutAuthToken: Story = {
 	name: 'Without Auth Token',
 	render: () => (
-		<ApolloConnection>
+		<ApolloConnection config={mockConfig}>
 			<ApolloContextTester />
 		</ApolloConnection>
 	),
@@ -117,7 +125,7 @@ export const WithoutAuthToken: Story = {
 export const RendersChildren: Story = {
 	name: 'Renders Children',
 	render: () => (
-		<ApolloConnection>
+		<ApolloConnection config={mockConfig}>
 			<div data-testid="child-component">
 				<h1>Child Component</h1>
 				<p>This is a child component wrapped by ApolloConnection</p>

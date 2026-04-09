@@ -23,7 +23,7 @@ export const CategoryFilter: React.FC<CategoryFilterProps> = ({
 			<label htmlFor={selectId}>{`${label}: `}</label>
 			<Select
 				id={selectId}
-				value={selectedCategory || 'All'} // Default to 'All'
+				value={selectedCategory || 'All'}
 				onChange={(value) => onCategoryChange(value)}
 				placeholder="Select a category"
 				className={styles['categorySelect']}

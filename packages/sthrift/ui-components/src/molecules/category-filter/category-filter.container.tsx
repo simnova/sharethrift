@@ -1,4 +1,4 @@
-import { CategoryFilter } from './category-filter.tsx';
+import { CategoryFilter } from './index.tsx';
 
 interface CategoryFilterContainerProps {
 	selectedCategory: string;
@@ -24,7 +24,6 @@ export const CategoryFilterContainer: React.FC<CategoryFilterContainerProps> = (
 	onCategoryChange,
 	label = 'Category',
 }) => {
-	// TODO: Replace with real GraphQL query when backend is ready
 	const categories = DEFAULT_CATEGORIES;
 
 	return (

@@ -1,7 +1,7 @@
 import styles from './hero-section.module.css';
-import { SearchBar } from '@sthrift/ui-components';
-import heroImg from '@sthrift/ui-components/src/assets/hero/hero.png';
-import heroImgSmall from '@sthrift/ui-components/src/assets/hero/hero-small.png';
+import { SearchBar } from '../../molecules/search-bar/index.tsx';
+import heroImg from '../../assets/hero/hero.png';
+import heroImgSmall from '../../assets/hero/hero-small.png';
 
 interface HeroSectionProps {
 	onSearch?: (query: string) => void;

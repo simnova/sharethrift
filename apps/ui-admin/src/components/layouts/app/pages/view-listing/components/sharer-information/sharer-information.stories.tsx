@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { expect, within, userEvent } from 'storybook/test';
-import { SharerInformation } from './sharer-information.tsx';
-import { CreateConversationDocument,HomeConversationListContainerConversationsByUserDocument } from '../../../../../../../generated.tsx';
-import { withMockApolloClient, withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
+import { expect, within, userEvent, fn } from 'storybook/test';
+import { SharerInformation } from '@sthrift/ui-components';
+import { withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
 
 
 const mockSharer = {
@@ -16,47 +15,12 @@ const meta: Meta<typeof SharerInformation> = {
 	component: SharerInformation,
 	parameters: {
 		layout: 'padded',
-		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: CreateConversationDocument,
-						variables: {
-							input: {
-								listingId: '1',
-								sharerId: 'user-1',
-								reserverId: 'user-2',
-							},
-						},
-					},
-					result: {
-						data: {
-							createConversation: {
-								__typename: 'ConversationMutationResult',
-								status: { success: true, errorMessage: null },
-								conversation: { __typename: 'Conversation', id: 'conv-1' },
-							},
-						},
-					},
-				},
-				{
-					request: {
-						query: HomeConversationListContainerConversationsByUserDocument,
-						variables: { userId: 'user-2' },
-					},
-					result: {
-						data: {
-							conversationsByUser: [],
-						},
-					},
-				},
-			],
-		},
 	},
-	decorators: [withMockApolloClient, withMockRouter('/listing/1')],
+	decorators: [withMockRouter('/listing/1')],
 	args: {
 		sharer: mockSharer,
-		listingId: '1',
+		onMessageSharer: fn(),
+		isMessageLoading: false,
 		isOwner: false,
 		sharedTimeAgo: '2 days ago',
 		currentUserId: 'user-2',
@@ -121,39 +85,9 @@ export const ClickMessageButton: Story = {
 };
 
 export const MessageButtonWithError: Story = {
-	parameters: {
-		apolloClient: {
-			mocks: [
-				{
-					request: {
-						query: CreateConversationDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							createConversation: {
-								__typename: 'ConversationMutationResult',
-								status: { success: false, errorMessage: 'Failed to create' },
-								conversation: null,
-							},
-						},
-					},
-				},
-				{
-					request: {
-						query: HomeConversationListContainerConversationsByUserDocument,
-						variables: () => true,
-					},
-					maxUsageCount: Number.POSITIVE_INFINITY,
-					result: {
-						data: {
-							conversationsByUser: [],
-						},
-					},
-				},
-			],
-		},
+	args: {
+		onMessageSharer: fn(),
+		isMessageLoading: false,
 	},
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

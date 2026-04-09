@@ -1,12 +1,31 @@
 import { SwapOutlined } from '@ant-design/icons';
 import { Avatar, List, Tag } from 'antd';
-import type { Conversation } from '../../../../../../generated.tsx';
+
+interface ConversationParticipantData {
+	account?: {
+		profile?: {
+			firstName?: string | null;
+		} | null;
+	} | null;
+}
+
+interface ConversationData {
+	id: string;
+	sharer: ConversationParticipantData | null;
+	reserver: ConversationParticipantData | null;
+	updatedAt: string;
+	listing?: {
+		title?: string | null;
+	} | null;
+}
 
 interface ConversationListProps {
 	onConversationSelect: (conversationId: string) => void;
 	selectedConversationId: string | null;
-	conversations: Conversation[];
+	conversations: ConversationData[];
 }
+
+export type { ConversationData as ConversationListConversation };
 
 export const ConversationList: React.FC<ConversationListProps> = (props) => {
 	const { onConversationSelect, selectedConversationId, conversations } = props;
@@ -57,7 +76,7 @@ export const ConversationList: React.FC<ConversationListProps> = (props) => {
 };
 
 interface ConversationItemProps {
-	conversation: Conversation;
+	conversation: ConversationData;
 	isSelected: boolean;
 	onClick: () => void;
 }
@@ -67,8 +86,7 @@ function ConversationItem({
 	isSelected,
 	onClick,
 }: ConversationItemProps) {
-	// Extract firstName from sharer or reserver (both user types have same profile structure)
-	const getFirstName = (user: typeof conversation.sharer | typeof conversation.reserver) => {
+	const getFirstName = (user: ConversationParticipantData | null) => {
 		if (!user) return 'Unknown';
 		return user.account?.profile?.firstName ?? 'Unknown';
 	};

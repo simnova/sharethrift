@@ -1,4 +1,4 @@
-import { CategoryFilter } from '../../home/components/category-filter';
+import { CategoryFilter } from '@sthrift/ui-components';
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 
