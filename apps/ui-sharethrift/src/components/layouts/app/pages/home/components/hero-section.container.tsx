@@ -1,4 +1,4 @@
-import { HeroSection } from '@sthrift/ui-components';
+import { HeroSection } from '@sthrift/ui-shared';
 
 interface HeroSectionContainerProps {
 	searchValue?: string;

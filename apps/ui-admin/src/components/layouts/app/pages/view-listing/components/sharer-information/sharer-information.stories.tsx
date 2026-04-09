@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, within, userEvent, fn } from 'storybook/test';
-import { SharerInformation } from '@sthrift/ui-components';
+import { SharerInformation } from '@sthrift/ui-shared';
 import { withMockRouter } from '../../../../../../../test-utils/storybook-decorators.tsx';
 
 

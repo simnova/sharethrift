@@ -1,7 +1,7 @@
 import { Button, Layout } from 'antd';
 import { Link } from 'react-router-dom';
-import logoIcon from '@sthrift/ui-components/src/assets/logo/logo-icon.svg';
-import '@sthrift/ui-components/src/styles/theme.css';
+import logoIcon from '@sthrift/ui-shared/src/assets/logo/logo-icon.svg';
+import '@sthrift/ui-shared/src/styles/theme.css';
 import styles from './admin-header.module.css';
 
 interface AdminHeaderProps {

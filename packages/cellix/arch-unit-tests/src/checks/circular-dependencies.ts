@@ -171,7 +171,7 @@ export async function checkLayeredArchitecture(config: LayeredArchitectureConfig
 
 export interface UiIsolationConfig {
   uiCoreFolder?: string;         // e.g. '../cellix/ui-core'
-  uiComponentsFolder?: string;   // e.g. '../sthrift/ui-components'
+  uiComponentsFolder?: string;   // e.g. '../sthrift/ui-shared'
   appUiFolder?: string;          // e.g. '../../apps/ui-sharethrift'
 }
 
@@ -181,7 +181,7 @@ export interface UiIsolationConfig {
 export async function checkUiIsolation(config: UiIsolationConfig): Promise<string[]> {
   const violations: string[] = [];
 
-  // ui-core should not depend on ui-components
+  // ui-core should not depend on ui-shared
   if (config.uiCoreFolder && config.uiComponentsFolder) {
     try {
       const rule = projectFiles()
@@ -192,7 +192,7 @@ export async function checkUiIsolation(config: UiIsolationConfig): Promise<strin
       try {
         await rule.check();
       } catch (error_) {
-        violations.push(`ui-core depends on ui-components: ${String(error_)}`);
+        violations.push(`ui-core depends on ui-shared: ${String(error_)}`);
       }
     } catch {
       // Silently skip
@@ -217,7 +217,7 @@ export async function checkUiIsolation(config: UiIsolationConfig): Promise<strin
     }
   }
 
-  // ui-components should not depend on app UI
+  // ui-shared should not depend on app UI
   if (config.uiComponentsFolder && config.appUiFolder) {
     try {
       const rule = projectFiles()
@@ -228,7 +228,7 @@ export async function checkUiIsolation(config: UiIsolationConfig): Promise<strin
       try {
         await rule.check();
       } catch (error_) {
-        violations.push(`ui-components depends on app UI: ${String(error_)}`);
+        violations.push(`ui-shared depends on app UI: ${String(error_)}`);
       }
     } catch {
       // Silently skip

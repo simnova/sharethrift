@@ -426,9 +426,9 @@ importers:
       '@apollo/client':
         specifier: ^4.0.7
         version: 4.1.6(graphql-ws@6.0.7(graphql@16.13.1)(ws@8.19.0))(graphql@16.13.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
-      '@sthrift/ui-components':
+      '@sthrift/ui-shared':
         specifier: workspace:*
-        version: link:../../packages/sthrift/ui-components
+        version: link:../../packages/sthrift/ui-shared
       antd:
         specifier: ^5.27.1
         version: 5.29.3(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -517,9 +517,9 @@ importers:
       '@apollo/client':
         specifier: ^4.0.7
         version: 4.1.6(graphql-ws@6.0.7(graphql@16.13.1)(ws@8.19.0))(graphql@16.13.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(rxjs@7.8.2)
-      '@sthrift/ui-components':
+      '@sthrift/ui-shared':
         specifier: workspace:*
-        version: link:../../packages/sthrift/ui-components
+        version: link:../../packages/sthrift/ui-shared
       antd:
         specifier: ^5.27.1
         version: 5.29.3(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1361,9 +1361,9 @@ importers:
       '@sthrift/domain':
         specifier: workspace:*
         version: link:../../sthrift/domain
-      '@sthrift/ui-components':
+      '@sthrift/ui-shared':
         specifier: workspace:*
-        version: link:../../sthrift/ui-components
+        version: link:../../sthrift/ui-shared
       '@testing-library/react':
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
@@ -1807,7 +1807,7 @@ importers:
         specifier: ^5.8.3
         version: 5.8.3
 
-  packages/sthrift/ui-components:
+  packages/sthrift/ui-shared:
     dependencies:
       '@ant-design/icons':
         specifier: ^6.1.0

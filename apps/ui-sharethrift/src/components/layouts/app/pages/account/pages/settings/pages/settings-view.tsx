@@ -1,5 +1,5 @@
 import { EditOutlined, LockOutlined } from '@ant-design/icons';
-import '@sthrift/ui-components/src/styles/theme.css';
+import '@sthrift/ui-shared/src/styles/theme.css';
 import {
 	Avatar,
 	Button,

@@ -1,5 +1,5 @@
 import type { JSX } from 'react';
-import { RequireAuth as RequireAuthBase } from '@sthrift/ui-components';
+import { RequireAuth as RequireAuthBase } from '@sthrift/ui-shared';
 
 const { VITE_B2C_ADMIN_REDIRECT_URI } = import.meta.env;
 

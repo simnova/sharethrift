@@ -1,11 +1,11 @@
-import { ConversationList } from '@sthrift/ui-components';
+import { ConversationList } from '@sthrift/ui-shared';
 import { useQuery } from '@apollo/client/react';
 import {
     HomeConversationListContainerCurrentUserDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	type Conversation,
 } from '../../../../../../generated.tsx';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { useEffect } from 'react';
 import { Empty, Result } from 'antd';
 

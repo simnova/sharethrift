@@ -2,7 +2,7 @@ import type { FC } from "react";
 import { useQuery } from "@apollo/client/react";
 import { AppContainerCurrentUserDocument } from "./generated.tsx";
 import { App } from "./app.tsx";
-import { ComponentQueryLoader, UserIdProvider } from "@sthrift/ui-components";
+import { ComponentQueryLoader, UserIdProvider } from "@sthrift/ui-shared";
 import { useAuth } from "react-oidc-context";
 
 export const AppContainer: FC = () => {

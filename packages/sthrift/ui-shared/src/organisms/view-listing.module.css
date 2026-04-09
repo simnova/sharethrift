@@ -1,0 +1,83 @@
+.container {
+	padding-left: 100px;
+	padding-right: 100px;
+	padding-top: 50px;
+	padding-bottom: 75px;
+	box-sizing: border-box;
+	width: 100%;
+}
+
+.backButton {
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+.sharerInfoRow {
+	margin-bottom: 0;
+	padding-bottom: 0;
+}
+
+.mainContentRow {
+	margin-top: 0;
+	padding-top: 0;
+}
+
+.imageColumn {
+	display: flex;
+	align-items: flex-start;
+	justify-content: center;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+.infoColumn {
+	margin-top: 0;
+	padding-top: 0;
+}
+
+@media (max-width: 600px) {
+	.container {
+		padding-left: 16px;
+		padding-right: 16px;
+		padding-top: 24px;
+		padding-bottom: 24px;
+	}
+
+	.mainContent {
+		flex-direction: column;
+		gap: 0;
+		align-items: center;
+	}
+
+	.sharerInfo {
+		align-items: center;
+	}
+
+	.imageColumn,
+	.infoColumn,
+	.sharerInfo {
+		width: 100%;
+		max-width: 450px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.infoTextRow,
+	.sharerInfoTextRow {
+		width: 100%;
+		text-align: left;
+	}
+
+	.imageColumn {
+		height: auto;
+		margin-bottom: 8px;
+	}
+
+	.infoColumn {
+		margin-bottom: 16px;
+	}
+
+	.sharerInfo {
+		margin-bottom: 16px;
+	}
+}

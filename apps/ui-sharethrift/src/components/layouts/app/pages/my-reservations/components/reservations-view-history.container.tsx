@@ -1,4 +1,4 @@
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { Alert } from 'antd';
 import { useQuery } from '@apollo/client/react';
 import {

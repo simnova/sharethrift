@@ -1,6 +1,6 @@
 import { MyListingsDashboard } from './my-listings-dashboard.tsx';
 import { useQuery } from "@apollo/client/react";
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { HomeAllListingsTableContainerMyListingsAllDocument } from '../../../../../../generated.tsx';
 
 import { useNavigate } from 'react-router-dom';

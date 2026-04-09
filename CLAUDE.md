@@ -60,7 +60,7 @@ sharethrift/
 │   │   ├── rest/            # REST API adapters
 │   │   ├── persistence/     # MongoDB persistence layer
 │   │   ├── application-services/  # Orchestration services
-│   │   └── ui-components/   # Shared React components
+│   │   └── ui-shared/        # Shared React components
 │   └── sthrift-verification/ # Verification packages and shared test support
 │       ├── acceptance-api/   # API-path acceptance tests (Serenity.js)
 │       ├── acceptance-ui/    # UI-path acceptance tests (Serenity.js + jsdom)
@@ -100,7 +100,7 @@ Example: `@cellix/server-messaging-seedwork` → `@apps/server-messaging-mock`
 
 **Frontend**:
 - `@app/ui-sharethrift` - Main UI application
-- `@sthrift/ui-components` - Shared component library
+- `@sthrift/ui-shared` - Shared component library
 
 **Backend**:
 - `@app/api` - Azure Functions host

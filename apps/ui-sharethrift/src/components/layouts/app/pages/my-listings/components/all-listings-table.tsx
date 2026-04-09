@@ -1,5 +1,5 @@
 import { FilterOutlined, SearchOutlined } from '@ant-design/icons';
-import { Dashboard } from '@sthrift/ui-components';
+import { Dashboard } from '@sthrift/ui-shared';
 import type { TableProps } from 'antd';
 import { Badge, Button, Checkbox, Image, Input, Popconfirm, Tag } from 'antd';
 import type { HomeAllListingsTableContainerListingFieldsFragment } from '../../../../../../generated.tsx';

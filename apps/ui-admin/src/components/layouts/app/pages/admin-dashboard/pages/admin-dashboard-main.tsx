@@ -3,7 +3,7 @@ import type React from 'react';
 import { AdminListings } from '../components/admin-listings-table/index.ts';
 import { AdminUsers } from '../components/admin-users-table/index.ts';
 import styles from './admin-dashboard-main.module.css';
-import '@sthrift/ui-components/src/styles/theme.css';
+import '@sthrift/ui-shared/src/styles/theme.css';
 
 export const AdminDashboardMain: React.FC = () => {
 	const tabItems = [

@@ -1,8 +1,8 @@
 import type React from 'react';
 import { Layout, Button } from 'antd';
 import styles from './index.module.css';
-import '@sthrift/ui-components/src/styles/theme.css';
-import logoIcon from '@sthrift/ui-components/src/assets/logo/logo-icon.svg';
+import '@sthrift/ui-shared/src/styles/theme.css';
+import logoIcon from '@sthrift/ui-shared/src/assets/logo/logo-icon.svg';
 
 interface HeaderProps {
 	isAuthenticated: boolean;

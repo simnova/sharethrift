@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { SharerInformationContainerDocument, CreateConversationDocument,
 HomeConversationListContainerConversationsByUserDocument,
 type CreateConversationMutation, type CreateConversationMutationVariables } from '../../../../../../../generated.tsx';
-import { SharerInformation } from '@sthrift/ui-components';
+import { SharerInformation } from '@sthrift/ui-shared';
 
 interface SharerInformationContainerProps {
 	sharerId: string;

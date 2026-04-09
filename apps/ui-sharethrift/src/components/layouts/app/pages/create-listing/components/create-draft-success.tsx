@@ -1,7 +1,7 @@
 import { Modal, Button, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import styles from './modals.module.css';
-import '@sthrift/ui-components/src/styles/theme.css';
+import '@sthrift/ui-shared/src/styles/theme.css';
 
 interface SuccessDraftProps {
 	visible: boolean;

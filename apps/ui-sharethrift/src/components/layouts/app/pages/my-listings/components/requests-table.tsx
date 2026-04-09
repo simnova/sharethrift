@@ -1,7 +1,7 @@
 import { Input, Checkbox, Image, Tag } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import type { TableProps } from 'antd';
-import { Dashboard } from '@sthrift/ui-components';
+import { Dashboard } from '@sthrift/ui-shared';
 import { RequestsCard } from './requests-card.tsx';
 import type { ListingRequestData } from './my-listings-dashboard.types.tsx';
 import {

@@ -120,7 +120,7 @@ export class CreateListing extends Task {
 				}
 			});
 
-			// Also render the shared ListingForm standalone for ui-components coverage
+			// Also render the shared ListingForm standalone for ui-shared coverage
 			render(
 				React.createElement(
 					ListingForm as React.ComponentType<Record<string, unknown>>,

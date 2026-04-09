@@ -1,5 +1,5 @@
 import { useQuery } from "@apollo/client/react";
-import { ListingImageGallery } from '@sthrift/ui-components';
+import { ListingImageGallery } from '@sthrift/ui-shared';
 import { ViewListingImageGalleryGetImagesDocument,type ViewListingImageGalleryGetImagesQuery } from '../../../../../../../generated.tsx';
 
 

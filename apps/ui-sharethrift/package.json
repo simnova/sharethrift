@@ -21,7 +21,7 @@
 		"@ant-design/icons": "^6.1.0",
 		"@ant-design/v5-patch-for-react-19": "^1.0.3",
 		"@apollo/client": "^4.0.7",
-		"@sthrift/ui-components": "workspace:*",
+		"@sthrift/ui-shared": "workspace:*",
 		"antd": "^5.27.1",
 		"dayjs": "^1.11.18",
 		"graphql": "^16.11.0",

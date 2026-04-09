@@ -4,7 +4,7 @@ import './index.css';
 import { BrowserRouter } from 'react-router-dom';
 import { AuthProvider } from 'react-oidc-context';
 import { oidcConfig } from './config/oidc-config.tsx';
-import { ApolloConnection } from '@sthrift/ui-components';
+import { ApolloConnection } from '@sthrift/ui-shared';
 import { ApolloManualMergeCacheFix } from './components/shared/apollo-manual-merge-cache-fix.ts';
 import { AppContainer } from './app.container.tsx';
 import '@ant-design/v5-patch-for-react-19';

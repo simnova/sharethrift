@@ -6,7 +6,7 @@ import {
 	type PersonalUserUpdateInput,
 	ProfileSetUpContainerPersonalUserUpdateDocument,
 } from '../../../../generated.tsx';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { message } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { countriesMockData } from './countries-mock-data.ts';

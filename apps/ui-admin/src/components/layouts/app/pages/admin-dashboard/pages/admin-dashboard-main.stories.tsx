@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect } from 'storybook/test';
-import '@sthrift/ui-components/src/styles/theme.css';
+import '@sthrift/ui-shared/src/styles/theme.css';
 
 // Simple test to verify the file exports correctly
 const meta = {

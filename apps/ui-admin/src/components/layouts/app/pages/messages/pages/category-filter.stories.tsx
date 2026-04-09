@@ -1,4 +1,4 @@
-import { CategoryFilter } from '@sthrift/ui-components';
+import { CategoryFilter } from '@sthrift/ui-shared';
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 

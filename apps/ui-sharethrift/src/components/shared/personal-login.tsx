@@ -2,7 +2,7 @@ import { Button, Divider } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
-import { LoginForm } from '@sthrift/ui-components';
+import { LoginForm } from '@sthrift/ui-shared';
 import { Header } from '../ui/molecules/header/index.tsx';
 
 interface LoginFormData {

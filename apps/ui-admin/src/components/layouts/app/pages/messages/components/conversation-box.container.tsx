@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client/react';
-import { ComponentQueryLoader, useUserId } from '@sthrift/ui-components';
+import { ComponentQueryLoader, useUserId } from '@sthrift/ui-shared';
 import { message as antdMessage } from 'antd';
 import { useCallback } from 'react';
 import {
@@ -7,7 +7,7 @@ import {
 	ConversationBoxContainerConversationDocument,
 	ConversationBoxContainerSendMessageDocument,
 } from '../../../../../../generated.tsx';
-import { ConversationBox } from '@sthrift/ui-components';
+import { ConversationBox } from '@sthrift/ui-shared';
 
 interface ConversationBoxContainerProps {
 	selectedConversationId: string;

@@ -15,7 +15,7 @@
         "@cellix/service-otel#build",
         "@cellix/service-blob#build",
         "@cellix/service-token-validation#build",
-        "@sthrift/ui-components#build",
+        "@sthrift/ui-shared#build",
         "@apps/api#build",
         "@apps/ui-sharethrift#build"
       ]

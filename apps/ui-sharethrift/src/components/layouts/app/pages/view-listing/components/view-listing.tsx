@@ -1,4 +1,4 @@
-import { ViewListing as SharedViewListing } from '@sthrift/ui-components';
+import { ViewListing as SharedViewListing } from '@sthrift/ui-shared';
 import { ListingImageGalleryContainer } from './listing-image-gallery/listing-image-gallery.container.tsx';
 import { SharerInformationContainer } from './sharer-information/sharer-information.container.tsx';
 import { ListingInformationContainer } from './listing-information/listing-information.container.tsx';

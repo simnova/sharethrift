@@ -1,4 +1,4 @@
-import { ListingInformation as SharedListingInformation } from '@sthrift/ui-components';
+import { ListingInformation as SharedListingInformation } from '@sthrift/ui-shared';
 import type { ViewListingActiveReservationRequestForListingQuery, ItemListing, ViewListingQueryActiveByListingIdQuery } from '../../../../../../../generated.tsx';
 import { ReservationRequestForm } from '../reservation-request-form.js';
 

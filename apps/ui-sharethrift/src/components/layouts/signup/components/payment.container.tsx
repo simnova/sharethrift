@@ -9,7 +9,7 @@ import {
 	SignUpPaymentContainerPersonalUserProcessPaymentDocument,
 } from '../../../../generated.tsx';
 import { useQuery, useMutation, useLazyQuery } from '@apollo/client/react';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { countriesMockData } from './countries-mock-data.ts';
 import { message } from 'antd';
 import { Payment } from './payment.tsx';

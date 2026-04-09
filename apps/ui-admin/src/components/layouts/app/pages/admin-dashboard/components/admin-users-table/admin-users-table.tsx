@@ -1,7 +1,7 @@
 import { Input, Checkbox, Button, Tag, Modal, Form, Select } from 'antd';
 import type { TableProps } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
-import { Dashboard } from '@sthrift/ui-components';
+import { Dashboard } from '@sthrift/ui-shared';
 import type {
 	AdminUserData,
 	AdminUsersTableProps,

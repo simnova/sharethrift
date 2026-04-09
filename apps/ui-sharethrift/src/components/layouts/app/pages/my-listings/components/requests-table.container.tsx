@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from "@apollo/client/react";
 import { RequestsTable } from './requests-table.tsx';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../../generated.tsx';
 
 interface RequestsTableContainerProps {

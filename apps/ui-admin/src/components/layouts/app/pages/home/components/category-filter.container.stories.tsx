@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { expect, fn } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
-import { CategoryFilterContainer } from '@sthrift/ui-components';
+import { CategoryFilterContainer } from '@sthrift/ui-shared';
 
 const meta: Meta<typeof CategoryFilterContainer> = {
 	title: 'Containers/CategoryFilterContainer',

@@ -1,7 +1,7 @@
-import { ListingsPage as SharedListingsPage } from '@sthrift/ui-components';
+import { ListingsPage as SharedListingsPage } from '@sthrift/ui-shared';
 import type { ItemListing } from '../../../../../../generated.tsx';
 import { HeroSectionContainer } from './hero-section.container.tsx';
-import type { UIItemListing } from '@sthrift/ui-components';
+import type { UIItemListing } from '@sthrift/ui-shared';
 interface ListingsPageProps {
 	isAuthenticated: boolean;
 	searchQuery: string;

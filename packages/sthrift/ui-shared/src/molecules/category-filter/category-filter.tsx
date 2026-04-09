@@ -1,0 +1,43 @@
+import { Select } from 'antd';
+import { useId } from 'react';
+import styles from './category-filter.module.css';
+
+const { Option } = Select;
+
+interface CategoryFilterProps {
+	label?: string;
+	categories: string[];
+	selectedCategory: string;
+	onCategoryChange: (category: string) => void;
+}
+
+export const CategoryFilter: React.FC<CategoryFilterProps> = ({
+	label = 'Category',
+	categories,
+	selectedCategory,
+	onCategoryChange,
+}) => {
+	const selectId = useId();
+	return (
+		<div className={styles.categoryFilter}>
+			<label htmlFor={selectId}>{`${label}: `}</label>
+			<Select
+				id={selectId}
+				value={selectedCategory || 'All'}
+				onChange={(value) => onCategoryChange(value)}
+				placeholder="Select a category"
+				className={styles.categorySelect}
+				suffixIcon={null}
+			>
+				<Option key={'All'} value="All">
+					All
+				</Option>
+				{categories.map((category) => (
+					<Option key={category} value={category}>
+						{category}
+					</Option>
+				))}
+			</Select>
+		</div>
+	);
+};

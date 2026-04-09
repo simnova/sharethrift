@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ProfileView } from './profile-view.tsx';
 import { useQuery } from '@apollo/client/react';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import {
 	type ItemListing,
 	HomeAccountProfileViewContainerCurrentUserDocument,

@@ -1,7 +1,7 @@
 import { Button, Image, Popconfirm } from 'antd';
 import type { TableProps } from 'antd';
 import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
-import { Dashboard } from '@sthrift/ui-components';
+import { Dashboard } from '@sthrift/ui-shared';
 import { TitleFilter } from './admin-listings-table.title-filter';
 import { StatusFilter } from './admin-listings-table.status-filter';
 import { StatusTag } from './admin-listings-table.status-tag';

@@ -1,5 +1,5 @@
 import { type FC, useCallback } from "react";
-import { ComponentQueryLoader } from "@sthrift/ui-components";
+import { ComponentQueryLoader } from "@sthrift/ui-shared";
 import { useQuery, useMutation } from "@apollo/client/react";
 import { Terms } from "./terms.tsx";
 import { TermsContainerCurrentPersonalUserAndCreateIfNotExistsDocument, TermsContainerPersonalUserUpdateDocument } from "../../../../generated.tsx";

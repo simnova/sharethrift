@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AdminUsersTable } from "./admin-users-table.tsx";
-import { ComponentQueryLoader } from "@sthrift/ui-components";
+import { ComponentQueryLoader } from "@sthrift/ui-shared";
 import { message } from "antd";
 import { useQuery, useMutation } from "@apollo/client/react";
 import {

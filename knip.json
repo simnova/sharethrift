@@ -82,7 +82,7 @@
 		"packages/sthrift-verification/acceptance-api",
 		"packages/sthrift-verification/acceptance-ui",
 		"packages/sthrift-verification/e2e-tests",
-		"packages/sthrift/ui-components",
+		"packages/sthrift/ui-shared",
 		"apps/server-messaging-mock",
 		"apps/server-mongodb-memory-mock",
 		"apps/server-oauth2-mock",

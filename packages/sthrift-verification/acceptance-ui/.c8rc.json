@@ -5,7 +5,7 @@
 	"tempDirectory": ".c8-output",
 	"src": [
 		"../../../apps/ui-sharethrift/src",
-		"../../../packages/sthrift/ui-components/src"
+		"../../../packages/sthrift/ui-shared/src"
 	],
 	"exclude": [
 		"cucumber.js",

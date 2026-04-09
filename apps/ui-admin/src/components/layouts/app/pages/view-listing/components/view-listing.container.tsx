@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client/react';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { useParams } from 'react-router-dom';
 import {
 	type ItemListing,

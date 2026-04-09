@@ -9,7 +9,7 @@ import {
 	MessageOutlined,
 	UserOutlined,
 } from '@ant-design/icons';
-import { HandleLogout, Footer, Navigation } from '@sthrift/ui-components';
+import { HandleLogout, Footer, Navigation } from '@sthrift/ui-shared';
 import { Header } from '../../ui/molecules/header/index.tsx';
 import { useCreateListingNavigation } from '../../shared/hooks/use-create-listing-navigation.ts';
 import { useApolloClient } from '@apollo/client/react';

@@ -1,4 +1,4 @@
-import { ListingInformation as SharedListingInformation } from '@sthrift/ui-components';
+import { ListingInformation as SharedListingInformation } from '@sthrift/ui-shared';
 import type { ItemListing } from '../../../../../../../generated.tsx';
 
 interface ListingInformationProps {

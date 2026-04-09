@@ -1,0 +1,52 @@
+import type React from 'react';
+import { Card } from 'antd';
+import { SwapRightOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
+import styles from './listing-card.module.css';
+import type { UIItemListing } from '../../organisms/listings-grid/listings-grid.tsx';
+
+interface ListingCardProps {
+	listing: UIItemListing;
+	onClick?: () => void;
+}
+
+export const ListingCard: React.FC<ListingCardProps> = ({
+	listing,
+	onClick,
+}) => {
+	const formatDate = (date: Date) => {
+		const mm = String(date.getMonth() + 1).padStart(2, '0');
+		const dd = String(date.getDate()).padStart(2, '0');
+		const yyyy = date.getFullYear();
+		return `${mm}-${dd}-${yyyy}`;
+	};
+
+	return (
+		<Link to={`/listing/${listing.id}`} onClick={onClick}>
+			<Card
+				className={styles.listingCard}
+				cover={
+					<div className={styles.imageContainer}>
+						<img
+							alt={listing.title}
+							src={listing.images?.[0] || '/placeholder.jpg'}
+							className={styles.image}
+							loading="lazy"
+						/>
+					</div>
+				}
+				styles={{ body: { padding: '0' } }}
+			>
+				<div className={styles.content}>
+					<h3 className={styles.title}>{listing.title}</h3>
+					<p className={styles.dateRange}>
+						{formatDate(listing.sharingPeriodStart)}
+						<SwapRightOutlined style={{ padding: '0 8px' }} />
+						{formatDate(listing.sharingPeriodEnd)}
+					</p>
+					<p className={styles.location}>{listing.location}</p>
+				</div>
+			</Card>
+		</Link>
+	);
+};
