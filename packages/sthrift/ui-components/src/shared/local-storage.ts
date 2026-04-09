@@ -7,3 +7,4 @@ export const clearStorage = (): void => {
     console.error(`Error clearing storage: ${error}`);
   }
 }
+
