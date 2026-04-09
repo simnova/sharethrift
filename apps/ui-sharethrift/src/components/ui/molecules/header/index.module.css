@@ -1,4 +1,4 @@
-@import "../../styles/theme.css";
+@import "@sthrift/ui-components/src/styles/theme.css";
 
 .header {
 	z-index: 1010;
@@ -47,24 +47,4 @@
 
 .divider {
 	color: var(--color-message-text);
-}
-
-@media (max-width: 600px) {
-	.logoText {
-		display: none;
-	}
-
-	.header {
-		padding: 0 1rem;
-		height: 56px;
-	}
-
-	.logo {
-		height: 28px;
-		width: 28px;
-	}
-
-	.createListing {
-		display: none;
-	}
 }

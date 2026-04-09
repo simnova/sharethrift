@@ -2,9 +2,8 @@ import type { FC } from 'react';
 import { useQuery } from '@apollo/client/react';
 import { AppContainerCurrentAdminUserDocument } from './generated.tsx';
 import { App } from './app.tsx';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader, UserIdProvider } from '@sthrift/ui-components';
 import { useAuth } from 'react-oidc-context';
-import { UserIdProvider } from './components/shared/user-context.tsx';
 
 export const AppContainer: FC = () => {
 	const auth = useAuth();

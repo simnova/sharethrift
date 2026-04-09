@@ -3,7 +3,7 @@ import { type Actor, notes, Task } from '@serenity-js/core';
 import { render, cleanup, act } from '@testing-library/react';
 import * as React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { ListingForm } from '@sthrift/ui-components';
+import { ListingForm } from '@apps/ui-sharethrift/src/components/layouts/app/pages/create-listing/components/listing-form.tsx';
 import { CreateListing as CreateListingComponent } from '@apps/ui-sharethrift/src/components/layouts/app/pages/create-listing/components/create-listing.tsx';
 import {
 	ListingPage,

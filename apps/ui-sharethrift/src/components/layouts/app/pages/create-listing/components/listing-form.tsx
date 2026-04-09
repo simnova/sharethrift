@@ -2,7 +2,7 @@ import { Form, Input, Select, DatePicker, Button } from 'antd';
 
 const { Option } = Select;
 
-export interface ListingFormProps {
+interface ListingFormProps {
 	categories: string[];
 	isLoading: boolean;
 	maxCharacters: number;

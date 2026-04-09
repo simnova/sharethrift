@@ -5,7 +5,7 @@ import Form from 'antd/es/form';
 import message from 'antd/es/message';
 import { LeftOutlined } from '@ant-design/icons';
 import { useRef, useState, useEffect } from 'react';
-import { ListingForm } from '@sthrift/ui-components';
+import { ListingForm } from './listing-form.tsx';
 import { SuccessPublished } from './create-listing-success.tsx';
 import { SuccessDraft } from './create-draft-success.tsx';
 import { ImageGallery } from './create-listing-image-gallery.tsx';

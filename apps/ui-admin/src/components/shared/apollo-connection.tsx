@@ -9,7 +9,7 @@ import {
 	BaseApolloLink,
 	TerminatingApolloBatchLinkForGraphqlServer,
 	TerminatingApolloHttpLinkForGraphqlServer,
-} from './apollo-client-links.tsx';
+} from '@sthrift/ui-components';
 import { ApolloManualMergeCacheFix } from './apollo-manual-merge-cache-fix.ts';
 
 

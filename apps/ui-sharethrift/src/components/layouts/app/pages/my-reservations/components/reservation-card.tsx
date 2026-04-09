@@ -1,7 +1,7 @@
 import type React from 'react';
 import { Card, Typography, Image } from 'antd';
 import styles from './reservation-card.module.css';
-import { ReservationStatusTag } from '@sthrift/ui-components';
+import { ReservationStatusTag } from '../../../../../ui/atoms/reservation-status-tag/index.tsx';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../../generated.tsx';
 import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';

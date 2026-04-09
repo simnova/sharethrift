@@ -1,4 +1,4 @@
-import { ApolloClient } from '@apollo/client';
+import type { ApolloClient } from '@apollo/client';
 import { clearStorage } from './local-storage.ts';
 import type { AuthContextProps } from 'react-oidc-context';
 

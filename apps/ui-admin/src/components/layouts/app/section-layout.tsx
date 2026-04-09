@@ -7,8 +7,7 @@ import {
 	MessageOutlined,
 	BarChartOutlined,
 } from '@ant-design/icons';
-import { HandleLogout } from '../../shared/handle-logout.ts';
-import { Footer, Navigation } from '@sthrift/ui-components';
+import { HandleLogout, Footer, Navigation } from '@sthrift/ui-components';
 import { useApolloClient } from '@apollo/client/react';
 import { AdminHeader } from '../../shared/admin-header.tsx';
 

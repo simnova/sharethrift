@@ -107,19 +107,6 @@ generates:
       - 'typescript'
       - 'typescript-operations'
       - 'typed-document-node'
-  ./packages/sthrift/ui-components/src/generated.tsx:
-    documents: './packages/sthrift/ui-components/src/components/**/**.graphql'
-    config:
-      withHooks: true
-      withHOC: false
-      withComponent: false
-      useTypeImports: true
-      enumsAsTypes: true
-    plugins:
-      - 'typescript'
-      - 'typescript-operations'
-      - 'typed-document-node'
-
 hooks:
   afterAllFileWrite:
     - pnpm exec biome format --write

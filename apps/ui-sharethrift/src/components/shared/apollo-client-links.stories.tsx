@@ -10,7 +10,7 @@ import {
 	BaseApolloLink,
 	TerminatingApolloBatchLinkForGraphqlServer,
 	TerminatingApolloHttpLinkForGraphqlServer,
-} from './apollo-client-links.tsx';
+} from '@sthrift/ui-components';
 
 // Mock environment variable
 const mockEnv = {

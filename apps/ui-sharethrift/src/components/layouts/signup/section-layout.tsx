@@ -1,7 +1,8 @@
 import { Outlet, useNavigate } from 'react-router-dom';
-import { Footer, Header } from '@sthrift/ui-components';
+import { Footer } from '@sthrift/ui-components';
+import { Header } from '../../ui/molecules/header/index.tsx';
 import { useAuth } from 'react-oidc-context';
-import { HandleLogout } from '../../shared/handle-logout.ts';
+import { HandleLogout } from '@sthrift/ui-components';
 import { useApolloClient } from '@apollo/client/react';
 import { useCreateListingNavigation } from '../../shared/hooks/use-create-listing-navigation.ts';
 import { Card } from 'antd';

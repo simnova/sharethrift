@@ -9,7 +9,7 @@ import { BillingAddressFormItems } from './billing-address-form-items.tsx';
 import type { Country } from './country-type.ts';
 import utc from 'dayjs/plugin/utc.js';
 import type { PersonalUserProcessPaymentInput } from '../../../generated.tsx';
-import { useUserId } from '../user-context.tsx';
+import { useUserId } from '@sthrift/ui-components';
 
 const { Title } = Typography;
 dayjs.extend(utc);

@@ -6,7 +6,7 @@ import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
 import type { Decorator, StoryContext } from '@storybook/react';
 import { createMockAuth, createMockUser } from '../test/utils/mock-auth.ts';
-import { UserIdProvider } from '../components/shared/user-context.tsx';
+import { UserIdProvider } from '@sthrift/ui-components';
 
 /**
  * Reusable Apollo Client decorator for Storybook stories.

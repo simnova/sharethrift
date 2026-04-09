@@ -2,7 +2,8 @@ import { Form, Input, Button, Card, Typography, Divider, Grid } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
-import { Footer, Header } from '@sthrift/ui-components';
+import { Footer } from '@sthrift/ui-components';
+import { Header } from '../ui/molecules/header/index.tsx';
 import heroImg from '@sthrift/ui-components/src/assets/hero/hero-small.png';
 
 const { Title } = Typography;
