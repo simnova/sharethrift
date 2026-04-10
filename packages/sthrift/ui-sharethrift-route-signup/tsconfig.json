@@ -1,0 +1,15 @@
+{
+	"extends": "@cellix/typescript-config/tsconfig-base.json",
+	"compilerOptions": {
+		"outDir": "dist",
+		"rootDir": ".",
+		"jsx": "react-jsx",
+		"exactOptionalPropertyTypes": false,
+		"skipLibCheck": true,
+		"module": "ESNext",
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true
+	},
+	"include": ["src"],
+	"exclude": ["node_modules", "src/**/*.stories.tsx", "src/**/*.stories.ts"]
+}

@@ -21,7 +21,7 @@ apps/docs/apps/docs/static/serenity-reports
 **/generated.ts
 **/generated.tsx
 **/graphql.schema.json
-apps/ui-sharethrift/tsconfig.tsbuildinfo
+**/tsconfig.tsbuildinfo
 **/node_modules
 **/dist
 
