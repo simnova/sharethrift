@@ -13,7 +13,7 @@
 		"lint": "biome lint",
 		"format": "biome format --write",
 		"start": "node dist/src/index.js",
-		"dev": "PORTLESS_PORT=1355 PORTLESS_STATE_DIR=${HOME}/.portless portless --force mock-payment.sharethrift.localhost node dist/src/index.js"
+		"dev": "PORTLESS_STATE_DIR=${HOME}/.portless portless mock-payment.sharethrift.localhost node dist/src/index.js"
 	},
 	"dependencies": {
 		"@cellix/server-payment-seedwork": "workspace:*",

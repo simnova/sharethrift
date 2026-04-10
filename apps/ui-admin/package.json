@@ -5,7 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"start": "vite",
-		"dev": "PORTLESS_PORT=1355 PORTLESS_STATE_DIR=${HOME}/.portless portless --force admin.sharethrift.localhost vite",
+		"dev": "PORTLESS_STATE_DIR=${HOME}/.portless portless admin.sharethrift.localhost vite",
 		"build": "tsc -b && vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",

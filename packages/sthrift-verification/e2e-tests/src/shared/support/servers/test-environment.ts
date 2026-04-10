@@ -8,14 +8,13 @@ export function initTestEnvironment() {
 	if (proxyInitialized) return;
 
 	// Ensure the shared local portless proxy is running on the fixed non-root HTTPS port.
-	// Force PORTLESS_STATE_DIR so the proxy uses ~/.portless/ (not /tmp/portless/)
-	// to keep the CA cert path consistent with NODE_EXTRA_CA_CERTS.
+	// Force PORTLESS_STATE_DIR so portless reads the same ~/.portless state directory
+	// and CA cert path as local dev, instead of falling back to /tmp/portless/.
 	execFileSync(getPortlessPath(), ['proxy', 'start', '-p', '1355'], {
 		timeout: 15_000,
 		stdio: 'pipe',
 		env: {
 			...process.env,
-			PORTLESS_PORT: '1355',
 			PORTLESS_STATE_DIR: `${process.env.HOME}/.portless`,
 		},
 	});

@@ -12,7 +12,7 @@
 		"build": "tsc --build",
 		"clean": "rimraf dist",
 		"start": "node -r dotenv/config dist/src/index.js",
-		"dev": "PORTLESS_PORT=1355 PORTLESS_STATE_DIR=${HOME}/.portless portless --force mock-messaging.sharethrift.localhost node -r dotenv/config dist/src/index.js",
+		"dev": "PORTLESS_STATE_DIR=${HOME}/.portless portless mock-messaging.sharethrift.localhost node -r dotenv/config dist/src/index.js",
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},
