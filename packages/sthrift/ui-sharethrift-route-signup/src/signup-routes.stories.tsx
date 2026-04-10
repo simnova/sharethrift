@@ -1,6 +1,6 @@
 import type { Meta, StoryFn } from '@storybook/react';
 import SignupRoutes from './index.tsx';
-import { withMockApolloClient, withMockRouter } from '../../../test-utils/storybook-decorators.tsx';
+import { withMockApolloClient, withMockRouter } from '@sthrift/ui-sharethrift-route-shared/test-utils';
 import { expect } from 'storybook/test';
 
 const meta: Meta<typeof SignupRoutes> = {

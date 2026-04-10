@@ -2,9 +2,9 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { expect, userEvent, within } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { useCreateListingNavigation } from './use-create-listing-navigation.ts';
-import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
+import { MockAuthWrapper } from '@sthrift/ui-sharethrift-route-shared/test-utils';
 import { AuthContext } from 'react-oidc-context';
-import { createMockAuth, createMockUser } from '../../../test/utils/mock-auth.ts';
+import { createMockAuth, createMockUser } from '@sthrift/ui-sharethrift-route-shared/test-utils';
 
 const NavigationTestComponent = () => {
 	const handleCreateListing = useCreateListingNavigation();

@@ -24,11 +24,17 @@ export async function checkFrontendArchitecture(config: FrontendArchitectureConf
   if (!fs.existsSync(path.join(resolvedPath, 'config'))) {
     violations.push('Missing required directory: config');
   }
-  if (!fs.existsSync(path.join(resolvedPath, 'components', 'layouts'))) {
-    violations.push('components/layouts directory is required');
+  if (!fs.existsSync(path.join(resolvedPath, 'components', 'pages'))) {
+    violations.push('components/pages directory is required');
   }
   if (!fs.existsSync(path.join(resolvedPath, 'components', 'shared'))) {
     violations.push('components/shared directory is required');
+  }
+  if (fs.existsSync(path.join(resolvedPath, 'pages'))) {
+    violations.push('Legacy pages directory is not allowed; use components/pages');
+  }
+  if (fs.existsSync(path.join(resolvedPath, 'components', 'layouts'))) {
+    violations.push('Legacy components/layouts directory is not allowed');
   }
 
   // Get all files for further checks
@@ -70,25 +76,6 @@ export async function checkFrontendArchitecture(config: FrontendArchitectureConf
     }
     if (!isKebabCase(fileName)) {
       violations.push(`Story file '${path.basename(file)}' must use kebab-case`);
-    }
-  }
-
-  // Check layout requirements: each layout directory should have section-layout.tsx and index.tsx
-  const layoutFiles = allFiles.filter((f) => f.includes('/components/layouts/'));
-  const layoutDirs = new Set<string>();
-  for (const file of layoutFiles) {
-    const match = file.match(/\/components\/layouts\/([^/]+)\//);
-    if (match?.[1]) {
-      layoutDirs.add(match[1]);
-    }
-  }
-
-  for (const layoutDir of layoutDirs) {
-    if (!fs.existsSync(path.join(resolvedPath, 'components', 'layouts', layoutDir, 'section-layout.tsx'))) {
-      violations.push(`Layout '${layoutDir}' must have section-layout.tsx`);
-    }
-    if (!fs.existsSync(path.join(resolvedPath, 'components', 'layouts', layoutDir, 'index.tsx'))) {
-      violations.push(`Layout '${layoutDir}' must have index.tsx`);
     }
   }
 

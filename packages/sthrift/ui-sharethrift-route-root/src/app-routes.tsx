@@ -1,13 +1,13 @@
 import { Route, Routes } from 'react-router-dom';
 import { SectionLayout } from './section-layout.tsx';
 import { RequireAuth } from '@sthrift/ui-sharethrift-route-shared';
-import { Listings } from './pages/home/pages/all-listings-page.tsx';
-import { ViewListing } from './pages/view-listing/pages/view-listing-page.tsx';
-import { CreateListing } from './pages/create-listing/pages/create-listing-page.tsx';
-import { MyListingsRoutes } from './pages/my-listings/index.tsx';
-import { MyReservationsRoutes } from './pages/my-reservations/index.tsx';
-import { MessagesRoutes } from './pages/messages/index.tsx';
-import { AccountRoutes } from './pages/account/index.tsx';
+import { Listings } from './components/pages/home/pages/all-listings-page.tsx';
+import { ViewListing } from './components/pages/view-listing/pages/view-listing-page.tsx';
+import { CreateListing } from './components/pages/create-listing/pages/create-listing-page.tsx';
+import { MyListingsRoutes } from './components/pages/my-listings/index.tsx';
+import { MyReservationsRoutes } from './components/pages/my-reservations/index.tsx';
+import { MessagesRoutes } from './components/pages/messages/index.tsx';
+import { AccountRoutes } from './components/pages/account/index.tsx';
 
 export const AppRoutes: React.FC = () => {
 	return (

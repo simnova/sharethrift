@@ -17,12 +17,12 @@ export function describeFrontendArchitectureTests(config: FrontendArchitectureTe
         expect(dirViolations).toStrictEqual([]);
       });
 
-      it('should have components/layouts directory', async () => {
+      it('should have components/pages directory', async () => {
         const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
-        const layoutViolations = violations.filter((v) => v.includes('layouts'));
-        expect(layoutViolations).toStrictEqual([]);
+        const pageViolations = violations.filter((v) => v.includes('components/pages'));
+        expect(pageViolations).toStrictEqual([]);
       });
 
       it('should have components/shared directory', async () => {
@@ -62,23 +62,13 @@ export function describeFrontendArchitectureTests(config: FrontendArchitectureTe
       });
     });
 
-    describe('Layout Requirements', () => {
-      it('each layout directory should have section-layout.tsx', async () => {
+    describe('Legacy Structure', () => {
+      it('should not use legacy pages or layout directories', async () => {
         const violations = await checkFrontendArchitecture({
           uiSourcePath: config.uiSourcePath,
         });
-        const layoutFileViolations = violations.filter((v) =>
-          v.includes('section-layout')
-        );
-        expect(layoutFileViolations).toStrictEqual([]);
-      });
-
-      it('each layout directory should have index.tsx', async () => {
-        const violations = await checkFrontendArchitecture({
-          uiSourcePath: config.uiSourcePath,
-        });
-        const indexViolations = violations.filter((v) => v.includes('index.tsx'));
-        expect(indexViolations).toStrictEqual([]);
+        const legacyViolations = violations.filter((v) => v.includes('Legacy'));
+        expect(legacyViolations).toStrictEqual([]);
       });
     });
 

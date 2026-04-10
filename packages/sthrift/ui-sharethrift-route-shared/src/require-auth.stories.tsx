@@ -3,7 +3,7 @@ import { expect } from 'storybook/test';
 import { MemoryRouter } from 'react-router-dom';
 import { AuthContext } from 'react-oidc-context';
 import { RequireAuth } from './require-auth.tsx';
-import { createMockAuth, createMockUser } from '../../test/utils/mock-auth.ts';
+import { createMockAuth, createMockUser } from '@sthrift/ui-sharethrift-route-shared/test-utils';
 
 const meta: Meta<typeof RequireAuth> = {
 	title: 'Shared/RequireAuth',

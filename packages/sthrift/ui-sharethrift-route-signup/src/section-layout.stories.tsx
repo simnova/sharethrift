@@ -4,7 +4,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { MockLink } from '@apollo/client/testing';
-import { MockAuthWrapper } from '../../../test-utils/storybook-decorators.tsx';
+import { MockAuthWrapper } from '@sthrift/ui-sharethrift-route-shared/test-utils';
 import { SectionLayout } from './section-layout.tsx';
 
 const mockApolloClient = new ApolloClient({

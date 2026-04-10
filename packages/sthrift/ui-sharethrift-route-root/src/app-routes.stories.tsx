@@ -1,7 +1,7 @@
 import type { Meta, StoryFn } from "@storybook/react";
 import { AppRoutes } from "./index.tsx";
 import { ListingsPageContainerGetListingsDocument } from "./generated.tsx";
-import { withMockApolloClient, withMockRouter } from "../../../test-utils/storybook-decorators.tsx";
+import { withMockApolloClient, withMockRouter } from "@sthrift/ui-sharethrift-route-shared/test-utils";
 import { expect } from 'storybook/test';
 
 const meta: Meta<typeof AppRoutes> = {

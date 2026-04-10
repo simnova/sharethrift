@@ -1,10 +1,10 @@
 import { Route, Routes } from 'react-router-dom';
 import { SectionLayout } from './section-layout.tsx';
 import { RequireAuth } from './require-auth.tsx';
-import { Listings } from './pages/home/pages/all-listings-page.tsx';
-import { ViewListing } from './pages/view-listing/pages/view-listing-page.tsx';
-import { MessagesRoutes } from './pages/messages/index.tsx';
-import { AdminDashboardMain } from './pages/admin-dashboard/pages/admin-dashboard-main.tsx';
+import { Listings } from './components/pages/home/pages/all-listings-page.tsx';
+import { ViewListing } from './components/pages/view-listing/pages/view-listing-page.tsx';
+import { MessagesRoutes } from './components/pages/messages/index.tsx';
+import { AdminDashboardMain } from './components/pages/admin-dashboard/pages/admin-dashboard-main.tsx';
 
 export const AppRoutes: React.FC = () => {
 	return (
