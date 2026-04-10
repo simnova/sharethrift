@@ -5,7 +5,7 @@
 	"scripts": {
 		"docusaurus": "docusaurus",
 		"start": "docusaurus start --port 3002 --host docs.sharethrift.localhost --no-open",
-		"dev": "PORTLESS_STATE_DIR=${HOME}/.portless portless docs.sharethrift.localhost node start-dev.mjs",
+		"dev": "portless docs.sharethrift.localhost node start-dev.mjs",
 		"build": "docusaurus build",
 		"swizzle": "docusaurus swizzle",
 		"deploy": "docusaurus deploy",

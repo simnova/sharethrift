@@ -34,7 +34,6 @@ export abstract class PortlessServer {
 			cwd: this.cwd,
 			env: {
 				...process.env,
-				PORTLESS_STATE_DIR: `${process.env.HOME}/.portless`,
 				...this.extraEnv,
 			},
 			stdio: ['ignore', 'pipe', 'pipe'],
