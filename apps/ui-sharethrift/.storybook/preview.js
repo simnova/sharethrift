@@ -1,4 +1,4 @@
-import "@sthrift/ui-components/src/styles/theme.css";
+import "@sthrift/ui-shared/src/styles/theme.css";
 
 // Remove Storybook's default 1rem padding from .sb-show-main.sb-main-padded
 const style = document.createElement("style");

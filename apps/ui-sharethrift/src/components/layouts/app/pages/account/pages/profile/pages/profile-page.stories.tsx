@@ -7,7 +7,6 @@ import {
 import {
 	HomeAccountProfileViewContainerCurrentUserDocument,
 	HomeAccountProfileViewContainerUserListingsDocument,
-	UseUserIsAdminDocument,
 	type ItemListing,
 	type PersonalUser,
 } from '../../../../../../../../generated.tsx';
@@ -87,18 +86,7 @@ const mockTwoListings: ItemListing[] = [
 	},
 ];
 
-const userIsAdminMockRequest = (userId: string) => {
-	return {
-		request: {
-			query: UseUserIsAdminDocument,
-		},
-		result: {
-			data: {
-				currentUser: {id: userId, userIsAdmin: false },
-			},
-		},
-	};
-};
+
 
 const meta: Meta<typeof AppRoutes> = {
 	title: 'Pages/Account/Profile',
@@ -148,7 +136,6 @@ export const DefaultView: Story = {
 						},
 					},
 				},
-				userIsAdminMockRequest(mockUserSarah.id),
 			],
 		},
 	},
@@ -179,7 +166,6 @@ export const NoListings: Story = {
 						},
 					},
 				},
-				userIsAdminMockRequest(mockUserAlex.id),
 			],
 		},
 	},

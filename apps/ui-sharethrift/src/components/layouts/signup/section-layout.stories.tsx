@@ -80,22 +80,6 @@ export const ProductionModeLogin: Story = {
 	},
 };
 
-export const ProductionModeAdminLogin: Story = {
-	parameters: {
-		env: {
-			MODE: 'production',
-		},
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvasElement).toBeTruthy();
-		const adminButton = canvas.queryByText(/Admin/i);
-		if (adminButton) {
-			await userEvent.click(adminButton);
-		}
-	},
-};
-
 export const ClickSignUp: Story = {
 	play: async ({ canvasElement }) => {
 		const canvas = within(canvasElement);

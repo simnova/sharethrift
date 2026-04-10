@@ -1,11 +1,11 @@
 type ListingAppealRequest implements MongoBase {
 	id: ObjectID!
-	user: PersonalUser!
+	user: User!
 	listing: ItemListing!
 	reason: String!
 	state: AppealRequestState!
 	type: AppealRequestType!
-	blocker: PersonalUser!
+	blocker: AdminUser!
 	schemaVersion: String
 	createdAt: DateTime
 	updatedAt: DateTime

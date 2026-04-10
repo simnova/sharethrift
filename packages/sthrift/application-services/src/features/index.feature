@@ -57,9 +57,7 @@ Feature: Application Services Factory
     Given a valid application services factory
     And a valid AdminPortal token for non-existent admin
     When forRequest is called with the token
-    Then application services should be created
-    And verifiedUser should contain the JWT data
-    And a guest passport should be used
+    Then it should throw "Forbidden: Admin portal requires an admin user"
 
   Scenario: Including hints in verifiedUser
     Given a valid application services factory

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useQuery } from "@apollo/client/react";
 import { RequestsTable } from './requests-table.tsx';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { HomeRequestsTableContainerMyListingsRequestsDocument } from '../../../../../../generated.tsx';
 
 interface RequestsTableContainerProps {
@@ -40,7 +40,9 @@ export const RequestsTableContainer: React.FC<RequestsTableContainerProps> = ({
 		id: request.id,
 		title: request.listing?.title || 'Unknown',
 		image: request.listing?.images?.[0] || null,
-		requestedBy: `@${request.reserver?.account?.username || 'unknown'}`,
+		requestedBy: request.reserver?.__typename === 'PersonalUser'
+			? `@${request.reserver.account?.username || 'unknown'}`
+			: '@unknown',
 		requestedOn: request.createdAt?.toISOString(),
 		reservationPeriod: request.reservationPeriodStart && request.reservationPeriodEnd
 			? `${request.reservationPeriodStart.toISOString().split('T')[0]} to ${request.reservationPeriodEnd.toISOString().split('T')[0]}`

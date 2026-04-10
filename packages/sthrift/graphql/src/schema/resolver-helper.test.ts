@@ -9,6 +9,7 @@ import {
 	currentViewerIsAdmin,
 	getRequestedFieldPaths,
 	getUserByEmail,
+	PopulateConversationParticipantFromField,
 	PopulateItemListingFromField,
 	PopulateUserFromField,
 } from './resolver-helper.ts';
@@ -203,7 +204,7 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 	);
 
 	Scenario(
-		'PopulateUserFromField resolves AdminUser by ID',
+		'PopulateConversationParticipantFromField resolves AdminUser by ID',
 		({ Given, When, Then }) => {
 			const parent = { userId: { id: '507f1f77bcf86cd799439011' } };
 
@@ -213,10 +214,13 @@ test.for(feature, ({ Background, Scenario, BeforeEachScenario }) => {
 				).mockResolvedValue(mockAdminUser);
 			});
 
-			When('PopulateUserFromField resolver is called', async () => {
-				const resolver = PopulateUserFromField('userId');
-				result = await resolver(parent, {}, mockContext);
-			});
+			When(
+				'PopulateConversationParticipantFromField resolver is called',
+				async () => {
+					const resolver = PopulateConversationParticipantFromField('userId');
+					result = await resolver(parent, {}, mockContext);
+				},
+			);
 
 			Then('it should return the AdminUser entity', () => {
 				expect(result).toEqual(mockAdminUser);

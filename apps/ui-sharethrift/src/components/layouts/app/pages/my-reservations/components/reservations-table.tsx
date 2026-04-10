@@ -1,7 +1,7 @@
 import type React from 'react';
 import { Table, Image } from 'antd';
 import styles from './reservations-table.module.css';
-import { ReservationStatusTag } from '@sthrift/ui-components';
+import { ReservationStatusTag } from '../../../../../ui/atoms/reservation-status-tag/index.tsx';
 import { ReservationActions } from './reservation-actions.tsx';
 import type { HomeMyReservationsReservationsViewActiveContainerActiveReservationsQuery } from '../../../../../../generated.tsx';
 import { BASE64_FALLBACK_IMAGE } from '../constants/ui-constants.ts';
@@ -92,7 +92,7 @@ export const ReservationsTable: React.FC<ReservationsTableProps> = ({
 			key: 'sharer',
 			render: (reserver: ReservationRequestFieldsFragment['reserver']) => (
 				<span className={classes.tableText}>
-					{reserver?.account?.username
+					{reserver?.__typename === 'PersonalUser' && reserver.account?.username
 						? `@${reserver.account.username}`
 						: 'Unknown'}
 				</span>

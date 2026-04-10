@@ -2,7 +2,7 @@ import { useQuery } from '@apollo/client/react';
 import {
 	ComponentQueryLoader,
 	type UIItemListing,
-} from '@sthrift/ui-components';
+} from '@sthrift/ui-shared';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {

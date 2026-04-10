@@ -1,4 +1,4 @@
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { Alert } from 'antd';
 import { useQuery, useMutation } from '@apollo/client/react';
 import {
@@ -26,7 +26,8 @@ export const ReservationsViewActiveContainer: React.FC<
 	} = useQuery<ViewListingCurrentUserQuery>(ViewListingCurrentUserDocument, {
 		fetchPolicy: 'cache-first',
 	});
-	const userId = userData?.currentUser?.id;
+	const currentUser = userData?.currentUser;
+	const userId = currentUser?.__typename === 'PersonalUser' ? currentUser.id : undefined;
 
 	// Get active reservations
 	const {

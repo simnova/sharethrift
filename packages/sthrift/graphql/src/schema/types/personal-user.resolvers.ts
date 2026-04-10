@@ -5,7 +5,6 @@ import type {
 	PersonalUserUpdateInput,
 	PersonalUserProcessPaymentInput,
 	Resolvers,
-	QueryAllUsersArgs,
 } from '../builder/generated.ts';
 import type {
 	PersonalUserUpdateCommand,
@@ -76,12 +75,12 @@ const personalUserResolvers: Resolvers = {
 				throw new Error('Unauthorized');
 			}
 
-			// Block admin users - they should use currentUser query instead
+			// Block admin users - they should use currentAdminUser instead
 			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
 			const existingUser = await getUserByEmail(email, context);
 			if (existingUser?.userType === 'admin-user') {
 				throw new Error(
-					'Admin users cannot use this query. Use currentUser instead.',
+					'Forbidden: Admin users cannot use this query. Use currentAdminUser instead.',
 				);
 			}
 
@@ -96,39 +95,6 @@ const personalUserResolvers: Resolvers = {
 						context.applicationServices.verifiedUser.verifiedJwt.family_name,
 				},
 			);
-		},
-		allUsers: async (
-			_parent: unknown,
-			args: QueryAllUsersArgs,
-			context: GraphContext,
-			_info: GraphQLResolveInfo,
-		) => {
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized: Authentication required');
-			}
-
-			// Query-level permission check: Only admins with canViewAllUsers can view all personal users
-			// (Read permissions are checked at GraphQL/service layer, write permissions at domain layer)
-			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
-			const currentUser = await getUserByEmail(email, context);
-			const isAdmin = currentUser && 'role' in currentUser;
-
-			if (
-				!isAdmin ||
-				!currentUser?.role?.permissions?.userPermissions?.canViewAllUsers
-			) {
-				throw new Error(
-					'Forbidden: Only admins with canViewAllUsers permission can access this query',
-				);
-			}
-
-			return await context.applicationServices.User.PersonalUser.getAllUsers({
-				page: args.page,
-				pageSize: args.pageSize,
-				searchText: args.searchText || undefined,
-				statusFilters: args.statusFilters ? [...args.statusFilters] : undefined,
-				sorter: args.sorter || undefined,
-			});
 		},
 	},
 
@@ -197,22 +163,20 @@ const personalUserResolvers: Resolvers = {
 
 			try {
 				const paymentResponse =
-					await context.applicationServices.User.PersonalUser.processPayment(
-						{
-							request: {
-								userId: args.input.userId,
-								paymentInstrument: {
-									...args.input.paymentInstrument,
-									billingAddressLine2:
-										args.input.paymentInstrument.billingAddressLine2 ?? '',
-									billingPhone: args.input.paymentInstrument.billingPhone ?? '',
-									billingEmail: args.input.paymentInstrument.billingEmail ?? '',
-								},
-								paymentAmount: args.input.paymentAmount,
-								currency: args.input.currency,
+					await context.applicationServices.User.PersonalUser.processPayment({
+						request: {
+							userId: args.input.userId,
+							paymentInstrument: {
+								...args.input.paymentInstrument,
+								billingAddressLine2:
+									args.input.paymentInstrument.billingAddressLine2 ?? '',
+								billingPhone: args.input.paymentInstrument.billingPhone ?? '',
+								billingEmail: args.input.paymentInstrument.billingEmail ?? '',
 							},
+							paymentAmount: args.input.paymentAmount,
+							currency: args.input.currency,
 						},
-					);
+					});
 				return {
 					status: { success: true },
 					paymentResponse,

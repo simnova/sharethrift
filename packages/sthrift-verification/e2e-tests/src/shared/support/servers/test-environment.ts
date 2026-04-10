@@ -7,20 +7,17 @@ let mongoConnectionString: string | undefined;
 export function initTestEnvironment() {
 	if (proxyInitialized) return;
 
-	// Ensure the global portless proxy is running (HTTPS on port 443, the 0.9.x default)
-	// Force PORTLESS_STATE_DIR so the proxy uses ~/.portless/ (not /tmp/portless/)
-	// to keep the CA cert path consistent with NODE_EXTRA_CA_CERTS.
-	execFileSync(getPortlessPath(), ['proxy', 'start'], {
+	// Ensure the shared local portless proxy is running on the fixed non-root HTTPS port.
+	execFileSync(getPortlessPath(), ['proxy', 'start', '-p', '1355'], {
 		timeout: 15_000,
 		stdio: 'pipe',
-		env: { ...process.env, PORTLESS_STATE_DIR: `${process.env.HOME}/.portless` },
 	});
 
 	proxyInitialized = true;
 }
 
 export function buildUrl(hostname: string, path = ''): string {
-	return `https://${hostname}${path}`;
+	return `https://${hostname}:1355${path}`;
 }
 
 export function setMongoConnectionString(connStr: string): void {

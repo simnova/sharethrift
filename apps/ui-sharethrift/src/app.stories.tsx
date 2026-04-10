@@ -113,21 +113,6 @@ export const LoginRoute: Story = {
 	},
 };
 
-export const AuthRedirectAdminRoute: Story = {
-	name: 'Auth Redirect Admin Route',
-	decorators: [
-		(Story) => (
-			<MemoryRouter initialEntries={['/auth-redirect-admin']}>
-				<Story />
-			</MemoryRouter>
-		),
-	],
-	play: ({ canvasElement }: { canvasElement: HTMLElement }) => {
-		expect(canvasElement).toBeTruthy();
-		expect(canvasElement.children.length).toBeGreaterThan(0);
-	},
-};
-
 export const AuthRedirectUserRoute: Story = {
 	name: 'Auth Redirect User Route',
 	decorators: [

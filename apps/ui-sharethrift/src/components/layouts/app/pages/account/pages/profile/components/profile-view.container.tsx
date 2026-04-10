@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ProfileView } from './profile-view.tsx';
 import { useQuery } from '@apollo/client/react';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import {
 	type ItemListing,
 	HomeAccountProfileViewContainerCurrentUserDocument,
@@ -33,11 +33,10 @@ export const ProfileViewContainer: React.FC = () => {
 	};
 
 	const currentUser = userQueryData?.currentUser;
-	const { account, createdAt } = currentUser || {};
-
-	if (!currentUser) {
+	if (!currentUser || currentUser.__typename !== 'PersonalUser') {
 		return null;
 	}
+	const { account, createdAt } = currentUser;
 
 	const profileUser = {
 		id: currentUser.id,

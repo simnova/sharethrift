@@ -1,43 +1,29 @@
-import { Outlet } from 'react-router-dom';
-import { Footer, Header } from '@sthrift/ui-components';
+import { Outlet, useNavigate } from 'react-router-dom';
+import { Footer } from '@sthrift/ui-shared';
+import { Header } from '../../ui/molecules/header/index.tsx';
 import { useAuth } from 'react-oidc-context';
-import { HandleLogout } from '../../shared/handle-logout.ts';
+import { HandleLogout } from '@sthrift/ui-shared';
 import { useApolloClient } from '@apollo/client/react';
 import { useCreateListingNavigation } from '../../shared/hooks/use-create-listing-navigation.ts';
 import { Card } from 'antd';
 
 export const SectionLayout: React.FC = () => {
+	const navigate = useNavigate();
 	const auth = useAuth();
 	const apolloClient = useApolloClient();
 
-	const isProduction = import.meta.env.MODE === 'production';
-
 	const handleOnLogin = () => {
-		if (isProduction) {
-			globalThis.sessionStorage.setItem('loginPortalType', 'UserPortal');
-			globalThis.location.href = '/auth-redirect-user';
-		} else {
-			auth.signinRedirect();
-		}
-	};
-
-	const handleOnAdminLogin = () => {
-		if (isProduction) {
-			globalThis.sessionStorage.setItem('loginPortalType', 'AdminPortal');
-			globalThis.location.href = '/auth-redirect-admin';
-		} else {
-			auth.signinRedirect();
-		}
+		navigate('/login');
 	};
 
 	const handleOnSignUp = () => {
-        auth.signinRedirect({ extraQueryParams: { option: "signup" } });
+		auth.signinRedirect({ extraQueryParams: { option: 'signup' } });
 	};
 
 	const handleCreateListing = useCreateListingNavigation();
 
 	const handleLogOut = () => {
-        HandleLogout(auth, apolloClient, globalThis.location.origin);
+		HandleLogout(auth, apolloClient, globalThis.location.origin);
 	};
 
 	return (
@@ -53,7 +39,6 @@ export const SectionLayout: React.FC = () => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={handleOnLogin}
-				onAdminLogin={handleOnAdminLogin}
 				onSignUp={handleOnSignUp}
 				onLogout={handleLogOut}
 				onCreateListing={handleCreateListing}

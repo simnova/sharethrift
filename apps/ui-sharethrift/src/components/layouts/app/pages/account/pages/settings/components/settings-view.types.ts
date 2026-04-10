@@ -77,7 +77,7 @@ export interface SettingsViewProps {
 	mutationErrorMessage?: string;
 }
 
-// Union type for current user
+// Type for current user
 type PersonalUserSettings = {
 	__typename: 'PersonalUser';
 	id: string;
@@ -108,38 +108,8 @@ type PersonalUserSettings = {
 	updatedAt: string;
 };
 
-type AdminUserSettings = {
-	__typename: 'AdminUser';
-	id: string;
-	userType: string;
-	account: {
-		accountType: string;
-		email: string;
-		username: string;
-		profile: {
-			firstName: string;
-			lastName: string;
-			aboutMe?: string;
-			location: {
-				address1?: string;
-				address2?: string;
-				city?: string;
-				state?: string;
-				country?: string;
-				zipCode?: string;
-			};
-		};
-	};
-	role: {
-		id: string;
-		roleName: string;
-	};
-	createdAt: string;
-	updatedAt: string;
-};
-
 export interface CurrentUserSettingsQueryData {
-	currentUser: PersonalUserSettings | AdminUserSettings;
+	currentUser: PersonalUserSettings;
 }
 
 export interface PlanOption {

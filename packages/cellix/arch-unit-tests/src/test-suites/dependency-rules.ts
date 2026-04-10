@@ -109,7 +109,7 @@ export function describeDependencyRulesTests(config: DependencyRulesTestsConfig)
     if (uiCoreFolder || uiComponentsFolder) {
       describe('UI Isolation', () => {
         if (uiCoreFolder && uiComponentsFolder) {
-          it('ui-core should not depend on ui-components', async () => {
+          it('ui-core should not depend on ui-shared', async () => {
             const violations = await checkUiIsolation({ uiCoreFolder, uiComponentsFolder });
             expect(violations).toStrictEqual([]);
           }, 30000);
@@ -123,7 +123,7 @@ export function describeDependencyRulesTests(config: DependencyRulesTestsConfig)
         }
 
         if (uiComponentsFolder && appUiFolder) {
-          it('ui-components should not depend on app UI', async () => {
+          it('ui-shared should not depend on app UI', async () => {
             const violations = await checkUiIsolation({ uiComponentsFolder, appUiFolder });
             expect(violations).toStrictEqual([]);
           }, 30000);

@@ -9,7 +9,7 @@ import {
 	Space,
 	Divider,
 } from 'antd';
-import { ListingsGrid } from '@sthrift/ui-components';
+import { ListingsGrid } from '@sthrift/ui-shared';
 import { SettingOutlined, UserOutlined } from '@ant-design/icons';
 import './profile-view.overrides.css';
 import type { ItemListing } from '../../../../../../../../generated.tsx';

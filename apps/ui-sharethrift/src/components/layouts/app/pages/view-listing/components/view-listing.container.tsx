@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client/react';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { useParams } from 'react-router-dom';
 import {
 	type ItemListing,
@@ -48,7 +48,8 @@ export const ViewListingContainer: React.FC<ViewListingContainerProps> = (
 		skip: !props.isAuthenticated, // Skip if not authenticated
 	});
 
-	const reserverId = currentUserData?.currentUser?.id ?? '';
+	const currentUser = currentUserData?.currentUser;
+	const reserverId = currentUser?.__typename === 'PersonalUser' ? currentUser.id : '';
 
 	const skip = !reserverId || !listingId;
 	const {

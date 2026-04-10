@@ -1,0 +1,50 @@
+query ViewListingInformationGetListing($listingId: ObjectID!) {
+	itemListing(id: $listingId) {
+		id
+		title
+		description
+		category
+		location
+		sharingPeriodStart
+		sharingPeriodEnd
+		state
+		images
+		createdAt
+		updatedAt
+		reports
+		sharingHistory
+		schemaVersion
+	}
+}
+
+query ViewListingQueryActiveByListingId($listingId: ObjectID!) {
+	queryActiveByListingId(listingId: $listingId) {
+		id
+		state
+		reservationPeriodStart
+		reservationPeriodEnd
+		createdAt
+		updatedAt
+		closeRequestedBySharer
+		closeRequestedByReserver
+	}
+}
+
+mutation HomeListingInformationCreateReservationRequest(
+	$input: ReservationRequestCreateInput!
+) {
+	createReservationRequest(input: $input) {
+		status {
+			success
+			errorMessage
+		}
+		reservationRequest {
+			id
+			state
+			reservationPeriodStart
+			reservationPeriodEnd
+			createdAt
+			updatedAt
+		}
+	}
+}

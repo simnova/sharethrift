@@ -6,7 +6,7 @@ import {
   type PersonalUserUpdateInput,
 } from "../../../../generated.tsx";
 import { useQuery, useMutation } from "@apollo/client/react";
-import { ComponentQueryLoader } from "@sthrift/ui-components";
+import { ComponentQueryLoader } from "@sthrift/ui-shared";
 import { useNavigate } from "react-router-dom";
 import { message } from "antd";
 

@@ -12,7 +12,7 @@ import {
 import {
 	getAllUsers,
 	type GetAllUsersCommand,
-	type PersonalUserPageResult,
+	type PaginatedUsersResult,
 } from './get-all-users.ts';
 import { update, type PersonalUserUpdateCommand } from './update.ts';
 import { generatePublicKey } from './generate-public-key.ts';
@@ -40,7 +40,7 @@ export interface PersonalUserApplicationService {
 	queryByEmail: (
 		email: PersonalUserQueryByEmailCommand,
 	) => Promise<Domain.Contexts.User.PersonalUser.PersonalUserEntityReference | null>;
-	getAllUsers: (command: GetAllUsersCommand) => Promise<PersonalUserPageResult>;
+	getAllUsers: (command: GetAllUsersCommand) => Promise<PaginatedUsersResult>;
 	processPayment: (command: ProcessPaymentCommand) => Promise<PaymentResponse>;
 	generatePublicKey: () => Promise<string>;
 	refundPayment: (command: RefundPaymentCommand) => Promise<RefundResponse>;

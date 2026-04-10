@@ -35,11 +35,6 @@ fragment HomeRequestsTableContainerRequestFields on ReservationRequest {
         username
       }
     }
-    ... on AdminUser {
-      account {
-        username
-      }
-    }
   }
   createdAt
   reservationPeriodStart

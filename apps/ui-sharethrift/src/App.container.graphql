@@ -5,9 +5,5 @@ query AppContainerCurrentUser {
       userType
       hasCompletedOnboarding
     }
-    ... on AdminUser {
-      id
-      userType
-    }
   }
 }

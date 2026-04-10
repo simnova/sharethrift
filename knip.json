@@ -10,6 +10,11 @@
 			"project": ["src/**/*.{ts,tsx}"],
 			"ignore": ["**/terms-communication-preferences.tsx", "**/applicant-id-context.tsx"]
 		},
+		"apps/ui-admin": {
+			"entry": ["src/main.tsx"],
+			"project": ["src/**/*.{ts,tsx}"],
+			"ignore": ["**/applicant-id-context.tsx"]
+		},
 		"apps/docs": {
 			"entry": ["src/**/*.{ts,tsx,js,jsx}"],
 			"project": ["src/**/*.{ts,tsx,js,jsx}"]
@@ -77,7 +82,7 @@
 		"packages/sthrift-verification/acceptance-api",
 		"packages/sthrift-verification/acceptance-ui",
 		"packages/sthrift-verification/e2e-tests",
-		"packages/sthrift/ui-components",
+		"packages/sthrift/ui-shared",
 		"apps/server-messaging-mock",
 		"apps/server-mongodb-memory-mock",
 		"apps/server-oauth2-mock",

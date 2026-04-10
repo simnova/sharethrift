@@ -1,3 +1,4 @@
+// biome-ignore-all lint/complexity/useLiteralKeys: process.env uses indexed access to satisfy TS4111 in this package
 import dotenv from 'dotenv';
 import {
 	startMockPaymentServer,
@@ -14,11 +15,13 @@ const setupEnvironment = () => {
 
 setupEnvironment();
 
-// biome-ignore lint:useLiteralKeys
 const port = Number(process.env['PORT'] ?? 3001);
 
-const FRONTEND_BASE_URL = process.env['FRONTEND_BASE_URL'] ?? 'https://sharethrift.localhost';
-const PAYMENT_BASE_URL = process.env['PAYMENT_BASE_URL'] ?? 'https://mock-payment.sharethrift.localhost';
+const FRONTEND_BASE_URL =
+	process.env['FRONTEND_BASE_URL'] ?? 'https://sharethrift.localhost:1355';
+const PAYMENT_BASE_URL =
+	process.env['PAYMENT_BASE_URL'] ??
+	'https://mock-payment.sharethrift.localhost:1355';
 
 const config: PaymentConfig = {
 	port,

@@ -13,7 +13,7 @@ const CREATE_RESERVATION_REQUEST_MUTATION = `
 			reservationRequest {
 				id state reservationPeriodStart reservationPeriodEnd
 				listing { id }
-				reserver { ... on PersonalUser { id } ... on AdminUser { id } }
+				reserver { ... on PersonalUser { id } }
 				createdAt updatedAt
 			}
 		}

@@ -1,0 +1,6 @@
+query AppContainerCurrentAdminUser {
+  currentAdminUser {
+    id
+    userType
+  }
+}

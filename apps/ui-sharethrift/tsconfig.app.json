@@ -30,7 +30,7 @@
     ],
     "references": [
         {
-            "path": "../ui-components"
+            "path": "../ui-shared"
         }
     ]
 }

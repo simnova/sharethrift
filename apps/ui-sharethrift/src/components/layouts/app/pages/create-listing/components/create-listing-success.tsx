@@ -1,8 +1,8 @@
 import { Modal, Button, Spin } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import styles from './modals.module.css';
-import '@sthrift/ui-components/src/styles/theme.css';
-import confettiImg from '@sthrift/ui-components/src/assets/item-images/confetti.png';
+import '@sthrift/ui-shared/src/styles/theme.css';
+import confettiImg from '@sthrift/ui-shared/src/assets/item-images/confetti.png';
 
 interface SuccessPublishedProps {
 	visible: boolean;

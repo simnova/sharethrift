@@ -5,10 +5,14 @@ import type {
 	AdminUserCreateInput,
 	AdminUserUpdateInput,
 	Resolvers,
-	QueryAllAdminUsersArgs,
+	QueryAdminDashboardUsersArgs,
 } from '../builder/generated.ts';
 import type { AdminUserUpdateCommand } from '@sthrift/application-services';
-import { getUserByEmail, currentViewerIsAdmin } from '../resolver-helper.ts';
+import {
+	currentViewerIsAdmin,
+	getUserByEmail,
+	requireCurrentAdminUser,
+} from '../resolver-helper.ts';
 
 const adminUserResolvers: Resolvers = {
 	AdminUser: {
@@ -45,84 +49,24 @@ const adminUserResolvers: Resolvers = {
 		},
 	},
 	Query: {
-		adminUserById: async (
-			_parent: unknown,
-			args: { id: string },
-			context: GraphContext,
-			_info: GraphQLResolveInfo,
-		) => {
-			console.log('adminUserById resolver called with id:', args.id);
-			return await context.applicationServices.User.AdminUser.queryById({
-				id: args.id,
-			});
-		},
-		adminUserByEmail: async (
-			_parent: unknown,
-			args: { email: string },
-			context: GraphContext,
-			_info: GraphQLResolveInfo,
-		) => {
-			console.log('adminUserByEmail resolver called with email:', args.email);
-			return await context.applicationServices.User.AdminUser.queryByEmail({
-				email: args.email,
-			});
-		},
-		adminUserByUsername: async (
-			_parent: unknown,
-			args: { username: string },
-			context: GraphContext,
-			_info: GraphQLResolveInfo,
-		) => {
-			console.log(
-				'adminUserByUsername resolver called with username:',
-				args.username,
-			);
-			return await context.applicationServices.User.AdminUser.queryByUsername({
-				username: args.username,
-			});
-		},
 		currentAdminUser: async (
 			_parent: unknown,
 			_args: unknown,
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized: Authentication required');
-			}
 			console.log('currentAdminUser resolver called');
-			// Note: Additional authorization checks are enforced in domain layer via passport/visa
-			return await context.applicationServices.User.AdminUser.queryByEmail({
-				email: context.applicationServices.verifiedUser.verifiedJwt.email,
-			});
+			return await requireCurrentAdminUser(context);
 		},
-		// The following code can be used to list all admin users in the database
-		allAdminUsers: async (
+		adminDashboardUsers: async (
 			_parent: unknown,
-			args: QueryAllAdminUsersArgs,
+			args: QueryAdminDashboardUsersArgs,
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized: Authentication required');
-			}
+			await requireCurrentAdminUser(context);
 
-			// Query-level permission check: Only admins with canViewAllUsers can view all admin users
-			// (Read permissions are checked at GraphQL/service layer, write permissions at domain layer)
-			const { email } = context.applicationServices.verifiedUser.verifiedJwt;
-			const currentUser = await getUserByEmail(email, context);
-			const isAdmin = currentUser && 'role' in currentUser;
-
-			if (
-				!isAdmin ||
-				!currentUser?.role?.permissions?.userPermissions?.canViewAllUsers
-			) {
-				throw new Error(
-					'Forbidden: Only admins with canViewAllUsers permission can access this query',
-				);
-			}
-
-			return await context.applicationServices.User.AdminUser.getAllUsers({
+			return await context.applicationServices.User.PersonalUser.getAllUsers({
 				page: args.page,
 				pageSize: args.pageSize,
 				searchText: args.searchText || undefined,
@@ -139,18 +83,10 @@ const adminUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			const { verifiedUser } = context.applicationServices;
-			if (!verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized: Authentication required');
-			}
-
 			// Only admins with canManageUserRoles permission can create admin users
-			const { email } = verifiedUser.verifiedJwt;
-			const currentUser = await getUserByEmail(email, context);
-			const isAdmin = currentUser && 'role' in currentUser;
+			const currentUser = await requireCurrentAdminUser(context);
 
 			if (
-				!isAdmin ||
 				!currentUser?.role?.permissions?.userPermissions?.canManageUserRoles
 			) {
 				throw new Error(
@@ -189,9 +125,7 @@ const adminUserResolvers: Resolvers = {
 			context: GraphContext,
 			_info: GraphQLResolveInfo,
 		) => {
-			if (!context.applicationServices.verifiedUser?.verifiedJwt) {
-				throw new Error('Unauthorized: Authentication required');
-			}
+			await requireCurrentAdminUser(context);
 
 			// Permission checks are handled in the domain layer via passport/visa
 			// - isEditingOwnAccount and canEditUsers checked by entity setters

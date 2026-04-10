@@ -13,7 +13,7 @@ const config: DependencyRulesTestsConfig = {
   restInfrastructurePattern: '../service-*/**',
 
   uiCoreFolder: '../../cellix/ui-core',
-  uiComponentsFolder: '../ui-components',
+  uiComponentsFolder: '../ui-shared',
   appUiFolder: '../../apps/ui-sharethrift',
 };
 

@@ -2,8 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 import { AppRoutes } from './components/layouts/app/index.tsx';
 import type React from 'react';
 import SignupRoutes from './components/layouts/signup/index.tsx';
-import { LoginSelection } from './components/shared/login-selection.tsx';
-import { AuthRedirectAdmin } from './components/shared/auth-redirect-admin.tsx';
+import { PersonalLogin } from './components/shared/personal-login.tsx';
 import { AuthRedirectUser } from './components/shared/auth-redirect-user.tsx';
 import { RequireAuth } from './components/shared/require-auth.tsx';
 import { useOnboardingRedirect } from './components/shared/use-has-completed-onboarding-check.ts';
@@ -23,8 +22,7 @@ export const App: React.FC<AppProps> = (props) => {
 	return (
 		<Routes>
 			<Route path="/*" element={<AppRoutes />} />
-			<Route path="/login" element={<LoginSelection />} />
-			<Route path="/auth-redirect-admin" element={<AuthRedirectAdmin />} />
+			<Route path="/login" element={<PersonalLogin />} />
 			<Route path="/auth-redirect-user" element={<AuthRedirectUser />} />
 			<Route path="/signup/*" element={signupSection} />
 		</Routes>

@@ -15,7 +15,7 @@ export class LoginPage {
 	}
 
 	get personalLoginButton() {
-		return this.page.getByRole('button', { name: 'Personal Login' });
+		return this.page.locator('form button[type="submit"]');
 	}
 
 	async goto(): Promise<void> {

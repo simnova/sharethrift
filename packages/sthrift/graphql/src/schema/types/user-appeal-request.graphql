@@ -1,10 +1,10 @@
 type UserAppealRequest implements MongoBase {
 	id: ObjectID!
-	user: PersonalUser!
+	user: User!
 	reason: String!
 	state: AppealRequestState!
 	type: AppealRequestType!
-	blocker: PersonalUser!
+	blocker: AdminUser!
 	schemaVersion: String
 	createdAt: DateTime
 	updatedAt: DateTime

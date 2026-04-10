@@ -5,7 +5,7 @@ import {
 	withMockRouter,
 	MockUnauthWrapper,
 } from './test-utils/storybook-decorators.tsx';
-import { AppContainerCurrentUserDocument, ListingsPageContainerGetListingsDocument, UseUserIsAdminDocument } from './generated.tsx';
+import { AppContainerCurrentUserDocument, ListingsPageContainerGetListingsDocument } from './generated.tsx';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 
 
@@ -72,20 +72,6 @@ export const AuthenticatedCompletedOnboarding: Story = {
 						},
 					},
 				},
-				{
-					request: {
-						query: UseUserIsAdminDocument,
-					},
-					result: {
-						data: {
-							currentUser: {
-								__typename: "PersonalUser",
-								id: "user-123",
-								userIsAdmin: false,
-							},
-						},
-					},
-				},
 			],
 		},
 	},
@@ -138,20 +124,6 @@ export const AuthenticatedNotCompletedOnboarding: Story = {
 									sharingHistory: [],
 								},
 							],
-						},
-					},
-				},
-				{
-					request: {
-						query: UseUserIsAdminDocument,
-					},
-					result: {
-						data: {
-							currentUser: {
-								__typename: "PersonalUser",
-								id: "user-456",
-								userIsAdmin: false,
-							},
 						},
 					},
 				},

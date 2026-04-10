@@ -24,16 +24,6 @@ query HomeMyReservationsReservationsViewActiveContainerActiveReservations(
 					}
 				}
 			}
-			... on AdminUser {
-				id
-				account {
-					username
-					profile {
-						firstName
-						lastName
-					}
-				}
-			}
 		}
 		closeRequestedBySharer
 		closeRequestedByReserver

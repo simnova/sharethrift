@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Form } from 'antd';
-import { ListingForm } from '@sthrift/ui-components';
+import { ListingForm } from './listing-form.tsx';
 
 const meta: Meta<typeof ListingForm> = {
 	title: 'CreateListing/ListingForm',

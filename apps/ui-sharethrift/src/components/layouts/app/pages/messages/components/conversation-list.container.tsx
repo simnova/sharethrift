@@ -1,11 +1,11 @@
-import { ConversationList } from './conversation-list.tsx';
+import { ConversationList } from '@sthrift/ui-shared';
 import { useQuery } from '@apollo/client/react';
 import {
     HomeConversationListContainerCurrentUserDocument,
 	HomeConversationListContainerConversationsByUserDocument,
 	type Conversation,
 } from '../../../../../../generated.tsx';
-import { ComponentQueryLoader } from '@sthrift/ui-components';
+import { ComponentQueryLoader } from '@sthrift/ui-shared';
 import { useEffect } from 'react';
 import { Empty, Result } from 'antd';
 
@@ -29,15 +29,18 @@ export const ConversationListContainer: React.FC<
 		error: currentUserError,
 	} = useQuery(HomeConversationListContainerCurrentUserDocument);
 
+	const currentUser = currentUserData?.currentUser;
+	const currentUserId = currentUser?.__typename === 'PersonalUser' ? currentUser.id : undefined;
+
 	const {
 		data: currentUserConversationsData,
 		loading: loadingConversations,
 		error: conversationsError,
 	} = useQuery(HomeConversationListContainerConversationsByUserDocument, {
 		variables: {
-			userId: currentUserData?.currentUser.id,
+			userId: currentUserId,
 		},
-		skip: !currentUserData?.currentUser.id,
+		skip: !currentUserId,
 	});
 
 	useEffect(() => {

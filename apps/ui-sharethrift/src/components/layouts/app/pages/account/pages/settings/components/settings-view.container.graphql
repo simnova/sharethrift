@@ -9,19 +9,6 @@ query HomeAccountSettingsViewContainerCurrentUser {
 				...PersonalUserAccountFields
 			}
 		}
-		... on AdminUser {
-			id
-			userType
-			createdAt
-			updatedAt
-			account {
-				...AdminUserAccountFields
-			}
-			role {
-				id
-				roleName
-			}
-		}
 	}
 }
 
@@ -37,23 +24,6 @@ mutation HomeAccountSettingsViewContainerUpdatePersonalUser(
 			id
 			account {
 				...PersonalUserAccountFields
-			}
-		}
-	}
-}
-
-mutation HomeAccountSettingsViewContainerUpdateAdminUser(
-	$input: AdminUserUpdateInput!
-) {
-	adminUserUpdate(input: $input) {
-		status {
-			success
-			errorMessage
-		}
-		adminUser {
-			id
-			account {
-				...AdminUserAccountFields
 			}
 		}
 	}
@@ -94,31 +64,4 @@ fragment PersonalUserAccountFields on PersonalUserAccount {
 	profile {
 		...PersonalUserProfileFields
 	}
-}
-
-fragment AdminUserAccountFields on AdminUserAccount {
-	accountType
-	email
-	username
-	profile {
-		...AdminUserProfileFields
-	}
-}
-
-fragment AdminUserProfileFields on AdminUserAccountProfile {
-	firstName
-	lastName
-	aboutMe
-	location {
-		...AdminUserLocationFields
-	}
-}
-
-fragment AdminUserLocationFields on AdminUserAccountProfileLocation {
-	address1
-	address2
-	city
-	state
-	country
-	zipCode
 }

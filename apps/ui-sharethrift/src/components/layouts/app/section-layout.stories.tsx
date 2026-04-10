@@ -91,21 +91,6 @@ export const NavigationInteraction: Story = {
 	},
 };
 
-export const AdminUserView: Story = {
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-
-		// For admin users, verify admin dashboard link might be present
-		// Note: This depends on the useUserIsAdmin hook returning true
-		const navigation = canvasElement.querySelector('nav');
-		expect(navigation).toBeInTheDocument();
-
-		// Basic verification that navigation renders
-		const homeLink = await canvas.findByText('Home');
-		expect(homeLink).toBeInTheDocument();
-	},
-};
-
 export const ResponsiveLayout: Story = {
 	parameters: {
 		viewport: {
@@ -227,23 +212,6 @@ export const ProductionModeLogin: Story = {
 		const loginButton = canvas.queryByText(/Login|Sign In/i);
 		if (loginButton) {
 			await userEvent.click(loginButton);
-		}
-	},
-};
-
-// Test production mode admin login redirect
-export const ProductionModeAdminLogin: Story = {
-	parameters: {
-		env: {
-			MODE: 'production',
-		},
-	},
-	play: async ({ canvasElement }) => {
-		const canvas = within(canvasElement);
-		await expect(canvasElement).toBeTruthy();
-		const adminButton = canvas.queryByText(/Admin/i);
-		if (adminButton) {
-			await userEvent.click(adminButton);
 		}
 	},
 };

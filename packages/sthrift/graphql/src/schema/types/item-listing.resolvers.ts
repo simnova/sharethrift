@@ -2,6 +2,30 @@ import type { GraphContext } from '../../init/context.ts';
 import type { Resolvers } from '../builder/generated.js';
 import { PopulateUserFromField } from '../resolver-helper.ts';
 
+type PagedCommand = Parameters<GraphContext['applicationServices']['Listing']['ItemListing']['queryPaged']>[0];
+
+function buildPagedCommand(
+	args: { page: number; pageSize: number; searchText?: string | null; statusFilters?: readonly string[] | null; sorter?: { field: string; order: string } | null },
+): PagedCommand {
+	const command: PagedCommand = {
+		page: args.page,
+		pageSize: args.pageSize,
+		...(args.searchText ? { searchText: args.searchText } : {}),
+		...(args.statusFilters?.length
+			? { statusFilters: [...args.statusFilters] }
+			: {}),
+	};
+
+	if (args.sorter) {
+		command.sorter = {
+			field: args.sorter.field,
+			order: args.sorter.order === 'ascend' || args.sorter.order === 'descend' ? args.sorter.order : "ascend",
+		};
+	}
+
+	return command;
+}
+
 const itemListingResolvers: Resolvers = {
 	ItemListing: {
 		sharer: PopulateUserFromField('sharer'),
@@ -18,19 +42,7 @@ const itemListingResolvers: Resolvers = {
 					}).then((user) => (user ? user.id : undefined));
 			}
 
-			const command: Parameters<typeof context.applicationServices.Listing.ItemListing.queryPaged>[0] = {
-				page: args.page,
-				pageSize: args.pageSize,
-				...(args.searchText ? { searchText: args.searchText } : {}),
-				...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
-			};
-
-			if (args.sorter) {
-				command.sorter = {
-					field: args.sorter.field,
-					order: args.sorter.order === 'ascend' || args.sorter.order === 'descend' ? args.sorter.order : "ascend",
-				};
-			}
+			const command = buildPagedCommand(args);
 
 			if (sharerId) {
 				command.sharerId = sharerId;
@@ -49,19 +61,7 @@ const itemListingResolvers: Resolvers = {
 		},
 		adminListings: async (_parent, args, context) => {
 			// Admin-note: role-based authorization should be implemented here (security)
-			const command: Parameters<typeof context.applicationServices.Listing.ItemListing.queryPaged>[0] = {
-				page: args.page,
-				pageSize: args.pageSize,
-				...(args.searchText ? { searchText: args.searchText } : {}),
-				...(args.statusFilters ? { statusFilters: [...args.statusFilters] } : {}),
-			};
-
-			if (args.sorter) {
-				command.sorter = {
-					field: args.sorter.field,
-					order: args.sorter.order === 'ascend' || args.sorter.order === 'descend' ? args.sorter.order : "ascend",
-				};
-			}
+			const command = buildPagedCommand(args);
 
 			return await context.applicationServices.Listing.ItemListing.queryPaged(command);
 		},

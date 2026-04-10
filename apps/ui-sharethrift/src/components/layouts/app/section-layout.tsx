@@ -8,20 +8,17 @@ import {
 	CalendarOutlined,
 	MessageOutlined,
 	UserOutlined,
-	BarChartOutlined,
 } from '@ant-design/icons';
-import { HandleLogout } from '../../shared/handle-logout.ts';
-import { Footer, Header, Navigation } from '@sthrift/ui-components';
+import { HandleLogout, Footer, Navigation } from '@sthrift/ui-shared';
+import { Header } from '../../ui/molecules/header/index.tsx';
 import { useCreateListingNavigation } from '../../shared/hooks/use-create-listing-navigation.ts';
 import { useApolloClient } from '@apollo/client/react';
-import { useUserIsAdmin } from '../../shared/hooks/use-user-is-admin.ts';
 
 export const SectionLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const auth = useAuth();
-    const apolloClient = useApolloClient();
-	const { isAdmin } = useUserIsAdmin();
+	const apolloClient = useApolloClient();
 
 	// Map nav keys to routes as defined in index.tsx
 	const routeMap = {
@@ -30,7 +27,6 @@ export const SectionLayout: React.FC = () => {
 		reservations: 'my-reservations',
 		messages: 'messages',
 		account: 'account',
-		adminDashboard: 'admin-dashboard',
 	} as const;
 
 	// Determine selectedKey from current location
@@ -44,7 +40,7 @@ export const SectionLayout: React.FC = () => {
 			return undefined;
 		}
 		const found = (Object.entries(routeMap) as [string, string][]).find(
-			([, r]) => path === r || path.startsWith(`${r}/`)
+			([, r]) => path === r || path.startsWith(`${r}/`),
 		);
 		return found?.[0] ?? 'home';
 	};
@@ -82,22 +78,9 @@ export const SectionLayout: React.FC = () => {
 		return () => window.removeEventListener('resize', handleResize);
 	}, [auth.isAuthenticated]);
 
-	const isProduction = import.meta.env.MODE === 'production';
-
-	function redirectLogin(
-		portal: 'UserPortal' | 'AdminPortal',
-		href: '/auth-redirect-user' | '/auth-redirect-admin'
-	) {
-		if (isProduction) {
-			globalThis.sessionStorage.setItem('loginPortalType', portal);
-			globalThis.location.href = href;
-		} else {
-			navigate('/login');
-		}
-	}
-
-	const handleOnLogin = () => redirectLogin('UserPortal', '/auth-redirect-user');
-	const handleOnAdminLogin = () => redirectLogin('AdminPortal', '/auth-redirect-admin');
+	const handleOnLogin = () => {
+		navigate('/login');
+	};
 
 	const handleOnSignUp = () => {
 		navigate('/auth-redirect-user');
@@ -108,7 +91,7 @@ export const SectionLayout: React.FC = () => {
 		HandleLogout(auth, apolloClient, window.location.origin);
 	};
 
-	// Build navigation items dynamically based on user role
+	// Build navigation items dynamically
 	const navItems: MenuProps['items'] = useMemo(() => {
 		const accountChildren: MenuProps['items'] = [
 			{ key: 'profile', label: 'Profile' },
@@ -137,17 +120,8 @@ export const SectionLayout: React.FC = () => {
 			children: accountChildren,
 		});
 
-        // Add admin dashboard as a top-level item for admin users conditionally
-		if (isAdmin) {
-			baseItems.push({
-				key: 'adminDashboard',
-				icon: <BarChartOutlined />,
-				label: 'Admin Dashboard',
-			});
-		}
-
 		return baseItems;
-	}, [isAdmin]);
+	}, []);
 
 	return (
 		<div
@@ -162,7 +136,6 @@ export const SectionLayout: React.FC = () => {
 			<Header
 				isAuthenticated={auth.isAuthenticated}
 				onLogin={handleOnLogin}
-				onAdminLogin={handleOnAdminLogin}
 				onLogout={handleLogOut}
 				onSignUp={handleOnSignUp}
 				onCreateListing={handleCreateListing}

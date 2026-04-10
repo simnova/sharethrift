@@ -20,7 +20,7 @@ The following environment variables can be set via `.env` or `.env.local`:
 - `EMAIL` - Email for user portal (default: '')
 - `GIVEN_NAME` - Given name for user portal (default: '')
 - `FAMILY_NAME` - Family name for user portal (default: '')
-- `ADMIN_EMAIL` - Email for admin portal (default: '')
+- `ADMIN_EMAIL` - Email for admin portal (default: ''). In local dev this should match a seeded admin user, such as `superadmin@sharethrift.com`.
 - `ADMIN_GIVEN_NAME` - Given name for admin portal (default: '')
 - `ADMIN_FAMILY_NAME` - Family name for admin portal (default: '')
 
