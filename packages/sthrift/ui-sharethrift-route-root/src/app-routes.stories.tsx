@@ -19,7 +19,7 @@ const Template: StoryFn<typeof AppRoutes> = () => <AppRoutes />;
 
 export const DefaultView: StoryFn<typeof AppRoutes> = Template.bind({});
 
-DefaultView.play = async ({ canvasElement }) => {
+DefaultView.play = ({ canvasElement }) => {
 	// Component renders with lazy-loaded routes
 	expect(canvasElement).toBeTruthy();
 };
@@ -29,7 +29,7 @@ DefaultView.play = async ({ canvasElement }) => {
  * Verifies the lazy() import mechanism and Suspense wrapper are working for all route components.
  */
 export const LazyLoadedRoutes: StoryFn<typeof AppRoutes> = Template.bind({});
-LazyLoadedRoutes.play = async ({ canvasElement }) => {
+LazyLoadedRoutes.play = ({ canvasElement }) => {
 	// Component should render (Suspense wrapper is present)
 	expect(canvasElement).toBeTruthy();
 	
