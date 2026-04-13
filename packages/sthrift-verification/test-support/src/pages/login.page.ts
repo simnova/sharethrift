@@ -14,7 +14,7 @@ export class LoginPage {
 		return this.page.getByLabel('Password');
 	}
 
-	get personalLoginButton() {
+	get loginButton() {
 		return this.page.locator('form button[type="submit"]');
 	}
 
@@ -25,7 +25,7 @@ export class LoginPage {
 	async login(email: string, password: string): Promise<void> {
 		await this.emailInput.fill(email);
 		await this.passwordInput.fill(password);
-		await this.personalLoginButton.click();
+		await this.loginButton.click();
 	}
 
 	async waitForRedirectComplete(): Promise<void> {
