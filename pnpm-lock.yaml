@@ -526,9 +526,6 @@ importers:
       antd:
         specifier: ^5.27.1
         version: 5.29.3(luxon@3.7.2)(moment@2.30.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      dayjs:
-        specifier: ^1.11.18
-        version: 1.11.20
       graphql:
         specifier: ^16.11.0
         version: 16.13.1
@@ -1346,9 +1343,6 @@ importers:
       '@ant-design/icons':
         specifier: ^6.1.0
         version: 6.1.0(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      '@apps/ui-sharethrift':
-        specifier: workspace:*
-        version: link:../../../apps/ui-sharethrift
       '@cellix/typescript-config':
         specifier: workspace:*
         version: link:../../cellix/typescript-config
@@ -1364,6 +1358,9 @@ importers:
       '@sthrift/ui-shared':
         specifier: workspace:*
         version: link:../../sthrift/ui-shared
+      '@sthrift/ui-sharethrift-route-root':
+        specifier: workspace:*
+        version: link:../../sthrift/ui-sharethrift-route-root
       '@testing-library/react':
         specifier: ^16.3.2
         version: 16.3.2(@testing-library/dom@10.4.1)(@types/react-dom@19.2.3(@types/react@19.2.14))(@types/react@19.2.14)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)

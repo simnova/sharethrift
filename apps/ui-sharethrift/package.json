@@ -25,7 +25,6 @@
 		"@sthrift/ui-sharethrift-route-shared": "workspace:*",
 		"@sthrift/ui-sharethrift-route-signup": "workspace:*",
 		"antd": "^5.27.1",
-		"dayjs": "^1.11.18",
 		"graphql": "^16.11.0",
 		"lodash": "^4.17.23",
 		"react": "^19.1.1",
