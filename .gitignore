@@ -34,3 +34,6 @@ __pycache__/
 
 # Portless proxy state (generated at runtime)
 .portless/
+
+# Agent runtime artifacts (per-session working state)
+.agents-work/
