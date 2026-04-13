@@ -1,11 +1,8 @@
 import { Route, Routes } from 'react-router-dom';
-import { AppRoutes } from './components/layouts/app/index.tsx';
+import { AppRoutes, PersonalLogin, AuthRedirectUser } from '@sthrift/ui-sharethrift-route-root';
 import type React from 'react';
-import SignupRoutes from './components/layouts/signup/index.tsx';
-import { PersonalLogin } from './components/shared/personal-login.tsx';
-import { AuthRedirectUser } from './components/shared/auth-redirect-user.tsx';
-import { RequireAuth } from './components/shared/require-auth.tsx';
-import { useOnboardingRedirect } from './components/shared/use-has-completed-onboarding-check.ts';
+import { SignupRoutes } from '@sthrift/ui-sharethrift-route-signup';
+import { RequireAuth, useOnboardingRedirect } from '@sthrift/ui-sharethrift-route-shared';
 
 const signupSection = (
 	<RequireAuth redirectPath="/" forceLogin={true}>

@@ -8,12 +8,10 @@ const dirname =
 		? path.dirname(fileURLToPath(import.meta.url))
 		: __dirname;
 
-// Storybook+Vitest config for ui-sharethrift app
-// Arch-unit-tests are run via vitest.arch.config.ts (test:arch script)
+// Storybook+Vitest config for the ui-sharethrift app shell
 export default defineConfig(
 	createStorybookVitestConfig(dirname, {
 		additionalCoverageExclude: [
-			'src/arch-unit-tests/**',
 			'**/index.ts',
 			'**/index.tsx',
             '**/Index.tsx',

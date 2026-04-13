@@ -1,0 +1,41 @@
+{
+	"name": "@sthrift/ui-sharethrift-route-signup",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"scripts": {
+		"build": "tsc -b",
+		"lint": "biome lint",
+		"test:arch": "vitest run --config vitest.arch.config.ts"
+	},
+	"dependencies": {
+		"@ant-design/icons": "^6.1.0",
+		"@apollo/client": "^4.0.7",
+		"@graphql-typed-document-node/core": "^3.2.0",
+		"@sthrift/ui-shared": "workspace:*",
+		"@sthrift/ui-sharethrift-route-shared": "workspace:*",
+		"antd": "^5.27.1",
+		"dayjs": "^1.11.18",
+		"graphql": "^16.11.0",
+		"react": "^19.1.1",
+		"react-dom": "^19.1.1",
+		"react-oidc-context": "^3.3.0",
+		"react-router-dom": "^7.12.0"
+	},
+	"devDependencies": {
+		"@cellix/arch-unit-tests": "workspace:*",
+		"@cellix/typescript-config": "workspace:*",
+		"@cellix/vitest-config": "workspace:*",
+		"@storybook/react": "^10.1.11",
+		"@types/react": "^19.1.9",
+		"@types/react-dom": "^19.1.7",
+		"storybook": "^10.2.10",
+		"typescript": "~5.8.3",
+		"vite": "catalog:",
+		"vitest": "catalog:"
+	},
+	"license": "MIT"
+}

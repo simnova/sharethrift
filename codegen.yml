@@ -95,8 +95,44 @@ generates:
       - 'typescript'
       - 'typescript-operations'
       - 'typed-document-node'
+  ./packages/sthrift/ui-sharethrift-route-root/src/generated.tsx:
+    documents: './packages/sthrift/ui-sharethrift-route-root/src/**/**.graphql'
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+      useTypeImports: true
+      enumsAsTypes: true
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typed-document-node'
+  ./packages/sthrift/ui-sharethrift-route-signup/src/generated.tsx:
+    documents: './packages/sthrift/ui-sharethrift-route-signup/src/**/**.graphql'
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+      useTypeImports: true
+      enumsAsTypes: true
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typed-document-node'
   ./apps/ui-admin/src/generated.tsx:
     documents: './apps/ui-admin/src/**/**.graphql'
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+      useTypeImports: true
+      enumsAsTypes: true
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typed-document-node'
+  ./packages/sthrift/ui-admin-route-root/src/generated.tsx:
+    documents: './packages/sthrift/ui-admin-route-root/src/**/**.graphql'
     config:
       withHooks: true
       withHOC: false

@@ -8,8 +8,10 @@ import {
 	type UiReservationPage,
 } from '@sthrift-verification/test-support/pages';
 import { JsdomPageAdapter } from '@sthrift-verification/test-support/pages/jsdom';
-import { ReservationCard } from '@apps/ui-sharethrift/src/components/layouts/app/pages/my-reservations/components/reservation-card.tsx';
-import { ReservationRequestForm } from '@apps/ui-sharethrift/src/components/layouts/app/pages/view-listing/components/reservation-request-form.tsx';
+import {
+	ReservationCard,
+	ReservationRequestForm,
+} from '@sthrift/ui-sharethrift-route-root/acceptance';
 import { CreateReservationRequestAbility } from '../../abilities/create-reservation-request-ability.ts';
 import type {
 	CreateReservationRequestInput,

@@ -13,7 +13,6 @@
 		"storybook": "portless storybook.sharethrift.localhost storybook dev --no-open",
 		"build-storybook": "storybook build",
 		"test": "echo 'UI Storybook tests disabled (memory constraints)'",
-		"test:arch": "vitest run --config vitest.arch.config.ts",
 		"test:coverage:ui": "echo 'UI Storybook tests disabled (memory constraints)'",
 		"test:watch": "vitest"
 	},
@@ -22,8 +21,10 @@
 		"@ant-design/v5-patch-for-react-19": "^1.0.3",
 		"@apollo/client": "^4.0.7",
 		"@sthrift/ui-shared": "workspace:*",
+		"@sthrift/ui-sharethrift-route-root": "workspace:*",
+		"@sthrift/ui-sharethrift-route-shared": "workspace:*",
+		"@sthrift/ui-sharethrift-route-signup": "workspace:*",
 		"antd": "^5.27.1",
-		"dayjs": "^1.11.18",
 		"graphql": "^16.11.0",
 		"lodash": "^4.17.23",
 		"react": "^19.1.1",
@@ -33,7 +34,6 @@
 		"rxjs": "^7.8.2"
 	},
 	"devDependencies": {
-		"@cellix/arch-unit-tests": "workspace:*",
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
 		"@chromatic-com/storybook": "^4.1.3",

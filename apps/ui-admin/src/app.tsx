@@ -1,8 +1,6 @@
 import { Route, Routes } from 'react-router-dom';
-import { AppRoutes } from './components/layouts/app/index.tsx';
+import { AppRoutes, AdminLogin, AuthRedirect } from '@sthrift/ui-admin-route-root';
 import type React from 'react';
-import { AdminLogin } from './components/shared/admin-login.tsx';
-import { AuthRedirect } from './components/shared/auth-redirect.tsx';
 
 interface AppProps {
 	isAuthenticated: boolean;
