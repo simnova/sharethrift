@@ -40,6 +40,7 @@ You review code changes like a senior engineer: quality, correctness, security, 
 - Refactor working code that wasn't touched by the changes
 - Add comments, docstrings, or type annotations to unchanged code
 - **Declare success or completion** — report your verdict only. The orchestrator decides when work is done.
+- **Write review.blocked** — use `review.feedback` for issues and `review.ok` for pass
 
 ## Review Process
 
@@ -118,14 +119,14 @@ After the standard checklist, actively try to find ways the code could fail:
 
 ## Block Policy
 
-Return **BLOCKED** when:
+Return **BLOCKED** (write `review.feedback`) when:
 - Functional bug or broken acceptance criteria
 - Missing tests for risky logic change
 - High likelihood of regression
 - Security vulnerability (any `major` or `blocker` security finding)
 - DDD boundary violation (infrastructure leaking into domain)
 
-Return **PASS** with notes for everything else.
+Return **PASS** (write `review.ok`) with notes for everything else.
 
 ## Output Format
 
@@ -159,21 +160,20 @@ Provide findings as a structured list:
 ## Checkpoint Output (MANDATORY)
 
 After completing your review, you MUST write a checkpoint file to `.agents-work/current/`.
-The orchestrator's gate-check script will verify these files exist before allowing
-the workflow to proceed. If you do not write the correct file, the workflow is blocked.
+The hook verifies these files to control workflow progression.
 
-**You MUST delete the opposite file before writing your verdict.** These files are
-mutually exclusive — both existing simultaneously will break the gate checks.
+**Delete any previous verdict files before writing your new verdict.**
 
 - **If PASS or PASS WITH NOTES**:
-  1. Run: `rm -f .agents-work/current/review.blocked`
+  1. Run: `rm -f .agents-work/current/review.feedback`
   2. Write `.agents-work/current/review.ok` with a one-line summary
 - **If BLOCKED**:
   1. Run: `rm -f .agents-work/current/review.ok`
-  2. Write `.agents-work/current/review.blocked` with the blocking findings
+  2. Write `.agents-work/current/review.feedback` with the specific findings that need fixing
 
-If re-reviewing after fixes, always delete the previous file first, then write
-the new verdict.
+The orchestrator uses these files to decide whether to start a feedback cycle.
+If `review.feedback` exists, the orchestrator spawns implementers to fix the issues,
+then re-runs the reviewer one final time.
 
 ## Rules
 

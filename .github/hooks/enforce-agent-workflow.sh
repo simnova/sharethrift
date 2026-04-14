@@ -1,237 +1,330 @@
 #!/usr/bin/env bash
+# enforce-agent-workflow.sh — preToolUse hook for Copilot CLI agent workflow.
+#
+# Phase-based state machine with BETWEEN-PHASE GUARDS:
+#   planner → implementer(s) → reviewer → [1 feedback cycle] → done
+#
+# Phases: (empty) → planning → implementing → reviewing → feedback → final-review
+#
+# KEY DESIGN: Between phases (after a subagent completes but before the next is
+# spawned), non-delegation tools are BLOCKED. This prevents the orchestrator
+# from doing work itself — it can ONLY delegate to the next agent.
+#
+# Checkpoint files that trigger between-phase blocks:
+#   plan.md           → planner done, must delegate implementer
+#   implementer.done  → implementer done, must delegate reviewer (or more implementers)
+#   review.feedback   → reviewer done (issues), must delegate implementer
+#   review.ok         → reviewer done (pass), allow DONE reporting
+#
+# workflow.session — marker created on first delegation. Prevents session-bootstrap
+# from clearing state when subagent sessions fire sessionStart.
+#
+# Python helpers (same directory):
+#   parse-tool-call.py    — parse JSON payload, detect agent name
+#   extract-command.py    — extract command text for git guard
+#   deny.py               — emit JSON deny response
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../.." && pwd)"
 WORK_DIR="${REPO_ROOT}/.agents-work/current"
-GATE_SCRIPT="${SCRIPT_DIR}/check-gate.sh"
+PHASE_FILE="${WORK_DIR}/phase"
+WORKFLOW_SESSION="${WORK_DIR}/workflow.session"
 
 INPUT="$(cat)"
 
-PARSED="$(
-  printf '%s' "$INPUT" | python3 -c '
-import json
-import sys
+# ── Debug logging ────────────────────────────────────────────────────────────
+if [[ "${AGENT_WORKFLOW_DEBUG:-}" == "1" ]]; then
+  mkdir -p "$WORK_DIR"
+  printf '%s\n---\n' "$INPUT" >> "$WORK_DIR/hook-debug.log"
+fi
 
-def walk_strings(value):
-    if isinstance(value, str):
-        yield value
-    elif isinstance(value, dict):
-        for nested in value.values():
-            yield from walk_strings(nested)
-    elif isinstance(value, list):
-        for nested in value:
-            yield from walk_strings(nested)
+# ── Parse payload ────────────────────────────────────────────────────────────
 
-try:
-    payload = json.load(sys.stdin)
-except Exception:
-    print("")
-    print("")
-    raise SystemExit(0)
-
-tool_name = str(payload.get("toolName", "")).strip().lower()
-tool_args_raw = payload.get("toolArgs", "")
-
-haystacks = []
-if isinstance(tool_args_raw, str):
-    haystacks.append(tool_args_raw.lower())
-    try:
-        tool_args = json.loads(tool_args_raw)
-    except Exception:
-        tool_args = None
-else:
-    tool_args = tool_args_raw
-
-if tool_args is not None:
-    for item in walk_strings(tool_args):
-        haystacks.append(item.lower())
-
-search_blob = "\n".join(haystacks)
-
-agent_name = ""
-for candidate in (
-    "implementer-research",
-    "validator",
-    "implementer",
-    "planner",
-    "reviewer",
-    "security",
-    "orchestrator",
-):
-    if candidate in search_blob:
-        agent_name = candidate
-        break
-
-print(tool_name)
-print(agent_name)
-'
-)"
+PARSED="$(printf '%s' "$INPUT" | python3 "${SCRIPT_DIR}/parse-tool-call.py")"
 
 TOOL_NAME="$(printf '%s\n' "$PARSED" | sed -n '1p')"
 AGENT_NAME="$(printf '%s\n' "$PARSED" | sed -n '2p')"
 
+# ── Detect agent delegations ────────────────────────────────────────────────
+
+IS_AGENT_DELEGATION=false
+
+case "$TOOL_NAME" in
+  agent|custom-agent|task|subagent)
+    [[ -n "$AGENT_NAME" ]] && IS_AGENT_DELEGATION=true
+    ;;
+  orchestrator|planner|implementer|implementer-research|reviewer|security|validator)
+    IS_AGENT_DELEGATION=true
+    AGENT_NAME="$TOOL_NAME"
+    ;;
+esac
+
+# ── Helpers ──────────────────────────────────────────────────────────────────
+
 deny() {
-  local reason="$1"
-
-  python3 -c '
-import json
-import sys
-
-print(json.dumps({
-    "permissionDecision": "deny",
-    "permissionDecisionReason": sys.argv[1],
-}))
-' "$reason"
+  python3 "${SCRIPT_DIR}/deny.py" "$1"
   exit 0
 }
 
-# ── Git commit/push guard ────────────────────────────────────────────────────
-# Intercept execute/bash tool calls that contain git commit or git push.
-# Deny unless review.ok exists — code must be reviewed before committing.
+current_phase() {
+  [[ -f "$PHASE_FILE" ]] && tr -d '[:space:]' < "$PHASE_FILE" || true
+}
+
+state_summary() {
+  local phase; phase="$(current_phase)"
+  local parts="phase=${phase:-empty}"
+  [[ -f "${WORK_DIR}/plan.md" ]]            && parts+=", plan.md=YES"            || parts+=", plan.md=no"
+  [[ -f "${WORK_DIR}/implementer.done" ]]   && parts+=", implementer.done=YES"
+  [[ -f "${WORK_DIR}/review.ok" ]]          && parts+=", review.ok=YES"
+  [[ -f "${WORK_DIR}/review.feedback" ]]    && parts+=", review.feedback=YES"
+  printf '%s' "$parts"
+}
+
+# ── Phase recovery ───────────────────────────────────────────────────────────
+# If checkpoint files exist but phase is empty (e.g. session-bootstrap cleared
+# it during a subagent session), reconstruct the phase from the checkpoints.
+
+recover_phase() {
+  mkdir -p "$WORK_DIR"
+  local phase; phase="$(current_phase)"
+  if [[ -n "$phase" ]]; then
+    return
+  fi
+  # Phase is empty — try to recover from checkpoint files
+  if [[ -f "${WORK_DIR}/review.ok" ]]; then
+    echo "final-review" > "$PHASE_FILE"
+  elif [[ -f "${WORK_DIR}/review.feedback" ]]; then
+    echo "reviewing" > "$PHASE_FILE"
+  elif [[ -f "${WORK_DIR}/implementer.done" ]]; then
+    echo "implementing" > "$PHASE_FILE"
+  elif [[ -f "${WORK_DIR}/plan.md" ]]; then
+    echo "planning" > "$PHASE_FILE"
+  fi
+}
+
+recover_phase
+
+# ── Git commit/push guard (always active) ────────────────────────────────────
 
 if [[ "$TOOL_NAME" == "execute" || "$TOOL_NAME" == "bash" || "$TOOL_NAME" == "shell" ]]; then
-  SEARCH_BLOB="$(printf '%s\n' "$PARSED" | sed -n '2p')"
-
-  # Re-parse: for execute/bash, the interesting content is in the full args blob
-  CMD_BLOB="$(
-    printf '%s' "$INPUT" | python3 -c '
-import json, sys
-try:
-    payload = json.load(sys.stdin)
-except Exception:
-    raise SystemExit(0)
-args = payload.get("toolArgs", "")
-if isinstance(args, dict):
-    blob = " ".join(str(v) for v in args.values())
-else:
-    blob = str(args)
-print(blob.lower())
-'
-  )"
-
-  mkdir -p "$WORK_DIR"
+  CMD_BLOB="$(printf '%s' "$INPUT" | python3 "${SCRIPT_DIR}/extract-command.py")"
 
   if printf '%s' "$CMD_BLOB" | grep -qE 'git\s+(commit|push)'; then
-    if [[ ! -f "$WORK_DIR/review.ok" ]]; then
-      deny "git commit/push blocked: review.ok must exist before committing or pushing. Run the full workflow: implement → review → security → validate → commit."
-    fi
+    deny "BLOCKED: git commit/push. All changes must remain local and uncommitted. [$(state_summary)]"
   fi
-
-  # Not a blocked git command — allow
-  exit 0
 fi
 
-# ── Agent delegation guard ───────────────────────────────────────────────────
-# Only intercept agent/custom-agent tool calls from here on.
+# ═══════════════════════════════════════════════════════════════════════════════
+# BETWEEN-PHASE GUARDS — for non-delegation, non-infrastructure tools
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# The orchestrator should ONLY delegate agents. Between phases, any tool that
+# isn't a delegation or CLI infrastructure is blocked. During a phase (subagent
+# running), all tools pass because the subagent needs them.
+#
+# Phase checkpoints:
+#   planning   + plan.md            → planner done, must delegate implementer
+#   implementing + implementer.done → implementer done, must delegate reviewer
+#   reviewing  + review.feedback    → reviewer done (issues), must delegate implementer
+#   reviewing  + review.ok          → reviewer done (pass), allow DONE reporting
+#   feedback   + implementer.done   → feedback implementer done, must delegate reviewer
 
-if [[ "$TOOL_NAME" != "agent" && "$TOOL_NAME" != "custom-agent" ]]; then
-  exit 0
+if [[ "$IS_AGENT_DELEGATION" != "true" ]]; then
+  # Infrastructure tools always pass through
+  case "$TOOL_NAME" in
+    report_intent|ask_user|sql|todo|memory|log)
+      exit 0
+      ;;
+  esac
+
+  # ── Allow reads/views of files OUTSIDE the workspace ───────────────────────
+  # The CLI uses `read` on temp files (/var/folders/.../copilot-tool-output-*.txt)
+  # to relay subagent results. These MUST be allowed or the orchestrator can't
+  # see what its subagents produced and gives up.
+  case "$TOOL_NAME" in
+    read|view)
+      TOOL_PATH="$(printf '%s' "$INPUT" | python3 -c "
+import json, sys
+try:
+    d = json.load(sys.stdin)
+    a = d.get('toolArgs', {})
+    if isinstance(a, str):
+        import json as j; a = j.loads(a)
+    if isinstance(a, dict):
+        print(a.get('path', a.get('filePath', a.get('file', a.get('uri', '')))))
+    else:
+        print('')
+except:
+    print('')" 2>/dev/null)"
+      # Absolute path NOT under repo root → external file (agent output) → allow
+      if [[ -n "$TOOL_PATH" ]] && [[ "$TOOL_PATH" == /* ]] && [[ "$TOOL_PATH" != "${REPO_ROOT}"* ]]; then
+        exit 0
+      fi
+      ;;
+  esac
+
+  mkdir -p "$WORK_DIR"
+  PHASE="$(current_phase)"
+
+  case "$PHASE" in
+    "")
+      # No phase → orchestrator must delegate planner first
+      deny "BLOCKED: Workflow not started. You MUST delegate to the planner agent as your FIRST action. Tool '${TOOL_NAME}' is denied. [$(state_summary)]"
+      ;;
+
+    planning)
+      if [[ -f "${WORK_DIR}/plan.md" ]]; then
+        # Planner finished (plan.md written) → orchestrator must delegate implementer
+        deny "BLOCKED: Planning complete — plan.md exists. Delegate to an implementer agent now. Do NOT read files or explore — delegate immediately. [$(state_summary)]"
+      fi
+      # Plan doesn't exist yet → planner subagent still running → allow its tools
+      exit 0
+      ;;
+
+    implementing)
+      if [[ -f "${WORK_DIR}/implementer.done" ]]; then
+        # Implementer finished → orchestrator must delegate reviewer (or another implementer)
+        deny "BLOCKED: Implementer finished (implementer.done exists). Delegate to the reviewer agent now, or delegate another implementer if tasks remain. Do NOT read files yourself. [$(state_summary)]"
+      fi
+      # No implementer.done yet → implementer subagent still running → allow its tools
+      exit 0
+      ;;
+
+    reviewing)
+      if [[ -f "${WORK_DIR}/review.ok" ]]; then
+        # Review passed → workflow done → allow orchestrator to report
+        exit 0
+      fi
+      if [[ -f "${WORK_DIR}/review.feedback" ]]; then
+        # Reviewer flagged issues → must delegate implementer for fixes
+        deny "BLOCKED: Review found issues (review.feedback exists). Delegate to an implementer agent to fix the feedback. Do NOT read files yourself. [$(state_summary)]"
+      fi
+      # No verdict yet → reviewer subagent still running → allow its tools
+      exit 0
+      ;;
+
+    feedback)
+      if [[ -f "${WORK_DIR}/implementer.done" ]]; then
+        # Feedback implementer finished → must delegate reviewer for final review
+        deny "BLOCKED: Feedback implementer finished (implementer.done exists). Delegate to the reviewer agent for final review. [$(state_summary)]"
+      fi
+      # Implementer fixing review feedback → allow its tools
+      exit 0
+      ;;
+
+    final-review)
+      # Final reviewer running or done → allow (orchestrator reports DONE after)
+      exit 0
+      ;;
+
+    *)
+      # Unknown phase → allow (safe fallback)
+      exit 0
+      ;;
+  esac
 fi
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AGENT DELEGATION GATING — enforce phase ordering for agent spawns
+# ═══════════════════════════════════════════════════════════════════════════════
 
 mkdir -p "$WORK_DIR"
 
-# ── Workflow sequencing ──────────────────────────────────────────────────────
-# After implementation, force the orchestrator through reviewer → security
-# in order. Without this, the orchestrator could stop after implementation
-# and never spawn review or security agents.
-#
-# Rules:
-#   - If implementer.done exists AND review.ok doesn't → only reviewer
-#     (or implementer for fix loops) is allowed
-#   - If review.ok exists AND security.ok doesn't → only security
-#     (or implementer/reviewer for fix loops) is allowed
-#   - Planner is always allowed (resets everything)
-#   - Helper agents (implementer-research, validator) are always allowed
-
-if [[ "$AGENT_NAME" != "planner" \
-   && "$AGENT_NAME" != "implementer-research" \
-   && "$AGENT_NAME" != "validator" \
-   && "$AGENT_NAME" != "orchestrator" \
-   && "$AGENT_NAME" != "" ]]; then
-
-  if [[ -f "$WORK_DIR/implementer.done" && ! -f "$WORK_DIR/review.ok" && ! -f "$WORK_DIR/review.blocked" ]]; then
-    # Implementation done, review hasn't run yet
-    if [[ "$AGENT_NAME" != "reviewer" && "$AGENT_NAME" != "implementer" ]]; then
-      deny "Workflow sequencing: reviewer must run after implementation. Delegate to reviewer next. (implementer.done exists but review.ok does not)"
-    fi
-  fi
-
-  if [[ -f "$WORK_DIR/review.ok" && ! -f "$WORK_DIR/security.ok" && ! -f "$WORK_DIR/security.blocked" ]]; then
-    # Review passed, security hasn't run yet
-    if [[ "$AGENT_NAME" != "security" && "$AGENT_NAME" != "implementer" && "$AGENT_NAME" != "reviewer" ]]; then
-      deny "Workflow sequencing: security must run after review. Delegate to security next. (review.ok exists but security.ok does not)"
-    fi
-  fi
+# ── Create workflow.session marker on first delegation ───────────────────────
+# This prevents session-bootstrap from clearing state when subagent sessions
+# fire sessionStart with source=new.
+if [[ ! -f "$WORKFLOW_SESSION" ]]; then
+  date -u +"%Y-%m-%dT%H:%M:%SZ" > "$WORKFLOW_SESSION"
 fi
 
-# ── Per-agent gate checks ───────────────────────────────────────────────────
+PHASE="$(current_phase)"
 
 case "$AGENT_NAME" in
+
+  # ── PLANNER: only at start or during planning phase ────────────────────────
   planner)
-    # Reset all checkpoints — fresh planning cycle
-    rm -f \
-      "$WORK_DIR/plan.md" \
-      "$WORK_DIR/plan.approved" \
-      "$WORK_DIR/review.ok" \
-      "$WORK_DIR/review.blocked" \
-      "$WORK_DIR/security.ok" \
-      "$WORK_DIR/security.blocked" \
-      "$WORK_DIR/validation.ok" \
-      "$WORK_DIR/implementer.done" \
-      "$WORK_DIR/notes.md"
-    printf 'full\n' > "$WORK_DIR/workflow.mode"
+    case "$PHASE" in
+      ""|planning)
+        echo "planning" > "$PHASE_FILE"
+        ;;
+      *)
+        deny "BLOCKED: Planner — planning is already complete (phase=${PHASE}). Delegate to an implementer agent next. [$(state_summary)]"
+        ;;
+    esac
     ;;
-  implementer)
-    # Require workflow.mode to exist — forces orchestrator to either
-    # delegate to planner first (writes "full") or explicitly write "lean"
-    if [[ ! -f "$WORK_DIR/workflow.mode" ]]; then
-      deny "Implementer blocked: workflow.mode must exist. Delegate to planner first (sets mode=full) or write workflow.mode=lean for trivial changes."
+
+  # ── IMPLEMENTER: requires plan.md + correct phase ─────────────────────────
+  implementer|implementer-research)
+    if [[ ! -f "${WORK_DIR}/plan.md" ]]; then
+      deny "BLOCKED: Implementer — plan.md does not exist. The planner must create .agents-work/current/plan.md first. Re-delegate to the planner if needed. [$(state_summary)]"
     fi
 
-    MODE="$(tr -d '[:space:]' < "$WORK_DIR/workflow.mode")"
+    # Clear implementer.done from previous implementer (new implementer starting)
+    rm -f "${WORK_DIR}/implementer.done"
 
-    if [[ "$MODE" == "lean" ]]; then
-      if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-implement --lean 2>&1)"; then
-        deny "Workflow gate blocked implementer delegation: ${OUTPUT}"
-      fi
-    else
-      if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-implement 2>&1)"; then
-        deny "Workflow gate blocked implementer delegation: ${OUTPUT}"
-      fi
-    fi
-
-    # Clear downstream checkpoints — fresh review/security cycle
-    rm -f \
-      "$WORK_DIR/review.ok" \
-      "$WORK_DIR/review.blocked" \
-      "$WORK_DIR/security.ok" \
-      "$WORK_DIR/security.blocked" \
-      "$WORK_DIR/validation.ok" \
-      "$WORK_DIR/implementer.done"
-
-    # Mark that implementer has been dispatched — postToolUse or the
-    # implementer itself isn't needed; the fact that we allowed this
-    # delegation means implementation is in progress. We write the
-    # marker now; if the implementer fails, the orchestrator re-delegates
-    # (which clears and re-writes this marker).
-    touch "$WORK_DIR/implementer.done"
+    case "$PHASE" in
+      planning)
+        # First implementer after plan → transition to implementing
+        echo "implementing" > "$PHASE_FILE"
+        ;;
+      implementing)
+        # More implementers → stay in implementing
+        ;;
+      reviewing)
+        # After reviewer flagged issues → transition to feedback round
+        if [[ ! -f "${WORK_DIR}/review.feedback" ]]; then
+          deny "BLOCKED: Implementer — reviewer has not written review.feedback yet. If review.ok exists, proceed to DONE — no more implementation needed. [$(state_summary)]"
+        fi
+        echo "feedback" > "$PHASE_FILE"
+        ;;
+      feedback)
+        # More implementers during feedback round → stay in feedback
+        ;;
+      final-review)
+        deny "BLOCKED: Implementer — final review phase. The feedback cycle is complete — no more implementation allowed. Report DONE. [$(state_summary)]"
+        ;;
+      *)
+        deny "BLOCKED: Implementer — unexpected phase '${PHASE}'. Expected: planning (after plan.md), implementing, reviewing (with feedback), or feedback. [$(state_summary)]"
+        ;;
+    esac
     ;;
+
+  # ── REVIEWER: requires implementing or feedback phase ──────────────────────
   reviewer)
-    if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-review 2>&1)"; then
-      deny "Workflow gate blocked reviewer delegation: ${OUTPUT}"
+    # Clear implementer.done (moving to review, not between implementers)
+    rm -f "${WORK_DIR}/implementer.done"
+
+    case "$PHASE" in
+      implementing)
+        # First review after implementation
+        echo "reviewing" > "$PHASE_FILE"
+        ;;
+      feedback)
+        # Final review after feedback fixes — no more cycles
+        echo "final-review" > "$PHASE_FILE"
+        ;;
+      *)
+        deny "BLOCKED: Reviewer — expected phase 'implementing' or 'feedback', got '${PHASE}'. Complete implementation before requesting review. [$(state_summary)]"
+        ;;
+    esac
+    ;;
+
+  # ── HELPER AGENTS: allowed any time after planning starts ──────────────────
+  security|validator)
+    if [[ -z "$PHASE" ]]; then
+      deny "BLOCKED: ${AGENT_NAME} — workflow not started. Delegate to the planner first. [$(state_summary)]"
     fi
     ;;
-  security)
-    if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-security 2>&1)"; then
-      deny "Workflow gate blocked security delegation: ${OUTPUT}"
-    fi
-    ;;
-  implementer-research|validator)
-    # Helper agents — no gate required, read-only work
-    ;;
+
+  # ── ORCHESTRATOR: self-delegation — always allow ───────────────────────────
   orchestrator)
-    # Self-delegation — no gate required
+    ;;
+
+  # ── UNKNOWN: allow through ─────────────────────────────────────────────────
+  *)
     ;;
 esac
+
+exit 0

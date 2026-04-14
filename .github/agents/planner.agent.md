@@ -6,7 +6,11 @@ description: >
   to create a plan that minimizes risk and enables parallel work.
 tools:
   - read
+  - edit
+  - write
+  - create
   - search
+  - execute
   - web
 model: GPT-5 mini (copilot)
 ---
@@ -42,7 +46,22 @@ You analyze the user's goal and produce a clear, ordered task breakdown. You rea
 3. **Identify scope**: Map the goal to specific bounded contexts, packages, and files
 4. **Break into tasks**: Create ordered tasks with clear boundaries
 5. **Flag risks**: Mark tasks that touch auth, security, breaking changes, or performance
-6. **Output plan**: Write to `.agents-work/current/plan.md` from the repo root — this is the checkpoint the orchestrator requires before approval
+6. **Output plan**: You MUST write the plan to `.agents-work/current/plan.md` before returning.
+   Use the `execute` tool with a shell command to guarantee creation:
+   ```bash
+   mkdir -p .agents-work/current && cat > .agents-work/current/plan.md << 'PLAN_EOF'
+   <your plan content here>
+   PLAN_EOF
+   ```
+   **This file is the checkpoint the hook requires before implementers can run. If you return without creating it, the entire workflow stalls.**
+
+## CRITICAL: State File Rules
+
+- You MUST create exactly ONE file: `.agents-work/current/plan.md`
+- Do NOT create `workflow.mode`, `plan.implementer.md`, or any other state file
+- Do NOT write to any other path under `.agents-work/`
+- The hook manages all phase transitions — your only job is creating `plan.md`
+- Write `plan.md` as your LAST action — after it exists, the hook blocks further tool calls to force the next phase
 
 ## Plan Format
 

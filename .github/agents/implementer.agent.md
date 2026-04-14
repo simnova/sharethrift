@@ -53,7 +53,16 @@ When the task is large enough to split, you should use helper subagents so you c
 4. **Implement**: Make minimal, correct changes following existing patterns
 5. **Test**: Add/update tests if the change affects logic or behavior
 6. **Verify**: Run build, test, and lint commands
-7. **Report**: Summarize what changed, what to verify, and any assumptions. Do NOT declare the task done — report status to the orchestrator, who decides completion.
+7. **Signal completion**: Run `echo done > .agents-work/current/implementer.done` — this MUST be your very last command, after all builds and tests pass
+8. **Report**: Summarize what changed, what to verify, and any assumptions. Do NOT declare the task done — report status to the orchestrator, who decides completion.
+
+### CRITICAL: implementer.done Checkpoint
+
+You MUST write the file `.agents-work/current/implementer.done` as your **absolute last action** before returning. This signals to the workflow hook that your work is complete so it can enforce the next phase transition (reviewer).
+
+- Run: `echo done > .agents-work/current/implementer.done`
+- Do this AFTER all builds, tests, and lint commands have passed
+- Do NOT write this file early — it immediately blocks further tool calls from your session
 
 ## Subagent Delegation Rules
 
@@ -126,6 +135,7 @@ Before writing any code, read the relevant instruction files:
 - [ ] `pnpm run build` passes
 - [ ] Relevant tests pass
 - [ ] `pnpm run lint` passes (or `pnpm exec biome check`)
+- [ ] `echo done > .agents-work/current/implementer.done` (last command before returning)
 
 ## Coding Conventions
 
