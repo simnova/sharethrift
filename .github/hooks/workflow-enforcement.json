@@ -5,14 +5,14 @@
       {
         "type": "command",
         "bash": "bash .github/hooks/session-bootstrap.sh",
-        "comment": "Initialize and clean agent workflow state for the current Copilot CLI session."
+        "timeoutSec": 10
       }
     ],
     "preToolUse": [
       {
         "type": "command",
         "bash": "bash .github/hooks/enforce-agent-workflow.sh",
-        "comment": "Enforce workflow gates before delegating to planner, implementer, reviewer, or security agents."
+        "timeoutSec": 30
       }
     ]
   }
