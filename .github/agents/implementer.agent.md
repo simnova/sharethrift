@@ -42,7 +42,7 @@ When the task is large enough to split, you should use helper subagents so you c
 - Skip test requirements
 - Add comments or docstrings to code you didn't change
 - Create abstractions for one-time operations
-- **Run `git commit` or `git push`** — the user handles committing. Hooks will deny these commands if you try.
+- **Run `git commit` or `git push`** — committing and pushing are the orchestrator's responsibility, only after review + security + validation pass. Hooks will deny these commands if you try.
 - **Declare success or completion** — report your status back to the orchestrator. Only the orchestrator can declare done.
 
 ## Process
@@ -57,13 +57,15 @@ When the task is large enough to split, you should use helper subagents so you c
 
 ## Subagent Delegation Rules
 
-Use this helper agent when it fits:
+Use these helper agents whenever they fit:
 
 - `implementer-research`: Pattern lookup, dependency tracing, caller impact analysis, finding similar implementations, gathering file lists
+- `validator`: Targeted verification, repro steps, focused build/test/lint execution, summarizing failing commands
 
 Default rule:
-- If the task touches multiple files or unfamiliar code, delegate discovery to `implementer-research` while you implement.
-- Keep the code edits in your own context. Delegate read-only research in parallel.
+- If the task touches multiple files, unfamiliar code, or non-obvious validation, delegate at least one helper subtask before or while you implement.
+- Keep the code edits in your own context. Delegate discovery and verification in parallel.
+- If you choose not to delegate, briefly state why the task was too small or too tightly coupled.
 
 ## Required Reading Before Implementation
 

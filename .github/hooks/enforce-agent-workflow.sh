@@ -1,28 +1,28 @@
 #!/usr/bin/env bash
-# enforce-agent-workflow.sh — preToolUse hook for Copilot CLI.
-#
-# Fires before every tool call (bash, edit, create, view).
-# NOTE: Does NOT fire for agent delegation — Copilot does not emit
-# preToolUse for subagent spawns. Enforcement must work through the
-# tools agents actually use.
-#
-# Enforcement rules:
-#   1. edit/create blocked unless plan.md exists (or workflow.mode=lean)
-#   2. git commit/push blocked unless review.ok + security.ok + validation.ok
-#   3. All other tool calls pass through
 
 set -euo pipefail
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd -- "${SCRIPT_DIR}/../.." && pwd)"
 WORK_DIR="${REPO_ROOT}/.agents-work/current"
+GATE_SCRIPT="${SCRIPT_DIR}/check-gate.sh"
 
 INPUT="$(cat)"
 
-# Parse tool name and args
 PARSED="$(
   printf '%s' "$INPUT" | python3 -c '
-import json, sys
+import json
+import sys
+
+def walk_strings(value):
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for nested in value.values():
+            yield from walk_strings(nested)
+    elif isinstance(value, list):
+        for nested in value:
+            yield from walk_strings(nested)
 
 try:
     payload = json.load(sys.stdin)
@@ -32,90 +32,206 @@ except Exception:
     raise SystemExit(0)
 
 tool_name = str(payload.get("toolName", "")).strip().lower()
-
 tool_args_raw = payload.get("toolArgs", "")
-if isinstance(tool_args_raw, dict):
-    blob = " ".join(str(v) for v in tool_args_raw.values())
-elif isinstance(tool_args_raw, str):
-    blob = tool_args_raw
+
+haystacks = []
+if isinstance(tool_args_raw, str):
+    haystacks.append(tool_args_raw.lower())
+    try:
+        tool_args = json.loads(tool_args_raw)
+    except Exception:
+        tool_args = None
 else:
-    blob = str(tool_args_raw)
+    tool_args = tool_args_raw
+
+if tool_args is not None:
+    for item in walk_strings(tool_args):
+        haystacks.append(item.lower())
+
+search_blob = "\n".join(haystacks)
+
+agent_name = ""
+for candidate in (
+    "implementer-research",
+    "validator",
+    "implementer",
+    "planner",
+    "reviewer",
+    "security",
+    "orchestrator",
+):
+    if candidate in search_blob:
+        agent_name = candidate
+        break
 
 print(tool_name)
-print(blob.lower())
+print(agent_name)
 '
 )"
 
 TOOL_NAME="$(printf '%s\n' "$PARSED" | sed -n '1p')"
-ARGS_BLOB="$(printf '%s\n' "$PARSED" | sed -n '2p')"
+AGENT_NAME="$(printf '%s\n' "$PARSED" | sed -n '2p')"
 
 deny() {
+  local reason="$1"
+
   python3 -c '
-import json, sys
+import json
+import sys
+
 print(json.dumps({
     "permissionDecision": "deny",
     "permissionDecisionReason": sys.argv[1],
 }))
-' "$1"
+' "$reason"
   exit 0
 }
 
+# ── Git commit/push guard ────────────────────────────────────────────────────
+# Intercept execute/bash tool calls that contain git commit or git push.
+# Deny unless review.ok exists — code must be reviewed before committing.
+
+if [[ "$TOOL_NAME" == "execute" || "$TOOL_NAME" == "bash" || "$TOOL_NAME" == "shell" ]]; then
+  SEARCH_BLOB="$(printf '%s\n' "$PARSED" | sed -n '2p')"
+
+  # Re-parse: for execute/bash, the interesting content is in the full args blob
+  CMD_BLOB="$(
+    printf '%s' "$INPUT" | python3 -c '
+import json, sys
+try:
+    payload = json.load(sys.stdin)
+except Exception:
+    raise SystemExit(0)
+args = payload.get("toolArgs", "")
+if isinstance(args, dict):
+    blob = " ".join(str(v) for v in args.values())
+else:
+    blob = str(args)
+print(blob.lower())
+'
+  )"
+
+  mkdir -p "$WORK_DIR"
+
+  if printf '%s' "$CMD_BLOB" | grep -qE 'git\s+(commit|push)'; then
+    if [[ ! -f "$WORK_DIR/review.ok" ]]; then
+      deny "git commit/push blocked: review.ok must exist before committing or pushing. Run the full workflow: implement → review → security → validate → commit."
+    fi
+  fi
+
+  # Not a blocked git command — allow
+  exit 0
+fi
+
+# ── Agent delegation guard ───────────────────────────────────────────────────
+# Only intercept agent/custom-agent tool calls from here on.
+
+if [[ "$TOOL_NAME" != "agent" && "$TOOL_NAME" != "custom-agent" ]]; then
+  exit 0
+fi
+
 mkdir -p "$WORK_DIR"
 
-# ── Rule 1: edit/create require a plan ───────────────────────────────────────
-# Blocks code changes until planning is done. The planner agent only uses
-# read/search/web, so it is unaffected. The reviewer and security agents
-# only use read/search/execute, so they are also unaffected.
-# Only the implementer (which uses edit/create) is gated.
+# ── Workflow sequencing ──────────────────────────────────────────────────────
+# After implementation, force the orchestrator through reviewer → security
+# in order. Without this, the orchestrator could stop after implementation
+# and never spawn review or security agents.
+#
+# Rules:
+#   - If implementer.done exists AND review.ok doesn't → only reviewer
+#     (or implementer for fix loops) is allowed
+#   - If review.ok exists AND security.ok doesn't → only security
+#     (or implementer/reviewer for fix loops) is allowed
+#   - Planner is always allowed (resets everything)
+#   - Helper agents (implementer-research, validator) are always allowed
 
-if [[ "$TOOL_NAME" == "edit" || "$TOOL_NAME" == "create" ]]; then
-  # Allow writes to .agents-work/ (checkpoint files)
-  if printf '%s' "$ARGS_BLOB" | grep -q '\.agents-work'; then
-    exit 0
+if [[ "$AGENT_NAME" != "planner" \
+   && "$AGENT_NAME" != "implementer-research" \
+   && "$AGENT_NAME" != "validator" \
+   && "$AGENT_NAME" != "orchestrator" \
+   && "$AGENT_NAME" != "" ]]; then
+
+  if [[ -f "$WORK_DIR/implementer.done" && ! -f "$WORK_DIR/review.ok" && ! -f "$WORK_DIR/review.blocked" ]]; then
+    # Implementation done, review hasn't run yet
+    if [[ "$AGENT_NAME" != "reviewer" && "$AGENT_NAME" != "implementer" ]]; then
+      deny "Workflow sequencing: reviewer must run after implementation. Delegate to reviewer next. (implementer.done exists but review.ok does not)"
+    fi
   fi
 
-  # Allow writes to .github/ (workflow config files)
-  if printf '%s' "$ARGS_BLOB" | grep -q '\.github/'; then
-    exit 0
+  if [[ -f "$WORK_DIR/review.ok" && ! -f "$WORK_DIR/security.ok" && ! -f "$WORK_DIR/security.blocked" ]]; then
+    # Review passed, security hasn't run yet
+    if [[ "$AGENT_NAME" != "security" && "$AGENT_NAME" != "implementer" && "$AGENT_NAME" != "reviewer" ]]; then
+      deny "Workflow sequencing: security must run after review. Delegate to security next. (review.ok exists but security.ok does not)"
+    fi
   fi
+fi
 
-  # Check for plan or lean mode
-  if [[ -f "$WORK_DIR/workflow.mode" ]]; then
+# ── Per-agent gate checks ───────────────────────────────────────────────────
+
+case "$AGENT_NAME" in
+  planner)
+    # Reset all checkpoints — fresh planning cycle
+    rm -f \
+      "$WORK_DIR/plan.md" \
+      "$WORK_DIR/plan.approved" \
+      "$WORK_DIR/review.ok" \
+      "$WORK_DIR/review.blocked" \
+      "$WORK_DIR/security.ok" \
+      "$WORK_DIR/security.blocked" \
+      "$WORK_DIR/validation.ok" \
+      "$WORK_DIR/implementer.done" \
+      "$WORK_DIR/notes.md"
+    printf 'full\n' > "$WORK_DIR/workflow.mode"
+    ;;
+  implementer)
+    # Require workflow.mode to exist — forces orchestrator to either
+    # delegate to planner first (writes "full") or explicitly write "lean"
+    if [[ ! -f "$WORK_DIR/workflow.mode" ]]; then
+      deny "Implementer blocked: workflow.mode must exist. Delegate to planner first (sets mode=full) or write workflow.mode=lean for trivial changes."
+    fi
+
     MODE="$(tr -d '[:space:]' < "$WORK_DIR/workflow.mode")"
+
     if [[ "$MODE" == "lean" ]]; then
-      exit 0
+      if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-implement --lean 2>&1)"; then
+        deny "Workflow gate blocked implementer delegation: ${OUTPUT}"
+      fi
+    else
+      if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-implement 2>&1)"; then
+        deny "Workflow gate blocked implementer delegation: ${OUTPUT}"
+      fi
     fi
-  fi
 
-  if [[ ! -f "$WORK_DIR/plan.md" ]]; then
-    deny "Code changes blocked: no plan exists. The orchestrator must delegate to the planner agent first, which writes .agents-work/current/plan.md. Or write workflow.mode=lean for trivial changes."
-  fi
+    # Clear downstream checkpoints — fresh review/security cycle
+    rm -f \
+      "$WORK_DIR/review.ok" \
+      "$WORK_DIR/review.blocked" \
+      "$WORK_DIR/security.ok" \
+      "$WORK_DIR/security.blocked" \
+      "$WORK_DIR/validation.ok" \
+      "$WORK_DIR/implementer.done"
 
-  if [[ ! -f "$WORK_DIR/plan.approved" ]]; then
-    deny "Code changes blocked: plan exists but is not approved. The orchestrator must get user approval and write .agents-work/current/plan.approved before implementation begins."
-  fi
-
-  exit 0
-fi
-
-# ── Rule 2: git commit/push require full review chain ────────────────────────
-# Blocks committing until review + security + validation are all done.
-
-if [[ "$TOOL_NAME" == "bash" || "$TOOL_NAME" == "execute" || "$TOOL_NAME" == "shell" ]]; then
-  if printf '%s' "$ARGS_BLOB" | grep -qE 'git\s+(commit|push)'; then
-    if [[ ! -f "$WORK_DIR/review.ok" ]]; then
-      deny "git commit/push blocked: review.ok missing. The reviewer agent must run and pass before committing."
+    # Mark that implementer has been dispatched — postToolUse or the
+    # implementer itself isn't needed; the fact that we allowed this
+    # delegation means implementation is in progress. We write the
+    # marker now; if the implementer fails, the orchestrator re-delegates
+    # (which clears and re-writes this marker).
+    touch "$WORK_DIR/implementer.done"
+    ;;
+  reviewer)
+    if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-review 2>&1)"; then
+      deny "Workflow gate blocked reviewer delegation: ${OUTPUT}"
     fi
-    if [[ ! -f "$WORK_DIR/security.ok" ]]; then
-      deny "git commit/push blocked: security.ok missing. The security agent must run and pass before committing."
+    ;;
+  security)
+    if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-security 2>&1)"; then
+      deny "Workflow gate blocked security delegation: ${OUTPUT}"
     fi
-    if [[ ! -f "$WORK_DIR/validation.ok" ]]; then
-      deny "git commit/push blocked: validation.ok missing. Run build/test/lint and write validation.ok before committing."
-    fi
-  fi
-
-  exit 0
-fi
-
-# ── Everything else passes through ───────────────────────────────────────────
-exit 0
+    ;;
+  implementer-research|validator)
+    # Helper agents — no gate required, read-only work
+    ;;
+  orchestrator)
+    # Self-delegation — no gate required
+    ;;
+esac
