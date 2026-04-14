@@ -42,6 +42,7 @@ When the task is large enough to split, you should use helper subagents so you c
 - Skip test requirements
 - Add comments or docstrings to code you didn't change
 - Create abstractions for one-time operations
+- **Run `git commit` or `git push`** — committing and pushing are the orchestrator's responsibility, only after review + security + validation pass. Hooks will deny these commands if you try.
 - **Declare success or completion** — report your status back to the orchestrator. Only the orchestrator can declare done.
 
 ## Process

@@ -87,14 +87,90 @@ print(json.dumps({
   exit 0
 }
 
+# ── Git commit/push guard ────────────────────────────────────────────────────
+# Intercept execute/bash tool calls that contain git commit or git push.
+# Deny unless review.ok exists — code must be reviewed before committing.
+
+if [[ "$TOOL_NAME" == "execute" || "$TOOL_NAME" == "bash" || "$TOOL_NAME" == "shell" ]]; then
+  SEARCH_BLOB="$(printf '%s\n' "$PARSED" | sed -n '2p')"
+
+  # Re-parse: for execute/bash, the interesting content is in the full args blob
+  CMD_BLOB="$(
+    printf '%s' "$INPUT" | python3 -c '
+import json, sys
+try:
+    payload = json.load(sys.stdin)
+except Exception:
+    raise SystemExit(0)
+args = payload.get("toolArgs", "")
+if isinstance(args, dict):
+    blob = " ".join(str(v) for v in args.values())
+else:
+    blob = str(args)
+print(blob.lower())
+'
+  )"
+
+  mkdir -p "$WORK_DIR"
+
+  if printf '%s' "$CMD_BLOB" | grep -qE 'git\s+(commit|push)'; then
+    if [[ ! -f "$WORK_DIR/review.ok" ]]; then
+      deny "git commit/push blocked: review.ok must exist before committing or pushing. Run the full workflow: implement → review → security → validate → commit."
+    fi
+  fi
+
+  # Not a blocked git command — allow
+  exit 0
+fi
+
+# ── Agent delegation guard ───────────────────────────────────────────────────
+# Only intercept agent/custom-agent tool calls from here on.
+
 if [[ "$TOOL_NAME" != "agent" && "$TOOL_NAME" != "custom-agent" ]]; then
   exit 0
 fi
 
 mkdir -p "$WORK_DIR"
 
+# ── Workflow sequencing ──────────────────────────────────────────────────────
+# After implementation, force the orchestrator through reviewer → security
+# in order. Without this, the orchestrator could stop after implementation
+# and never spawn review or security agents.
+#
+# Rules:
+#   - If implementer.done exists AND review.ok doesn't → only reviewer
+#     (or implementer for fix loops) is allowed
+#   - If review.ok exists AND security.ok doesn't → only security
+#     (or implementer/reviewer for fix loops) is allowed
+#   - Planner is always allowed (resets everything)
+#   - Helper agents (implementer-research, validator) are always allowed
+
+if [[ "$AGENT_NAME" != "planner" \
+   && "$AGENT_NAME" != "implementer-research" \
+   && "$AGENT_NAME" != "validator" \
+   && "$AGENT_NAME" != "orchestrator" \
+   && "$AGENT_NAME" != "" ]]; then
+
+  if [[ -f "$WORK_DIR/implementer.done" && ! -f "$WORK_DIR/review.ok" && ! -f "$WORK_DIR/review.blocked" ]]; then
+    # Implementation done, review hasn't run yet
+    if [[ "$AGENT_NAME" != "reviewer" && "$AGENT_NAME" != "implementer" ]]; then
+      deny "Workflow sequencing: reviewer must run after implementation. Delegate to reviewer next. (implementer.done exists but review.ok does not)"
+    fi
+  fi
+
+  if [[ -f "$WORK_DIR/review.ok" && ! -f "$WORK_DIR/security.ok" && ! -f "$WORK_DIR/security.blocked" ]]; then
+    # Review passed, security hasn't run yet
+    if [[ "$AGENT_NAME" != "security" && "$AGENT_NAME" != "implementer" && "$AGENT_NAME" != "reviewer" ]]; then
+      deny "Workflow sequencing: security must run after review. Delegate to security next. (review.ok exists but security.ok does not)"
+    fi
+  fi
+fi
+
+# ── Per-agent gate checks ───────────────────────────────────────────────────
+
 case "$AGENT_NAME" in
   planner)
+    # Reset all checkpoints — fresh planning cycle
     rm -f \
       "$WORK_DIR/plan.md" \
       "$WORK_DIR/plan.approved" \
@@ -103,14 +179,18 @@ case "$AGENT_NAME" in
       "$WORK_DIR/security.ok" \
       "$WORK_DIR/security.blocked" \
       "$WORK_DIR/validation.ok" \
+      "$WORK_DIR/implementer.done" \
       "$WORK_DIR/notes.md"
     printf 'full\n' > "$WORK_DIR/workflow.mode"
     ;;
   implementer)
-    MODE=""
-    if [[ -f "$WORK_DIR/workflow.mode" ]]; then
-      MODE="$(tr -d '[:space:]' < "$WORK_DIR/workflow.mode")"
+    # Require workflow.mode to exist — forces orchestrator to either
+    # delegate to planner first (writes "full") or explicitly write "lean"
+    if [[ ! -f "$WORK_DIR/workflow.mode" ]]; then
+      deny "Implementer blocked: workflow.mode must exist. Delegate to planner first (sets mode=full) or write workflow.mode=lean for trivial changes."
     fi
+
+    MODE="$(tr -d '[:space:]' < "$WORK_DIR/workflow.mode")"
 
     if [[ "$MODE" == "lean" ]]; then
       if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-implement --lean 2>&1)"; then
@@ -122,12 +202,21 @@ case "$AGENT_NAME" in
       fi
     fi
 
+    # Clear downstream checkpoints — fresh review/security cycle
     rm -f \
       "$WORK_DIR/review.ok" \
       "$WORK_DIR/review.blocked" \
       "$WORK_DIR/security.ok" \
       "$WORK_DIR/security.blocked" \
-      "$WORK_DIR/validation.ok"
+      "$WORK_DIR/validation.ok" \
+      "$WORK_DIR/implementer.done"
+
+    # Mark that implementer has been dispatched — postToolUse or the
+    # implementer itself isn't needed; the fact that we allowed this
+    # delegation means implementation is in progress. We write the
+    # marker now; if the implementer fails, the orchestrator re-delegates
+    # (which clears and re-writes this marker).
+    touch "$WORK_DIR/implementer.done"
     ;;
   reviewer)
     if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-review 2>&1)"; then
@@ -138,5 +227,11 @@ case "$AGENT_NAME" in
     if ! OUTPUT="$(bash "$GATE_SCRIPT" pre-security 2>&1)"; then
       deny "Workflow gate blocked security delegation: ${OUTPUT}"
     fi
+    ;;
+  implementer-research|validator)
+    # Helper agents — no gate required, read-only work
+    ;;
+  orchestrator)
+    # Self-delegation — no gate required
     ;;
 esac

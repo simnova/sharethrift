@@ -34,6 +34,7 @@ if [[ "$SOURCE" == "new" ]]; then
     "$WORK_DIR/security.ok" \
     "$WORK_DIR/security.blocked" \
     "$WORK_DIR/validation.ok" \
+    "$WORK_DIR/implementer.done" \
     "$WORK_DIR/workflow.mode" \
     "$WORK_DIR/notes.md"
 fi

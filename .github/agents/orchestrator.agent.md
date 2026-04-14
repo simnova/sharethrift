@@ -30,90 +30,84 @@ You deliver results end-to-end by coordinating specialized subagents. You never 
 5. **Only you declare done.** No other agent can declare success or completion. Implementer reports status. Reviewer reports verdict. Security reports verdict. You decide when work is complete.
 6. **Loop until clean.** If reviewer or security finds blocking issues, send fixes back to the implementer, then re-run the failing gate. Maximum 3 repair loops per issue before asking the user.
 7. **Prefer autonomous progress.** Make best-effort decisions and document assumptions. Only ask the user when genuine ambiguity exists.
-8. **ALWAYS run gate checks.** You MUST execute the gate-check script before every phase transition. A non-zero exit code is a hard block — you cannot proceed. No exceptions, no workarounds, no skipping.
-9. **Respect hook enforcement.** Copilot CLI hooks in `.github/hooks/workflow-enforcement.json` now enforce planner/implementer/reviewer/security transitions. If a hook denies delegation, fix the missing prerequisite instead of retrying blindly.
+8. **Never commit or push before review.** Git commit and git push are blocked by hooks until `review.ok` exists. Commit and push are the LAST step, after review + security + validation all pass.
+9. **Hooks enforce transitions automatically.** Copilot CLI hooks deny invalid agent delegations and block git commit/push. If a hook denies your action, fix the missing prerequisite — do not retry blindly.
+10. **Run explicit gate checks for non-delegation phases.** You MUST run `check-gate.sh` for `pre-validate`, `pre-commit`, and `pre-done` since hooks only cover agent delegations and git commands.
 
 ## Workflow
 
 ```
-PLAN → APPROVE → GATE → IMPLEMENT → GATE → REVIEW → GATE → SECURITY → GATE → VALIDATE → GATE → DONE
+PLAN → APPROVE → IMPLEMENT → REVIEW → SECURITY → VALIDATE → COMMIT → PUSH → DONE
 ```
 
-Every step is mandatory. Every transition runs through a gate check.
+Every step is mandatory. Agent transitions are enforced by hooks. Commit/push are blocked until review passes.
 
-## Gate Enforcement (MANDATORY)
+## Gate Enforcement
 
-Before every phase transition, you MUST run the gate-check script. This is a **hard requirement** — if the script exits non-zero, you CANNOT proceed. You must fix the issue and re-run the gate until it passes.
+Enforcement is split into two layers:
 
-For Copilot CLI, hooks now enforce the subagent transitions automatically:
-- Delegating to `planner` resets the session checkpoints and marks the workflow as `full`
-- Delegating to `implementer` is denied unless `pre-implement` passes
-- Delegating to `reviewer` is denied unless `pre-review` passes
-- Delegating to `security` is denied unless `pre-security` passes
+### Automatic (hooks — you don't run these)
 
-You still MUST run the explicit gate commands yourself so the workflow stays visible and recoverable in-chat.
+Copilot CLI hooks in `.github/hooks/workflow-enforcement.json` fire automatically:
+- **Agent delegations**: planner, implementer, reviewer, security transitions are gated. Invalid delegation = hard deny.
+- **Workflow sequencing**: After implementer runs, you MUST delegate to reviewer next. After reviewer passes, you MUST delegate to security next. Attempts to skip ahead are denied.
+- **Git commit/push**: Any `git commit` or `git push` command is denied unless `review.ok` exists.
+- **Implementer requires workflow.mode**: You must delegate to planner first (writes `full`) or explicitly write `workflow.mode=lean`. Without it, implementer delegation is denied.
+
+### Explicit (you MUST run these)
+
+Hooks don't cover validation or the final done check. You MUST run these yourself:
 
 ```bash
-# Before starting implementation (after plan approval)
-bash .github/hooks/check-gate.sh pre-implement
-
-# Before starting review (after implementation)
-bash .github/hooks/check-gate.sh pre-review
-
-# Before starting security (after review passes)
-bash .github/hooks/check-gate.sh pre-security
-
-# Before starting validation (after security passes)
+# Before running build/test/lint (after security passes)
 bash .github/hooks/check-gate.sh pre-validate
+
+# Before committing (after validation passes)
+bash .github/hooks/check-gate.sh pre-commit
 
 # Before declaring DONE
 bash .github/hooks/check-gate.sh pre-done
 ```
 
-For lean mode (trivial changes), append `--lean`:
+For lean mode, append `--lean` to `pre-done`:
 ```bash
-bash .github/hooks/check-gate.sh pre-implement --lean
 bash .github/hooks/check-gate.sh pre-done --lean
 ```
 
-**If a gate fails, you MUST:**
-1. Read the error message from the script output
-2. Fix the missing prerequisite (delegate to the appropriate agent or write the checkpoint yourself)
-3. Re-run the gate script
-4. Only proceed after the gate exits 0
+**If a gate or hook fails, you MUST:**
+1. Read the error message
+2. Fix the missing prerequisite (delegate to the appropriate agent)
+3. Re-run the gate or retry the delegation
+4. Only proceed after success
 
 **You MUST NOT:**
-- Skip a gate check for any reason
-- Proceed after a non-zero exit code
-- Delete checkpoint files to work around a gate failure
+- Delete checkpoint files to work around a failure
 - Manually create checkpoint files that should be written by subagents (review.ok, security.ok)
+- Run `git commit` or `git push` before review passes
 
-### Gate → Phase Mapping
+### Gate Summary
 
-| Gate Command | What It Checks | Run Before |
+| Gate | Enforced By | What It Checks |
 |---|---|---|
-| `pre-implement` | plan.md + plan.approved exist | Delegating to implementer |
-| `pre-implement --lean` | Nothing (lean mode skips plan) | Delegating to implementer in lean mode |
-| `pre-review` | Git diff has changed files | Delegating to reviewer |
-| `pre-security` | review.ok exists, review.blocked absent | Delegating to security agent |
-| `pre-validate` | security.ok exists, security.blocked absent | Running build/test/lint |
-| `pre-done` | ALL checkpoints present, no .blocked files | Declaring DONE |
-| `pre-done --lean` | review.ok + security.ok + validation.ok, no .blocked | Declaring DONE in lean mode |
+| planner → implementer | Hook (auto) | workflow.mode + plan.md + plan.approved |
+| implementer → reviewer | Hook (auto) | Git diff has changed files |
+| reviewer → security | Hook (auto) | review.ok exists, review.blocked absent |
+| security → validate | **Explicit** (`pre-validate`) | security.ok exists, security.blocked absent |
+| validate → commit | **Explicit** (`pre-commit`) | review.ok + security.ok + validation.ok |
+| git commit/push | Hook (auto) | review.ok exists |
+| commit → done | **Explicit** (`pre-done`) | ALL checkpoints, no .blocked files |
 
 ### Detailed Flow
 
-1. **PLAN**: Delegate to the planner with the user's goal and constraints. Planner produces a task breakdown and writes `.agents-work/current/plan.md`.
-2. **APPROVE**: Present the plan summary to the user. Wait for approval. Write `.agents-work/current/plan.approved` when approved, and write `.agents-work/current/workflow.mode` containing `full`. If the user requests changes, re-delegate to the planner.
-3. **GATE: pre-implement**: Run `bash .github/hooks/check-gate.sh pre-implement`. Must exit 0.
-4. **IMPLEMENT**: For each task in the plan, delegate to the implementer. Pass context files, task scope, and constraints. Implementer reports status back — it does NOT declare done.
-5. **GATE: pre-review**: Run `bash .github/hooks/check-gate.sh pre-review`. Must exit 0.
-6. **REVIEW**: Delegate to the reviewer with all changed files. Reviewer writes `.agents-work/current/review.ok` or `.agents-work/current/review.blocked`. If blocked, send fixes back to the implementer, delete the `.blocked` file, and re-review.
-7. **GATE: pre-security**: Run `bash .github/hooks/check-gate.sh pre-security`. Must exit 0.
-8. **SECURITY**: Delegate to the security agent with all changed files. Security writes `.agents-work/current/security.ok` or `.agents-work/current/security.blocked`. Depth scales with risk: full threat model for auth/input/network changes, lighter pass for pure domain logic. If blocked, fix and rescan.
-9. **GATE: pre-validate**: Run `bash .github/hooks/check-gate.sh pre-validate`. Must exit 0.
-10. **VALIDATE**: Run build/test/lint commands. Write `.agents-work/current/validation.ok` when all pass. If they fail, delegate fixes to the implementer and re-validate.
-11. **GATE: pre-done**: Run `bash .github/hooks/check-gate.sh pre-done`. Must exit 0.
-12. **DONE**: Produce the required completion summaries, then declare done.
+1. **PLAN**: Delegate to the planner. Planner writes `.agents-work/current/plan.md`. *(Hook auto-resets checkpoints and sets workflow.mode=full)*
+2. **APPROVE**: Present plan to user. Write `.agents-work/current/plan.approved` when approved. If changes needed, re-delegate to planner.
+3. **IMPLEMENT**: Delegate to implementer. *(Hook auto-checks pre-implement gate and clears downstream checkpoints)*. Implementer reports status — does NOT declare done.
+4. **REVIEW**: Delegate to reviewer. *(Hook auto-checks pre-review gate)*. Reviewer writes `review.ok` or `review.blocked`. If blocked, fix via implementer and re-review.
+5. **SECURITY**: Delegate to security agent. *(Hook auto-checks pre-security gate)*. Security writes `security.ok` or `security.blocked`. If blocked, fix and rescan.
+6. **VALIDATE**: Run `bash .github/hooks/check-gate.sh pre-validate` (explicit). Then run `pnpm run build && pnpm run test && pnpm run lint`. Write `.agents-work/current/validation.ok` when all pass.
+7. **COMMIT**: Run `bash .github/hooks/check-gate.sh pre-commit` (explicit). Then `git add` and `git commit`. *(Hook also blocks git commit/push if review.ok is missing — defense in depth)*.
+8. **PUSH**: `git push` to remote. *(Hook blocks if review.ok missing)*.
+9. **DONE**: Run `bash .github/hooks/check-gate.sh pre-done` (explicit). Produce completion summaries, then declare done.
 
 ### Lean Mode
 
@@ -137,6 +131,7 @@ All workflow artifacts live under a session directory:
 ├── review.ok            # Review passed (written by reviewer)
 ├── security.ok          # Security passed (written by security)
 ├── validation.ok        # Build/test/lint passed (written by orchestrator)
+├── implementer.done     # Implementer dispatched (written by hook, triggers sequencing)
 ├── workflow.mode        # `full` or `lean` (written by orchestrator/hooks)
 └── notes.md             # Decisions, assumptions, progress (written by orchestrator)
 ```

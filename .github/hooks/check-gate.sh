@@ -12,6 +12,8 @@
 #   pre-review      Requires at least one file changed (git diff)
 #   pre-security    Requires review.ok, rejects review.blocked
 #   pre-validate    Requires security.ok, rejects security.blocked
+#   pre-commit      Requires review.ok + security.ok + validation.ok.
+#                   Must pass before any git commit or git push.
 #   pre-done        Requires ALL: review.ok + security.ok + validation.ok,
 #                   rejects any .blocked file. In full mode also requires
 #                   plan.md + plan.approved.
@@ -40,7 +42,7 @@ fi
 
 if [[ -z "$GATE" ]]; then
   echo -e "${RED}ERROR: Usage: bash .github/hooks/check-gate.sh <gate> [--lean]${NC}"
-  echo "Gates: pre-implement, pre-review, pre-security, pre-validate, pre-done"
+  echo "Gates: pre-implement, pre-review, pre-security, pre-validate, pre-commit, pre-done"
   exit 2
 fi
 
@@ -126,6 +128,16 @@ gate_pre_validate() {
   pass
 }
 
+gate_pre_commit() {
+  ensure_work_dir
+  require_file "${WORK_DIR}/review.ok" "review.ok (review must pass before committing)"
+  reject_file "${WORK_DIR}/review.blocked" "review.blocked (review has unresolved blockers)"
+  require_file "${WORK_DIR}/security.ok" "security.ok (security must pass before committing)"
+  reject_file "${WORK_DIR}/security.blocked" "security.blocked (security has unresolved blockers)"
+  require_file "${WORK_DIR}/validation.ok" "validation.ok (validation must pass before committing)"
+  pass
+}
+
 gate_pre_done() {
   ensure_work_dir
 
@@ -154,10 +166,11 @@ case "$GATE" in
   pre-review)     gate_pre_review ;;
   pre-security)   gate_pre_security ;;
   pre-validate)   gate_pre_validate ;;
+  pre-commit)     gate_pre_commit ;;
   pre-done)       gate_pre_done ;;
   *)
     echo -e "${RED}ERROR: Unknown gate '${GATE}'${NC}"
-    echo "Valid gates: pre-implement, pre-review, pre-security, pre-validate, pre-done"
+    echo "Valid gates: pre-implement, pre-review, pre-security, pre-validate, pre-commit, pre-done"
     exit 2
     ;;
 esac
