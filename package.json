@@ -114,7 +114,7 @@
         "@serenity-js/core": "^3.36.1",
         "@serenity-js/cucumber": "^3.36.1",
         "@serenity-js/serenity-bdd": "^3.36.1",
-        "@sonar/scan": "^4.3.0",
+        "@sonar/scan": "4.3.5",
         "@types/node": "^24.7.2",
         "@vitest/browser-playwright": "catalog:",
         "@vitest/coverage-v8": "catalog:",
