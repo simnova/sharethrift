@@ -5,7 +5,6 @@ export interface MemberOrderingTestsConfig {
   domainSourcePath: string;
   persistenceSourcePath: string;
   graphqlSourcePath: string;
-  fixturesSourcePath?: string;
 }
 
 export function describeMemberOrderingTests(config: MemberOrderingTestsConfig): void {
@@ -59,7 +58,7 @@ export function describeMemberOrderingTests(config: MemberOrderingTestsConfig): 
       it('allows mixing instance methods and accessors within the same instance-member group', async () => {
         const violations = await checkMemberOrdering({
           sourceGlobs: [
-            '../../cellix/arch-unit-tests/src/fixtures/member-ordering/instance-mixed-ok.ts',
+            '../../cellix/arch-unit-tests/src/fixtures/domain-conventions/instance-mixed-ok.ts',
           ],
         });
 
