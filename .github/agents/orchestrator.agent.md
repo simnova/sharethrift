@@ -7,27 +7,27 @@ agents: ['Planner', 'Implementor', 'Reviewer']
 hooks:
   SessionStart:
     - type: command
-      command: "node .github/scripts/workflow-enforce.mjs"
+      command: "node .github/scripts/session-start.mjs"
       timeout: 10
   UserPromptSubmit:
     - type: command
-      command: "node .github/scripts/workflow-enforce.mjs"
+      command: "node .github/scripts/user-prompt-submit.mjs"
       timeout: 10
   PreToolUse:
     - type: command
-      command: "node .github/scripts/workflow-enforce.mjs"
+      command: "node .github/scripts/pre-tool-use.mjs"
       timeout: 10
   SubagentStart:
     - type: command
-      command: "node .github/scripts/workflow-enforce.mjs"
+      command: "node .github/scripts/subagent-start.mjs"
       timeout: 10
   SubagentStop:
     - type: command
-      command: "node .github/scripts/workflow-enforce.mjs"
+      command: "node .github/scripts/subagent-stop.mjs"
       timeout: 10
   Stop:
     - type: command
-      command: "node .github/scripts/workflow-enforce.mjs"
+      command: "node .github/scripts/stop.mjs"
       timeout: 10
 ---
 
