@@ -18,6 +18,26 @@ afterEach(() => {
 });
 
 describe('ShareThrift graphql checks', () => {
+	it('returns no violations for a fully compliant workspace', async () => {
+		const workspace = createTempWorkspace();
+		workspaces.push(workspace);
+
+		writeFile(workspace, 'schema/types/user.resolvers.ts', 'export default {};\n');
+		writeFile(workspace, 'schema/types/user.graphql', 'type User { id: ID! }\n');
+		writeFile(workspace, 'schema/types/listing.resolvers.ts', 'export default {};\n');
+		writeFile(workspace, 'schema/types/listing.graphql', 'type Listing { id: ID! }\n');
+
+		const resolverViolations = await checkShareThriftResolversHaveSchemaFiles({
+			resolversGlob: `${workspace}/schema/types/**`,
+		});
+		const schemaViolations = await checkShareThriftSchemaFilesHaveResolvers({
+			graphqlGlob: `${workspace}/schema/types/**/*.graphql`,
+		});
+
+		expect(resolverViolations).toEqual([]);
+		expect(schemaViolations).toEqual([]);
+	});
+
 	it('pairs resolver files with schema files in both directions', async () => {
 		const workspace = createTempWorkspace();
 		workspaces.push(workspace);

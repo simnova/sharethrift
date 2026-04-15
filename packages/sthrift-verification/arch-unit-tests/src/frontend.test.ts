@@ -19,7 +19,7 @@ afterEach(() => {
 });
 
 describe('ShareThrift frontend checks', () => {
-	it('requires page story files, container placement, and container component pairs', async () => {
+	it('requires page story files', async () => {
 		const workspace = createTempWorkspace();
 		workspaces.push(workspace);
 
@@ -30,26 +30,43 @@ describe('ShareThrift frontend checks', () => {
 			'src/components/pages/account/profile/pages/profile-page.tsx',
 			'export const ProfilePage = () => null;\n',
 		);
+
+		const violations = await checkShareThriftPageStoryCoverage({
+			uiSourcePath: `${workspace}/src`,
+		});
+
+		expect(violations).toHaveLength(1);
+		expect(violations[0]).toContain('profile-page.tsx');
+	});
+
+	it('requires containers inside page component directories', async () => {
+		const workspace = createTempWorkspace();
+		workspaces.push(workspace);
+
+		writeFile(workspace, 'src/components/pages/home/components/home.container.tsx', 'export const HomeContainer = () => null;\n');
+		writeFile(workspace, 'src/pages/rogue.container.tsx', 'export const RogueContainer = () => null;\n');
+
+		const violations = await checkShareThriftContainerPlacement({
+			uiSourcePath: `${workspace}/src`,
+		});
+
+		expect(violations).toHaveLength(1);
+		expect(violations[0]).toContain('rogue.container.tsx');
+	});
+
+	it('requires container components to have matching graphql files', async () => {
+		const workspace = createTempWorkspace();
+		workspaces.push(workspace);
+
 		writeFile(workspace, 'src/components/pages/home/components/home.container.graphql', 'query Home { home }\n');
 		writeFile(workspace, 'src/components/pages/home/components/home.container.tsx', 'export const HomeContainer = () => null;\n');
 		writeFile(workspace, 'src/components/pages/account/components/profile.container.graphql', 'query Profile { profile }\n');
-		writeFile(workspace, 'src/pages/rogue.container.tsx', 'export const RogueContainer = () => null;\n');
 
-		const pageViolations = await checkShareThriftPageStoryCoverage({
-			uiSourcePath: `${workspace}/src`,
-		});
-		const placementViolations = await checkShareThriftContainerPlacement({
-			uiSourcePath: `${workspace}/src`,
-		});
-		const containerViolations = await checkShareThriftContainerGraphqlPairing({
+		const violations = await checkShareThriftContainerGraphqlPairing({
 			uiSourcePath: `${workspace}/src`,
 		});
 
-		expect(pageViolations).toHaveLength(1);
-		expect(pageViolations[0]).toContain('profile-page.tsx');
-		expect(placementViolations).toHaveLength(1);
-		expect(placementViolations[0]).toContain('rogue.container.tsx');
-		expect(containerViolations).toHaveLength(1);
-		expect(containerViolations[0]).toContain('profile.container.graphql');
+		expect(violations).toHaveLength(1);
+		expect(violations[0]).toContain('profile.container.graphql');
 	});
 });

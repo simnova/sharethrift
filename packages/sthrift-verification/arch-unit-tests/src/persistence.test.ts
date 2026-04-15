@@ -56,7 +56,11 @@ describe('ShareThrift persistence checks', () => {
 		});
 
 		expect(violations).toHaveLength(2);
-		expect(violations[0]).toContain('PersonalUserPersistence');
-		expect(violations[1]).toContain('PersonalUserReadRepositoryImpl');
+		expect(violations).toEqual(
+			expect.arrayContaining([
+				expect.stringContaining('PersonalUserPersistence'),
+				expect.stringContaining('PersonalUserReadRepositoryImpl'),
+			]),
+		);
 	});
 });

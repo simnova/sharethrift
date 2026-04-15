@@ -31,6 +31,11 @@ describe('ShareThrift domain checks', () => {
 		});
 
 		expect(violations).toHaveLength(2);
-		expect(violations[0]).toContain('user.domain-permissions.ts');
+		expect(violations).toEqual(
+			expect.arrayContaining([
+				expect.stringContaining('user.domain-permissions.ts'),
+				expect.stringContaining('user.visa.ts'),
+			]),
+		);
 	});
 });
