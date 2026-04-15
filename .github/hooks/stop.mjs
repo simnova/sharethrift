@@ -22,8 +22,9 @@ function handleStop(input) {
 		return {};
 	}
 
+	state.stopBlockCount++;
+
 	if (input.stop_hook_active) {
-		state.stopBlockCount++;
 		saveState(input.sessionId, state);
 
 		if (state.stopBlockCount >= MAX_STOP_BLOCKS) {
@@ -33,7 +34,6 @@ function handleStop(input) {
 		}
 	}
 
-	state.stopBlockCount++;
 	saveState(input.sessionId, state);
 
 	const guidance = PHASE_GUIDANCE[state.phase];
