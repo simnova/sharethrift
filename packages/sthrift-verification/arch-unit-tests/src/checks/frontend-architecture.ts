@@ -1,4 +1,3 @@
-import * as path from 'node:path';
 import {
 	fileExists,
 	getAllFiles,
@@ -6,9 +5,9 @@ import {
 	toPosixPath,
 } from '../utils/source-files.js';
 
-export async function checkShareThriftPageStoryCoverage(
+export function checkShareThriftPageStoryCoverage(
 	config: { uiSourcePath: string },
-): Promise<string[]> {
+): string[] {
 	const violations: string[] = [];
 	const sourceRoot = resolveSearchRoot(config.uiSourcePath);
 
@@ -34,9 +33,9 @@ export async function checkShareThriftPageStoryCoverage(
 	return violations;
 }
 
-export async function checkShareThriftContainerPlacement(
+export function checkShareThriftContainerPlacement(
 	config: { uiSourcePath: string },
-): Promise<string[]> {
+): string[] {
 	const violations: string[] = [];
 	const sourceRoot = resolveSearchRoot(config.uiSourcePath);
 
@@ -56,9 +55,9 @@ export async function checkShareThriftContainerPlacement(
 	return violations;
 }
 
-export async function checkShareThriftContainerGraphqlPairing(
+export function checkShareThriftContainerGraphqlPairing(
 	config: { uiSourcePath?: string } = {},
-): Promise<string[]> {
+): string[] {
 	const violations: string[] = [];
 	const sourceRoot = resolveSearchRoot(config.uiSourcePath ?? './src');
 

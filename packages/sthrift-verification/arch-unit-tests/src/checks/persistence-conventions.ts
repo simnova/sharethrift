@@ -9,7 +9,7 @@ export function checkShareThriftPersistenceFactoryExports(
 		persistenceDomainGlob: string;
 		persistenceReadonlyGlob: string;
 	},
-): Promise<string[]> {
+): string[] {
 	const violations: string[] = [];
 
 	for (const filePath of getFilesMatching(config.persistenceDomainGlob, 'index.ts')) {
