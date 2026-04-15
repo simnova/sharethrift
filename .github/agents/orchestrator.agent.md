@@ -7,27 +7,27 @@ agents: ['Planner', 'Implementor', 'Reviewer']
 hooks:
   SessionStart:
     - type: command
-      command: "node .github/scripts/session-start.mjs"
+      command: "node .github/hooks/session-start.mjs"
       timeout: 10
   UserPromptSubmit:
     - type: command
-      command: "node .github/scripts/user-prompt-submit.mjs"
+      command: "node .github/hooks/user-prompt-submit.mjs"
       timeout: 10
   PreToolUse:
     - type: command
-      command: "node .github/scripts/pre-tool-use.mjs"
+      command: "node .github/hooks/pre-tool-use.mjs"
       timeout: 10
   SubagentStart:
     - type: command
-      command: "node .github/scripts/subagent-start.mjs"
+      command: "node .github/hooks/subagent-start.mjs"
       timeout: 10
   SubagentStop:
     - type: command
-      command: "node .github/scripts/subagent-stop.mjs"
+      command: "node .github/hooks/subagent-stop.mjs"
       timeout: 10
   Stop:
     - type: command
-      command: "node .github/scripts/stop.mjs"
+      command: "node .github/hooks/stop.mjs"
       timeout: 10
 ---
 
