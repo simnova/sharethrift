@@ -89,6 +89,7 @@
 		"apps/server-payment-mock"
 	],
 	"ignore": [
+		".github/hooks/*.mjs",
 		"build-pipeline/scripts/**",
 		"local-https-proxy.js",
 		"**/*.test.ts",
