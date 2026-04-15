@@ -32,7 +32,9 @@
 	},
 	"[typescriptreact]": {
 		"editor.defaultFormatter": "biomejs.biome"
-	}
+	},
+	// Orchestrator workflow agent settings
+	"chat.useCustomAgentHooks": true,
 	// "[typescript]": {
 	//     "editor.tabSize": 2,
 	//     // "prettier.singleQuote": true,
