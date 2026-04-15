@@ -33,6 +33,7 @@
 		"@cellix/arch-unit-tests": "workspace:*",
 		"@cellix/typescript-config": "workspace:*",
 		"@cellix/vitest-config": "workspace:*",
+		"@sthrift-verification/arch-unit-tests": "workspace:*",
 		"rimraf": "^6.0.1",
 		"typescript": "^5.8.3"
 	},
