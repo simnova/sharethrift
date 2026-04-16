@@ -1,7 +1,7 @@
 ---
 name: Reviewer
 description: "Senior dev code review with actionable feedback"
-model: GPT-5 mini (copilot)
+model: Claude Sonnet 4.6 (copilot)
 tools: ['read', 'search']
 user-invocable: true
 disable-model-invocation: false

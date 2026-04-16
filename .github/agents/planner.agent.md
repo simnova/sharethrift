@@ -1,7 +1,7 @@
 ---
 name: Planner
 description: "Analyzes codebases and produces detailed implementation plans"
-model: GPT-5 mini (copilot)
+model: Claude Opus 4.6 (copilot)
 tools: ['read', 'search', 'web']
 user-invocable: false
 disable-model-invocation: false
