@@ -1,7 +1,7 @@
 ---
 name: Planner
 description: "Analyzes codebases and produces detailed implementation plans"
-model: claude-opus-4-6
+model: claude-opus-4.6
 tools: ['read', 'search', 'web']
 user-invocable: false
 disable-model-invocation: false

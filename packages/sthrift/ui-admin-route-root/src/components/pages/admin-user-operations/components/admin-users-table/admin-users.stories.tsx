@@ -88,7 +88,7 @@ const meta: Meta<typeof AdminUsers> = {
 			],
 		},
 	},
-	decorators: [withMockApolloClient, withMockRouter('/account/admin-dashboard')],
+	decorators: [withMockApolloClient, withMockRouter('/account/admin-user-operations')],
 } satisfies Meta<typeof AdminUsers>;
 
 export default meta;

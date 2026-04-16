@@ -8,4 +8,3 @@ export const StatusTag: React.FC<StatusTagProps> = ({ status }) => {
   const color = normalized === 'Blocked' ? 'red' : 'purple';
   return <Tag color={color}>{normalized}</Tag>;
 };
-

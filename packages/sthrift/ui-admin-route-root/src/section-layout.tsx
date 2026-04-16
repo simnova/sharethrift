@@ -3,9 +3,10 @@ import { useAuth } from 'react-oidc-context';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd';
 import {
+	ContainerOutlined,
 	HomeOutlined,
 	MessageOutlined,
-	BarChartOutlined,
+	TeamOutlined,
 } from '@ant-design/icons';
 import { HandleLogout, Footer, Navigation } from '@sthrift/ui-shared';
 import { useApolloClient } from '@apollo/client/react';
@@ -20,7 +21,8 @@ export const SectionLayout: React.FC = () => {
 	const routeMap = {
 		home: '',
 		messages: 'messages',
-		adminDashboard: 'admin-dashboard',
+		adminListingOperations: 'admin-listing-operations',
+		adminUserOperations: 'admin-user-operations',
 	} as const;
 
 	const getSelectedKey = () => {
@@ -67,9 +69,14 @@ export const SectionLayout: React.FC = () => {
 			{ key: 'home', icon: <HomeOutlined />, label: 'Home' },
 			{ key: 'messages', icon: <MessageOutlined />, label: 'Messages' },
 			{
-				key: 'adminDashboard',
-				icon: <BarChartOutlined />,
-				label: 'Admin Dashboard',
+				key: 'adminListingOperations',
+				icon: <ContainerOutlined />,
+				label: 'Listing Operations',
+			},
+			{
+				key: 'adminUserOperations',
+				icon: <TeamOutlined />,
+				label: 'User Operations',
 			},
 		];
 	}, []);
