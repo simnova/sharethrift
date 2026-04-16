@@ -1,7 +1,7 @@
 ---
 name: Reviewer
 description: "Senior dev code review with actionable feedback"
-model: Claude Sonnet 4.6 (copilot)
+model: claude-sonnet-4-6
 tools: ['read', 'search']
 user-invocable: true
 disable-model-invocation: false

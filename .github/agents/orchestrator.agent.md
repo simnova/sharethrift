@@ -1,7 +1,7 @@
 ---
 name: Orchestrator
 description: "Strict workflow orchestrator: Plan → Implement → Review → Revise"
-model: GPT-5 mini (copilot)
+model: gpt-5-mini
 tools: ['agent']
 agents: ['Planner', 'Implementor', 'Reviewer']
 hooks:

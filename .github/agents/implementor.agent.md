@@ -1,7 +1,7 @@
 ---
 name: Implementor
 description: "Implements code changes according to a provided plan"
-model: GPT-5.4 (copilot)
+model: gpt-5.4
 tools: ['read', 'search', 'edit']
 user-invocable: false
 disable-model-invocation: false
