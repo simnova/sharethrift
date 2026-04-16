@@ -3,9 +3,20 @@ import {
 	type GraphqlSchemaConventionsTestsConfig,
 } from '@cellix/arch-unit-tests/graphql';
 
-const schemaConfig: GraphqlSchemaConventionsTestsConfig = {
+import {
+	describeGraphqlSchemaConventionsTests as describeShareThriftGraphqlSchemaConventionsTests,
+	type GraphqlSchemaConventionsTestsConfig as ShareThriftGraphqlSchemaConventionsTestsConfig,
+} from '@sthrift-verification/arch-unit-tests/graphql';
+
+const cellixSchemaConfig: GraphqlSchemaConventionsTestsConfig = {
 	graphqlGlob: '../graphql/src/schema/types/**/*.graphql',
 	excludeFiles: ['shared-types.graphql', 'listing.graphql', 'appeal-request.graphql'],
 };
 
-describeGraphqlSchemaConventionsTests(schemaConfig);
+const shareThriftSchemaConfig: ShareThriftGraphqlSchemaConventionsTestsConfig = {
+	graphqlGlob: '../graphql/src/schema/types/**/*.graphql',
+	excludeFiles: ['shared-types.graphql', 'listing.graphql', 'appeal-request.graphql'],
+};
+
+describeGraphqlSchemaConventionsTests(cellixSchemaConfig);
+describeShareThriftGraphqlSchemaConventionsTests(shareThriftSchemaConfig);

@@ -4,6 +4,15 @@
   "description": "Architectural fitness tests for ShareThrift application",
   "private": true,
   "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./application-services": "./src/application-services.ts",
+    "./data-sources-mongoose-models": "./src/data-sources-mongoose-models.ts",
+    "./domain": "./src/domain.ts",
+    "./frontend": "./src/frontend.ts",
+    "./graphql": "./src/graphql.ts",
+    "./persistence": "./src/persistence.ts"
+  },
   "scripts": {
     "test": "vitest run",
     "test:arch": "vitest run",
