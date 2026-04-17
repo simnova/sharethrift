@@ -1,5 +1,4 @@
 import { Route, Routes } from 'react-router-dom';
-import { RequireAuth } from '@sthrift/ui-admin-route-shared';
 import { SectionLayout } from './section-layout.tsx';
 import { Listings } from './components/pages/home/pages/all-listings-page.tsx';
 import { ViewListing } from './components/pages/view-listing/pages/view-listing-page.tsx';
@@ -11,14 +10,7 @@ export const AppRoutes: React.FC = () => {
 			<Route path="" element={<SectionLayout />}>
 				<Route path="" element={<Listings />} />
 				<Route path="listing/:listingId" element={<ViewListing />} />
-				<Route
-					path="messages/*"
-					element={
-						<RequireAuth redirectPath="/">
-							<MessagesRoutes />
-						</RequireAuth>
-					}
-				/>
+				<Route path="messages/*" element={<MessagesRoutes />} />
 			</Route>
 		</Routes>
 	);

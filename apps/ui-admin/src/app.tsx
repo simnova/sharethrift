@@ -9,25 +9,28 @@ import { RequireAuth } from '@sthrift/ui-admin-route-shared';
 import { UserOperationsRoutes } from '@sthrift/ui-admin-route-user-operations';
 import type React from 'react';
 
+const appSection = (
+	<RequireAuth redirectPath="/login">
+		<AppRoutes />
+	</RequireAuth>
+);
+
 const listingOperationsSection = (
-	<RequireAuth redirectPath="/">
+	<RequireAuth redirectPath="/login">
 		<ListingOperationsRoutes />
 	</RequireAuth>
 );
 
 const userOperationsSection = (
-	<RequireAuth redirectPath="/">
+	<RequireAuth redirectPath="/login">
 		<UserOperationsRoutes />
 	</RequireAuth>
 );
 
-interface AppProps {
-	isAuthenticated: boolean;
-}
-export const App: React.FC<AppProps> = () => {
+export const App: React.FC = () => {
 	return (
 		<Routes>
-			<Route path="/*" element={<AppRoutes />} />
+			<Route path="/*" element={appSection} />
 			<Route path="/login" element={<AdminLogin />} />
 			<Route path="/auth-redirect" element={<AuthRedirect />} />
 			<Route
