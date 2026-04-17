@@ -1,2 +1,1 @@
-export * from './mock-auth.ts';
-export * from './storybook-decorators.tsx';
+export * from '@sthrift/ui-admin-route-shared/test-utils';

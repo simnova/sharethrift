@@ -1,5 +1,4 @@
 export {
-	checkShareThriftPageStoryCoverage,
 	checkShareThriftContainerPlacement,
 	checkShareThriftContainerGraphqlPairing,
 } from './checks/frontend-architecture.js';

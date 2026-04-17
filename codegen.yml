@@ -143,6 +143,30 @@ generates:
       - 'typescript'
       - 'typescript-operations'
       - 'typed-document-node'
+  ./packages/sthrift/ui-admin-route-listing-operations/src/generated.tsx:
+    documents: './packages/sthrift/ui-admin-route-listing-operations/src/**/**.graphql'
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+      useTypeImports: true
+      enumsAsTypes: true
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typed-document-node'
+  ./packages/sthrift/ui-admin-route-user-operations/src/generated.tsx:
+    documents: './packages/sthrift/ui-admin-route-user-operations/src/**/**.graphql'
+    config:
+      withHooks: true
+      withHOC: false
+      withComponent: false
+      useTypeImports: true
+      enumsAsTypes: true
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+      - 'typed-document-node'
 hooks:
   afterAllFileWrite:
     - pnpm exec biome format --write

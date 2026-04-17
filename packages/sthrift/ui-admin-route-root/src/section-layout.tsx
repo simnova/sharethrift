@@ -3,13 +3,14 @@ import { useAuth } from 'react-oidc-context';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd';
 import {
+	ContainerOutlined,
 	HomeOutlined,
 	MessageOutlined,
-	BarChartOutlined,
+	TeamOutlined,
 } from '@ant-design/icons';
+import { AdminHeader } from '@sthrift/ui-admin-route-shared';
 import { HandleLogout, Footer, Navigation } from '@sthrift/ui-shared';
 import { useApolloClient } from '@apollo/client/react';
-import { AdminHeader } from './admin-header.tsx';
 
 export const SectionLayout: React.FC = () => {
 	const navigate = useNavigate();
@@ -20,13 +21,14 @@ export const SectionLayout: React.FC = () => {
 	const routeMap = {
 		home: '',
 		messages: 'messages',
-		adminDashboard: 'admin-dashboard',
+		adminListingOperations: 'admin-listing-operations',
+		adminUserOperations: 'admin-user-operations',
 	} as const;
 
 	const getSelectedKey = () => {
 		const path = location.pathname.replace(/^\//, '');
 		const found = (Object.entries(routeMap) as [string, string][]).find(
-			([, r]) => path === r || path.startsWith(`${r}/`)
+			([, r]) => path === r || path.startsWith(`${r}/`),
 		);
 		return found?.[0] ?? 'home';
 	};
@@ -67,9 +69,14 @@ export const SectionLayout: React.FC = () => {
 			{ key: 'home', icon: <HomeOutlined />, label: 'Home' },
 			{ key: 'messages', icon: <MessageOutlined />, label: 'Messages' },
 			{
-				key: 'adminDashboard',
-				icon: <BarChartOutlined />,
-				label: 'Admin Dashboard',
+				key: 'adminListingOperations',
+				icon: <ContainerOutlined />,
+				label: 'Listing Operations',
+			},
+			{
+				key: 'adminUserOperations',
+				icon: <TeamOutlined />,
+				label: 'User Operations',
 			},
 		];
 	}, []);

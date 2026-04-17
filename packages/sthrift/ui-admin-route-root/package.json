@@ -10,12 +10,14 @@
 	"scripts": {
 		"build": "tsc -b",
 		"lint": "biome lint",
+		"test": "vitest run",
 		"test:arch": "vitest run --config vitest.arch.config.ts"
 	},
 	"dependencies": {
 		"@ant-design/icons": "^6.1.0",
 		"@apollo/client": "^4.0.7",
 		"@graphql-typed-document-node/core": "^3.2.0",
+		"@sthrift/ui-admin-route-shared": "workspace:*",
 		"@sthrift/ui-shared": "workspace:*",
 		"antd": "^5.27.1",
 		"graphql": "^16.11.0",
