@@ -6,7 +6,6 @@ import styles from './admin-header.module.css';
 
 interface AdminHeaderProps {
 	isAuthenticated: boolean;
-	onLogin?: () => void;
 	onLogout?: () => void;
 }
 
@@ -14,7 +13,6 @@ const { Header: AntHeader } = Layout;
 
 export const AdminHeader: React.FC<AdminHeaderProps> = ({
 	isAuthenticated,
-	onLogin,
 	onLogout,
 }) => {
 	return (
@@ -35,15 +33,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({
 					>
 						Log Out
 					</Button>
-				) : (
-					<Button
-						type="link"
-						className={styles['authButton']}
-						onClick={onLogin}
-					>
-						Log In
-					</Button>
-				)}
+				) : null}
 			</nav>
 		</AntHeader>
 	);
