@@ -8,9 +8,9 @@ import {
 	MessageOutlined,
 	TeamOutlined,
 } from '@ant-design/icons';
-import { AdminHeader } from '@sthrift/ui-admin-route-shared';
 import { HandleLogout, Footer, Navigation } from '@sthrift/ui-shared';
 import { useApolloClient } from '@apollo/client/react';
+import { AdminHeader } from '@sthrift/ui-admin-route-shared';
 
 export const SectionLayout: React.FC = () => {
 	const navigate = useNavigate();

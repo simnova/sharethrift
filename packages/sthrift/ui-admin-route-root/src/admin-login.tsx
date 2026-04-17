@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { useAuth } from 'react-oidc-context';
+import { AdminHeader } from '@sthrift/ui-admin-route-shared';
 import { LoginForm } from '@sthrift/ui-shared';
-import { AdminHeader } from './admin-header.tsx';
 
 interface LoginFormData {
 	username: string;

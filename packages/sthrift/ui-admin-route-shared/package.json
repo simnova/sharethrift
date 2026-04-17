@@ -1,0 +1,30 @@
+{
+	"name": "@sthrift/ui-admin-route-shared",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": "./src/index.ts",
+		"./test-utils": "./src/test-utils/index.ts"
+	},
+	"scripts": {
+		"build": "tsc -b",
+		"lint": "biome lint"
+	},
+	"dependencies": {
+		"@apollo/client": "^4.0.7",
+		"@sthrift/ui-shared": "workspace:*",
+		"antd": "^5.27.1",
+		"react": "^19.1.1",
+		"react-oidc-context": "^3.3.0",
+		"react-router-dom": "^7.12.0"
+	},
+	"devDependencies": {
+		"@cellix/typescript-config": "workspace:*",
+		"@storybook/react": "^10.1.11",
+		"@types/react": "^19.1.9",
+		"storybook": "^10.2.10",
+		"typescript": "~5.8.3"
+	},
+	"license": "MIT"
+}

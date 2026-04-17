@@ -1,25 +1,24 @@
 {
-	"name": "@sthrift/ui-admin-route-root",
+	"name": "@sthrift/ui-admin-route-listing-operations",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
 	"exports": {
-		".": "./src/index.ts",
-		"./test-utils": "./src/test-utils/index.ts"
+		".": "./src/index.ts"
 	},
 	"scripts": {
 		"build": "tsc -b",
 		"lint": "biome lint",
-		"test": "vitest run",
 		"test:arch": "vitest run --config vitest.arch.config.ts"
 	},
 	"dependencies": {
 		"@ant-design/icons": "^6.1.0",
 		"@apollo/client": "^4.0.7",
 		"@graphql-typed-document-node/core": "^3.2.0",
-		"@sthrift/ui-admin-route-shared": "workspace:*",
 		"@sthrift/ui-shared": "workspace:*",
+		"@sthrift/ui-admin-route-shared": "workspace:*",
 		"antd": "^5.27.1",
+		"dayjs": "^1.11.18",
 		"graphql": "^16.11.0",
 		"react": "^19.1.1",
 		"react-dom": "^19.1.1",

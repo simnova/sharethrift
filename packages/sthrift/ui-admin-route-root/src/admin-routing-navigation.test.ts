@@ -8,26 +8,25 @@ const packageRoot = resolve(currentDirectory, '..');
 const srcRoot = join(packageRoot, 'src');
 
 const getFiles = (directoryPath: string): string[] => {
-	return readdirSync(directoryPath, { withFileTypes: true }).flatMap((entry) => {
-		const entryPath = join(directoryPath, entry.name);
-		return entry.isDirectory() ? getFiles(entryPath) : [entryPath];
-	});
+	return readdirSync(directoryPath, { withFileTypes: true }).flatMap(
+		(entry) => {
+			const entryPath = join(directoryPath, entry.name);
+			return entry.isDirectory() ? getFiles(entryPath) : [entryPath];
+		},
+	);
 };
 
 describe('admin routing and navigation', () => {
-	it('wires the new admin operations pages into app routes', () => {
-		const appRoutesSource = readFileSync(join(srcRoot, 'app-routes.tsx'), 'utf8');
+	it('keeps extracted admin operations pages out of app routes', () => {
+		const appRoutesSource = readFileSync(
+			join(srcRoot, 'app-routes.tsx'),
+			'utf8',
+		);
 
-		expect(appRoutesSource).toContain(
-			"./components/pages/admin-listing-operations/pages/admin-listing-operations-page.tsx",
-		);
-		expect(appRoutesSource).toContain(
-			"./components/pages/admin-user-operations/pages/admin-user-operations-page.tsx",
-		);
-		expect(appRoutesSource).toContain('path="admin-listing-operations"');
-		expect(appRoutesSource).toContain('<AdminListingOperationsPage />');
-		expect(appRoutesSource).toContain('path="admin-user-operations"');
-		expect(appRoutesSource).toContain('<AdminUserOperationsPage />');
+		expect(appRoutesSource).not.toContain('AdminListingOperationsPage');
+		expect(appRoutesSource).not.toContain('AdminUserOperationsPage');
+		expect(appRoutesSource).not.toContain('path="admin-listing-operations"');
+		expect(appRoutesSource).not.toContain('path="admin-user-operations"');
 		expect(appRoutesSource).not.toContain('AdminDashboardMain');
 		expect(appRoutesSource).not.toContain('path="admin-dashboard"');
 	});
@@ -48,7 +47,9 @@ describe('admin routing and navigation', () => {
 		expect(sectionLayoutSource).toContain("label: 'Listing Operations'");
 		expect(sectionLayoutSource).toContain("key: 'adminUserOperations'");
 		expect(sectionLayoutSource).toContain("label: 'User Operations'");
-		expect(sectionLayoutSource).not.toContain("adminDashboard: 'admin-dashboard'");
+		expect(sectionLayoutSource).not.toContain(
+			"adminDashboard: 'admin-dashboard'",
+		);
 		expect(sectionLayoutSource).not.toContain("label: 'Admin Dashboard'");
 	});
 
