@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
 import {
-	loadState,
 	MAX_STOP_BLOCKS,
 	PHASE_GUIDANCE,
+	loadState,
 	runHook,
 	saveState,
 } from "./shared.mjs";
@@ -16,11 +16,9 @@ function handleStop(input) {
 		return {};
 	}
 
-	if (state.phase === "revising" && state.revisionImplementorsCompleted > 0) {
-		state.phase = "done";
-		saveState(input.sessionId, state);
-		return {};
-	}
+	// Finalizer is the ONLY way to transition to done — do not auto-complete
+	// the workflow just because revision implementors ran. The orchestrator
+	// must spawn the Finalizer.
 
 	state.stopBlockCount++;
 
@@ -42,6 +40,7 @@ function handleStop(input) {
 		`Implementors (pass 1): ${state.firstPassImplementorsCompleted} completed`,
 		`Reviewer: ${state.reviewerCompleted ? "✓" : "✗"}`,
 		`Implementors (revision): ${state.revisionImplementorsCompleted} completed`,
+		`Finalizer: ${state.finalizerCompleted ? "✓" : "✗"}`,
 	].join(" | ");
 
 	return {
@@ -52,7 +51,7 @@ function handleStop(input) {
 				`[WORKFLOW INCOMPLETE] Cannot stop. Phase: "${state.phase}".`,
 				`Progress: ${progressReport}`,
 				`Required action: ${guidance}`,
-				"You MUST complete all workflow steps before stopping.",
+				"You MUST complete all workflow steps before stopping — including the Finalizer.",
 			].join("\n"),
 		},
 	};

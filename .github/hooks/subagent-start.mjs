@@ -1,11 +1,6 @@
 #!/usr/bin/env node
 
-import {
-	isDuplicate,
-	loadState,
-	runHook,
-	saveState,
-} from "./shared.mjs";
+import { isDuplicate, loadState, runHook, saveState } from "./shared.mjs";
 
 function handleSubagentStart(input) {
 	const state = loadState(input.sessionId);
@@ -24,8 +19,13 @@ function handleSubagentStart(input) {
 		state.phase = "implementing";
 	} else if (agentType === "Reviewer" && state.phase === "implementing") {
 		state.phase = "reviewing";
-	} else if (agentType === "Implementor" && state.phase === "review_complete") {
+	} else if (
+		agentType === "Implementor" &&
+		state.phase === "review_complete"
+	) {
 		state.phase = "revising";
+	} else if (agentType === "Finalizer" && state.phase === "revising") {
+		state.phase = "finalizing";
 	}
 
 	saveState(input.sessionId, state);
