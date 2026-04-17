@@ -1,5 +1,5 @@
 ---
-name: Orchestrator
+name: Implementation-Orchestrator
 description: "Strict workflow orchestrator: Plan → Implement (verified) → Review → Revise (verified) → Finalize"
 model: claude-opus-4.6
 tools: ['agent']
@@ -7,27 +7,27 @@ agents: ['Planner', 'Implementor', 'Reviewer', 'Finalizer']
 hooks:
   SessionStart:
     - type: command
-      command: "node .github/hooks/session-start.mjs"
+      command: "node .github/hooks/implementation/session-start.mjs"
       timeout: 10
   UserPromptSubmit:
     - type: command
-      command: "node .github/hooks/user-prompt-submit.mjs"
+      command: "node .github/hooks/implementation/user-prompt-submit.mjs"
       timeout: 10
   PreToolUse:
     - type: command
-      command: "node .github/hooks/pre-tool-use.mjs"
+      command: "node .github/hooks/implementation/pre-tool-use.mjs"
       timeout: 10
   SubagentStart:
     - type: command
-      command: "node .github/hooks/subagent-start.mjs"
+      command: "node .github/hooks/implementation/subagent-start.mjs"
       timeout: 10
   SubagentStop:
     - type: command
-      command: "node .github/hooks/subagent-stop.mjs"
+      command: "node .github/hooks/implementation/subagent-stop.mjs"
       timeout: 10
   Stop:
     - type: command
-      command: "node .github/hooks/stop.mjs"
+      command: "node .github/hooks/implementation/stop.mjs"
       timeout: 10
 ---
 
