@@ -56,10 +56,6 @@ export const SectionLayout: React.FC = () => {
 		return () => window.removeEventListener('resize', handleResize);
 	}, [auth.isAuthenticated]);
 
-	const handleOnLogin = () => {
-		navigate('/login');
-	};
-
 	const handleLogOut = () => {
 		HandleLogout(auth, apolloClient, window.location.origin);
 	};
@@ -93,7 +89,6 @@ export const SectionLayout: React.FC = () => {
 		>
 			<AdminHeader
 				isAuthenticated={auth.isAuthenticated}
-				onLogin={handleOnLogin}
 				onLogout={handleLogOut}
 			/>
 			<div

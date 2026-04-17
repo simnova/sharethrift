@@ -13,6 +13,7 @@ export const AdminLogin: React.FC = () => {
 	const [submitting, setSubmitting] = useState(false);
 	const navigate = useNavigate();
 	const auth = useAuth();
+	const handleBack = () => undefined;
 
 	const handleLogin = (_values: LoginFormData) => {
 		setSubmitting(true);
@@ -23,14 +24,6 @@ export const AdminLogin: React.FC = () => {
 		}
 	};
 
-	const handleBack = () => {
-		navigate('/');
-	};
-
-	const handleOnLogin = () => {
-		globalThis.location.href = '/auth-redirect';
-	};
-
 	return (
 		<LoginForm
 			title="Admin Log In"
@@ -38,10 +31,10 @@ export const AdminLogin: React.FC = () => {
 			onSubmit={handleLogin}
 			submitting={submitting}
 			onBack={handleBack}
+			showBack={false}
 			headerSlot={
 				<AdminHeader
 					isAuthenticated={auth.isAuthenticated}
-					onLogin={handleOnLogin}
 					onLogout={() => navigate('/')}
 				/>
 			}

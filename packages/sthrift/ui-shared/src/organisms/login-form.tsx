@@ -18,6 +18,7 @@ interface LoginFormProps {
 	onBack: () => void;
 	headerSlot: React.ReactNode;
 	footerSlot?: React.ReactNode;
+	showBack?: boolean;
 	showForgotPassword?: boolean;
 	onForgotPassword?: () => void;
 }
@@ -30,6 +31,7 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 	onBack,
 	headerSlot,
 	footerSlot,
+	showBack = true,
 	showForgotPassword,
 	onForgotPassword,
 }) => {
@@ -166,17 +168,24 @@ export const LoginForm: React.FC<LoginFormProps> = ({
 								<div
 									style={{
 										display: 'flex',
-										justifyContent: showForgotPassword ? 'space-between' : 'flex-start',
+										justifyContent:
+											showBack && showForgotPassword
+												? 'space-between'
+												: showBack
+													? 'flex-start'
+													: 'flex-end',
 										marginTop: '1rem',
 									}}
 								>
-									<Button
-										type="link"
-										onClick={onBack}
-										style={{ padding: 0 }}
-									>
-										← Back to Home
-									</Button>
+									{showBack && (
+										<Button
+											type="link"
+											onClick={onBack}
+											style={{ padding: 0 }}
+										>
+											← Back to Home
+										</Button>
+									)}
 									{showForgotPassword && onForgotPassword && (
 										<Button
 											type="link"

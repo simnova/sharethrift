@@ -13,7 +13,7 @@ export const AppContainer: FC = () => {
 	});
 
 	if (!auth.isAuthenticated) {
-		return <App isAuthenticated={false} />;
+		return <App />;
 	}
 
 	const user = data?.currentAdminUser;
@@ -26,7 +26,7 @@ export const AppContainer: FC = () => {
 			error={error}
 			hasDataComponent={
 				<UserIdProvider userId={userId}>
-					<App isAuthenticated={auth.isAuthenticated} />
+					<App />
 				</UserIdProvider>
 			}
 		/>
