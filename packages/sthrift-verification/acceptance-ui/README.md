@@ -5,7 +5,7 @@ Cucumber Screenplay acceptance tests for the ShareThrift UI component path.
 ## Scope
 
 - jsdom-rendered UI components
-- shared page objects from `test-support`
+- shared page objects from `verification-shared`
 - domain-backed in-memory validation/assertion helpers
 
 ## Running Tests

@@ -6,7 +6,7 @@ import { engage } from '@serenity-js/core';
 import {
 	clearMockListings,
 	clearMockReservationRequests,
-} from '@sthrift-verification/test-support/test-data';
+} from '@sthrift-verification/verification-shared/test-data';
 import './shared/support/hooks.ts';
 import { ShareThriftApiCast } from './shared/support/cast.ts';
 import * as infra from './shared/support/shared-infrastructure.ts';

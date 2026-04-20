@@ -2,6 +2,11 @@ import { type DataTable, Given, Then, When } from '@cucumber/cucumber';
 import { Ensure, equals, includes, isPresent } from '@serenity-js/assertions';
 import { actorCalled, notes } from '@serenity-js/core';
 import {
+	formatDateForComparison,
+	parseDateInput,
+	typedRowsHash,
+} from '@sthrift-verification/verification-shared/helpers';
+import {
 	makeTestUserData,
 	resolveActorName,
 } from '../../../shared/support/domain-test-helpers.ts';
@@ -17,21 +22,9 @@ import { CreateReservationRequest as UICreateReservationRequest } from '../tasks
 
 let lastActorName = 'Alice';
 
-function parseDateInput(input: string): Date {
-	if (input.startsWith('+')) {
-		const days = Number.parseInt(input.substring(1), 10);
-		const date = new Date();
-		date.setDate(date.getDate() + days);
-		date.setHours(0, 0, 0, 0);
-		return date;
-	}
-	const date = new Date(input);
-	date.setHours(0, 0, 0, 0);
-	return date;
-}
-
-function formatDateForComparison(date: Date): string {
-	return date.toISOString().split('T')[0] ?? '';
+interface ReservationRequestTableData {
+	reservationPeriodStart?: string;
+	reservationPeriodEnd?: string;
 }
 
 async function getListingIdFromOwner(ownerName: string): Promise<string> {
@@ -74,7 +67,7 @@ When(
 	) {
 		lastActorName = reserver;
 		const actor = actorCalled(reserver);
-		const data = dataTable.rowsHash();
+		const data = typedRowsHash<ReservationRequestTableData>(dataTable);
 
 		const listingId = await getListingIdFromOwner(owner);
 		const startDate = data.reservationPeriodStart;
@@ -104,7 +97,7 @@ When(
 	) {
 		lastActorName = actorName;
 		const actor = actorCalled(actorName);
-		const data = dataTable.rowsHash();
+		const data = typedRowsHash<ReservationRequestTableData>(dataTable);
 
 		await actor.attemptsTo(
 			notes<ReservationRequestNotes>().set(
@@ -140,9 +133,7 @@ When(
 			}
 
 			await actor.attemptsTo(
-				UICreateReservationRequest.with(
-					input as CreateReservationRequestInput,
-				),
+				UICreateReservationRequest.with(input as CreateReservationRequestInput),
 			);
 		} catch (error) {
 			const errorMessage =
@@ -367,7 +358,7 @@ Given(
 	) {
 		lastActorName = reserver;
 		const actor = actorCalled(reserver);
-		const data = dataTable.rowsHash();
+		const data = typedRowsHash<ReservationRequestTableData>(dataTable);
 
 		const listingId = await getListingIdFromOwner(owner);
 		const startDate = data.reservationPeriodStart;
@@ -397,7 +388,7 @@ When(
 	) {
 		lastActorName = actorName;
 		const actor = actorCalled(actorName);
-		const data = dataTable.rowsHash();
+		const data = typedRowsHash<ReservationRequestTableData>(dataTable);
 
 		await actor.attemptsTo(
 			notes<{ lastValidationError?: string }>().set(

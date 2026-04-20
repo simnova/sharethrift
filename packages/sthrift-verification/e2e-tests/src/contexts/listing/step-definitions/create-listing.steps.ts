@@ -1,8 +1,8 @@
 import { Given, When, Then, type DataTable } from '@cucumber/cucumber';
 import { actorCalled, notes } from '@serenity-js/core';
 import { Ensure, equals } from '@serenity-js/assertions';
+import { resolveActorName } from '@sthrift-verification/verification-shared/helpers';
 import type { ShareThriftWorld } from '../../../world.ts';
-import { resolveActorName } from '../../../shared/support/test-helpers.ts';
 import type { ListingDetails, ListingNotes } from '../types.ts';
 import { CreateListing } from '../tasks/create-listing.ts';
 import { ListingStatus } from '../questions/listing-status.ts';

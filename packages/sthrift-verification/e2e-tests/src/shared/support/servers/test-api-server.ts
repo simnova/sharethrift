@@ -1,4 +1,4 @@
-import { apiSettings } from '../local-settings.ts';
+import { apiSettings } from '@sthrift-verification/verification-shared/settings';
 import { PortlessServer } from './portless-server.ts';
 import { buildUrl, getMongoConnectionString } from './test-environment.ts';
 

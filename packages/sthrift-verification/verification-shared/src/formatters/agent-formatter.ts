@@ -1,5 +1,15 @@
-import { Formatter, formatterHelpers, type IFormatterOptions } from '@cucumber/cucumber';
-import type { Envelope, TestCaseFinished, TestRunFinished, TestRunStarted, Timestamp } from '@cucumber/messages';
+import {
+	Formatter,
+	formatterHelpers,
+	type IFormatterOptions,
+} from '@cucumber/cucumber';
+import type {
+	Envelope,
+	TestCaseFinished,
+	TestRunFinished,
+	TestRunStarted,
+	Timestamp,
+} from '@cucumber/messages';
 
 type ParsedTestSteps = ReturnType<
 	typeof formatterHelpers.parseTestCaseAttempt
@@ -18,6 +28,7 @@ const STATUS_ICONS: Record<string, string> = {
 function timestampToMs(ts: Timestamp): number {
 	return (ts.seconds ?? 0) * 1000 + Math.round((ts.nanos ?? 0) / 1_000_000);
 }
+
 export default class AgentFormatter extends Formatter {
 	static override readonly documentation =
 		'Condensed formatter for AI coding agents — minimal, token-efficient output.';
@@ -29,9 +40,8 @@ export default class AgentFormatter extends Formatter {
 
 	constructor(options: IFormatterOptions) {
 		super(options);
-		options.eventBroadcaster.on(
-			'envelope',
-			(envelope: Envelope) => this.parseEnvelope(envelope),
+		options.eventBroadcaster.on('envelope', (envelope: Envelope) =>
+			this.parseEnvelope(envelope),
 		);
 	}
 
@@ -81,7 +91,6 @@ export default class AgentFormatter extends Formatter {
 			this.log(`[${icon}] ${name} (${loc})\n`);
 			this.logFailedSteps(parsed.testSteps);
 		}
-		// Passing scenarios are not logged individually to save tokens.
 	}
 
 	private logFailedSteps(testSteps: ParsedTestSteps): void {

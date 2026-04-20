@@ -3,8 +3,8 @@ import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
 import {
 	type E2EListingPage,
 	ListingPage,
-} from '@sthrift-verification/test-support/pages';
-import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
+} from '@sthrift-verification/verification-shared/pages';
+import { PlaywrightPageAdapter } from '@sthrift-verification/verification-shared/pages/playwright';
 
 export class ListingTitle extends Question<Promise<string>> {
 	constructor() {

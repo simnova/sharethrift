@@ -10,8 +10,8 @@ import {
 import {
 	ListingPage,
 	type UiListingPage,
-} from '@sthrift-verification/test-support/pages';
-import { JsdomPageAdapter } from '@sthrift-verification/test-support/pages/jsdom';
+} from '@sthrift-verification/verification-shared/pages';
+import { JsdomPageAdapter } from '@sthrift-verification/verification-shared/pages/jsdom';
 import { CreateListingAbility } from '../../abilities/create-listing-ability.ts';
 import type {
 	ListingDetails,

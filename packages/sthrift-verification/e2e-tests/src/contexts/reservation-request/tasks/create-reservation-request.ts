@@ -4,8 +4,8 @@ import {
 	type E2EReservationPage,
 	ReservationPage,
 	formatDate,
-} from '@sthrift-verification/test-support/pages';
-import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
+} from '@sthrift-verification/verification-shared/pages';
+import { PlaywrightPageAdapter } from '@sthrift-verification/verification-shared/pages/playwright';
 import type { CreateReservationRequestInput, ReservationRequestNotes } from '../types.ts';
 
 export class CreateReservationRequest extends Task {

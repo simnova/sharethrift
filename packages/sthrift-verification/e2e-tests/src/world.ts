@@ -2,7 +2,7 @@ import { setWorldConstructor, World } from '@cucumber/cucumber';
 import { engage } from '@serenity-js/core';
 import './shared/support/hooks.ts';
 import { ShareThriftCast } from './shared/support/cast.ts';
-import { clearMockListings, clearMockReservationRequests } from '@sthrift-verification/test-support/test-data';
+import { clearMockListings, clearMockReservationRequests } from '@sthrift-verification/verification-shared/test-data';
 import * as infra from './shared/support/shared-infrastructure.ts';
 
 export async function stopSharedServers(): Promise<void> {
