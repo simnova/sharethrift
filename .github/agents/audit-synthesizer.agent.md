@@ -1,7 +1,7 @@
 ---
 name: Synthesizer
 description: "Merges every analyzer report into a prioritized audit with week-over-week trend"
-model: claude-sonnet-4.6
+model: claude-opus-4.6
 tools: ['read', 'search', 'edit', 'execute']
 user-invocable: false
 disable-model-invocation: false
