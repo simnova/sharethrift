@@ -1,1 +1,1 @@
-export { createRealApplicationServicesFactory } from './real-application-services.ts';
+export { createMockApplicationServicesFactory } from './mock-application-services.ts';

@@ -1,15 +1,16 @@
 import { chromium, type Browser, type BrowserContext } from '@playwright/test';
 import { BrowseTheWeb } from '../abilities/browse-the-web.ts';
 import { MongoDBTestServer, TestOAuth2Server, TestViteServer, TestApiServer, initTestEnvironment, cleanupTestEnvironment, setMongoConnectionString } from './servers/index.ts';
-import { defaultActor } from '@sthrift-verification/test-support/test-data';
+import { defaultActor } from '@sthrift-verification/verification-shared/test-data';
+import { apiSettings } from '@sthrift-verification/verification-shared/settings';
 import { performOAuth2Login } from './oauth2-login.ts';
-import { apiSettings } from './local-settings.ts';
 
-const isDeployedE2E = process.env.E2E_DEPLOYED === 'true';
-const deployedApiUrl = process.env.E2E_API_URL;
-const deployedUiUrl = process.env.E2E_UI_URL;
-const deployedIgnoreHttpsErrors = process.env.E2E_IGNORE_HTTPS_ERRORS === 'true';
-const skipDeployedUiLogin = process.env.E2E_SKIP_UI_LOGIN === 'true';
+const isDeployedE2E = process.env['E2E_DEPLOYED'] === 'true';
+const deployedApiUrl = process.env['E2E_API_URL'];
+const deployedUiUrl = process.env['E2E_UI_URL'];
+const deployedIgnoreHttpsErrors =
+	process.env['E2E_IGNORE_HTTPS_ERRORS'] === 'true';
+const skipDeployedUiLogin = process.env['E2E_SKIP_UI_LOGIN'] === 'true';
 
 // Shared infrastructure — persists across scenarios within a single test run
 let mongoDBServer: MongoDBTestServer | undefined;
@@ -123,7 +124,7 @@ async function initDeployedE2E(): Promise<void> {
 
 	apiUrl = deployedApiUrl;
 	browserBaseUrl = deployedUiUrl;
-	accessToken = process.env.E2E_ACCESS_TOKEN ?? undefined;
+	accessToken = process.env['E2E_ACCESS_TOKEN'] ?? undefined;
 
 	if (!browser) {
 		browser = await chromium.launch({ headless: true, args: ['--headless=new'] });

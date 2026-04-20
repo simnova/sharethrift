@@ -1,11 +1,11 @@
 import { isAgent } from 'std-env';
 
 const terminalFormat = isAgent
-	? './src/shared/support/formatters/agent-formatter.ts'
+	? '../verification-shared/src/formatters/agent-formatter.ts'
 	: 'progress-bar';
 
 export default {
-	paths: ['../test-support/src/scenarios/feature-files/**/*.feature'],
+	paths: ['../verification-shared/src/scenarios/**/*.feature'],
 	import: [
 		'src/world.ts',
 		'src/step-definitions/index.ts',

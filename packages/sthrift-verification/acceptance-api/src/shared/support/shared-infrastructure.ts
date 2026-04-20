@@ -1,6 +1,9 @@
-import { GraphQLTestServer, MongoDBTestServer } from './servers/index.ts';
-import { createRealApplicationServicesFactory } from './application-services/index.ts';
-import { apiSettings } from './local-settings.ts';
+import {
+	GraphQLTestServer,
+	MongoDBTestServer,
+} from '@sthrift-verification/verification-shared/servers';
+import { apiSettings } from '@sthrift-verification/verification-shared/settings';
+import { createMockApplicationServicesFactory } from './application-services/index.ts';
 
 // Shared infrastructure — persists across scenarios within a single test run
 let mongoDBServer: MongoDBTestServer | undefined;
@@ -17,20 +20,37 @@ export function getState(): InfrastructureState {
 }
 
 export async function stopAll(): Promise<void> {
-	if (graphQLServer) { await graphQLServer.stop(); graphQLServer = undefined; }
-	if (mongoDBServer) { await mongoDBServer.stop(); mongoDBServer = undefined; }
+	if (graphQLServer) {
+		await graphQLServer.stop();
+		graphQLServer = undefined;
+	}
+	if (mongoDBServer) {
+		await mongoDBServer.stop();
+		mongoDBServer = undefined;
+	}
 	apiUrl = undefined;
 	mongoSeeded = false;
 }
 
-async function ensureMongoDBServer(options?: { port?: number; dbName?: string }): Promise<MongoDBTestServer> {
+async function ensureMongoDBServer(options?: {
+	port?: number;
+	dbName?: string;
+}): Promise<MongoDBTestServer> {
 	if (mongoDBServer) return mongoDBServer;
 
-	const connectionString = options?.port ? apiSettings.cosmosDbConnectionString : '';
+	const connectionString = options?.port
+		? apiSettings.cosmosDbConnectionString
+		: '';
 
-	if (connectionString && await MongoDBTestServer.isReachable(connectionString)) {
+	if (
+		connectionString &&
+		(await MongoDBTestServer.isReachable(connectionString))
+	) {
 		if (!mongoSeeded) {
-			await MongoDBTestServer.seedData(connectionString, options?.dbName ?? apiSettings.cosmosDbName);
+			await MongoDBTestServer.seedData(
+				connectionString,
+				options?.dbName ?? apiSettings.cosmosDbName,
+			);
 			mongoSeeded = true;
 		}
 		mongoDBServer = new MongoDBTestServer();
@@ -48,8 +68,10 @@ export async function ensureApiServers(): Promise<void> {
 	if (graphQLServer) return;
 
 	const mongo = await ensureMongoDBServer();
-	const realFactory = createRealApplicationServicesFactory(mongo.getServiceMongoose());
-	graphQLServer = new GraphQLTestServer(realFactory);
+	const mockApplicationServicesFactory = createMockApplicationServicesFactory(
+		mongo.getServiceMongoose(),
+	);
+	graphQLServer = new GraphQLTestServer(mockApplicationServicesFactory);
 	await graphQLServer.start();
 	apiUrl = graphQLServer.getUrl();
 }

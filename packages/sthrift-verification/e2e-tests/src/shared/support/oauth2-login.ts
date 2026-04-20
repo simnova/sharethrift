@@ -6,8 +6,8 @@ import {
 	type E2EOnboardingPage,
 	LoginPage,
 	OnboardingPage,
-} from '@sthrift-verification/test-support/pages';
-import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
+} from '@sthrift-verification/verification-shared/pages';
+import { PlaywrightPageAdapter } from '@sthrift-verification/verification-shared/pages/playwright';
 
 function loadTestCredentials(): { username: string; password: string } {
 	// Load defaults from .env.test, overridable by actual environment variables
@@ -25,8 +25,11 @@ function loadTestCredentials(): { username: string; password: string } {
 	}
 
 	return {
-		username: process.env.E2E_USERNAME || defaults.E2E_USERNAME || 'test@sharethrift.local',
-		password: process.env.E2E_PASSWORD || defaults.E2E_PASSWORD || '',
+		username:
+			process.env['E2E_USERNAME'] ||
+			defaults['E2E_USERNAME'] ||
+			'test@sharethrift.local',
+		password: process.env['E2E_PASSWORD'] || defaults['E2E_PASSWORD'] || '',
 	};
 }
 

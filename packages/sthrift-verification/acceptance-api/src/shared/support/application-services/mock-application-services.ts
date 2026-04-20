@@ -1,17 +1,17 @@
+import type { MessagingService } from '@cellix/service-messaging-base';
 import type { ServiceMongoose } from '@cellix/service-mongoose';
-import { Persistence } from '@sthrift/persistence';
-import {
-	buildApplicationServicesFactory,
-	type ApplicationServicesFactory,
-} from '@sthrift/application-services';
-import type { ApiContextSpec } from '@sthrift/context-spec';
+import type { PaymentService } from '@cellix/service-payment-base';
 import type {
 	TokenValidation,
 	TokenValidationResult,
 } from '@cellix/service-token-validation';
-import type { MessagingService } from '@cellix/service-messaging-base';
-import type { PaymentService } from '@cellix/service-payment-base';
-import { defaultActor } from '@sthrift-verification/test-support/test-data';
+import {
+	type ApplicationServicesFactory,
+	buildApplicationServicesFactory,
+} from '@sthrift/application-services';
+import type { ApiContextSpec } from '@sthrift/context-spec';
+import { Persistence } from '@sthrift/persistence';
+import { defaultActor } from '@sthrift-verification/verification-shared/test-data';
 
 function createMockTokenValidation(): TokenValidation {
 	return {
@@ -36,7 +36,8 @@ function createNoOpMessagingService(): MessagingService {
 		throw new Error('MessagingService not implemented in mongodb test session');
 	};
 	const service: MessagingService = {
-		startUp: () => Promise.resolve(service) as ReturnType<MessagingService['startUp']>,
+		startUp: () =>
+			Promise.resolve(service) as ReturnType<MessagingService['startUp']>,
 		shutDown: () => Promise.resolve(),
 		getConversation: notImplemented,
 		sendMessage: notImplemented,
@@ -53,7 +54,8 @@ function createNoOpPaymentService(): PaymentService {
 		throw new Error('PaymentService not implemented in mongodb test session');
 	};
 	const service: PaymentService = {
-		startUp: () => Promise.resolve(service) as ReturnType<PaymentService['startUp']>,
+		startUp: () =>
+			Promise.resolve(service) as ReturnType<PaymentService['startUp']>,
 		shutDown: () => Promise.resolve(),
 		generatePublicKey: notImplemented,
 		createCustomerProfile: notImplemented,
@@ -77,7 +79,7 @@ function createNoOpPaymentService(): PaymentService {
 	return service;
 }
 
-export function createRealApplicationServicesFactory(
+export function createMockApplicationServicesFactory(
 	serviceMongoose: ServiceMongoose,
 ): ApplicationServicesFactory {
 	const dataSourcesFactory = Persistence(serviceMongoose);
@@ -89,11 +91,15 @@ export function createRealApplicationServicesFactory(
 		paymentService: createNoOpPaymentService(),
 	};
 
-	const realFactory = buildApplicationServicesFactory(apiContextSpec);
+	const mockApplicationServicesFactory =
+		buildApplicationServicesFactory(apiContextSpec);
 
 	return {
 		forRequest: (_rawAuthHeader, hints) => {
-			return realFactory.forRequest('Bearer test-token', hints);
+			return mockApplicationServicesFactory.forRequest(
+				'Bearer test-token',
+				hints,
+			);
 		},
 	};
 }
