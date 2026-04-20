@@ -20,6 +20,7 @@
 		"std-env": "^4.0.0"
 	},
 	"devDependencies": {
+		"@ant-design/v5-patch-for-react-19": "^1.0.3",
 		"@ant-design/icons": "^6.1.0",
 		"@cellix/typescript-config": "workspace:*",
 		"@cucumber/messages": "^32.2.0",
