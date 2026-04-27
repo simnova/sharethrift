@@ -15,7 +15,7 @@
 		"@serenity-js/console-reporter": "^3.37.2",
 		"@serenity-js/core": "^3.37.2",
 		"@serenity-js/cucumber": "^3.37.2",
-		"@serenity-js/serenity-bdd": "^3.37.2",
+		"@serenity-js/serenity-bdd": "^3.42.2",
 		"std-env": "^4.0.0"
 	},
 	"devDependencies": {
