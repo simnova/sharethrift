@@ -95,6 +95,8 @@ Write a Markdown file structured as:
 
 ## RULES
 
+- Use the built-in `search` and `read` tools to locate prior audits, reports, and workflow-produced files. Reserve `execute` for branch creation, staging, commit/push, and `gh` PR commands.
+- Do NOT use shell `find`/`grep` for repo exploration when the built-in `search` tool can do the job.
 - Every finding or applied-fix entry in the final audit MUST be traceable to an analyzer report — don't invent new items.
 - Prioritization is your call — you CAN demote an analyzer's "high" to medium if the broader context warrants it, but explain why.
 - If an analyzer reported `status: "error"`, call it out in the Appendix and in the Executive Summary.

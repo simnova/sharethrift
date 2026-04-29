@@ -84,6 +84,8 @@ You audit **security waivers** — each override/ignore is a deliberate decision
 
 ## RULES
 
+- Use the built-in `search` and `read` tools to locate waiver files and inspect manifests. Reserve `execute` for `pnpm`, minimal lockfile verification, and other commands that cannot be handled by the built-in tools.
+- Do NOT use shell `find`/`grep` for repo exploration when the built-in `search` tool can do the job.
 - You MAY run `pnpm why`, `pnpm list`, `pnpm outdated`, and read lockfiles.
 - You MAY modify waiver files and any strictly-necessary lockfile updates, in addition to your report.
 - If you modify any dependency waiver, `.snyk` policy, package manifest override, or lockfile, you MUST run `pnpm run snyk` before writing the report and include the result in `appliedFixes[].verification`.

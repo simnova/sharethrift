@@ -54,6 +54,8 @@ If there's no prior audit, set `priorAudit: null` and use `HEAD~50..HEAD` (or re
 
 ## RULES
 
+- Use the built-in `search` and `read` tools for locating audits and repo files. Reserve `execute` for the required `git` commands and other minimal command-line verification.
+- Do NOT use shell `find`/`grep` for repo exploration when the built-in `search` tool can do the job.
 - Do NOT do any deep analysis — that's the analyzers' job.
 - Do NOT modify any code.
 - Write `scope.json` as your final action.
