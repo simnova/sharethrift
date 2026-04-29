@@ -1,172 +1,176 @@
 # Codebase Audit — 2026-04-29
 
-**Scope**: Full-repo baseline audit — all packages under `apps/`, `packages/cellix/`, `packages/sthrift/`, `packages/sthrift-verification/`
-**Commits since last audit**: 50 (`33efee808 (2025-12-01)` → `HEAD 79bc7bb5a (2026-04-29)`, ~5 months)
-**Prior audit**: _none — this is the inaugural baseline_
+**Scope**: Full repository weekly audit — sharethrift monorepo (pnpm/Turborepo, TypeScript, Azure Functions, Apollo GraphQL, MongoDB/Mongoose, React)
+**Commits since last audit**: 7 (`e3857ff74..7ad2eded4`) — 41 files changed, +2 059 / −776 lines (2026-04-22 → HEAD)
+**Prior audit**: _none — this is the baseline_
 
 ---
 
 ## Executive Summary
 
-This is the first weekly audit for the ShareThrift monorepo and establishes the baseline across security, code quality, and performance dimensions. **One Critical finding requires immediate action**: four GraphQL appeal-request resolvers (two mutations, two queries) are deployed to production without any authentication or authorization checks, as evidenced by explicit `TODO SECURITY` comments in the code. Seven High-severity findings cover unbounded database queries that will cause OOM failures at scale, a silently non-functional event-handler integration, and an exception-as-control-flow pattern in auth code that can silently grant access during DB errors. The overall health of the codebase is **below target for a production system**: multiple core features (appeal-request retrieval, conversation messaging, event-driven side-effects) are stubbed out and silently non-functional. **No auto-fixes were applied by any analyzer during this run.** Note: the `DependencySecurity.json` report was not present in the session directory and could not be read; dependency security findings summarized in this report are drawn from the task-provided context only and should be validated independently.
+This is the **first weekly audit** for the sharethrift monorepo and establishes the baseline for all future trend comparisons. Across three analysis domains (Dependency Security, Code Quality, and Performance) the audit surfaced **1 Critical, 7 High, 9 Medium, 5 Low, and 4 Info** findings (26 total). The dominant risk areas are **unenforced access control in the GraphQL layer** and **unbounded MongoDB queries that will degrade or crash the API under real load**. One safe mechanical fix was automatically applied during this audit: nine obsolete Snyk ignore waivers were pruned from `.snyk`, leaving only the five live waivers that are still needed. No production secrets were exposed and no breaking build changes were detected. The team should address the single Critical finding (unauthenticated admin endpoint) and the dead permissions middleware before next release.
 
 ---
 
 ## Trend vs Last Week
 
-_No prior audit exists. This table establishes the baseline._
+_No prior audit exists — the following table is the baseline._
 
 | Severity | Last Week | This Week | Δ |
 |----------|-----------|-----------|---|
-| Critical | —         | 1         | — |
-| High     | —         | 6         | — |
-| Medium   | —         | 12        | — |
-| Low      | —         | 6         | — |
-| Info     | —         | 0         | — |
-| **Total**| —         | **25**    | — |
+| Critical | —         | 1         | baseline |
+| High     | —         | 7         | baseline |
+| Medium   | —         | 9         | baseline |
+| Low      | —         | 5         | baseline |
+| Info     | —         | 4         | baseline |
 
-> One finding was deduplicated: `console.log` in production hot paths was flagged by both CodeQuality (medium, PII risk) and Performance (low, overhead). The merged entry is carried at **Medium** (higher severity wins). Raw finding counts per analyzer: CodeQuality 17, Performance 9, DependencySecurity not read.
-
-**New this week**: 25 (baseline) | **Resolved since last week**: N/A | **Still open**: 25
+**New this week**: 26 (all baseline) | **Resolved since last week**: — | **Still open**: 26
 
 ---
 
 ## Auto-Fixed During This Audit
 
-No safe mechanical fixes were applied by any analyzer during this audit run. All findings below represent open work.
+| File | Fix | Applied By |
+|------|-----|------------|
+| `.snyk` | Removed 9 obsolete ignore waivers for packages whose vulnerable versions are no longer present in the lockfile: `node-forge`, `express`, `@pnpm/npm-conf`, `undici`, `qs`, `ajv`, `minimatch`, `yauzl`, `svgo`. Snyk still passes with 5 remaining live waivers. | DependencySecurity |
 
 ---
 
 ## Critical Findings
 
-### [CQ-H1] Appeal-request GraphQL resolvers deployed without authentication or authorization
+### CRIT-1 · `adminListings` and `unblockListing` resolvers have no authentication or role check
 
-**Severity**: Critical (promoted from analyzer-rated High — live security hole in deployed API)
-**Location**: `packages/sthrift/graphql/src/schema/types/listing-appeal-request.resolvers.ts:29` and `user-appeal-request.resolvers.ts:27`
-**Category**: Security / Missing Auth
+**Source**: CodeQuality | **File**: `packages/sthrift/graphql/src/schema/types/item-listing.resolvers.ts` lines 62, 111
 
-All four appeal-request operations — `createListingAppealRequest`, `getAllListingAppealRequests`, `createUserAppealRequest`, `getAllUserAppealRequests` — are live in the deployed API with explicit `TODO SECURITY` comments and zero access control. Specifically:
+**Description**: The `adminListings` resolver serves paginated listing data intended for the admin dashboard but performs zero authentication — no `requireCurrentAdminUser`, no JWT verification, nothing. A code comment explicitly acknowledges this: `// Admin-note: role-based authorization should be implemented here (security)`. The same gap exists on `unblockListing` (line 111). Any unauthenticated HTTP client can call these queries over the public API and receive or mutate the full listing dataset.
 
-- **`createListingAppealRequest` / `createUserAppealRequest`**: Do not verify (1) the caller is authenticated, (2) the `userId` in the payload matches the session user, or (3) the caller is actually blocked by `blockerId`. Any unauthenticated user can submit appeal requests on behalf of any other user.
-- **`getAllListingAppealRequests` / `getAllUserAppealRequests`**: Do not verify admin role. Any caller can enumerate all appeal records.
-
-**Recommendation**: Apply `requireAuthentication(context)` to the create mutations and `requireCurrentAdminUser(context)` to the getAll queries immediately — both helpers already exist in `resolver-helper.ts`. This must not be deferred; the endpoints are reachable today. Apply symmetrically to both `listing-appeal-request.resolvers.ts` and `user-appeal-request.resolvers.ts`.
+**Recommendation**: Add `await requireCurrentAdminUser(context)` at the top of both `adminListings` and `unblockListing` before any application-service call, matching the pattern already used in `admin-user.resolvers.ts`. Add an integration test asserting that unauthenticated callers receive a 401/403.
 
 ---
 
 ## High Priority
 
-### [PERF-H1] `getAllUsers()` loads the entire user collection into Node memory
+### HIGH-1 · `graphql-middleware` permissions layer is built but never wired to Apollo Server
 
-**Severity**: High
-**Location**: `packages/sthrift/persistence/src/datasources/readonly/user/personal-user/personal-user.read-repository.ts:73`; also `admin-user.read-repository.ts:79`
-**Category**: Performance / Unbounded Query
+**Source**: CodeQuality | **File**: `packages/sthrift/graphql/src/init/handler.ts:26`
 
-Both `PersonalUserReadRepositoryImpl.getAllUsers()` and `AdminUserReadRepositoryImpl.getAllUsers()` call `this.getAll()` — an unbounded `find({})` — then apply text filtering, status filtering, sorting, and pagination entirely in JavaScript. At 50k users, every admin dashboard page-turn allocates and processes the full user collection on the Node.js heap. At 500k users, this will OOM an Azure Function.
+`resolver-builder.ts` collects all `*.permissions.{js,cjs,mjs}` files and exports a `permissions` Resolvers object, but `handler.ts` calls `applyMiddleware(combinedSchema)` with **no middleware arguments**. The entire permission rule layer is silently dead at runtime. Any resolver relying on those permission files for access control has no enforcement.
 
-**Recommendation**: Push all filtering, sorting, and pagination into MongoDB: use `$regex`/text index for search, `$in` for status, `.sort()`, `.skip()`, `.limit()`, and a parallel `countDocuments()` call.
+**Recommendation**: Either pass `applyMiddleware(combinedSchema, permissions)` as intended, or remove the permissions infrastructure and document that inline resolver checks are the canonical pattern. This is currently misleading infrastructure — it looks like a safety net but provides none.
 
 ---
 
-### [PERF-H2] Home listings page fetches ALL listings; filtering and pagination are client-side
+### HIGH-2 · `listingType` setter on `ItemListing` aggregate bypasses the visa permission model
 
-**Severity**: High
-**Location**: `packages/sthrift/ui-sharethrift-route-root/src/components/pages/home/components/listings-page.container.tsx:26`
-**Category**: Performance / Unbounded Query
+**Source**: CodeQuality | **File**: `packages/sthrift/domain/src/domain/contexts/listing/item/item-listing.aggregate.ts:394`
 
-`ListingsPageContainer` issues `itemListings` with no arguments → `queryAll` → `ItemListingReadRepositoryImpl.getAll()` → `find({})` with no limit. Every anonymous visitor downloads all listing documents (including `sharingHistory`, `reports`, `schemaVersion` fields not rendered on the page). Category, search, and pagination are handled client-side via `.filter()` + `.slice()`.
+Every other mutable property on `ItemListing` guards its setter with `this.visa.determineIf(...)`. The `listingType` setter has no guard — any code holding an `ItemListing` reference can change `listingType` unconditionally, silently bypassing the DDD permission model.
 
-**Recommendation**: Migrate to a server-side paginated query (reuse the `adminListings` paginated resolver pattern). Pass `page`, `pageSize`, `searchText`, and `category` as GraphQL arguments and remove client-side filter/slice logic.
+**Recommendation**: Apply `if (!this.isNew && !this.visa.determineIf((permissions) => permissions.canUpdateItemListing))` identical to the `title` setter (line 220). If `listingType` is internal-only, make it `private set` or restrict it to factory methods.
 
 ---
 
-### [PERF-H3] `getPaged()` counts results by fetching all matching documents instead of `countDocuments()`
+### HIGH-3 · Seven CyberSource `PaymentService` methods unconditionally throw `"Method not implemented"`
 
-**Severity**: High
-**Location**: `packages/sthrift/persistence/src/datasources/readonly/listing/item/item-listing.read-repository.ts:149`
-**Category**: Performance / Unbounded Query
+**Source**: CodeQuality | **File**: `packages/cellix/service-payment-cybersource/src/index.ts:1072`
 
-`ItemListingReadRepositoryImpl.getPaged()` obtains the total document count via `this.mongoDataSource.find(query).then((result) => result?.length ?? 0)` — an unlimited find that scans every matching document just to count them. The page data is fetched separately with a proper limit, but the count query doubles every admin/sharer dashboard request's DB cost.
+`createPlan`, `listOfPlans`, `getPlan`, `createSubscription`, `updatePlanForSubscription`, `listOfSubscriptions`, and `suspendSubscription` satisfy the interface at compile time but unconditionally throw at runtime. Any code path that reaches these methods will produce an unhandled exception in production.
 
-**Recommendation**: Replace with `this.model.countDocuments(query).exec()` and run it in parallel with the data query via `Promise.all`.
+**Recommendation**: Implement or remove each method. For truly out-of-scope methods, add a `// NOT_IMPLEMENTED: tracked in <issue-link>` comment and add a guard in the service factory to ensure application code never calls them. Do not rely solely on TypeScript satisfying the interface.
 
 ---
 
-### [CQ-H2] Event-handler integration module is a no-op shell — all domain/integration events are silently dropped
+### HIGH-4 · N+1 DB queries from GraphQL field resolvers (PopulateUserFromField / PopulateItemListingFromField / PopulateConversationParticipantFromField)
 
-**Severity**: High
-**Location**: `packages/sthrift/event-handler/src/handlers/integration/index.ts:6`; `domain/index.ts:4`
-**Category**: Code Quality / Dead Code
+**Source**: Performance | **File**: `packages/sthrift/graphql/src/schema/resolver-helper.ts:134`
 
-`RegisterIntegrationEventHandlers` contains only `console.log(domainDataSource)`. `RegisterDomainEventHandlers` is an empty stub. The event bus is wired into the startup path. Any events that should trigger side-effects (notifications, projections, audit trails) are silently discarded.
+Three field-resolver helpers each issue one individual `queryById` DB call per parent object. `PopulateConversationParticipantFromField` tries AdminUser then PersonalUser, firing up to 2N queries per field. For a user with 20 conversations needing `sharer + reserver + listing` populated, 60–120 additional MongoDB round-trips fire per request.
 
-**Recommendation**: Implement the handlers, or remove the wiring and replace with `throw new Error('Integration event handlers not implemented')` so the gap is visible in CI.
+**Recommendation**: Introduce DataLoader (or Apollo's built-in batching) for `PersonalUser`, `AdminUser`, and `ItemListing` lookups. A `getByIds(ids)` method backed by `{ _id: { $in: ids } }` would reduce N lookups to 1 per request batch.
 
 ---
 
-### [CQ-H3] Appeal-request `getAll` always returns an empty list — feature is silently non-functional
+### HIGH-5 · `getAllUsers` loads entire User collection into Node.js memory before filtering/sorting/paginating
 
-**Severity**: High
-**Location**: `packages/sthrift/persistence/src/datasources/readonly/appeal-request/listing-appeal-request/listing-appeal-request.read-repository.ts:51`; `user-appeal-request.read-repository.ts:51`
-**Category**: Code Quality / Stub / Workaround
+**Source**: Performance | **File**: `packages/sthrift/persistence/src/datasources/readonly/user/personal-user/personal-user.read-repository.ts:73`
 
-Both appeal-request read repositories implement `getAll` as `Promise.resolve({ items: [], total: 0, ... })`. Admin operators querying all appeal requests always receive an empty table with no error.
+`PersonalUserReadRepositoryImpl.getAllUsers` calls `find({})` with no filter or limit and performs search, status filtering, sorting, and pagination entirely in JavaScript. At 10 000 users this consumes significant process heap; at 100 000 it will OOM the function.
 
-**Recommendation**: Implement the MongoDB query using the `reservation-request.read-repository.ts` pagination pattern as a reference. This pairs with [CQ-H1] — fix auth first, then implement the data layer.
+**Recommendation**: Push filtering, sorting, and pagination into MongoDB: `find({ 'account.email': { $regex: … } }).sort(…).skip(offset).limit(pageSize)` with a separate `countDocuments(filter)` call. Add a compound index on `{ 'account.email': 1, isBlocked: 1 }`.
 
 ---
 
-### [CQ-H4] Exception-as-control-flow in auth helper can silently grant public access during DB errors
+### HIGH-6 · `itemListings` query returns all listing documents with no limit or pagination
 
-**Severity**: High
-**Location**: `packages/sthrift/graphql/src/schema/resolver-helper.ts:27`; also `:63`, `:87`
-**Category**: Code Quality / Security / Workaround
+**Source**: Performance | **File**: `packages/sthrift/graphql/src/schema/types/item-listing.resolvers.ts:53`
 
-`getUserByEmail`, `requireCurrentAdminUser`, and `PopulateConversationParticipantFromField` use `try/catch` to distinguish "user not found in AdminUser table" from "user not found in PersonalUser table." A genuine DB connectivity error or timeout is caught, treated as "user not found," and `currentViewerIsAdmin` returns `false` — meaning a flaky database can quietly grant public access to any resolver guarded by that boolean.
+The `itemListings` resolver calls `queryAll({})` which flows to a raw `find({})` with no filter, sort, or limit. The entire `Listing` collection (including full description, image arrays, history) is returned to the caller in one unbounded payload.
 
-**Recommendation**: Redesign so `queryByEmail` returns `null` for not-found (rather than throwing). Infrastructure exceptions should propagate to the caller as GraphQL errors.
+**Recommendation**: Either remove the endpoint (paginated `adminListings` / `myListingsAll` already exist for the known consumers) or add mandatory `page`/`pageSize` arguments with a hard cap (e.g. `limit(500)`). _Note: this resolver also carries the auth gap flagged in CRIT-1._
 
 ---
 
-## Medium / Low / Info
+### HIGH-7 · Pagination total count computed by full collection scan instead of `countDocuments`
 
-### Medium Findings
+**Source**: Performance | **File**: `packages/sthrift/persistence/src/datasources/readonly/listing/item/item-listing.read-repository.ts:149`
 
-| ID | Title | Location | Category |
-|----|-------|----------|----------|
-| CQ-M1 | 10+ files byte-for-byte identical between `ui-admin-route-root` and `ui-sharethrift-route-root` | `ui-admin-route-root/…/conversation-box.container.tsx:1` | Duplication |
-| CQ-M2 | Arch-unit `checkCodeMetrics` / `checkCodeQuality` are permanently disabled stubs | `packages/cellix/arch-unit-tests/src/checks/code-metrics.ts:15` | Dead Code |
-| CQ-M3 | Conversation messages always return empty — messaging integration is non-functional | `packages/sthrift/persistence/…/conversation.domain-adapter.ts:214` | Workaround |
-| CQ-M4 | `as unknown as ClientSession` shim in appeal-request read repositories | `…/user-appeal-request.read-repository.ts:34` | Workaround |
-| CQ-M5 | `console.log` in hot resolver paths logs PII (`aboutMe`, payment args) | `packages/sthrift/graphql/…/personal-user.resolvers.ts:63` | PII / Perf _(merged with PERF-L1)_ |
-| CQ-M6 | `message.info('TODO: Navigate to user profile…')` surfaces placeholder text to admin users | `…/admin-users-table.container.tsx:133` | UX / Workaround |
-| CQ-M7 | Broad `error as Error` cast in 14 catch blocks — non-Error throws yield `undefined` error messages | `…/listing-appeal-request.resolvers.ts:76` | Type Safety |
-| CQ-M8 | Hardcoded mock `PLAN_OPTIONS` array in production `settings-view.tsx` | `…/settings-view.tsx:27` | Workaround |
-| PERF-M1 | N+1 GraphQL field resolvers for `sharer`, `reserver`, `listing` (up to 120 extra DB queries per page) | `packages/sthrift/graphql/src/schema/resolver-helper.ts:134` | N+1 |
-| PERF-M2 | Missing compound indexes on `ReservationRequest` and `ItemListing` high-cardinality query fields | `…/reservation-request.model.ts:18` | Missing Index |
-| PERF-M3 | `getListingRequestsBySharerId` does unbounded pre-query to collect listing IDs for a sharer | `…/reservation-request.read-repository.ts:219` | N+1 / Two-step Query |
-| PERF-M4 | `ApolloClient` is recreated on every OAuth token refresh, wiping `InMemoryCache` | `packages/sthrift/ui-shared/src/shared/apollo-connection.tsx:97` | Client Performance |
+`ItemListingReadRepositoryImpl.getPaged` computes the `total` by calling `this.mongoDataSource.find(query)` (no limit) and reading `.length` — loading all matching documents into memory just to count them. This doubles latency and memory usage on every paginated listing request.
 
-**Recommended fix for CQ-M5 / PERF-L1 (merged)**: Replace all `console.log/warn/error` in production resolver paths with the project's OTEL tracer or a structured logger. Immediately audit `processPayment`, `refundPayment`, and `update.ts:77` for PII — these log billing details and `aboutMe` content to the log stream today.
+**Recommendation**: Expose `countDocuments(query)` on `MongoDataSource` and use it here. The write-side `ItemListingRepository.getBySharerIDWithPagination` already uses `Promise.all([find(…), countDocuments(…)])` correctly — align the read-side.
 
-**Recommended fix for PERF-M2**: Add the following Mongoose indexes:
-```
-ReservationRequestSchema.index({ listing: 1, state: 1 })
-ReservationRequestSchema.index({ reserver: 1, state: 1 })
-ItemListingSchema.index({ sharer: 1 })
-ItemListingSchema.index({ state: 1 })
+---
+
+## Medium Priority
+
+| ID | Source | File | Title |
+|----|--------|------|-------|
+| MED-1 | CodeQuality | `packages/sthrift/graphql/src/schema/types/personal-user.resolvers.ts:114` | `personalUserUpdate` missing admin permission check — any authenticated user may attempt to update another user's record (TODO: SECURITY comment present) |
+| MED-2 | CodeQuality | `packages/cellix/service-payment-cybersource/src/index.ts:711` | `createPaymentRequest` rejects with a plain object literal instead of an `Error` instance — breaks `instanceof Error` checks, logging libraries, and debuggers |
+| MED-3 | CodeQuality | `packages/sthrift/domain/src/domain/contexts/listing/item/item-listing.aggregate.ts:380` | `expiresAt` setter missing `!this.isNew` guard — visa permission check fires during `getNewInstance`, potentially throwing a spurious `PermissionError` on new record construction |
+| MED-4 | CodeQuality | `packages/sthrift/graphql/src/schema/resolver-helper.ts:21` | Exception-as-control-flow in `getUserByEmail` swallows real infrastructure errors (DB timeout, serialization failure) as silent `null` — repeat pattern in `requireCurrentAdminUser` and `PopulateConversationParticipantFromField` |
+| MED-5 | CodeQuality | `packages/cellix/service-payment-cybersource/src/index.ts:1` | File-wide `biome-ignore-all` for `noExplicitAny` and `useAwait` across ~1 100 lines — masks new violations; should be replaced with targeted per-line suppressions |
+| MED-6 | Performance | `packages/sthrift/data-sources-mongoose-models/src/models/reservation-request/reservation-request.model.ts:18` | `ReservationRequest` collection has no indexes on `reserver`, `listing`, or `state` — all reservation queries (including the overlap check on every `createReservationRequest` mutation) are full collection scans |
+| MED-7 | Performance | `packages/sthrift/data-sources-mongoose-models/src/models/conversations/conversation.model.ts:16` | `Conversation` collection missing indexes on `sharer` and `reserver` — `conversationsByUser` (called on messages page) does a full COLLSCAN |
+| MED-8 | Performance | `packages/sthrift/graphql/src/schema/resolver-helper.ts:71` | `currentViewerIsAdmin` called multiple times per request with no memoization — can issue 1+N `queryByEmail` hits to `AdminUser` collection per request on list views |
+| MED-9 | Performance | `packages/sthrift/persistence/src/datasources/readonly/reservation-request/reservation-request/reservation-request.read-repository.ts:219` | `getListingRequestsBySharerId` pre-fetches all sharer listing IDs with no limit before building `$in` filter — large `$in` arrays degrade MongoDB index selectivity toward a near-COLLSCAN |
+
+**MongoDB index additions for MED-6 and MED-7:**
+```js
+// ReservationRequest
+ReservationRequestSchema.index({ reserver: 1, state: 1 });
+ReservationRequestSchema.index({ listing: 1, state: 1 });
+ReservationRequestSchema.index({ listing: 1, state: 1, reservationPeriodStart: 1, reservationPeriodEnd: 1 });
+
+// Conversation
+ConversationSchema.index({ sharer: 1 });
+ConversationSchema.index({ reserver: 1 });
+ConversationSchema.index({ sharer: 1, reserver: 1, listing: 1 }, { unique: true });
 ```
 
-### Low Findings
+---
 
-| ID | Title | Location |
-|----|-------|----------|
-| CQ-L1 | Near-identical `createValidatedStringAccessors` utility in domain and persistence layers | `packages/sthrift/domain/…/admin-user.helpers.ts:1` |
-| CQ-L2 | `versionKey: 'version'` commented out in Role model — inconsistent schema vs other models | `…/role.model.ts:8` |
-| CQ-L3 | `EMAIL_PATTERN` regex not unicode-compliant (live TODO in shared validation) | `…/patterns.ts:8` |
-| CQ-L4 | Unsafe string-to-union downcast for appeal-request `state` — invalid values accepted at type level | `…/listing-appeal-request.resolvers.ts:91` |
-| CQ-L5 | Bare `@ts-ignore` without rationale in `test-utils/index.ts` — should be `@ts-expect-error` | `packages/cellix/test-utils/src/index.ts:9` |
-| PERF-L2 | Text search uses unindexed `$regex` on 4 fields (full-collection scan per search keystroke) | `…/item-listing.read-repository.ts:105` |
+## Low Priority
+
+| ID | Source | File | Title |
+|----|--------|------|-------|
+| LOW-1 | CodeQuality | `packages/cellix/service-payment-mock/src/index.ts:467` | `isSuccess` hardcoded `true` — `else` block (error path) is permanently unreachable dead code |
+| LOW-2 | CodeQuality | `packages/cellix/service-payment-mock/src/index.ts:59` | Marked-for-deletion accessor + ~230 lines of commented-out code (`setDefaultCustomerPaymentInstrument`, `voidPayment`) — delete and rely on git history |
+| LOW-3 | CodeQuality | `packages/cellix/service-messaging-mock/src/index.test.ts:4` | Only test is `expect(true).toBe(true)` — the non-trivial `ServiceMessagingMock` class has zero meaningful test coverage |
+| LOW-4 | Performance | `apps/ui-sharethrift/package.json:29` | Full `lodash` (CJS, ~75 KB gzipped) imported as runtime dependency — switch to `lodash-es` or individual named imports for tree-shaking |
+| LOW-5 | Performance | `packages/sthrift/ui-sharethrift-route-root/src/components/pages/my-listings/components/all-listings-table.tsx:56` | `columns` array and `getActionButtons` function recreated on every render — wrap in `useMemo`/`useCallback` to prevent unnecessary Ant Design Table cell re-renders |
+
+---
+
+## Info
+
+| ID | Source | Finding |
+|----|--------|---------|
+| INFO-1 | DependencySecurity | `sirv 2.0.4` waiver in `.snyk` remains live via `@docusaurus/core → webpack-bundle-analyzer`. Keep until Docusaurus upgrades. |
+| INFO-2 | DependencySecurity | `js-yaml 3.14.2` waiver remains live via `gray-matter` in `apps/docs`. Keep until chain drops 3.x. |
+| INFO-3 | DependencySecurity | Two `lodash 4.17.23` waivers remain live across GraphQL Code Generator, azurite, and sequelize transitive deps. No fixed version available upstream. |
+| INFO-4 | DependencySecurity | `@apollo/protobufjs 1.2.7` waiver remains live — Apollo Server 5.5.0 still hard-pins it via usage-reporting internals. Keep until Apollo publishes a fixed chain. |
+
+_These waivers are accepted risks with no immediate action required. Review each quarter or when the upstream packages release new versions._
 
 ---
 
@@ -174,66 +178,61 @@ ItemListingSchema.index({ state: 1 })
 
 ### DependencySecurity
 
-> ⚠️ **Report not available** — `DependencySecurity.json` was not present in the session reports directory. The findings below are drawn from the task-provided context only and have not been validated from a machine-readable report.
-
-From context: 16 findings total — 10 obsolete `.snyk` waivers that should be cleaned up (vulnerabilities they covered are fixed upstream), 2 high-severity items (axios pinned at 1.15.0 with known CVEs; lodash waivers with a fix now available), 2 waivers confirmed still needed, and 2 unclear. No auto-fixes were applied. **Action required**: run the dependency security agent in isolation to produce a machine-readable report, then address the 2 high-severity upgrade items.
+The dependency surface is in good shape after this week's lockfile regeneration. Nine Snyk ignore waivers were found to be obsolete (the previously vulnerable package versions are no longer present in `pnpm-lock.yaml`) and were automatically removed from `.snyk`. Five waivers remain necessary: `sirv`, `js-yaml`, two `lodash`, and `@apollo/protobufjs` — all tied to transitive dependencies in toolchain or Apollo internals where no upstream fix is yet available. No new CVEs were introduced by this week's commits. The pnpm override policies in `root package.json` continue to keep the application's own dependency tree on patched versions.
 
 ### CodeQuality
 
-17 findings across 62 files reviewed. The most critical items are two live security holes (missing auth on appeal resolvers, exception-as-control-flow granting access during DB errors). The codebase carries a significant backlog of "TODO" stubs that are silently non-functional at runtime: event handlers, conversation message loading, appeal-request pagination, and plan-option data sourcing are all stubs. Code duplication between the two UI route packages (10+ identical files) is a maintainability risk that will compound bug-fix effort. PII exposure via `console.log` in production resolver paths is a compliance risk that warrants immediate audit.
+12 findings across three themes: **security gaps in the GraphQL layer** (permissions middleware never wired, two admin resolvers with no auth, a permission-bypass setter, and a missing role check), **brittle error handling** (exception-as-control-flow swallowing infrastructure errors, plain-object rejections), and **dead-code accumulation** (seven unimplemented CyberSource stubs, 230+ commented-out lines in the payment mock, a stub test suite, blanket linter suppressions). The highest-priority items cluster in `packages/sthrift/graphql/` and `packages/cellix/service-payment-cybersource/`. The `ItemListing` domain aggregate also has two setter inconsistencies that could cause subtle permission-bypass or construction errors.
 
 ### Performance
 
-9 findings across 42 files reviewed. Three high-severity unbounded-query patterns will cause linear memory growth and eventual OOM at scale: the home page fetches every listing for every visitor, both admin user repositories load entire user collections for every paginated request, and the paginated listing count path performs a redundant full-table scan. The N+1 resolver pattern (up to 120 DB round-trips per page load) and missing Mongoose indexes compound the query overhead. The Apollo client being recreated on token refresh causes unnecessary full-data refetches every 15–30 minutes for active sessions.
+10 findings in the backend data layer and frontend. The most severe are: N+1 queries from three generic field resolver helpers in `resolver-helper.ts` (can fire 60–120 extra DB round-trips per request), two unbounded queries that load entire MongoDB collections into Lambda/function memory (`getAllUsers`, `itemListings`), and a total-count scan that doubles the cost of every paginated listing request. Secondary issues include missing indexes on `ReservationRequest` and `Conversation` collections (all reservation and conversation queries are full collection scans), redundant per-request admin-status lookups with no memoization, and an unbounded listing ID pre-fetch before building a `$in` reservation filter. On the frontend, the full CJS lodash bundle and un-memoized Ant Design column definitions are lower-urgency but worth cleaning up with the lodash dependency work.
 
 ---
 
 ## Recommended Action Plan
 
-Priority order: fix what's live and broken in production first, then scalability, then maintainability.
+### Sprint 1 — Security (fix before next release)
 
-1. **[Immediate — this sprint] Secure the appeal-request API** (`CQ-H1`)
-   Apply `requireAuthentication` to create mutations and `requireCurrentAdminUser` to getAll queries in both `listing-appeal-request.resolvers.ts` and `user-appeal-request.resolvers.ts`. Ship as a hotfix PR.
+1. **[CRIT-1]** Wire auth on `adminListings` + `unblockListing`: add `await requireCurrentAdminUser(context)` to both resolvers. Add failing integration tests first to confirm the gap.
+2. **[HIGH-1]** Resolve the dead permissions middleware: decide canonical pattern (wire `permissions` into `applyMiddleware` or delete the infrastructure and document inline-check approach). Ship the decision, not the ambiguity.
+3. **[HIGH-2]** Add visa guard to `listingType` setter on `ItemListing` to match all peer setters.
+4. **[MED-1]** Add admin or ownership guard to `personalUserUpdate` (resolve the TODO: SECURITY comment).
 
-2. **[This sprint] Audit and remove PII-leaking `console.log` calls** (`CQ-M5` / `PERF-L1`)
-   Audit `processPayment`, `refundPayment`, and `personal-user.resolvers.ts` / `update.ts` for PII in log output. Replace all production `console.log` with structured OTEL logging. This is a compliance risk today.
+### Sprint 2 — Performance (critical data-layer fixes)
 
-3. **[This sprint] Fix exception-as-control-flow in auth helpers** (`CQ-H4`)
-   Redesign `queryByEmail` to return `null` on not-found. DB errors must propagate. This closes the silent-grant-on-DB-failure vulnerability.
+5. **[HIGH-4]** Introduce DataLoader for `PersonalUser`, `AdminUser`, and `ItemListing` batch lookups in `resolver-helper.ts`. This is the highest-leverage performance fix.
+6. **[HIGH-5 + HIGH-6 + HIGH-7]** Push filtering/sorting/pagination into MongoDB for `getAllUsers`, add a limit/pagination to `itemListings`, and replace the count scan in `getPaged` with `countDocuments`. These can be bundled as one PR on the persistence layer.
+7. **[MED-6 + MED-7]** Add the six missing Mongoose schema indexes (ReservationRequest, Conversation) listed above — this is a one-file change per model with high impact on query performance.
 
-4. **[This sprint] Add MongoDB indexes** (`PERF-M2`, `PERF-L2`)
-   Add compound indexes on `ReservationRequest(listing, state)`, `ReservationRequest(reserver, state)`, `ItemListing(sharer)`, `ItemListing(state)`, and a text index on `ItemListing(title, description, category, location)`. Zero-downtime: indexes build in the background on MongoDB.
+### Sprint 3 — Quality & Maintainability
 
-5. **[This sprint] Fix the three unbounded-query OOM hazards** (`PERF-H1`, `PERF-H2`, `PERF-H3`)
-   Push filtering/sort/pagination into MongoDB for `getAllUsers()` (both repos), migrate the home listings page to a server-side paginated GraphQL query, and replace the count `find()` with `countDocuments()`. Group these into a single "pagination hardening" PR.
+8. **[HIGH-3]** Either implement or formally remove the seven stub CyberSource methods. Guard the service factory so they can never be called at runtime until implemented.
+9. **[MED-4]** Fix exception-as-control-flow in `getUserByEmail` and related helpers — catch only typed `NotFoundError`, re-throw everything else.
+10. **[MED-2 + MED-3]** Fix `expiresAt` setter `!isNew` guard; create `PaymentError extends Error` to replace plain-object rejection in `createPaymentRequest`.
+11. **[MED-8 + MED-9]** Memoize `currentViewerIsAdmin` result in GraphQL context; replace two-step listing-ID pre-fetch with `$lookup` aggregation or denormalised `sharerId` field on `ReservationRequest`.
+12. **[MED-5]** Replace file-wide `biome-ignore-all` in CyberSource service with targeted per-line suppressions.
 
-6. **[Next sprint] Implement appeal-request read repository and event handlers** (`CQ-H3`, `CQ-H2`)
-   Implement `getAll` pagination for both appeal-request read repositories (mirrors `reservation-request.read-repository.ts`). Separately, implement or explicitly tombstone the integration/domain event handlers so the gap is visible in CI.
+### Backlog
 
-7. **[Next sprint] Introduce DataLoader for N+1 GraphQL resolvers** (`PERF-M1`)
-   Add per-request DataLoader instances for `PersonalUser.getById`, `AdminUser.getById`, and `ItemListing.getById`. This eliminates up to 120 extra DB round-trips per page for conversation and reservation-request lists.
-
-8. **[Next sprint] Fix ApolloClient recreation on token refresh** (`PERF-M4`)
-   Move the `ApolloClient` instance to a `useRef` or module-level singleton. Inject the current token dynamically inside the auth link closure.
-
-9. **[Within the month] Consolidate duplicated UI components** (`CQ-M1`)
-   Move the 10+ identical files from `ui-admin-route-root` and `ui-sharethrift-route-root` to `packages/sthrift/ui-shared`. Add an arch-unit test to prevent regression.
-
-10. **[Within the month] Address dependency security findings** (DependencySecurity — pending report)
-    Once the DependencySecurity report is re-run: upgrade axios past the pinned 1.15.0, resolve lodash waivers where a fix is available, and prune the 10 obsolete `.snyk` waivers.
-
-11. **[Backlog] Harden type safety and clean up workarounds** (`CQ-M7`, `CQ-L3`, `CQ-L4`, `CQ-L5`, `CQ-M4`, `CQ-M8`, `CQ-M6`, `CQ-L2`, `CQ-M2`)
-    Extract a shared `extractErrorMessage(e: unknown)` utility and apply it to all 14 catch blocks. Fix the unicode email regex. Add state validation for appeal-request inputs. Upgrade `@ts-ignore` to `@ts-expect-error`. Wire `PLAN_OPTIONS` to the GraphQL API. Replace TODO toast messages. Document or resolve the Role model `versionKey` decision. Activate or remove the arch-unit code-metric stubs.
+13. **[LOW-1 + LOW-2]** Delete dead code in `service-payment-mock` (unreachable else branch, commented-out blocks, deletion markers).
+14. **[LOW-3]** Replace no-op test in `service-messaging-mock` with meaningful lifecycle and mapping unit tests.
+15. **[LOW-4]** Migrate `apps/ui-sharethrift` from `lodash` (CJS) to `lodash-es` for proper tree-shaking.
+16. **[LOW-5]** Wrap `AllListingsTable` column definitions in `useMemo`/`useCallback`.
 
 ---
 
 ## Appendix: Raw Analyzer Reports
 
-| File | Status | Notes |
-|------|--------|-------|
-| `scope.json` | ✅ completed | 50 commits, 9 contributors, 2062 files changed, 158k lines added |
-| `CodeQuality.json` | ✅ completed | 17 findings (4H, 8M, 5L) across 62 files |
-| `Performance.json` | ✅ completed | 9 findings (3H, 4M, 2L) across 42 files |
-| `DependencySecurity.json` | ❌ **not found** | File was not present in the session reports directory. Findings from this analyzer are unavailable for this audit. Re-run the DependencySecurity agent independently. |
+| Report | Agent | Status | Findings |
+|--------|-------|--------|----------|
+| `scope.json` | Scoper | ✅ completed | 7-commit window, 41 files changed, no prior audit |
+| `DependencySecurity.json` | DependencySecurity | ✅ completed | 1 auto-fix applied, 4 medium (retained waivers), 1 info |
+| `CodeQuality.json` | CodeQuality | ✅ completed | 4 high, 5 medium, 3 low |
+| `Performance.json` | Performance | ✅ completed | 4 high, 4 medium, 2 low |
 
-_All findings in this audit are traceable to the analyzer reports above. No findings were invented. One finding was deduplicated (console.log PII/overhead flagged by both CodeQuality at medium and Performance at low; carried as Medium). The Critical severity on [CQ-H1] was promoted by the synthesizer from the analyzer-rated High because the endpoints are live in production with no access control._
+No analyzers reported `status: "error"`. All four reports were consumed without issue.
+
+---
+
+_Generated by the sharethrift weekly audit pipeline · 2026-04-29_
