@@ -6,6 +6,7 @@ Best practices for managing dependencies in a Turborepo monorepo.
 
 Dependencies belong in the package that uses them, not the root.
 
+
 ```bash
 # Good: Install in specific package
 pnpm add react --filter=@repo/ui
