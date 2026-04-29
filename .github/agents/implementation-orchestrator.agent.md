@@ -4,6 +4,8 @@ description: "Strict workflow orchestrator: Plan → Implement (verified) → Re
 model: claude-opus-4.6
 tools: ['agent']
 agents: ['Planner', 'Implementor', 'Reviewer', 'Finalizer']
+user-invocable: true
+disable-model-invocation: false
 hooks:
   SessionStart:
     - type: command

@@ -96,6 +96,12 @@ ignore:
         expires: '2026-07-01T00:00:00.000Z'
         created: '2026-04-01T00:00:00.000Z'
 
+  'SNYK-JS-APOLLOPROTOBUFJS-16321047':
+    - '* > @apollo/protobufjs@1.2.7':
+        reason: 'Apollo Server 5.5.0 still pulls @apollo/usage-reporting-protobuf@4.1.1, which hard-pins @apollo/protobufjs@1.2.7. pnpm metadata shows no newer usage-reporting-protobuf or server dependency chain to move to, and forcing @apollo/protobufjs@2.0.0 did not satisfy Snyk. This package is only used by Apollo usage-reporting internals, not by application code directly.'
+        expires: '2026-07-31T00:00:00.000Z'
+        created: '2026-04-29T00:00:00.000Z'
+
 # Snyk Code exclusions for local development tooling
 exclude:
   code:

@@ -4,6 +4,8 @@ description: "Strict weekly audit workflow orchestrator: Scope → Analyze (para
 model: claude-opus-4.6
 tools: ['agent']
 agents: ['Scoper', 'DependencySecurity', 'CodeQuality', 'Performance', 'Synthesizer']
+user-invocable: true
+disable-model-invocation: false
 hooks:
   SessionStart:
     - type: command
