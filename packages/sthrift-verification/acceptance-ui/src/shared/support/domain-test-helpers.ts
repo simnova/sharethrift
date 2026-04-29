@@ -4,18 +4,27 @@ export const ONE_DAY_MS = 86_400_000;
 export const DEFAULT_SHARING_PERIOD_DAYS = 30;
 
 // Resolve Gherkin pronoun references to actor names
-export function resolveActorName(actorName: string, defaultName = 'Alice'): string {
+export function resolveActorName(
+	actorName: string,
+	defaultName = 'Alice',
+): string {
 	return /^(she|he|they)$/i.test(actorName) ? defaultName : actorName;
 }
 
 type ItemListingProps = Domain.Contexts.Listing.ItemListing.ItemListingProps;
-type ItemListingEntityReference = Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
-type ReservationRequestProps = Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps;
+type ItemListingEntityReference =
+	Domain.Contexts.Listing.ItemListing.ItemListingEntityReference;
+type ReservationRequestProps =
+	Domain.Contexts.ReservationRequest.ReservationRequest.ReservationRequestProps;
 type UserEntityReference = Domain.Contexts.User.UserEntityReference;
 type Passport = Domain.Passport;
 
 export function makeTestPassport(): Passport {
-	const alwaysAllow = { determineIf: (fn: (p: Record<string, boolean>) => boolean) => fn(new Proxy({}, { get: () => true })) };
+	const alwaysAllow = {
+		determineIf: (fn: (permissions: Record<string, boolean>) => boolean) =>
+			fn(new Proxy({}, { get: () => true }) as Record<string, boolean>),
+	};
+
 	return {
 		listing: { forItemListing: () => alwaysAllow },
 		user: {
@@ -37,7 +46,10 @@ interface TestUserData {
 	lastName: string;
 }
 
-export function makeTestUserData(actorName: string, overrides?: Partial<TestUserData>): TestUserData {
+export function makeTestUserData(
+	actorName: string,
+	overrides?: Partial<TestUserData>,
+): TestUserData {
 	const defaultId = `test-user-${actorName.toLowerCase()}`;
 	const defaultEmail = `${actorName.toLowerCase()}@test.com`;
 	const defaultFirstName = actorName;
@@ -51,7 +63,14 @@ export function makeTestUserData(actorName: string, overrides?: Partial<TestUser
 	};
 }
 
-export function makeSharerUser(overrides: Partial<{ id: string; email: string; firstName: string; lastName: string }> = {}): UserEntityReference {
+export function makeSharerUser(
+	overrides: Partial<{
+		id: string;
+		email: string;
+		firstName: string;
+		lastName: string;
+	}> = {},
+): UserEntityReference {
 	return {
 		id: overrides.id ?? 'test-sharer-1',
 		userType: 'personal-user',
@@ -84,9 +103,15 @@ export function makeSharerUser(overrides: Partial<{ id: string; email: string; f
 					transactions: {
 						items: [],
 						getNewItem: () => ({}),
-						addItem: () => { /* no-op */ },
-						removeItem: () => { /* no-op */ },
-						removeAll: () => { /* no-op */ },
+						addItem: () => {
+							/* no-op */
+						},
+						removeItem: () => {
+							/* no-op */
+						},
+						removeAll: () => {
+							/* no-op */
+						},
 					},
 				},
 			},
@@ -97,8 +122,11 @@ export function makeSharerUser(overrides: Partial<{ id: string; email: string; f
 	} as unknown as UserEntityReference;
 }
 
-export function makeItemListingProps(overrides: Partial<ItemListingProps> = {}): ItemListingProps {
+export function makeItemListingProps(
+	overrides: Partial<ItemListingProps> = {},
+): ItemListingProps {
 	const sharer = makeSharerUser();
+
 	return {
 		id: overrides.id ?? `listing-${Date.now()}`,
 		sharer,
@@ -107,8 +135,10 @@ export function makeItemListingProps(overrides: Partial<ItemListingProps> = {}):
 		description: 'Default Description',
 		category: 'Electronics',
 		location: 'Seattle, WA',
-		sharingPeriodStart: new Date(Date.now() + 86_400_000),
-		sharingPeriodEnd: new Date(Date.now() + 86_400_000 * 30),
+		sharingPeriodStart: new Date(Date.now() + ONE_DAY_MS),
+		sharingPeriodEnd: new Date(
+			Date.now() + ONE_DAY_MS * DEFAULT_SHARING_PERIOD_DAYS,
+		),
 		state: 'Active',
 		images: [],
 		sharingHistory: [],
@@ -121,7 +151,9 @@ export function makeItemListingProps(overrides: Partial<ItemListingProps> = {}):
 	} as ItemListingProps;
 }
 
-export function makeListingReference(overrides: Partial<{ id: string; state: string }> = {}): ItemListingEntityReference {
+export function makeListingReference(
+	overrides: Partial<{ id: string; state: string }> = {},
+): ItemListingEntityReference {
 	return {
 		id: overrides.id ?? `listing-${Date.now()}`,
 		sharer: makeSharerUser(),
@@ -139,11 +171,16 @@ export function makeListingReference(overrides: Partial<{ id: string; state: str
 	} as ItemListingEntityReference;
 }
 
-export function makeReservationRequestProps(overrides: Partial<ReservationRequestProps> = {}): ReservationRequestProps {
+export function makeReservationRequestProps(
+	overrides: Partial<ReservationRequestProps> = {},
+): ReservationRequestProps {
 	const listing = makeListingReference();
 	const reserver = makeSharerUser({ id: 'reserver-1' });
-	const tomorrow = new Date(Date.now() + 86_400_000);
-	const nextMonth = new Date(Date.now() + 86_400_000 * 30);
+	const tomorrow = new Date(Date.now() + ONE_DAY_MS);
+	const nextMonth = new Date(
+		Date.now() + ONE_DAY_MS * DEFAULT_SHARING_PERIOD_DAYS,
+	);
+
 	return {
 		id: overrides.id ?? `rr-${Date.now()}`,
 		state: 'Requested',

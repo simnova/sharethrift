@@ -1,0 +1,45 @@
+{
+	"name": "@sthrift-verification/verification-shared",
+	"version": "1.0.0",
+	"description": "Shared Serenity verification utilities, servers, scenarios, and helpers",
+	"private": true,
+	"type": "module",
+	"exports": {
+		"./test-data": "./src/test-data/index.ts",
+		"./pages": "./src/pages/index.ts",
+		"./helpers": "./src/helpers/index.ts",
+		"./formatters": "./src/formatters/index.ts",
+		"./servers": "./src/servers/index.ts",
+		"./settings": "./src/settings/index.ts",
+		"./pages/jsdom": "./src/pages/adapters/jsdom-adapter.ts",
+		"./pages/playwright": "./src/pages/adapters/playwright-adapter.ts"
+	},
+	"dependencies": {
+		"@apollo/server": "^5.5.0",
+		"@cellix/service-mongoose": "workspace:*",
+		"@cucumber/cucumber": "^12.7.0",
+		"@cucumber/messages": "^32.2.0",
+		"@sthrift/graphql": "workspace:*",
+		"@sthrift/domain": "workspace:*",
+		"@sthrift/application-services": "workspace:*",
+		"graphql": "^16.12.0",
+		"graphql-depth-limit": "^1.1.0",
+		"graphql-middleware": "^6.1.35",
+		"mongodb": "^6.15.0",
+		"mongodb-memory-server": "^10.2.0"
+	},
+	"devDependencies": {
+		"@cellix/typescript-config": "workspace:*",
+		"@types/graphql-depth-limit": "^1.1.6",
+		"@types/node": "^24.6.1",
+		"typescript": "^5.4.5"
+	},
+	"peerDependencies": {
+		"@playwright/test": ">=1.40.0",
+		"@testing-library/react": ">=16.0.0",
+		"jsdom": ">=24.0.0"
+	},
+	"peerDependenciesMeta": {
+		"jsdom": { "optional": true }
+	}
+}

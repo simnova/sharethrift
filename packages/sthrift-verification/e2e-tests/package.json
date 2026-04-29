@@ -19,16 +19,11 @@
 		"std-env": "^4.0.0"
 	},
 	"devDependencies": {
-		"@cellix/service-mongoose": "workspace:*",
 		"@cellix/typescript-config": "workspace:*",
 		"@cucumber/messages": "^32.2.0",
 		"@playwright/test": "^1.52.0",
-		"@sthrift/application-services": "workspace:*",
-		"@sthrift/domain": "workspace:*",
-		"@sthrift-verification/test-support": "workspace:*",
+		"@sthrift-verification/verification-shared": "workspace:*",
 		"@types/node": "^24.6.1",
-		"mongodb": "^6.15.0",
-		"mongodb-memory-server": "^10.2.0",
 		"rimraf": "^6.0.1",
 		"tsx": "^4.20.3",
 		"typescript": "^5.4.5"

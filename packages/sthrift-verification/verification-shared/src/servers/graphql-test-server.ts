@@ -1,12 +1,12 @@
 import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
-import { applyMiddleware } from 'graphql-middleware';
-import depthLimit from 'graphql-depth-limit';
 import type {
 	ApplicationServices,
 	ApplicationServicesFactory,
 } from '@sthrift/application-services';
 import { combinedSchema } from '@sthrift/graphql';
+import depthLimit from 'graphql-depth-limit';
+import { applyMiddleware } from 'graphql-middleware';
 
 interface GraphContext {
 	applicationServices: ApplicationServices;
@@ -34,7 +34,7 @@ export class GraphQLTestServer {
 			schema: securedSchema,
 			allowBatchedHttpRequests: true,
 			validationRules: [depthLimit(MAX_QUERY_DEPTH)],
-			introspection: true, // Enable for tests
+			introspection: true,
 		});
 
 		const { url } = await startStandaloneServer(this.server, {

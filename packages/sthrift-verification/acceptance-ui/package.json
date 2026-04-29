@@ -20,13 +20,14 @@
 		"std-env": "^4.0.0"
 	},
 	"devDependencies": {
+		"@ant-design/v5-patch-for-react-19": "^1.0.3",
 		"@ant-design/icons": "^6.1.0",
 		"@cellix/typescript-config": "workspace:*",
 		"@cucumber/messages": "^32.2.0",
 		"@sthrift/domain": "workspace:*",
 		"@sthrift/ui-shared": "workspace:*",
 		"@sthrift/ui-sharethrift-route-root": "workspace:*",
-		"@sthrift-verification/test-support": "workspace:*",
+		"@sthrift-verification/verification-shared": "workspace:*",
 		"@testing-library/react": "^16.3.2",
 		"@types/jsdom": "^21.1.7",
 		"@types/node": "^24.6.1",

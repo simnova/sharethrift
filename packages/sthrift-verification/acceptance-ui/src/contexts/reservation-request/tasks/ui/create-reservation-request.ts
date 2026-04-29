@@ -6,8 +6,8 @@ import { MemoryRouter } from 'react-router-dom';
 import {
 	ReservationPage,
 	type UiReservationPage,
-} from '@sthrift-verification/test-support/pages';
-import { JsdomPageAdapter } from '@sthrift-verification/test-support/pages/jsdom';
+} from '@sthrift-verification/verification-shared/pages';
+import { JsdomPageAdapter } from '@sthrift-verification/verification-shared/pages/jsdom';
 import {
 	ReservationCard,
 	ReservationRequestForm,

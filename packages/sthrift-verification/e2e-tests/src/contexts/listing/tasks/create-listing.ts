@@ -7,8 +7,8 @@ import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
 import {
 	type E2EListingPage,
 	ListingPage,
-} from '@sthrift-verification/test-support/pages';
-import { PlaywrightPageAdapter } from '@sthrift-verification/test-support/pages/playwright';
+} from '@sthrift-verification/verification-shared/pages';
+import { PlaywrightPageAdapter } from '@sthrift-verification/verification-shared/pages/playwright';
 import type { ListingDetails, ListingNotes } from '../types.ts';
 
 const TEST_IMAGE_PATH = path.resolve(
@@ -180,10 +180,10 @@ export class CreateListing extends Task {
 		}
 
 		// Extract listing ID from the GraphQL mutation response
-		const listing = mutationResult.data?.listing as
+		const listing = mutationResult.data?.['listing'] as
 			| Record<string, unknown>
 			| undefined;
-		const listingId = String(listing?.id ?? 'e2e-unknown');
+		const listingId = String(listing?.['id'] ?? 'e2e-unknown');
 
 		await actor.attemptsTo(
 			notes<ListingNotes>().set('lastListingId', listingId),
@@ -231,8 +231,14 @@ export class CreateListing extends Task {
 					const result = entry?.data?.[mutationName];
 					if (result) {
 						mutationData = result as Record<string, unknown>;
-						if (result?.status?.success === false) {
-							serverError = result.status.errorMessage ?? `${mutationName} failed`;
+						const status = result['status'] as
+							| Record<string, unknown>
+							| undefined;
+						if (status?.['success'] === false) {
+							serverError =
+								(typeof status['errorMessage'] === 'string'
+									? status['errorMessage']
+									: undefined) ?? `${mutationName} failed`;
 						}
 					}
 				}

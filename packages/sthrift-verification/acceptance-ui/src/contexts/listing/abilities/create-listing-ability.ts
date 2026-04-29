@@ -1,7 +1,7 @@
 import { Ability } from '@serenity-js/core';
 import { Domain } from '@sthrift/domain';
 import { makeItemListingProps, makeSharerUser, ONE_DAY_MS, DEFAULT_SHARING_PERIOD_DAYS } from '../../../shared/support/domain-test-helpers.ts';
-import { listings } from '@sthrift-verification/test-support/test-data';
+import { listings } from '@sthrift-verification/verification-shared/test-data';
 
 type Passport = Domain.Passport;
 type ItemListingProps = Domain.Contexts.Listing.ItemListing.ItemListingProps;
