@@ -15,7 +15,7 @@ function handleScoperStop(state) {
 	state.phase = "scoping_complete";
 	return [
 		"The Scoper has completed.",
-		`You MUST now spawn ALL analyzer agents in parallel: ${AUDIT_ANALYZERS.join(", ")}.`,
+		`You MUST now spawn all analyzer agents in parallel: ${AUDIT_ANALYZERS.join(", ")}.`,
 		"Each analyzer MUST write its report to the reports dir.",
 		"The hook verifies report files; you are BLOCKED from spawning the Synthesizer until every analyzer has a report on disk.",
 	].join(" ");
@@ -45,18 +45,11 @@ function handleAnalyzerStop(state, agentType, sessionId) {
 
 function handleSynthesizerStop(state) {
 	state.synthesizerCompleted = true;
-	state.phase = "synthesis_complete";
-	return [
-		"The Synthesizer has completed and the audit markdown is ready.",
-		"You MUST now spawn the Publisher agent.",
-		"The Publisher creates the audit branch, commit, push, and pull request.",
-	].join(" ");
-}
-
-function handlePublisherStop(state) {
-	state.publisherCompleted = true;
 	state.phase = "done";
-	return "The Publisher has completed. The audit workflow is DONE. Stop the session now.";
+	return [
+		"The Synthesizer has completed and the audit markdown is published.",
+		"The weekly audit workflow is DONE. Stop the session now.",
+	].join(" ");
 }
 
 function handleSubagentStop(input) {
@@ -77,8 +70,6 @@ function handleSubagentStop(input) {
 		guidance = handleAnalyzerStop(state, agentType, input.sessionId);
 	} else if (agentType === "Synthesizer") {
 		guidance = handleSynthesizerStop(state);
-	} else if (agentType === "Publisher") {
-		guidance = handlePublisherStop(state);
 	}
 
 	saveState(input.sessionId, state);

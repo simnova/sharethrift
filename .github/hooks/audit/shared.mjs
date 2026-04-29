@@ -16,18 +16,16 @@ import { join } from "node:path";
  *
  * Analyzer agents (run in parallel during "analyzing"):
  *   - DependencySecurity
- *   - PracticeCompliance
  *   - CodeQuality
- *   - TestQuality
  *   - Performance
- *   - DocumentationDx
  *
  * Synthesizer (runs during "synthesizing"): reads every analyzer's
- * report file and produces the prioritized audit output.
+ * report file, produces the prioritized audit output, and publishes it
+ * by creating a branch, commit, push, and pull request.
  *
  * Enforcement:
- *   - Analyzer phase cannot advance to Synthesizer until EVERY expected
- *     analyzer has written a report file with status != "error".
+ *   - Analyzer phase cannot advance to Synthesizer until EVERY analyzer
+ *     has written a report file.
  *   - "error" status is allowed through (Synthesizer decides what to do)
  *     but a MISSING report blocks advancement.
  *   - Session cannot stop until Synthesizer completes.
@@ -35,18 +33,14 @@ import { join } from "node:path";
 
 export const AUDIT_ANALYZERS = [
 	"DependencySecurity",
-	"PracticeCompliance",
 	"CodeQuality",
-	"TestQuality",
 	"Performance",
-	"DocumentationDx",
 ];
 
 export const VALID_AGENTS = [
 	"Scoper",
 	...AUDIT_ANALYZERS,
 	"Synthesizer",
-	"Publisher",
 ];
 
 export const MAX_STOP_BLOCKS = 3;
@@ -57,7 +51,7 @@ export const PHASE_ALLOWED_AGENTS = {
 	scoping_complete: AUDIT_ANALYZERS,
 	analyzing: AUDIT_ANALYZERS.concat(["Synthesizer"]),
 	synthesizing: [],
-	synthesis_complete: ["Publisher"],
+	synthesis_complete: [],
 	publishing: [],
 	done: [],
 };
@@ -67,15 +61,14 @@ export const PHASE_GUIDANCE = {
 	scoping:
 		"The Scoper agent is running. WAIT for it to complete before doing anything else.",
 	scoping_complete:
-		"The scope is ready. You MUST now spawn ALL analyzer agents in parallel, in a single response. Each analyzer MUST receive REPORTS_DIR and SCOPE_PATH, and each MUST write its JSON report to the reports dir.",
+		"The scope is ready. You MUST now spawn all audit analyzer agents in parallel, in a single response. Each analyzer MUST receive REPORTS_DIR and SCOPE_PATH, and each MUST write its JSON report to the reports dir.",
 	analyzing:
-		"Analyzers are working. When ALL expected analyzer reports are present, spawn the Synthesizer. If any analyzer is missing its report, you MUST re-spawn that analyzer BEFORE spawning the Synthesizer.",
+		"Analyzers are working. When ALL analyzer reports are present, spawn the Synthesizer. If any analyzer is missing its report, you MUST re-spawn that analyzer BEFORE spawning the Synthesizer.",
 	synthesizing:
-		"The Synthesizer is running. WAIT for it to complete before doing anything else.",
+		"The Synthesizer is running. WAIT for it to write and publish the audit before doing anything else.",
 	synthesis_complete:
-		"The audit markdown is ready. You MUST now spawn the Publisher agent to create a branch, commit, push, and open a pull request for the audit.",
-	publishing:
-		"The Publisher is running. WAIT for it to complete before doing anything else.",
+		"The audit markdown is published. The weekly audit workflow is complete; stop the session.",
+	publishing: "Publishing is handled by the Synthesizer in the weekly audit workflow.",
 	done: "Workflow is COMPLETE. You should stop now.",
 };
 
@@ -110,7 +103,6 @@ export function createInitialState() {
 		scoperCompleted: false,
 		analyzersCompleted: [],
 		synthesizerCompleted: false,
-		publisherCompleted: false,
 		stopBlockCount: 0,
 		processedEvents: [],
 	};
@@ -165,12 +157,11 @@ export function workflowSummary(state) {
 		"",
 		"═══ MANDATORY AUDIT WORKFLOW (enforced by hooks) ═══",
 		"Step 1: Spawn Scoper → gathers baseline + trend data",
-		"Step 2: Spawn analyzer agents → one per audit domain, all in parallel",
+		"Step 2: Spawn analyzer agents → all in parallel",
 		`        (${AUDIT_ANALYZERS.join(", ")})`,
-		"        (hook verifies every expected analyzer report exists)",
-		"Step 3: Spawn Synthesizer → reads all reports, produces final output",
-		"Step 4: Spawn Publisher → creates branch, commit, push, and PR",
-		"Step 5: Stop → audit complete",
+		"        (hook verifies every analyzer report exists)",
+		"Step 3: Spawn Synthesizer → reads all reports, produces final output, publishes PR",
+		"Step 4: Stop → audit complete",
 		"════════════════════════════════════════════════════════",
 		`Current phase: ${state.phase}`,
 		`Next action: ${PHASE_GUIDANCE[state.phase]}`,

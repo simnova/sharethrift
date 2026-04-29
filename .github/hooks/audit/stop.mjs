@@ -28,7 +28,6 @@ function handleStop(input) {
 		`Scoper: ${state.scoperCompleted ? "✓" : "✗"}`,
 		`Analyzers completed: ${state.analyzersCompleted.length}`,
 		`Synthesizer: ${state.synthesizerCompleted ? "✓" : "✗"}`,
-		`Publisher: ${state.publisherCompleted ? "✓" : "✗"}`,
 	].join(" | ");
 
 	return {
@@ -39,7 +38,7 @@ function handleStop(input) {
 				`[AUDIT INCOMPLETE] Cannot stop. Phase: "${state.phase}".`,
 				`Progress: ${progress}`,
 				`Required action: ${PHASE_GUIDANCE[state.phase]}`,
-				"The audit is not complete until the Publisher finishes.",
+				"The audit is not complete until the Synthesizer finishes.",
 			].join("\n"),
 		},
 	};

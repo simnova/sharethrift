@@ -31,11 +31,6 @@ function handleSubagentStart(input) {
 		state.phase === "analyzing"
 	) {
 		state.phase = "synthesizing";
-	} else if (
-		agentType === "Publisher" &&
-		state.phase === "synthesis_complete"
-	) {
-		state.phase = "publishing";
 	}
 
 	saveState(input.sessionId, state);
