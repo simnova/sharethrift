@@ -96,6 +96,12 @@ ignore:
         expires: '2026-07-01T00:00:00.000Z'
         created: '2026-04-01T00:00:00.000Z'
 
+  'SNYK-JS-APOLLOPROTOBUFJS-16321047':
+    - '* > @apollo/protobufjs':
+        reason: 'No fixed version available (affects all versions). Transitive dependency of @apollo/server used only for internal Apollo usage-reporting protobuf schemas — protobuf definitions are static/internal, not user-supplied. CVE-2026-41242 requires attacker-controlled protobuf type names which is not possible in this usage.'
+        expires: '2026-10-30T00:00:00.000Z'
+        created: '2026-04-30T00:00:00.000Z'
+
 # Snyk Code exclusions for local development tooling
 exclude:
   code:

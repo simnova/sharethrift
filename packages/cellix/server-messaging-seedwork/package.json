@@ -22,7 +22,7 @@
 	},
 	"scripts": {
 		"prebuild": "biome lint",
-		"build": "tsc --build",
+		"build": "tsgo --build",
 		"clean": "rimraf dist"
 	},
 	"dependencies": {

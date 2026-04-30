@@ -14,13 +14,13 @@
 	},
 	"scripts": {
 		"prebuild": "biome lint",
-		"build": "tsc --build",
-		"watch": "tsc --watch",
+		"build": "tsgo --build",
+		"watch": "tsgo --watch",
 		"lint": "biome lint",
 		"clean": "rimraf dist",
 		"test": "vitest run",
 		"test:watch": "vitest",
-    "test:coverage:node": "vitest run --coverage"
+		"test:coverage:node": "vitest run --coverage"
 	},
 	"devDependencies": {
 		"rimraf": "^6.0.1",

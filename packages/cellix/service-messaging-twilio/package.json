@@ -12,7 +12,7 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json",
+		"build": "tsgo --project tsconfig.json",
 		"test": "vitest run",
 		"test:watch": "vitest"
 	},

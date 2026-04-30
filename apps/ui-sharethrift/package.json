@@ -6,10 +6,10 @@
 	"scripts": {
 		"start": "vite",
 		"dev": "portless sharethrift.localhost vite",
-		"build": "tsc -b && vite build",
+		"build": "tsgo -b && vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
-		"tswatch": "tsc --build --watch",
+		"tswatch": "tsgo --build --watch",
 		"storybook": "portless storybook.sharethrift.localhost storybook dev --no-open",
 		"build-storybook": "storybook build",
 		"test": "echo 'UI Storybook tests disabled (memory constraints)'",

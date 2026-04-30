@@ -10,9 +10,9 @@
 
 	"scripts": {
 		"prebuild": "biome lint",
-		"build": "tsc --build",
+		"build": "tsgo --build",
 		"test:coverage:node": "vitest run --coverage",
-		"watch": "tsc -w",
+		"watch": "tsgo -w",
 		"test:watch": "vitest",
 		"lint": "biome lint",
 		"clean": "rimraf dist",

@@ -7,7 +7,7 @@
 	"types": "dist/src/index.d.ts",
 
 	"scripts": {
-		"build": "tsc --build",
+		"build": "tsgo --build",
 		"clean": "rimraf dist",
 		"start": "node dist/src/index.js",
 		"dev": "node dist/src/index.js",

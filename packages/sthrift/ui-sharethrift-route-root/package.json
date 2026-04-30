@@ -9,7 +9,7 @@
 		"./test-utils": "./src/test-utils/index.ts"
 	},
 	"scripts": {
-		"build": "tsc -b",
+		"build": "tsgo -b",
 		"lint": "biome lint",
 		"test:arch": "vitest run --config vitest.arch.config.ts"
 	},

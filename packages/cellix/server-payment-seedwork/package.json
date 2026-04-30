@@ -15,7 +15,7 @@
 	},
 	"scripts": {
 		"prebuild": "biome lint",
-		"build": "tsc --build && node dist/src/copy-assets.js",
+		"build": "tsgo --build && node dist/src/copy-assets.js",
 		"clean": "rimraf dist"
 	},
 	"peerDependencies": {

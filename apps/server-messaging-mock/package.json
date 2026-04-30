@@ -9,7 +9,7 @@
 	"license": "MIT",
 	"scripts": {
 		"prebuild": "biome lint",
-		"build": "tsc --build",
+		"build": "tsgo --build",
 		"clean": "rimraf dist",
 		"start": "node -r dotenv/config dist/src/index.js",
 		"dev": "portless mock-messaging.sharethrift.localhost node -r dotenv/config dist/src/index.js",
