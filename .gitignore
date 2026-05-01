@@ -34,3 +34,6 @@ __pycache__/
 
 # Portless proxy state (generated at runtime)
 .portless/
+
+# Local OIDC mock claim overrides (per developer)
+**/mock-oidc.local.json

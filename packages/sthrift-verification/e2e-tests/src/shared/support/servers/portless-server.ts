@@ -1,10 +1,11 @@
-import { spawn, type ChildProcess } from 'node:child_process';
+import { type ChildProcess, spawn } from 'node:child_process';
 import { getPortlessPath } from './resolve-portless.ts';
 
 // Base class for portless-proxied servers
 export abstract class PortlessServer {
 	private process: ChildProcess | null = null;
 	private startedByUs = false;
+	private static readonly maxStartupAttempts = 3;
 
 	protected abstract get probeUrl(): string;
 	protected abstract get readyMarker(): string;
@@ -12,7 +13,12 @@ export abstract class PortlessServer {
 	protected abstract get startupTimeoutMs(): number;
 	protected abstract get spawnArgs(): string[];
 	protected abstract get cwd(): string;
-	protected get extraEnv(): Record<string, string> { return {}; }
+	protected get shouldWaitForProbe(): boolean {
+		return true;
+	}
+	protected get extraEnv(): Record<string, string> {
+		return {};
+	}
 
 	async isAlreadyRunning(): Promise<boolean> {
 		try {
@@ -30,17 +36,52 @@ export abstract class PortlessServer {
 		if (this.process || this.startedByUs) return;
 		if (await this.isAlreadyRunning()) return;
 
-		this.process = spawn(getPortlessPath(), this.spawnArgs, {
-			cwd: this.cwd,
-			env: {
-				...process.env,
-				...this.extraEnv,
-			},
-			stdio: ['ignore', 'pipe', 'pipe'],
-		});
-		this.startedByUs = true;
+		for (
+			let attempt = 1;
+			attempt <= PortlessServer.maxStartupAttempts;
+			attempt++
+		) {
+			this.process = spawn(getPortlessPath(), this.spawnArgs, {
+				cwd: this.cwd,
+				env: {
+					...process.env,
+					...this.extraEnv,
+				},
+				stdio: ['ignore', 'pipe', 'pipe'],
+			});
+			this.startedByUs = true;
 
-		await this.waitForReady();
+			try {
+				await this.waitForReady();
+				if (this.shouldWaitForProbe) {
+					await this.waitForProbe();
+				}
+				return;
+			} catch (error) {
+				if (
+					error instanceof Error &&
+					error.message.includes('already registered by a running process')
+				) {
+					this.process = null;
+					this.startedByUs = false;
+					return;
+				}
+
+				if (
+					attempt < PortlessServer.maxStartupAttempts &&
+					error instanceof Error &&
+					error.message.includes('Port') &&
+					error.message.includes('is unavailable')
+				) {
+					this.process = null;
+					this.startedByUs = false;
+					await new Promise((resolve) => setTimeout(resolve, 250));
+					continue;
+				}
+
+				throw error;
+			}
+		}
 	}
 
 	async stop(): Promise<void> {
@@ -112,5 +153,33 @@ export abstract class PortlessServer {
 				);
 			});
 		});
+	}
+
+	private async waitForProbe(): Promise<void> {
+		const deadline = Date.now() + this.startupTimeoutMs;
+
+		while (Date.now() < deadline) {
+			if (!this.process) {
+				throw new Error(`${this.serverName} stopped before becoming reachable`);
+			}
+
+			try {
+				const controller = new AbortController();
+				const timeout = setTimeout(() => controller.abort(), 3_000);
+				const res = await fetch(this.probeUrl, { signal: controller.signal });
+				clearTimeout(timeout);
+				if (res.ok) {
+					return;
+				}
+			} catch {
+				// Retry until timeout; portless route registration can lag behind startup logs.
+			}
+
+			await new Promise((resolve) => setTimeout(resolve, 250));
+		}
+
+		throw new Error(
+			`${this.serverName} did not become reachable at ${this.probeUrl} within ${this.startupTimeoutMs}ms`,
+		);
 	}
 }

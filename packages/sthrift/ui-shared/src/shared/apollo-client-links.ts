@@ -17,17 +17,20 @@ export const BaseApolloLink = (): ApolloLink =>
 		};
 	});
 
-// apollo link to add auth header
+// Apollo can bootstrap before the OIDC callback has populated both token fields.
+// Fall back to id_token so protected GraphQL calls still carry a bearer token.
 export const ApolloLinkToAddAuthHeaderIfAccessTokenAvailable = (
 	access_token: string | undefined,
+	id_token?: string | undefined,
 ): ApolloLink =>
 	new SetContextLink((prevContext) => {
+		const bearerToken = access_token ?? id_token;
 		return {
 			...prevContext,
 			headers: {
 				// biome-ignore lint/complexity/useLiteralKeys: DefaultContext uses an index signature in TypeScript.
 				...prevContext['headers'],
-				...(access_token && { Authorization: `Bearer ${access_token}` }),
+				...(bearerToken && { Authorization: `Bearer ${bearerToken}` }),
 			},
 		};
 	});

@@ -1,4 +1,14 @@
 {
 	"extends": ["//"],
-	"tags": ["backend"]
+	"tags": ["backend"],
+	"tasks": {
+		"build": {
+			"inputs": ["$TURBO_EXTENDS$", "../**/mock-oidc*.json"]
+		},
+		"dev": {
+			"dependsOn": ["build"],
+			"interruptible": true,
+			"persistent": true
+		}
+	}
 }

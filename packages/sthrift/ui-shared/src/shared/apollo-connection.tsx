@@ -1,8 +1,8 @@
-import { type FC, useMemo } from 'react';
-import { ApolloClient, ApolloLink } from '@apollo/client';
 import type { InMemoryCache } from '@apollo/client';
+import { ApolloClient, ApolloLink } from '@apollo/client';
 import { HttpLink } from '@apollo/client/link/http';
 import { ApolloProvider } from '@apollo/client/react';
+import { type FC, useMemo } from 'react';
 import { useAuth } from 'react-oidc-context';
 import {
 	ApolloLinkToAddAuthHeaderIfAccessTokenAvailable,
@@ -31,6 +31,8 @@ export const ApolloConnection: FC<ApolloConnectionProps> = ({
 	children,
 }) => {
 	const auth = useAuth();
+	const accessToken = auth.user?.access_token;
+	const idToken = auth.user?.id_token;
 
 	const restLinkForCountryDataSource = useMemo(
 		() => new HttpLink({ uri: config.blobStorageUrl }),
@@ -71,23 +73,20 @@ export const ApolloConnection: FC<ApolloConnectionProps> = ({
 			healthProfession: restLinkForHealthProfessionsDataSource,
 			cacheEnabled: ApolloLink.from([
 				BaseApolloLink(),
-				ApolloLinkToAddAuthHeaderIfAccessTokenAvailable(
-					auth.user?.access_token,
-				),
+				ApolloLinkToAddAuthHeaderIfAccessTokenAvailable(accessToken, idToken),
 				ApolloLinkToAddCustomHeader('Cache-Enabled', 'true'),
 				apolloHttpLinkForGraphqlDataSource,
 			]),
 			default: ApolloLink.from([
 				BaseApolloLink(),
-				ApolloLinkToAddAuthHeaderIfAccessTokenAvailable(
-					auth.user?.access_token,
-				),
+				ApolloLinkToAddAuthHeaderIfAccessTokenAvailable(accessToken, idToken),
 				ApolloLinkToAddCustomHeader('Cache-Enabled', 'false'),
 				apolloBatchHttpLinkForGraphqlDataSource,
 			]),
 		};
 	}, [
-		auth.user?.access_token,
+		accessToken,
+		idToken,
 		restLinkForCountryDataSource,
 		restLinkForHealthProfessionsDataSource,
 		apolloHttpLinkForGraphqlDataSource,
@@ -104,13 +103,11 @@ export const ApolloConnection: FC<ApolloConnectionProps> = ({
 				linkMap.cacheEnabled,
 				ApolloLink.split(
 					(operation) =>
-						!!operation.operationName &&
-						operation.operationName in linkMap,
+						!!operation.operationName && operation.operationName in linkMap,
 					new ApolloLink((operation, forward) => {
 						const link =
-							linkMap[
-								operation.operationName as keyof typeof linkMap
-							] || linkMap.default;
+							linkMap[operation.operationName as keyof typeof linkMap] ||
+							linkMap.default;
 						return link.request(operation, forward);
 					}),
 					linkMap.default,

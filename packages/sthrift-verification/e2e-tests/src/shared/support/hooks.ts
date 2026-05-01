@@ -1,12 +1,30 @@
-import type { IWorld, ITestCaseHookParameter } from '@cucumber/cucumber';
-import { After, AfterAll, Before, Status, setDefaultTimeout } from '@cucumber/cucumber';
-import path from 'node:path';
 import fs from 'node:fs';
+import path from 'node:path';
+import type { ITestCaseHookParameter, IWorld } from '@cucumber/cucumber';
+import {
+	After,
+	AfterAll,
+	Before,
+	BeforeAll,
+	Status,
+	setDefaultTimeout,
+} from '@cucumber/cucumber';
 
-import { type ShareThriftWorld, stopSharedServers } from '../../world.ts';
+import {
+	ensureServers,
+	type ShareThriftWorld,
+	stopSharedServers,
+} from '../../world.ts';
 import { BrowseTheWeb } from '../abilities/browse-the-web.ts';
 
 setDefaultTimeout(120_000);
+
+// Server startup can take >120s (MongoDB + OAuth2 + API + Vite + browser login).
+// Run it once in BeforeAll with a generous timeout so individual scenarios don't
+// pay the cost or risk timing out.
+BeforeAll({ timeout: 300_000 }, async () => {
+	await ensureServers();
+});
 
 Before(async function (this: IWorld) {
 	const world = this as IWorld & ShareThriftWorld;
@@ -14,7 +32,10 @@ Before(async function (this: IWorld) {
 	await world.init();
 });
 
-After(async function (this: IWorld, { result, pickle }: ITestCaseHookParameter) {
+After(async function (
+	this: IWorld,
+	{ result, pickle }: ITestCaseHookParameter,
+) {
 	const world = this as IWorld & ShareThriftWorld;
 
 	// Capture screenshot on failure for E2E tests
@@ -22,14 +43,29 @@ After(async function (this: IWorld, { result, pickle }: ITestCaseHookParameter) 
 		try {
 			const browseTheWeb = BrowseTheWeb.current();
 			if (browseTheWeb) {
-				const reportsDir = path.resolve(import.meta.dirname, '..', '..', '..', 'reports', 'screenshots');
+				const reportsDir = path.resolve(
+					import.meta.dirname,
+					'..',
+					'..',
+					'..',
+					'reports',
+					'screenshots',
+				);
 				fs.mkdirSync(reportsDir, { recursive: true });
 
-				const safeName = pickle.name.replace(/[^a-zA-Z0-9-_]/g, '_').slice(0, 80);
+				const safeName = pickle.name
+					.replace(/[^a-zA-Z0-9-_]/g, '_')
+					.slice(0, 80);
 				const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-				const screenshotPath = path.join(reportsDir, `${safeName}-${timestamp}.png`);
+				const screenshotPath = path.join(
+					reportsDir,
+					`${safeName}-${timestamp}.png`,
+				);
 
-				await browseTheWeb.page.screenshot({ path: screenshotPath, fullPage: true });
+				await browseTheWeb.page.screenshot({
+					path: screenshotPath,
+					fullPage: true,
+				});
 				this.attach(fs.readFileSync(screenshotPath), 'image/png');
 			}
 		} catch {

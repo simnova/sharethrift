@@ -1,9 +1,15 @@
-import { chromium, type Browser, type BrowserContext } from '@playwright/test';
+import { type Browser, type BrowserContext, chromium } from '@playwright/test';
 import { BrowseTheWeb } from '../abilities/browse-the-web.ts';
-import { MongoDBTestServer, TestOAuth2Server, TestViteServer, TestApiServer, initTestEnvironment, cleanupTestEnvironment, setMongoConnectionString } from './servers/index.ts';
-import { defaultActor } from '@sthrift-verification/verification-shared/test-data';
-import { apiSettings } from '@sthrift-verification/verification-shared/settings';
 import { performOAuth2Login } from './oauth2-login.ts';
+import {
+	cleanupTestEnvironment,
+	initTestEnvironment,
+	MongoDBTestServer,
+	setMongoConnectionString,
+	TestApiServer,
+	TestOAuth2Server,
+	TestViteServer,
+} from './servers/index.ts';
 
 const isDeployedE2E = process.env['E2E_DEPLOYED'] === 'true';
 const deployedApiUrl = process.env['E2E_API_URL'];
@@ -42,11 +48,26 @@ export async function stopAll(): Promise<void> {
 		await authenticatedBrowserContext.close();
 	}
 	authenticatedBrowserContext = undefined;
-	if (browser) { await browser.close(); browser = undefined; }
-	if (viteServer) { await viteServer.stop(); viteServer = undefined; }
-	if (apiServer) { await apiServer.stop(); apiServer = undefined; }
-	if (oauth2Server) { await oauth2Server.stop(); oauth2Server = undefined; }
-	if (mongoDBServer) { await mongoDBServer.stop(); mongoDBServer = undefined; }
+	if (browser) {
+		await browser.close().catch(() => undefined);
+		browser = undefined;
+	}
+	if (viteServer) {
+		await viteServer.stop().catch(() => undefined);
+		viteServer = undefined;
+	}
+	if (apiServer) {
+		await apiServer.stop().catch(() => undefined);
+		apiServer = undefined;
+	}
+	if (oauth2Server) {
+		await oauth2Server.stop().catch(() => undefined);
+		oauth2Server = undefined;
+	}
+	if (mongoDBServer) {
+		await mongoDBServer.stop().catch(() => undefined);
+		mongoDBServer = undefined;
+	}
 	apiUrl = undefined;
 	browserBaseUrl = undefined;
 	accessToken = undefined;
@@ -64,70 +85,81 @@ export async function ensureE2EServers(): Promise<void> {
 async function initLocalE2E(): Promise<void> {
 	initTestEnvironment();
 
-	// Phase 1: Start MongoDB and OAuth2 in parallel (no interdependency)
-	mongoDBServer ??= new MongoDBTestServer();
-	oauth2Server ??= new TestOAuth2Server({
-		testUser: {
-			email: defaultActor.email,
-			given_name: defaultActor.givenName,
-			family_name: defaultActor.familyName,
-		},
-	});
-	const mongo = mongoDBServer;
-	const oauth2 = oauth2Server;
-	const phase1: Promise<void>[] = [];
-	if (!mongo.isRunning()) {
-		phase1.push(mongo.start().then(() => setMongoConnectionString(mongo.getConnectionString())));
-	}
-	if (!oauth2.isRunning()) {
-		phase1.push(oauth2.start());
-	}
-	if (phase1.length > 0) await Promise.all(phase1);
+	try {
+		// Phase 1: Start MongoDB and OAuth2 in parallel (no interdependency)
+		mongoDBServer ??= new MongoDBTestServer();
+		oauth2Server ??= new TestOAuth2Server();
+		const mongo = mongoDBServer;
+		const oauth2 = oauth2Server;
+		const phase1: Promise<void>[] = [];
+		if (!mongo.isRunning()) {
+			phase1.push(
+				mongo.start().then(() => {
+					setMongoConnectionString(mongo.getConnectionString());
+				}),
+			);
+		}
+		if (!oauth2.isRunning()) {
+			phase1.push(oauth2.start());
+		}
+		await waitForStartupPhase(phase1);
 
-	// Phase 2: Start API (needs MongoDB conn string), Vite (independent), and generate token (needs OAuth2) in parallel
-	apiServer ??= new TestApiServer();
-	viteServer ??= new TestViteServer();
-	const api = apiServer;
-	const vite = viteServer;
-	const phase2: Promise<void>[] = [];
-	if (!api.isRunning()) {
-		phase2.push(api.start().then(() => { apiUrl = api.getUrl(); }));
-	}
-	if (!vite.isRunning()) {
-		phase2.push(vite.start());
-	}
-	if (!accessToken) {
-		phase2.push(oauth2.generateAccessToken(apiSettings.userPortalOidcAudience).then((token) => { accessToken = token; }));
-	}
-	if (phase2.length > 0) await Promise.all(phase2);
+		// Phase 2: Start API (needs MongoDB conn string) and Vite in parallel.
+		// The browser login flow below is the source of truth for authentication,
+		// so local E2E does not need a pre-minted access token here.
+		apiServer ??= new TestApiServer();
+		viteServer ??= new TestViteServer();
+		const api = apiServer;
+		const vite = viteServer;
+		const phase2: Promise<void>[] = [];
+		if (!api.isRunning()) {
+			phase2.push(
+				api.start().then(() => {
+					apiUrl = api.getUrl();
+				}),
+			);
+		}
+		if (!vite.isRunning()) {
+			phase2.push(vite.start());
+		}
+		await waitForStartupPhase(phase2);
 
-	browserBaseUrl = viteServer.getUrl();
+		browserBaseUrl = viteServer.getUrl();
 
-	if (!apiUrl) {
-		apiUrl = apiServer?.getUrl();
+		if (!apiUrl) {
+			apiUrl = apiServer?.getUrl();
+		}
+
+		if (!browser) {
+			browser = await chromium.launch({ headless: true });
+		}
+
+		await ensureAuthenticatedBrowserContext({
+			baseURL: browserBaseUrl,
+			ignoreHTTPSErrors: true,
+			performLogin: true,
+		});
+	} catch (error) {
+		await stopAll();
+		throw error;
 	}
-
-	if (!browser) {
-		browser = await chromium.launch({ headless: true });
-	}
-
-	await ensureAuthenticatedBrowserContext({
-		baseURL: browserBaseUrl,
-		ignoreHTTPSErrors: true,
-		performLogin: true,
-	});
 }
 
 async function initDeployedE2E(): Promise<void> {
-	if (!deployedApiUrl) throw new Error('E2E_API_URL is required when E2E_DEPLOYED=true');
-	if (!deployedUiUrl) throw new Error('E2E_UI_URL is required when E2E_DEPLOYED=true');
+	if (!deployedApiUrl)
+		throw new Error('E2E_API_URL is required when E2E_DEPLOYED=true');
+	if (!deployedUiUrl)
+		throw new Error('E2E_UI_URL is required when E2E_DEPLOYED=true');
 
 	apiUrl = deployedApiUrl;
 	browserBaseUrl = deployedUiUrl;
 	accessToken = process.env['E2E_ACCESS_TOKEN'] ?? undefined;
 
 	if (!browser) {
-		browser = await chromium.launch({ headless: true, args: ['--headless=new'] });
+		browser = await chromium.launch({
+			headless: true,
+			args: ['--headless=new'],
+		});
 	}
 
 	await ensureAuthenticatedBrowserContext({
@@ -164,5 +196,19 @@ async function ensureAuthenticatedBrowserContext(options: {
 		await authenticatedBrowserContext.close().catch(() => undefined);
 		authenticatedBrowserContext = undefined;
 		throw error;
+	}
+}
+
+async function waitForStartupPhase(tasks: Promise<void>[]): Promise<void> {
+	if (tasks.length === 0) {
+		return;
+	}
+
+	const results = await Promise.allSettled(tasks);
+	const failure = results.find(
+		(result): result is PromiseRejectedResult => result.status === 'rejected',
+	);
+	if (failure) {
+		throw failure.reason;
 	}
 }

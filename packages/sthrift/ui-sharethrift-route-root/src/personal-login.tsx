@@ -1,9 +1,9 @@
-import { Button, Divider } from 'antd';
-import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
-import { useAuth } from 'react-oidc-context';
 import { LoginForm } from '@sthrift/ui-shared';
 import { Header } from '@sthrift/ui-sharethrift-route-shared';
+import { Button, Divider } from 'antd';
+import { useState } from 'react';
+import { useAuth } from 'react-oidc-context';
+import { useNavigate } from 'react-router-dom';
 
 interface LoginFormData {
 	username: string;
@@ -29,7 +29,7 @@ export const PersonalLogin: React.FC = () => {
 	};
 
 	const handleOnSignUp = () => {
-		navigate('/auth-redirect-user');
+		auth.signinRedirect({ extraQueryParams: { option: 'signup' } });
 	};
 
 	const handleOnLogin = () => {
