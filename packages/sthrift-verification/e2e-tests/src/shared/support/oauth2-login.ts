@@ -9,9 +9,19 @@ import {
 } from '@sthrift-verification/verification-shared/pages';
 import { PlaywrightPageAdapter } from '@sthrift-verification/verification-shared/pages/playwright';
 
+export interface OAuth2LoginOptions {
+	mode?: 'login' | 'signup';
+}
+
 function loadTestCredentials(): { username: string; password: string } {
 	// Load defaults from .env.test, overridable by actual environment variables
-	const envTestPath = path.resolve(import.meta.dirname, '..', '..', '..', '.env.test');
+	const envTestPath = path.resolve(
+		import.meta.dirname,
+		'..',
+		'..',
+		'..',
+		'.env.test',
+	);
 	const defaults: Record<string, string> = {};
 
 	if (fs.existsSync(envTestPath)) {
@@ -28,24 +38,46 @@ function loadTestCredentials(): { username: string; password: string } {
 		username:
 			process.env['E2E_USERNAME'] ||
 			defaults['E2E_USERNAME'] ||
-			'test@sharethrift.local',
+			'alice@example.com',
 		password: process.env['E2E_PASSWORD'] || defaults['E2E_PASSWORD'] || '',
 	};
 }
 
-// Performs OAuth2 login by filling out the login form like a real user,
-// then completes the full onboarding flow (account type, account setup,
-// profile, terms) before the app is ready for test scenarios.
-export async function performOAuth2Login(page: Page): Promise<void> {
+// Performs OAuth2 auth through the real UI. Default login should land on an
+// already onboarded user, while signup mode is allowed to complete onboarding.
+export async function performOAuth2Login(
+	page: Page,
+	options: OAuth2LoginOptions = {},
+): Promise<void> {
 	const { username, password } = loadTestCredentials();
 	const pageAdapter = new PlaywrightPageAdapter(page);
 	const loginPage: E2ELoginPage = new LoginPage(pageAdapter);
+	const mode = options.mode ?? 'login';
 
-	await loginPage.goto();
-	await loginPage.login(username, password);
+	try {
+		await loginPage.goto();
+	} catch (gotoError) {
+		// Dump page state for debugging login failures
+		const url = page.url();
+		const content = await page.content().catch(() => '<failed to get content>');
+		console.error(
+			`[oauth2-login] Failed to load login page.\n` +
+				`  URL: ${url}\n` +
+				`  HTML (first 2000 chars): ${content.slice(0, 2000)}`,
+		);
+		throw gotoError;
+	}
+
+	if (mode === 'signup') {
+		await page.getByRole('button', { name: 'Sign Up' }).click();
+	} else {
+		await loginPage.login(username, password);
+	}
+
 	await loginPage.waitForRedirectComplete();
 
-	// Complete post-login onboarding if redirected to signup
+	// Signup mode still needs the full onboarding flow. Standard login should
+	// usually land on the app, but we tolerate /signup in case a fixture is reset.
 	if (pageAdapter.url().includes('/signup')) {
 		const onboardingPage: E2EOnboardingPage = new OnboardingPage(pageAdapter);
 		await onboardingPage.completeOnboarding();

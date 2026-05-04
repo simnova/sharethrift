@@ -19,7 +19,8 @@ export class LoginPage {
 	}
 
 	async goto(): Promise<void> {
-		await this.page.goto('/login', { waitUntil: 'networkidle' });
+		await this.page.goto('/login', { waitUntil: 'domcontentloaded' });
+		await this.emailInput.waitFor({ state: 'visible' });
 	}
 
 	async login(email: string, password: string): Promise<void> {

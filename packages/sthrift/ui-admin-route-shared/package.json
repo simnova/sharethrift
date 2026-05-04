@@ -8,7 +8,7 @@
 		"./test-utils": "./src/test-utils/index.ts"
 	},
 	"scripts": {
-		"build": "tsc -b",
+		"build": "tsgo -b",
 		"lint": "biome lint"
 	},
 	"dependencies": {

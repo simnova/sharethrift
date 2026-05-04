@@ -1,29 +1,74 @@
 # @apps/server-oauth2-mock
 
-Local OAuth2/OIDC mock server for dev/testing.
+Local OAuth2/OIDC mock server for dev/testing. Supports **multi-portal** configuration — each UI application (`apps/ui-*`) declares its own OIDC portal via a `mock-oidc.json` file, and the server auto-discovers them at startup.
 
 ## Usage
 
-This package is intended for internal use as a mock OAuth2/OIDC server for development and testing purposes.
+```bash
+pnpm run dev          # Start with portless proxy + hot reload
+pnpm run build && pnpm start  # Production-style start
+pnpm run test         # Run tests
+```
 
-## Setup
+## How It Works
 
-- Build: `npm run build`
-- Clean: `npm run clean`
-- Start: `npm start`
+1. On startup the server scans `apps/ui-*/mock-oidc.json` for portal definitions.
+2. Each portal is mounted at `/<portal-name>` (e.g. `/user-portal`, `/admin-portal`).
+3. Full OIDC endpoints are available per portal:
+   - `/<name>/.well-known/openid-configuration`
+   - `/<name>/.well-known/jwks.json`
+   - `/<name>/authorize`
+   - `/<name>/token`
+   - `/<name>/userinfo`
+   - `/<name>/logout`
+
+## Portal Configuration (`mock-oidc.json`)
+
+Place a `mock-oidc.json` in each `apps/ui-*` directory:
+
+```jsonc
+{
+  "name": "user-portal",           // URL-safe slug for the portal path
+  "envVars": {
+    "clientId": "VITE_B2C_CLIENTID",     // Env var name in the UI's .env
+    "redirectUri": "VITE_B2C_REDIRECT_URI"
+  },
+  "claims": {                      // Token claims for this portal's user
+    "sub": "00000000-0000-4000-8000-000000000001",
+    "email": "dev@example.com",
+    "given_name": "Dev",
+    "family_name": "User",
+    "tid": "test-tenant-id"
+  }
+}
+```
+
+### Local Overrides
+
+Create a `mock-oidc.local.json` alongside `mock-oidc.json` to override `claims` locally without affecting the committed config. This file is git-ignored.
+
+```jsonc
+{
+  "claims": {
+    "email": "my-local@example.com",
+    "given_name": "Local"
+  }
+}
+```
 
 ## Environment Variables
 
-The following environment variables can be set via `.env` or `.env.local`:
+The server's own `.env` (in this package) controls:
 
-- `PORT` - Port to run the server on (default: 4000)
-- `EMAIL` - Email for user portal (default: '')
-- `GIVEN_NAME` - Given name for user portal (default: '')
-- `FAMILY_NAME` - Family name for user portal (default: '')
-- `ADMIN_EMAIL` - Email for admin portal (default: ''). In local dev this should match a seeded admin user, such as `superadmin@sharethrift.com`.
-- `ADMIN_GIVEN_NAME` - Given name for admin portal (default: '')
-- `ADMIN_FAMILY_NAME` - Family name for admin portal (default: '')
+| Variable   | Default | Description |
+|------------|---------|-------------|
+| `PORT`     | `4000`  | Server listen port |
+| `BASE_URL` | `https://mock-auth.sharethrift.localhost` | Base URL for OIDC issuer |
 
-## Exports
+## Adding a New Portal
 
-The main entry point is `src/index.ts` which handles environment setup and starts the mock OAuth2 server.
+1. Create `apps/ui-<name>/mock-oidc.json` with the schema above.
+2. Ensure the UI app's `.env` has the env vars referenced in `envVars`.
+3. Set the UI's OIDC authority to `<BASE_URL>/<portal-name>`.
+4. Update `apps/api/local.settings.json` with the portal's OIDC issuer and JWKS endpoint.
+5. Restart the mock server — the portal is auto-discovered.

@@ -27,7 +27,7 @@ export function getAllFiles(rootPath: string): string[] {
 	const queue = [rootPath];
 
 	while (queue.length > 0) {
-		const currentPath = queue.pop()!;
+		const currentPath = queue.pop() as string;
 		const stats = fs.statSync(currentPath);
 		if (stats.isDirectory()) {
 			for (const entry of fs.readdirSync(currentPath)) {
@@ -38,7 +38,7 @@ export function getAllFiles(rootPath: string): string[] {
 		files.push(currentPath);
 	}
 
-	return files.sort((left, right) => left.localeCompare(right));
+	return files.sort((left: string, right: string) => left.localeCompare(right));
 }
 
 export function getFilesMatching(pattern: string, suffix: string): string[] {
@@ -70,16 +70,16 @@ export function getImmediateDirectories(rootPath: string): string[] {
 
 	return fs
 		.readdirSync(rootPath, { withFileTypes: true })
-		.filter((entry) => entry.isDirectory())
-		.map((entry) => path.join(rootPath, entry.name))
-		.sort((left, right) => left.localeCompare(right));
+		.filter((entry: fs.Dirent) => entry.isDirectory())
+		.map((entry: fs.Dirent) => path.join(rootPath, entry.name))
+		.sort((left: string, right: string) => left.localeCompare(right));
 }
 
 export function toPascalCase(value: string): string {
 	return value
 		.split(/[^a-zA-Z0-9]+/)
 		.filter(Boolean)
-		.map((segment) => segment[0]!.toUpperCase() + segment.slice(1))
+		.map((segment) => segment[0]?.toUpperCase() + segment.slice(1))
 		.join('');
 }
 

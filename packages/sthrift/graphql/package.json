@@ -15,8 +15,8 @@
 	},
 	"scripts": {
 		"prebuild": "biome lint",
-		"build": "tsc --build",
-		"watch": "tsc --build --watch",
+		"build": "tsgo --build",
+		"watch": "tsgo --build --watch",
 		"test": "vitest run",
 		"test:arch": "vitest run --config vitest.arch.config.ts",
 		"test:coverage:node": "vitest run --coverage",

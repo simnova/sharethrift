@@ -8,7 +8,7 @@
 	"main": "dist/src/index.js",
 	"types": "dist/src/index.d.ts",
 	"scripts": {
-		"build": "tsc --build"
+		"build": "tsgo --build"
 	},
 	"dependencies": {
 		"@storybook/addon-vitest": "^10.1.11",

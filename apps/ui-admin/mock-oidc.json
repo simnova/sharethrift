@@ -1,0 +1,14 @@
+{
+	"name": "admin-portal",
+	"envVars": {
+		"clientId": "VITE_B2C_ADMIN_CLIENTID",
+		"redirectUri": "VITE_B2C_ADMIN_REDIRECT_URI"
+	},
+	"claims": {
+		"sub": "00000000-0000-4000-8000-000000000002",
+		"email": "superadmin@sharethrift.com",
+		"given_name": "Super",
+		"family_name": "Admin",
+		"tid": "test-tenant-id"
+	}
+}

@@ -50,6 +50,7 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 
 ## ✨ Features
 
+
 ### 🔍 Browse, Search & Filter Listings
 
 - Filter by location and category

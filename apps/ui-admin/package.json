@@ -6,13 +6,13 @@
 	"scripts": {
 		"start": "vite",
 		"dev": "portless admin.sharethrift.localhost vite",
-		"build": "tsc -b && vite build",
+		"build": "tsgo -b && vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
-		"tswatch": "tsc --build --watch",
+		"tswatch": "tsgo --build --watch",
 		"test": "echo 'UI Storybook tests disabled (memory constraints)'"
 	},
-		"dependencies": {
+	"dependencies": {
 		"@ant-design/icons": "^6.1.0",
 		"@ant-design/v5-patch-for-react-19": "^1.0.3",
 		"@apollo/client": "^4.0.7",

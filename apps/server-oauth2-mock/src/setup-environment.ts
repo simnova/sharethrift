@@ -1,8 +1,7 @@
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 
-export const setupEnvironment = () => {
-	console.log('Setting up environment variables');
+export function setupEnvironment(): void {
+	// Load mock server environment and allow local overrides
 	dotenv.config();
 	dotenv.config({ path: `.env.local`, override: true });
-	console.log('Environment variables set up');
-};
+}

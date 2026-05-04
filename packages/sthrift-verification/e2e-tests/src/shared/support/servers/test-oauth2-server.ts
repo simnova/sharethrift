@@ -3,40 +3,35 @@ import { PortlessServer } from './portless-server.ts';
 import { buildUrl } from './test-environment.ts';
 
 // OAuth2 mock server via portless
+// Claims are now driven by mock-oidc.json files in each ui-* app directory,
+// not by environment variables passed at startup.
 export class TestOAuth2Server extends PortlessServer {
-	protected get probeUrl() { return `${buildUrl('mock-auth.sharethrift.localhost')}/.well-known/jwks.json`; }
-	protected get readyMarker() { return 'Mock OAuth2 server running'; }
-	protected get serverName() { return 'TestOAuth2Server'; }
-	protected get startupTimeoutMs() { return 30_000; }
-	protected get spawnArgs() { return ['mock-auth.sharethrift.localhost', 'node', 'dist/src/index.js']; }
-	protected get cwd() { return apiSettings.oauth2MockDir; }
-
-	private readonly testUser: {
-		email: string;
-		given_name: string;
-		family_name: string;
-	};
-
-	constructor(options?: {
-		testUser?: {
-			email?: string;
-			given_name?: string;
-			family_name?: string;
-		};
-	}) {
-		super();
-		this.testUser = {
-			email: options?.testUser?.email ?? 'alice@test.sharethrift.com',
-			given_name: options?.testUser?.given_name ?? 'Alice',
-			family_name: options?.testUser?.family_name ?? 'Test',
-		};
+	protected get probeUrl() {
+		return `${this.getPortalUrl('user-portal')}/.well-known/jwks.json`;
+	}
+	protected get readyMarker() {
+		return 'Registered portal: user-portal';
+	}
+	protected get serverName() {
+		return 'TestOAuth2Server';
+	}
+	protected get startupTimeoutMs() {
+		return 30_000;
+	}
+	protected get spawnArgs() {
+		return [
+			'--force',
+			'mock-auth.sharethrift.localhost',
+			'node',
+			'dist/src/index.js',
+		];
+	}
+	protected get cwd() {
+		return apiSettings.oauth2MockDir;
 	}
 
 	protected override get extraEnv() {
 		return {
-			EMAIL: this.testUser.email,
-			GIVEN_NAME: this.testUser.given_name,
-			FAMILY_NAME: this.testUser.family_name,
 			BASE_URL: buildUrl('mock-auth.sharethrift.localhost'),
 		};
 	}
@@ -45,8 +40,13 @@ export class TestOAuth2Server extends PortlessServer {
 		return buildUrl('mock-auth.sharethrift.localhost');
 	}
 
+	private getPortalUrl(portal: 'user-portal' | 'admin-portal'): string {
+		return `${this.getUrl()}/${portal}`;
+	}
+
 	async generateAccessToken(audience = 'user-portal'): Promise<string> {
-		const issuer = this.getUrl();
+		const portal = audience === 'admin-portal' ? 'admin-portal' : 'user-portal';
+		const issuer = this.getPortalUrl(portal);
 		const uiBaseUrl = buildUrl('sharethrift.localhost');
 
 		const redirectUri =
@@ -54,7 +54,9 @@ export class TestOAuth2Server extends PortlessServer {
 				? `${uiBaseUrl}/auth-redirect-admin`
 				: `${uiBaseUrl}/auth-redirect-user`;
 
-		const code = `mock-auth-code-${Buffer.from(redirectUri).toString('base64')}`;
+		const code = `mock-auth-code-${Buffer.from(
+			JSON.stringify({ redirectUri }),
+		).toString('base64')}`;
 
 		const response = await fetch(`${issuer}/token`, {
 			method: 'POST',

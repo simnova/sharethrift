@@ -1,9 +1,6 @@
 {
 	// This file is not used in compilation. It is here just for a nice editor experience.
-    "extends": "@cellix/typescript-config/node.json",
-	"compilerOptions": {
-		"baseUrl": "."
-	},
+	"extends": "@cellix/typescript-config/node.json",
 	"include": ["src/**/*.tsx", "src/**/*.ts"],
 	"exclude": [".docusaurus", "build"]
 }

@@ -23,8 +23,8 @@
 		"proxy:restart": "pnpm run proxy:stop && pnpm run proxy:start",
 		"gen": "graphql-codegen --config codegen.yml",
 		"gen:watch": "graphql-codegen --config codegen.yml --watch",
-		"tsbuild": "tsc --build",
-		"tswatch": "tsc --build --watch",
+		"tsbuild": "tsgo --build",
+		"tswatch": "tsgo --build --watch",
 		"clean": "pnpm install && turbo run clean && rimraf dist node_modules **/coverage .turbo",
 		"clean:python": "rimraf .venv",
 		"clean:all": "pnpm run clean:python && pnpm run clean",
@@ -137,6 +137,7 @@
 		"tsx": "^4.20.3",
 		"turbo": "^2.8.16",
 		"typescript": "^5.8.3",
+		"@typescript/native-preview": "catalog:",
 		"vite": "catalog:",
 		"vitest": "catalog:"
 	}

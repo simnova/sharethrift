@@ -1,0 +1,14 @@
+{
+	"name": "user-portal",
+	"envVars": {
+		"clientId": "VITE_B2C_CLIENTID",
+		"redirectUri": "VITE_B2C_REDIRECT_URI"
+	},
+	"claims": {
+		"sub": "00000000-0000-4000-8000-000000000010",
+		"email": "alice@example.com",
+		"given_name": "Alice",
+		"family_name": "Smith",
+		"tid": "test-tenant-id"
+	}
+}

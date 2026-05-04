@@ -36,9 +36,9 @@
 	},
 	"scripts": {
 		"prebuild": "biome lint",
-		"build": "tsc --build && pnpm run copy-css",
+		"build": "tsgo --build && pnpm run copy-css",
 		"copy-css": "cpx \"src/**/*.{css,svg,png,jpg,jpeg,gif}\" dist/src",
-		"watch": "tsc --watch",
+		"watch": "tsgo --watch",
 		"test": "echo 'UI Storybook tests disabled (memory constraints)'",
 		"test:coverage:ui": "echo 'UI Storybook tests disabled (memory constraints)'",
 		"test:watch": "vitest",

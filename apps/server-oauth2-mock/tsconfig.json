@@ -4,8 +4,6 @@
 		"rootDir": ".",
 		"outDir": "dist"
 	},
-	"include": ["src/**/*.ts"],
-	"references": [
-		{ "path": "../../packages/cellix/server-oauth2-seedwork" }
-	]
+	"include": ["src/**/*.ts", "tests/**/*.ts"],
+	"references": [{ "path": "../../packages/cellix/server-oauth2-seedwork" }]
 }

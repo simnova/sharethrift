@@ -14,7 +14,7 @@
 		}
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json"
+		"build": "tsgo --project tsconfig.json"
 	},
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
