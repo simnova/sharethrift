@@ -20,7 +20,7 @@
 	"dependencies": {
 		"@cellix/api-services-spec": "workspace:*",
 		"@cellix/service-messaging-base": "workspace:*",
-		"axios": "1.15.2"
+		"axios": "1.16.0"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",
