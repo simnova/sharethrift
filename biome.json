@@ -1,16 +1,31 @@
 {
 	"$schema": "https://biomejs.dev/schemas/2.0.0/schema.json",
-	"vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": true },
-	"files": { "ignoreUnknown": false },
+	"vcs": { "enabled": false, "clientKind": "git", "useIgnoreFile": false },
+	"files": {
+		"ignoreUnknown": false,
+		"includes": [
+			"**",
+			"!**/mock-oidc.users.local.json",
+			"!**/dist",
+			"!**/build",
+			"!**/deploy",
+			"!**/target",
+			"!**/node_modules",
+			"!**/coverage",
+			"!**/.turbo",
+			"!**/*.tsbuildinfo",
+			"!**/generated.*",
+			"!**/*.generated.*",
+			"!**/graphql.schema.json"
+		]
+	},
+	"css": { "parser": { "cssModules": true } },
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"indentWidth": 2
-	},
-	"css": {
-		"parser": {
-			"cssModules": true
-		}
+		"indentWidth": 2,
+		"attributePosition": "multiline",
+		"lineWidth": 230
 	},
 	"linter": {
 		"enabled": true,
@@ -95,7 +110,10 @@
 			}
 		},
 		"includes": [
-			"**",
+			"**/src/**",
+			"**/components/**",
+			"**/tests/**",
+			"**/docs/**",
 			"!*.config.*",
 			"!**/*.config.*",
 			"!**/node_modules/**",
@@ -106,7 +124,12 @@
 			"!**/coverage/**",
 			"!**/generated.ts",
 			"!**/generated.tsx",
-            "!**/target/**"
+			"!**/*.generated.ts",
+			"!**/*.generated.tsx",
+			"!**/*.generated.js",
+			"!**/*.generated.json",
+			"!**/graphql.schema.json",
+			"!**/App.css"
 		]
 	},
 	"javascript": { "formatter": { "quoteStyle": "single" }, "globals": [] },
@@ -143,7 +166,11 @@
 				}
 			}
 		},
-		{ "includes": ["**/src/**/*.ts"], "javascript": { "globals": [] } }
+		{ "includes": ["**/src/**/*.ts"], "javascript": { "globals": [] } },
+		{
+			"includes": ["build-pipeline/scripts/**/*.{cjs,mjs}"],
+			"linter": { "rules": { "style": { "noCommonJs": "off" } } }
+		}
 	],
 	"assist": {
 		"enabled": true,

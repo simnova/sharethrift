@@ -1,10 +1,7 @@
-import { Question, type AnswersQuestions, type UsesAbilities, notes } from '@serenity-js/core';
-import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
-import {
-	type E2EListingPage,
-	ListingPage,
-} from '@sthrift-verification/verification-shared/pages';
-import { PlaywrightPageAdapter } from '@sthrift-verification/verification-shared/pages/playwright';
+import { PlaywrightPageAdapter } from '@cellix/serenity-framework/pages/playwright';
+import { BrowseTheWeb } from '@cellix/serenity-framework/serenity/browser';
+import { type AnswersQuestions, notes, Question, type UsesAbilities } from '@serenity-js/core';
+import { type E2EListingPage, ListingPage } from '@sthrift-verification/verification-shared/pages';
 
 export class ListingTitle extends Question<Promise<string>> {
 	constructor() {
@@ -30,9 +27,7 @@ export class ListingTitle extends Question<Promise<string>> {
 		}
 
 		if (!notedTitle) {
-			throw new Error(
-				'No listing title found in the system or actor notes. Did the actor create a listing first?',
-			);
+			throw new Error('No listing title found in the system or actor notes. Did the actor create a listing first?');
 		}
 
 		return notedTitle;
@@ -45,9 +40,7 @@ export class ListingTitle extends Question<Promise<string>> {
 
 		try {
 			const { page } = BrowseTheWeb.withActor(actor);
-			const listingPage: E2EListingPage = new ListingPage(
-				new PlaywrightPageAdapter(page),
-			);
+			const listingPage: E2EListingPage = new ListingPage(new PlaywrightPageAdapter(page));
 			const titleCell = listingPage.listingTitleCell(listingTitle);
 			await titleCell.waitFor({ state: 'visible', timeout: 3_000 });
 			return (await titleCell.textContent())?.trim() || undefined;

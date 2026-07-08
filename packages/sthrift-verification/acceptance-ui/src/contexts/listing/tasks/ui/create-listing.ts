@@ -1,23 +1,12 @@
-import '../../../../shared/support/ui/setup-jsdom.ts';
+import { DomPageAdapter as JsdomPageAdapter } from '@cellix/serenity-framework/pages/dom';
 import { type Actor, notes, Task } from '@serenity-js/core';
-import { render, cleanup, act } from '@testing-library/react';
+import { CreateListing as CreateListingComponent, ListingForm } from '@sthrift/ui-sharethrift-route-root/acceptance';
+import { ListingPage, type UiListingPage } from '@sthrift-verification/verification-shared/pages';
+import { act, cleanup, render } from '@testing-library/react';
 import * as React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import {
-	CreateListing as CreateListingComponent,
-	ListingForm,
-} from '@sthrift/ui-sharethrift-route-root/acceptance';
-import {
-	ListingPage,
-	type UiListingPage,
-} from '@sthrift-verification/verification-shared/pages';
-import { JsdomPageAdapter } from '@sthrift-verification/verification-shared/pages/jsdom';
 import { CreateListingAbility } from '../../abilities/create-listing-ability.ts';
-import type {
-	ListingDetails,
-	ListingNotes,
-} from '../../abilities/listing-types.ts';
-import { cleanupJsdom } from '../../../../shared/support/ui/jsdom-setup.ts';
+import type { ListingDetails, ListingNotes } from '../../abilities/listing-types.ts';
 
 const noop = () => undefined;
 
@@ -31,9 +20,7 @@ export class CreateListing extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		const isDraft = !(
-			this.details.isDraft === 'false' || this.details.isDraft === false
-		);
+		const isDraft = !(this.details.isDraft === 'false' || this.details.isDraft === false);
 		const state = isDraft ? 'draft' : 'active';
 
 		// 1. Render and interact with UI via page object
@@ -51,17 +38,11 @@ export class CreateListing extends Task {
 
 		const listing = ability.getCreatedListing();
 		if (!listing) {
-			throw new Error(
-				'Domain CreateListingAbility.createDraftListing did not produce a listing',
-			);
+			throw new Error('Domain CreateListingAbility.createDraftListing did not produce a listing');
 		}
 
 		// 3. Store values in notes for assertion steps
-		await actor.attemptsTo(
-			notes<ListingNotes>().set('lastListingId', listing.id),
-			notes<ListingNotes>().set('lastListingTitle', listing.title),
-			notes<ListingNotes>().set('lastListingStatus', state),
-		);
+		await actor.attemptsTo(notes<ListingNotes>().set('lastListingId', listing.id), notes<ListingNotes>().set('lastListingTitle', listing.title), notes<ListingNotes>().set('lastListingStatus', state));
 	}
 
 	private async interactWithUI(isDraft: boolean): Promise<void> {
@@ -73,37 +54,24 @@ export class CreateListing extends Task {
 				React.createElement(
 					MemoryRouter,
 					null,
-					React.createElement(
-						CreateListingComponent as React.ComponentType<
-							Record<string, unknown>
-						>,
-						{
-							categories: [
-								...new Set([
-									this.details.category ?? 'Other',
-									'Electronics',
-									'Sports',
-								]),
-							],
-							isLoading: false,
-							submissionStatus: 'idle' as const,
-							onSubmit: noop,
-							onCancel: noop,
-							uploadedImages: [],
-							onImageAdd: noop,
-							onImageRemove: noop,
-							onViewListing: noop,
-							onViewDraft: noop,
-							onModalClose: noop,
-						},
-					),
+					React.createElement(CreateListingComponent as React.ComponentType<Record<string, unknown>>, {
+						categories: [...new Set([this.details.category ?? 'Other', 'Electronics', 'Sports'])],
+						isLoading: false,
+						submissionStatus: 'idle' as const,
+						onSubmit: noop,
+						onCancel: noop,
+						uploadedImages: [],
+						onImageAdd: noop,
+						onImageRemove: noop,
+						onViewListing: noop,
+						onViewDraft: noop,
+						onModalClose: noop,
+					}),
 				),
 			);
 
 			// Use shared page object for form interactions
-			const page: UiListingPage = new ListingPage(
-				new JsdomPageAdapter(container),
-			);
+			const page: UiListingPage = new ListingPage(new JsdomPageAdapter(container));
 
 			await act(async () => {
 				await page.fillForm({
@@ -124,26 +92,20 @@ export class CreateListing extends Task {
 
 			// Also render the shared ListingForm standalone for ui-shared coverage
 			render(
-				React.createElement(
-					ListingForm as React.ComponentType<Record<string, unknown>>,
-					{
-						categories: [
-							...new Set([this.details.category ?? 'Other', 'Electronics']),
-						],
-						isLoading: false,
-						maxCharacters: 2000,
-						handleFormSubmit: noop,
-						onCancel: noop,
-					},
-				),
+				React.createElement(ListingForm as React.ComponentType<Record<string, unknown>>, {
+					categories: [...new Set([this.details.category ?? 'Other', 'Electronics'])],
+					isLoading: false,
+					maxCharacters: 2000,
+					handleFormSubmit: noop,
+					onCancel: noop,
+				}),
 			);
 
 			cleanup();
 		} finally {
-			cleanupJsdom();
+			cleanup();
 		}
 	}
 
-	override toString = () =>
-		`fills and submits create listing form "${this.details.title}"`;
+	override toString = () => `fills and submits create listing form "${this.details.title}"`;
 }

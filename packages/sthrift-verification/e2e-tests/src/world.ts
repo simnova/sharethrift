@@ -1,38 +1,24 @@
-import { setWorldConstructor, World } from '@cucumber/cucumber';
-import { engage } from '@serenity-js/core';
-import './shared/support/hooks.ts';
-import {
-	clearMockListings,
-	clearMockReservationRequests,
-} from '@sthrift-verification/verification-shared/test-data';
-import { ShareThriftCast } from './shared/support/cast.ts';
-import * as infra from './shared/support/shared-infrastructure.ts';
+import { registerManagedSerenityWorld } from '@cellix/serenity-framework/cucumber';
+import { SerenityCast } from '@cellix/serenity-framework/serenity';
+import { registerLifecycleHooks } from './cucumber-lifecycle-hooks.ts';
+import { infrastructure } from './infrastructure.ts';
 
-export async function ensureServers(): Promise<void> {
-	await infra.ensureE2EServers();
-}
+export const ShareThriftWorld = registerManagedSerenityWorld({
+	infrastructure,
+	validateState: (state) => {
+		if (!state.browseTheWeb) throw new Error('BrowseTheWeb ability not initialized');
+	},
+	createCast: (state) =>
+		new SerenityCast({
+			useNotepad: true,
+			abilities: [
+				() => {
+					if (!state.browseTheWeb) throw new Error('BrowseTheWeb ability not initialized');
+					return state.browseTheWeb;
+				},
+			],
+		}),
+});
 
-export async function stopSharedServers(): Promise<void> {
-	await infra.stopAll();
-}
-
-export class ShareThriftWorld extends World {
-	async init(): Promise<void> {
-		// Servers are already started by BeforeAll; this is a no-op if already up.
-		await infra.ensureE2EServers();
-
-		const { browseTheWeb } = infra.getState();
-
-		clearMockReservationRequests();
-		clearMockListings();
-
-		engage(new ShareThriftCast(browseTheWeb));
-	}
-
-	async cleanup(): Promise<void> {
-		// Servers are reused across scenarios for performance.
-		// Full teardown happens in AfterAll via stopSharedServers().
-	}
-}
-
-setWorldConstructor(ShareThriftWorld);
+export type ShareThriftWorld = InstanceType<typeof ShareThriftWorld>;
+registerLifecycleHooks();

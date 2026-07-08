@@ -41,11 +41,7 @@
 			"ignore": ["**/graphql-tools-scalars.ts", "**/azure-functions.ts"]
 		},
 		"packages/sthrift/domain": {
-			"entry": [
-				"src/index.ts",
-				"src/domain/contexts/**/*.passport.ts",
-				"src/domain/contexts/**/*-permissions.ts"
-			],
+			"entry": ["src/index.ts", "src/domain/contexts/**/*.passport.ts", "src/domain/contexts/**/*-permissions.ts"],
 			"project": ["src/**/*.ts"],
 			"ignore": ["**/events/event-bus.ts", "**/events/index.ts", "**/*.value-objects.ts"]
 		},
@@ -79,6 +75,7 @@
 		"packages/cellix/server-payment-seedwork",
 		"packages/cellix/arch-unit-tests",
 		"packages/sthrift-verification/arch-unit-tests",
+		"packages/sthrift-verification/verification-shared",
 		"packages/sthrift-verification/acceptance-api",
 		"packages/sthrift-verification/acceptance-ui",
 		"packages/sthrift-verification/e2e-tests",
@@ -124,7 +121,8 @@
 		"antd",
 		"react-router-dom",
 		"tsx",
-		"progress-bar"
+		"progress-bar",
+		"azurite"
 	],
 	"ignoreBinaries": ["func", "open", "concurrently", "container", "portless", "python", "python3"]
 }

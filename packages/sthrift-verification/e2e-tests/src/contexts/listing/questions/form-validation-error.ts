@@ -1,16 +1,19 @@
-import { Question, type AnswersQuestions, type UsesAbilities } from '@serenity-js/core';
-import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
+import { BrowseTheWeb } from '@cellix/serenity-framework/serenity/browser';
+import { type AnswersQuestions, Question, type UsesAbilities } from '@serenity-js/core';
 
 export class FormValidationError extends Question<Promise<string>> {
 	static displayed(): FormValidationError {
 		return new FormValidationError('form');
 	}
-    
+
 	static forField(fieldName: string): FormValidationError {
 		return new FormValidationError('field', fieldName);
 	}
 
-	constructor(private readonly type: 'form' | 'field' = 'form', private readonly fieldName?: string) {
+	constructor(
+		private readonly type: 'form' | 'field' = 'form',
+		private readonly fieldName?: string,
+	) {
 		const message = fieldName ? `form validation error for ${fieldName}` : 'form validation error';
 		super(message);
 	}

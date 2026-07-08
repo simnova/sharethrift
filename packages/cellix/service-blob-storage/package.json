@@ -1,5 +1,5 @@
 {
-	"name": "@cellix/service-blob",
+	"name": "@cellix/service-blob-storage",
 	"version": "1.0.0",
 	"private": true,
 	"type": "module",
@@ -20,8 +20,7 @@
 		"clean": "rimraf dist"
 	},
 	"dependencies": {
-		"@cellix/api-services-spec": "workspace:*",
-		"@sthrift/domain": "workspace:*"
+		"@azure/storage-blob": "^12.31.0"
 	},
 	"devDependencies": {
 		"@cellix/typescript-config": "workspace:*",

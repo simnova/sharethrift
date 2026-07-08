@@ -169,4 +169,4 @@ generates:
       - 'typed-document-node'
 hooks:
   afterAllFileWrite:
-    - pnpm exec biome format --write
+    - pnpm exec biome format --write --no-errors-on-unmatched

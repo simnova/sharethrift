@@ -1,20 +1,13 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PlaywrightPageAdapter } from '@cellix/serenity-framework/pages/playwright';
 
-import { type Actor, Task, notes } from '@serenity-js/core';
-
-import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
-import {
-	type E2EListingPage,
-	ListingPage,
-} from '@sthrift-verification/verification-shared/pages';
-import { PlaywrightPageAdapter } from '@sthrift-verification/verification-shared/pages/playwright';
+import { BrowseTheWeb } from '@cellix/serenity-framework/serenity/browser';
+import { type Actor, notes, Task } from '@serenity-js/core';
+import { type E2EListingPage, ListingPage } from '@sthrift-verification/verification-shared/pages';
 import type { ListingDetails, ListingNotes } from '../types.ts';
 
-const TEST_IMAGE_PATH = path.resolve(
-	path.dirname(fileURLToPath(import.meta.url)),
-	'../../../shared/fixtures/test-image.png',
-);
+const TEST_IMAGE_PATH = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../shared/fixtures/test-image.png');
 
 export class CreateListing extends Task {
 	static with(details: ListingDetails) {
@@ -27,12 +20,13 @@ export class CreateListing extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const { page } = BrowseTheWeb.withActor(actor);
-		const listingPage: E2EListingPage = new ListingPage(
-			new PlaywrightPageAdapter(page),
-		);
+		const listingPage: E2EListingPage = new ListingPage(new PlaywrightPageAdapter(page));
 
 		await page.goto('/create-listing', { waitUntil: 'domcontentloaded' });
-		await page.waitForURL('**/create-listing', { timeout: 15_000, waitUntil: 'commit' });
+		await page.waitForURL('**/create-listing', {
+			timeout: 15_000,
+			waitUntil: 'commit',
+		});
 		await this.ensureCreateListingFormReady(page, listingPage);
 
 		await listingPage.fillForm({
@@ -80,9 +74,7 @@ export class CreateListing extends Task {
 		if (hasMissingRequired) {
 			await listingPage.clickPublish();
 
-			const validationError = await listingPage.firstValidationError
-				.textContent()
-				.catch(() => null);
+			const validationError = await listingPage.firstValidationError.textContent().catch(() => null);
 
 			if (validationError) {
 				throw new Error(validationError);
@@ -106,24 +98,26 @@ export class CreateListing extends Task {
 
 		// Wait for the success modal to appear
 		const expectedModalText = isDraft ? 'Draft saved!' : 'Your listing is live!';
-		const submissionOutcome = await page.waitForFunction(
-			(successText) => {
-				const modal = document.querySelector('.ant-modal');
-				if (modal?.textContent?.includes(String(successText))) {
-					return { kind: 'success' };
-				}
+		const submissionOutcome = await page
+			.waitForFunction(
+				(successText) => {
+					const modal = document.querySelector('.ant-modal');
+					if (modal?.textContent?.includes(String(successText))) {
+						return { kind: 'success' };
+					}
 
-				const errorEl = document.querySelector('.ant-form-item-explain-error, .ant-message-error, [role="alert"]');
-				const errorText = errorEl?.textContent?.trim();
-				if (errorText) {
-					return { kind: 'error', message: errorText };
-				}
+					const errorEl = document.querySelector('.ant-form-item-explain-error, .ant-message-error, [role="alert"]');
+					const errorText = errorEl?.textContent?.trim();
+					if (errorText) {
+						return { kind: 'error', message: errorText };
+					}
 
-				return null;
-			},
-			expectedModalText,
-			{ timeout: 15_000 },
-		).then((handle) => handle.jsonValue() as Promise<{ kind: 'success' } | { kind: 'error'; message: string }>);
+					return null;
+				},
+				expectedModalText,
+				{ timeout: 15_000 },
+			)
+			.then((handle) => handle.jsonValue() as Promise<{ kind: 'success' } | { kind: 'error'; message: string }>);
 
 		// Check for server-side errors
 		const mutationResult = getMutationResult();
@@ -139,9 +133,7 @@ export class CreateListing extends Task {
 
 		const modalContent = await listingPage.modal.textContent();
 		if (!modalContent?.includes(expectedModalText)) {
-			throw new Error(
-				`Expected success modal with "${expectedModalText}" but got: "${modalContent}"`,
-			);
+			throw new Error(`Expected success modal with "${expectedModalText}" but got: "${modalContent}"`);
 		}
 
 		// Navigate via modal button (real user interaction)
@@ -158,54 +150,51 @@ export class CreateListing extends Task {
 		const domTitle = await listingTitleCell.textContent();
 
 		if (!domTitle?.trim()) {
-			throw new Error(
-				`Listing title "${this.details.title}" not found on /my-listings page`,
-			);
+			throw new Error(`Listing title "${this.details.title}" not found on /my-listings page`);
 		}
 
 		// Read listing status from the table row
 		const statusTag = await listingPage.statusTagInRow(this.details.title);
 		if (!statusTag) {
-			throw new Error(
-				`Listing status not found in table for "${this.details.title}"`,
-			);
+			throw new Error(`Listing status not found in table for "${this.details.title}"`);
 		}
 		await statusTag.waitFor({ state: 'visible', timeout: 5_000 });
 		const domStatus = await statusTag.textContent();
 
 		if (!domStatus?.trim()) {
-			throw new Error(
-				`Listing status not found in table for "${this.details.title}"`,
-			);
+			throw new Error(`Listing status not found in table for "${this.details.title}"`);
 		}
 
 		// Extract listing ID from the GraphQL mutation response
-		const listing = mutationResult.data?.['listing'] as
-			| Record<string, unknown>
-			| undefined;
+		const listing = mutationResult.data?.['listing'] as Record<string, unknown> | undefined;
 		const listingId = String(listing?.['id'] ?? 'e2e-unknown');
 
-		await actor.attemptsTo(
-			notes<ListingNotes>().set('lastListingId', listingId),
-			notes<ListingNotes>().set('lastListingTitle', domTitle.trim()),
-			notes<ListingNotes>().set('lastListingStatus', domStatus.trim().toLowerCase()),
-		);
+		await actor.attemptsTo(notes<ListingNotes>().set('lastListingId', listingId), notes<ListingNotes>().set('lastListingTitle', domTitle.trim()), notes<ListingNotes>().set('lastListingStatus', domStatus.trim().toLowerCase()));
 	}
 
-	private async ensureCreateListingFormReady(
-		page: BrowseTheWeb['page'],
-		listingPage: E2EListingPage,
-	): Promise<void> {
+	private async ensureCreateListingFormReady(page: BrowseTheWeb['page'], listingPage: E2EListingPage): Promise<void> {
 		try {
-			await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
+			await listingPage.titleInput.waitFor({
+				state: 'visible',
+				timeout: 15_000,
+			});
 		} catch {
 			await page.goto('/', { waitUntil: 'domcontentloaded' });
 			await page.waitForLoadState('networkidle').catch(() => undefined);
-			await listingPage.homeCreateListingButton.waitFor({ state: 'visible', timeout: 15_000 });
+			await listingPage.homeCreateListingButton.waitFor({
+				state: 'visible',
+				timeout: 15_000,
+			});
 			await listingPage.homeCreateListingButton.click();
-			await page.waitForURL('**/create-listing', { timeout: 15_000, waitUntil: 'commit' });
+			await page.waitForURL('**/create-listing', {
+				timeout: 15_000,
+				waitUntil: 'commit',
+			});
 			try {
-				await listingPage.titleInput.waitFor({ state: 'visible', timeout: 15_000 });
+				await listingPage.titleInput.waitFor({
+					state: 'visible',
+					timeout: 15_000,
+				});
 			} catch {
 				throw new Error(`Create listing form did not render. Current URL: ${page.url()}`);
 			}
@@ -216,7 +205,15 @@ export class CreateListing extends Task {
 		});
 	}
 
-	private listenForMutationResponse(page: BrowseTheWeb['page'], mutationName: string): Promise<() => { error: string | undefined; data: Record<string, unknown> | undefined }> {
+	private listenForMutationResponse(
+		page: BrowseTheWeb['page'],
+		mutationName: string,
+	): Promise<
+		() => {
+			error: string | undefined;
+			data: Record<string, unknown> | undefined;
+		}
+	> {
 		let serverError: string | undefined;
 		let mutationData: Record<string, unknown> | undefined;
 
@@ -231,18 +228,15 @@ export class CreateListing extends Task {
 					const result = entry?.data?.[mutationName];
 					if (result) {
 						mutationData = result as Record<string, unknown>;
-						const status = result['status'] as
-							| Record<string, unknown>
-							| undefined;
+						const status = result['status'] as Record<string, unknown> | undefined;
 						if (status?.['success'] === false) {
-							serverError =
-								(typeof status['errorMessage'] === 'string'
-									? status['errorMessage']
-									: undefined) ?? `${mutationName} failed`;
+							serverError = (typeof status['errorMessage'] === 'string' ? status['errorMessage'] : undefined) ?? `${mutationName} failed`;
 						}
 					}
 				}
-			} catch { /* non-JSON response */ }
+			} catch {
+				/* non-JSON response */
+			}
 		};
 
 		page.on('response', listener);
