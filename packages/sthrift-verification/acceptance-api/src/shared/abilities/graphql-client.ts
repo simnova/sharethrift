@@ -1,4 +1,4 @@
-import { Ability, type Actor } from '@serenity-js/core';
+import { Ability } from '@serenity-js/core';
 
 interface GraphQLResponse {
 	data: Record<string, unknown>;
@@ -14,14 +14,7 @@ export class GraphQLClient extends Ability {
 		return new GraphQLClient(apiUrl);
 	}
 
-	static as(actor: Actor): GraphQLClient {
-		return actor.abilityTo(GraphQLClient);
-	}
-
-	async execute(
-		query: string,
-		variables: Record<string, unknown>,
-	): Promise<GraphQLResponse> {
+	async execute(query: string, variables: Record<string, unknown>): Promise<GraphQLResponse> {
 		const response = await fetch(this.apiUrl, {
 			method: 'POST',
 			headers: {
@@ -34,16 +27,12 @@ export class GraphQLClient extends Ability {
 		const result = (await response.json()) as GraphQLResponse;
 
 		if (result.errors && Array.isArray(result.errors)) {
-			const errorMessage = result.errors
-				.map((err) => err.message ?? 'Unknown error')
-				.join('; ');
+			const errorMessage = result.errors.map((err) => err.message ?? 'Unknown error').join('; ');
 			throw new Error(errorMessage);
 		}
 
 		if (!response.ok) {
-			throw new Error(
-				`GraphQL error: ${response.status} ${response.statusText}`,
-			);
+			throw new Error(`GraphQL error: ${response.status} ${response.statusText}`);
 		}
 
 		return result;

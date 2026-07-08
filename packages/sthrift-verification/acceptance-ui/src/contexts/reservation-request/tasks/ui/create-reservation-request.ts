@@ -1,23 +1,12 @@
-import '../../../../shared/support/ui/setup-jsdom.ts';
+import { DomPageAdapter as JsdomPageAdapter } from '@cellix/serenity-framework/pages/dom';
 import { type Actor, notes, Task } from '@serenity-js/core';
-import { render, cleanup, act } from '@testing-library/react';
+import { ReservationCard, ReservationRequestForm } from '@sthrift/ui-sharethrift-route-root/acceptance';
+import { ReservationPage, type UiReservationPage } from '@sthrift-verification/verification-shared/pages';
+import { act, cleanup, render } from '@testing-library/react';
 import * as React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import {
-	ReservationPage,
-	type UiReservationPage,
-} from '@sthrift-verification/verification-shared/pages';
-import { JsdomPageAdapter } from '@sthrift-verification/verification-shared/pages/jsdom';
-import {
-	ReservationCard,
-	ReservationRequestForm,
-} from '@sthrift/ui-sharethrift-route-root/acceptance';
 import { CreateReservationRequestAbility } from '../../abilities/create-reservation-request-ability.ts';
-import type {
-	CreateReservationRequestInput,
-	ReservationRequestNotes,
-} from '../../abilities/reservation-request-types.ts';
-import { cleanupJsdom } from '../../../../shared/support/ui/jsdom-setup.ts';
+import type { CreateReservationRequestInput, ReservationRequestNotes } from '../../abilities/reservation-request-types.ts';
 
 const noop = () => undefined;
 
@@ -27,9 +16,7 @@ export class CreateReservationRequest extends Task {
 	}
 
 	private constructor(private readonly input: CreateReservationRequestInput) {
-		super(
-			`fills and submits reservation request form for listing "${input.listingId}"`,
-		);
+		super(`fills and submits reservation request form for listing "${input.listingId}"`);
 	}
 
 	async performAs(actor: Actor): Promise<void> {
@@ -42,35 +29,18 @@ export class CreateReservationRequest extends Task {
 
 		const reservationRequest = ability.getCreatedAggregate();
 		if (!reservationRequest) {
-			throw new Error(
-				'Domain CreateReservationRequestAbility did not produce an aggregate',
-			);
+			throw new Error('Domain CreateReservationRequestAbility did not produce an aggregate');
 		}
 
 		// 3. Store values in notes for assertion steps
-		const startDate =
-			reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ??
-			'';
-		const endDate =
-			reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
+		const startDate = reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ?? '';
+		const endDate = reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
 
 		await actor.attemptsTo(
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestId',
-				reservationRequest.id,
-			),
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestState',
-				reservationRequest.state,
-			),
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestStartDate',
-				startDate,
-			),
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestEndDate',
-				endDate,
-			),
+			notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
+			notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
+			notes<ReservationRequestNotes>().set('lastReservationRequestStartDate', startDate),
+			notes<ReservationRequestNotes>().set('lastReservationRequestEndDate', endDate),
 		);
 	}
 
@@ -83,34 +53,27 @@ export class CreateReservationRequest extends Task {
 				React.createElement(
 					MemoryRouter,
 					null,
-					React.createElement(
-						ReservationRequestForm as React.ComponentType<
-							Record<string, unknown>
-						>,
-						{
-							userIsSharer: false,
-							isAuthenticated: true,
-							userReservationRequest: null,
-							onReserveClick: noop,
-							onCancelClick: noop,
-							reservationDates: {
-								startDate: this.input.reservationPeriodStart,
-								endDate: this.input.reservationPeriodEnd,
-							},
-							onReservationDatesChange: noop,
-							reservationLoading: false,
-							otherReservationsLoading: false,
-							otherReservationsError: undefined,
-							otherReservations: [],
+					React.createElement(ReservationRequestForm as React.ComponentType<Record<string, unknown>>, {
+						userIsSharer: false,
+						isAuthenticated: true,
+						userReservationRequest: null,
+						onReserveClick: noop,
+						onCancelClick: noop,
+						reservationDates: {
+							startDate: this.input.reservationPeriodStart,
+							endDate: this.input.reservationPeriodEnd,
 						},
-					),
+						onReservationDatesChange: noop,
+						reservationLoading: false,
+						otherReservationsLoading: false,
+						otherReservationsError: undefined,
+						otherReservations: [],
+					}),
 				),
 			);
 
 			// Use shared page object for form interactions
-			const page: UiReservationPage = new ReservationPage(
-				new JsdomPageAdapter(container),
-			);
+			const page: UiReservationPage = new ReservationPage(new JsdomPageAdapter(container));
 
 			await act(async () => {
 				await page.openDatePicker();
@@ -126,33 +89,27 @@ export class CreateReservationRequest extends Task {
 				React.createElement(
 					MemoryRouter,
 					null,
-					React.createElement(
-						ReservationCard as React.ComponentType<Record<string, unknown>>,
-						{
-							reservation: {
-								id: this.input.listingId,
-								listing: {
-									title: 'Test Listing',
-									images: [],
-								},
-								state: 'Requested',
-								reservationPeriodStart:
-									this.input.reservationPeriodStart?.toISOString(),
-								reservationPeriodEnd:
-									this.input.reservationPeriodEnd?.toISOString(),
+					React.createElement(ReservationCard as React.ComponentType<Record<string, unknown>>, {
+						reservation: {
+							id: this.input.listingId,
+							listing: {
+								title: 'Test Listing',
+								images: [],
 							},
-							showActions: false,
+							state: 'Requested',
+							reservationPeriodStart: this.input.reservationPeriodStart?.toISOString(),
+							reservationPeriodEnd: this.input.reservationPeriodEnd?.toISOString(),
 						},
-					),
+						showActions: false,
+					}),
 				),
 			);
 
 			cleanup();
 		} finally {
-			cleanupJsdom();
+			cleanup();
 		}
 	}
 
-	override toString = () =>
-		`fills and submits reservation request form for listing "${this.input.listingId}"`;
+	override toString = () => `fills and submits reservation request form for listing "${this.input.listingId}"`;
 }

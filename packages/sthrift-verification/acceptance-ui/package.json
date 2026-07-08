@@ -5,18 +5,19 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
-		"test": "LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm --import ./src/shared/support/ui/register-asset-loader.ts' cucumber-js --format json:./reports/cucumber-report-ui.json",
-		"test:coverage": "LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm --import ./src/shared/support/ui/register-asset-loader.ts' c8 --allowExternal -- cucumber-js --format json:./reports/cucumber-report-ui.json",
+		"test": "LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm --import @cellix/serenity-framework/dom/register-asset-loader --import @cellix/serenity-framework/dom/setup' cucumber-js --format json:./reports/cucumber-report-ui.json",
+		"test:coverage": "LOG_LEVEL=warn NODE_OPTIONS='--import tsx/esm --import @cellix/serenity-framework/dom/register-asset-loader --import @cellix/serenity-framework/dom/setup' c8 --allowExternal -- cucumber-js --format json:./reports/cucumber-report-ui.json",
 		"test:coverage:report": "c8 report --allowExternal",
 		"clean": "rimraf dist reports target coverage coverage-c8 coverage-vitest .c8-output"
 	},
 	"dependencies": {
-		"@cucumber/cucumber": "^12.7.0",
-		"@serenity-js/assertions": "^3.37.2",
-		"@serenity-js/console-reporter": "^3.37.2",
-		"@serenity-js/core": "^3.37.2",
-		"@serenity-js/cucumber": "^3.37.2",
-		"@serenity-js/serenity-bdd": "^3.42.2",
+		"@cellix/serenity-framework": "workspace:*",
+		"@cucumber/cucumber": "12.8.1",
+		"@serenity-js/assertions": "3.43.0",
+		"@serenity-js/console-reporter": "3.43.0",
+		"@serenity-js/core": "3.43.0",
+		"@serenity-js/cucumber": "3.43.0",
+		"@serenity-js/serenity-bdd": "3.43.0",
 		"std-env": "^4.0.0"
 	},
 	"devDependencies": {
@@ -31,12 +32,14 @@
 		"@testing-library/react": "^16.3.2",
 		"@types/jsdom": "^21.1.7",
 		"@types/node": "^24.6.1",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
 		"antd": "^5.27.0",
 		"c8": "^11.0.0",
 		"jsdom": "^26.1.0",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
-		"react-router-dom": "^7.12.0",
+		"react-router-dom": "^7.15.1",
 		"rimraf": "^6.0.1",
 		"tsx": "^4.20.3",
 		"typescript": "^5.4.5"

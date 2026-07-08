@@ -3,18 +3,9 @@
 	"compilerOptions": {
 		"outDir": "./dist",
 		"rootDir": ".",
-		"erasableSyntaxOnly": false
+		"erasableSyntaxOnly": false,
+		"noPropertyAccessFromIndexSignature": false
 	},
-	"include": [
-		"src/**/*",
-		"features/**/*"
-	],
-	"exclude": [
-		"node_modules",
-		"**/node_modules",
-		"dist",
-		"coverage",
-		"reports",
-		"target"
-	]
+	"include": ["src/**/*", "features/**/*"],
+	"exclude": ["node_modules", "**/node_modules", "dist", "coverage", "reports", "target"]
 }

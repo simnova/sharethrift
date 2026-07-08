@@ -1,10 +1,6 @@
 import { type Actor, notes, Task } from '@serenity-js/core';
 import { GraphQLClient } from '../../../../shared/abilities/graphql-client.ts';
-import type {
-	CreateReservationRequestInput,
-	ReservationRequestNotes,
-	ReservationRequestResponse,
-} from '../../abilities/reservation-request-types.ts';
+import type { CreateReservationRequestInput, ReservationRequestNotes, ReservationRequestResponse } from '../../abilities/reservation-request-types.ts';
 
 const CREATE_RESERVATION_REQUEST_MUTATION = `
 	mutation CreateReservationRequest($input: ReservationRequestCreateInput!) {
@@ -36,52 +32,34 @@ export class CreateReservationRequest extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		const graphql = GraphQLClient.as(actor);
+		const graphql = actor.abilityTo(GraphQLClient);
 
-		const response = await graphql.execute(
-			CREATE_RESERVATION_REQUEST_MUTATION,
-			{
-				input: {
-					listingId: this.input.listingId,
-					reservationPeriodStart:
-						this.input.reservationPeriodStart.toISOString(),
-					reservationPeriodEnd: this.input.reservationPeriodEnd.toISOString(),
-				},
+		const response = await graphql.execute(CREATE_RESERVATION_REQUEST_MUTATION, {
+			input: {
+				listingId: this.input.listingId,
+				reservationPeriodStart: this.input.reservationPeriodStart.toISOString(),
+				reservationPeriodEnd: this.input.reservationPeriodEnd.toISOString(),
 			},
-		);
+		});
 
-		const mutationResult = response.data.createReservationRequest as Record<
-			string,
-			unknown
-		>;
+		const mutationResult = response.data.createReservationRequest as Record<string, unknown>;
 		const status = mutationResult.status as Record<string, unknown> | undefined;
 
 		if (status && !status.success) {
-			throw new Error(
-				String(status.errorMessage ?? 'Failed to create reservation request'),
-			);
+			throw new Error(String(status.errorMessage ?? 'Failed to create reservation request'));
 		}
 
-		const data = (mutationResult.reservationRequest ?? {}) as Record<
-			string,
-			unknown
-		>;
+		const data = (mutationResult.reservationRequest ?? {}) as Record<string, unknown>;
 		const reservationRequest = this.deserialize(data);
 
 		if (!reservationRequest.id) {
-			throw new Error(
-				'API reservation:create returned a reservation request without an id',
-			);
+			throw new Error('API reservation:create returned a reservation request without an id');
 		}
 		if (!reservationRequest.state) {
-			throw new Error(
-				'API reservation:create returned a reservation request without a state',
-			);
+			throw new Error('API reservation:create returned a reservation request without a state');
 		}
 		if (reservationRequest.state !== 'Requested') {
-			throw new Error(
-				`API reservation:create returned state "${reservationRequest.state}", expected "Requested"`,
-			);
+			throw new Error(`API reservation:create returned state "${reservationRequest.state}", expected "Requested"`);
 		}
 
 		// Verify persistence via count query
@@ -92,40 +70,21 @@ export class CreateReservationRequest extends Task {
 		const count = Array.isArray(items) ? items.length : 0;
 
 		if (count < 1) {
-			throw new Error(
-				`Expected at least 1 reservation request for listing ${this.input.listingId} after creation, but found ${count}`,
-			);
+			throw new Error(`Expected at least 1 reservation request for listing ${this.input.listingId} after creation, but found ${count}`);
 		}
 
-		const startDate =
-			reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ??
-			'';
-		const endDate =
-			reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
+		const startDate = reservationRequest.reservationPeriodStart.toISOString().split('T')[0] ?? '';
+		const endDate = reservationRequest.reservationPeriodEnd.toISOString().split('T')[0] ?? '';
 
 		await actor.attemptsTo(
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestId',
-				reservationRequest.id,
-			),
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestState',
-				reservationRequest.state,
-			),
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestStartDate',
-				startDate,
-			),
-			notes<ReservationRequestNotes>().set(
-				'lastReservationRequestEndDate',
-				endDate,
-			),
+			notes<ReservationRequestNotes>().set('lastReservationRequestId', reservationRequest.id),
+			notes<ReservationRequestNotes>().set('lastReservationRequestState', reservationRequest.state),
+			notes<ReservationRequestNotes>().set('lastReservationRequestStartDate', startDate),
+			notes<ReservationRequestNotes>().set('lastReservationRequestEndDate', endDate),
 		);
 	}
 
-	private deserialize(
-		data: Record<string, unknown>,
-	): ReservationRequestResponse {
+	private deserialize(data: Record<string, unknown>): ReservationRequestResponse {
 		const listing = data.listing as Record<string, unknown> | undefined;
 		const reserver = data.reserver as Record<string, unknown> | undefined;
 
@@ -138,18 +97,13 @@ export class CreateReservationRequest extends Task {
 				firstName: '',
 				lastName: '',
 			},
-			reservationPeriodStart: data.reservationPeriodStart
-				? new Date(String(data.reservationPeriodStart))
-				: new Date(),
-			reservationPeriodEnd: data.reservationPeriodEnd
-				? new Date(String(data.reservationPeriodEnd))
-				: new Date(),
+			reservationPeriodStart: data.reservationPeriodStart ? new Date(String(data.reservationPeriodStart)) : new Date(),
+			reservationPeriodEnd: data.reservationPeriodEnd ? new Date(String(data.reservationPeriodEnd)) : new Date(),
 			state: String(data.state) as ReservationRequestResponse['state'],
 			createdAt: data.createdAt ? new Date(String(data.createdAt)) : new Date(),
 			updatedAt: data.updatedAt ? new Date(String(data.updatedAt)) : new Date(),
 		};
 	}
 
-	override toString = () =>
-		`creates reservation request for listing "${this.input.listingId}" (api)`;
+	override toString = () => `creates reservation request for listing "${this.input.listingId}" (api)`;
 }

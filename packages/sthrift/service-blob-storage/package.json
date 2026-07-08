@@ -1,0 +1,24 @@
+{
+	"name": "@sthrift/service-blob-storage",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsgo --build",
+		"clean": "rimraf dist"
+	},
+	"dependencies": {
+		"@cellix/service-blob-storage": "workspace:*"
+	},
+	"devDependencies": {
+		"@cellix/typescript-config": "workspace:*",
+		"rimraf": "^6.0.1",
+		"typescript": "^5.8.3"
+	}
+}

@@ -1,11 +1,7 @@
-import { Task, type Actor, notes } from '@serenity-js/core';
-import { BrowseTheWeb } from '../../../shared/abilities/browse-the-web.ts';
-import {
-	type E2EReservationPage,
-	ReservationPage,
-	formatDate,
-} from '@sthrift-verification/verification-shared/pages';
-import { PlaywrightPageAdapter } from '@sthrift-verification/verification-shared/pages/playwright';
+import { PlaywrightPageAdapter } from '@cellix/serenity-framework/pages/playwright';
+import { BrowseTheWeb } from '@cellix/serenity-framework/serenity/browser';
+import { type Actor, notes, Task } from '@serenity-js/core';
+import { type E2EReservationPage, formatDate, ReservationPage } from '@sthrift-verification/verification-shared/pages';
 import type { CreateReservationRequestInput, ReservationRequestNotes } from '../types.ts';
 
 export class CreateReservationRequest extends Task {
@@ -19,16 +15,9 @@ export class CreateReservationRequest extends Task {
 
 	async performAs(actor: Actor): Promise<void> {
 		const { page } = BrowseTheWeb.withActor(actor);
-		const reservationPage: E2EReservationPage = new ReservationPage(
-			new PlaywrightPageAdapter(page),
-		);
+		const reservationPage: E2EReservationPage = new ReservationPage(new PlaywrightPageAdapter(page));
 
-		await page.goto(`/listing/${this.input.listingId}`, { waitUntil: 'domcontentloaded' });
-
-		// Wait for all GraphQL queries to resolve (skeleton disappears)
-		await reservationPage.skeleton.waitFor({ state: 'hidden', timeout: 15_000 });
-
-		await reservationPage.rangePicker.waitFor({ state: 'visible', timeout: 10_000 });
+		await this.openListingWithReservationForm(page, reservationPage);
 
 		if (await reservationPage.isDisabled()) {
 			throw new Error('Reservation period overlaps with existing active reservation requests');
@@ -84,7 +73,10 @@ export class CreateReservationRequest extends Task {
 		}
 
 		// Click Reserve button
-		await reservationPage.reserveButton.waitFor({ state: 'visible', timeout: 5_000 });
+		await reservationPage.reserveButton.waitFor({
+			state: 'visible',
+			timeout: 5_000,
+		});
 		await reservationPage.reserveButton.click();
 
 		// Verify button shows loading state during submission
@@ -93,19 +85,23 @@ export class CreateReservationRequest extends Task {
 		});
 
 		// Verify "Cancel Request" button appears (proves reservation was accepted)
-		await reservationPage.cancelRequestButton.waitFor({ state: 'visible', timeout: 15_000 });
+		await reservationPage.cancelRequestButton.waitFor({
+			state: 'visible',
+			timeout: 15_000,
+		});
 
 		const cancelButtonText = await reservationPage.cancelRequestButton.textContent();
 		const domState = cancelButtonText?.includes('Cancel Request') ? 'Requested' : 'Unknown';
 
 		if (domState !== 'Requested') {
-			throw new Error(
-				`Expected reservation button to show "Cancel Request" but got: "${cancelButtonText}"`,
-			);
+			throw new Error(`Expected reservation button to show "Cancel Request" but got: "${cancelButtonText}"`);
 		}
 
 		// Verify date picker is disabled after reservation
-		await reservationPage.disabledPicker.waitFor({ state: 'visible', timeout: 5_000 });
+		await reservationPage.disabledPicker.waitFor({
+			state: 'visible',
+			timeout: 5_000,
+		});
 
 		await actor.attemptsTo(
 			notes<ReservationRequestNotes>().set('lastReservationRequestId', this.input.listingId),
@@ -113,6 +109,39 @@ export class CreateReservationRequest extends Task {
 			notes<ReservationRequestNotes>().set('lastReservationRequestStartDate', startDateStr),
 			notes<ReservationRequestNotes>().set('lastReservationRequestEndDate', endDateStr),
 		);
+	}
+
+	/**
+	 * Navigate to the listing and wait for its reservation form to render.
+	 *
+	 * The e2e UI is served by the Vite dev server behind an HTTP/2 proxy, which
+	 * occasionally drops one of the unbundled ES-module requests
+	 * (`ERR_HTTP2_PROTOCOL_ERROR`). When that happens the SPA never bootstraps,
+	 * leaving an empty `#root` with no skeleton — so waiting for the skeleton to
+	 * hide would pass falsely and the later date-picker wait would time out.
+	 * Waiting for the range picker to positively appear, and reloading when the
+	 * app fails to boot, makes the step resilient to that transient failure.
+	 */
+	private async openListingWithReservationForm(page: BrowseTheWeb['page'], reservationPage: E2EReservationPage): Promise<void> {
+		const maxAttempts = 3;
+		for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+			await page.goto(`/listing/${this.input.listingId}`, {
+				waitUntil: 'domcontentloaded',
+			});
+
+			const rendered = await reservationPage.rangePicker
+				.waitFor({ state: 'visible', timeout: 12_000 })
+				.then(() => true)
+				.catch(() => false);
+			if (rendered) {
+				return;
+			}
+
+			// App failed to bootstrap (empty #root). The next iteration re-navigates
+			// to the same URL, re-requesting the modules that failed to load.
+		}
+
+		throw new Error(`Reservation form did not render for listing "${this.input.listingId}" ` + `after ${maxAttempts} attempts. Current URL: ${page.url()}`);
 	}
 
 	override toString = () => `creates reservation request for listing "${this.input.listingId}" (e2e)`;

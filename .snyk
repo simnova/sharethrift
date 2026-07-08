@@ -3,7 +3,7 @@ ignore:
   'SNYK-JS-SIRV-12558119':
     - '* > sirv@2.0.4':
         reason: 'Transitive dependency in Docusaurus; not exploitable in static site serving context (dev-only asset handler)'
-        expires: '2026-06-04T00:00:00.000Z'
+        expires: '2026-10-08T00:00:00.000Z'
         created: '2025-12-05T00:00:00.000Z'
   'SNYK-JS-JSYAML-13961110':
     - '* > js-yaml':
@@ -101,6 +101,320 @@ ignore:
         reason: 'No fixed version available (affects all versions). Transitive dependency of @apollo/server used only for internal Apollo usage-reporting protobuf schemas — protobuf definitions are static/internal, not user-supplied. CVE-2026-41242 requires attacker-controlled protobuf type names which is not possible in this usage.'
         expires: '2026-10-30T00:00:00.000Z'
         created: '2026-04-30T00:00:00.000Z'
+
+  'SNYK-JS-FORMDATA-17337015':
+    - '* > form-data@4.0.5':
+        reason: 'Transitive dependency of axios/HTTP clients; multipart bodies are constructed internally, not from untrusted boundaries. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-GRPCGRPCJS-17315646':
+    - '* > @grpc/grpc-js@1.14.3':
+        reason: 'Transitive dependency of the OpenTelemetry OTLP exporter; connects only to the configured telemetry endpoint. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-GRPCGRPCJS-17315972':
+    - '* > @grpc/grpc-js@1.14.3':
+        reason: 'Transitive dependency of the OpenTelemetry OTLP exporter; connects only to the configured telemetry endpoint. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-MONGOOSE-16425765':
+    - '* > mongoose@8.17.0':
+        reason: 'Fix requires mongoose 8.22.x whose lean() return-type changes break persistence-layer type contracts across ~7 read repositories; upgrade deferred to a dedicated effort. Query inputs are validated by the domain layer.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-OPENTELEMETRYCORE-17373280':
+    - '* > @opentelemetry/core':
+        reason: 'Transitive dependency of the OpenTelemetry SDK; the fix requires a major-version upgrade of the whole otel suite (deferred). Telemetry payloads are internal, not user-controlled.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+    - '* > @opentelemetry/core@2.6.0':
+        reason: 'Transitive dependency of the OpenTelemetry SDK; the fix requires a major-version upgrade of the whole otel suite (deferred). Telemetry payloads are internal, not user-controlled.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-OPENTELEMETRYEXPORTERPROMETHEUS-16758050':
+    - '* > @opentelemetry/exporter-prometheus@0.57.2':
+        reason: 'Transitive dependency of the OpenTelemetry SDK; the fix requires a major-version upgrade of the whole otel suite (deferred). Telemetry payloads are internal, not user-controlled.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-16643234':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-16643262':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-16643291':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-16643304':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-16643319':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-16643419':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-16643421':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-16643442':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-16657755':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-17353168':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-17353320':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJS-17362837':
+    - '* > protobufjs@7.5.5':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJSCODEGEN-16643292':
+    - '* > @protobufjs/codegen@2.0.4':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJSUTF8-16643215':
+    - '* > @protobufjs/utf8@1.1.0':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-PROTOBUFJSUTF8-16643422':
+    - '* > @protobufjs/utf8@1.1.0':
+        reason: 'Transitive dependency of OpenTelemetry/gRPC; protobuf schemas are static and internal, not attacker-supplied. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-QS-16721866':
+    - '* > qs@6.15.0':
+        reason: 'Transitive dependency in express/@apollo/server; not exploitable in current usage. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-UNDICI-17372609':
+    - '* > undici@7.24.4':
+        reason: 'Transitive dependency of Azure Functions and OpenTelemetry exporters; requests target known internal/telemetry endpoints, not attacker-controlled URLs. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-UNDICI-17372658':
+    - '* > undici@7.24.4':
+        reason: 'Transitive dependency of Azure Functions and OpenTelemetry exporters; requests target known internal/telemetry endpoints, not attacker-controlled URLs. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-UNDICI-17372667':
+    - '* > undici@7.24.4':
+        reason: 'Transitive dependency of Azure Functions and OpenTelemetry exporters; requests target known internal/telemetry endpoints, not attacker-controlled URLs. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-UNDICI-17372697':
+    - '* > undici@7.24.4':
+        reason: 'Transitive dependency of Azure Functions and OpenTelemetry exporters; requests target known internal/telemetry endpoints, not attacker-controlled URLs. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-UNDICI-17372752':
+    - '* > undici@7.24.4':
+        reason: 'Transitive dependency of Azure Functions and OpenTelemetry exporters; requests target known internal/telemetry endpoints, not attacker-controlled URLs. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-UNDICI-17372754':
+    - '* > undici@7.24.4':
+        reason: 'Transitive dependency of Azure Functions and OpenTelemetry exporters; requests target known internal/telemetry endpoints, not attacker-controlled URLs. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-UNDICI-17372758':
+    - '* > undici@7.24.4':
+        reason: 'Transitive dependency of Azure Functions and OpenTelemetry exporters; requests target known internal/telemetry endpoints, not attacker-controlled URLs. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-BABELCORE-17342497':
+    - '* > @babel/core@7.29.0':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-BABELPLUGINTRANSFORMMODULESSYSTEMJS-16624576':
+    - '* > @babel/plugin-transform-modules-systemjs@7.29.0':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-BRACEEXPANSION-16755174':
+    - '* > brace-expansion@5.0.5':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-BRACEEXPANSION-17706650':
+    - '* > brace-expansion@5.0.5':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-FASTURI-16642394':
+    - '* > fast-uri@3.1.0':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-FASTURI-16642399':
+    - '* > fast-uri@3.1.0':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-FASTURI-17675102':
+    - '* > fast-uri@3.1.0':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-HTTPPROXYMIDDLEWARE-17375053':
+    - '* > http-proxy-middleware@2.0.9':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-IMAGESIZE-17295814':
+    - '* > image-size@2.0.2':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-IMAGESIZE-17295816':
+    - '* > image-size@2.0.2':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-JOI-17317897':
+    - '* > joi@17.13.3':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-JSYAML-17342520':
+    - '* > js-yaml':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-LAUNCHEDITOR-17345917':
+    - '* > launch-editor@2.13.1':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-POSTCSSSELECTORPARSER-16873882':
+    - '* > postcss-selector-parser':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-SHELLQUOTE-16799355':
+    - '* > shell-quote@1.8.3':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-SHELLQUOTE-17457810':
+    - '* > shell-quote@1.8.3':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-WEBPACKDEVSERVER-16642067':
+    - '* > webpack-dev-server@5.2.3':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-WEBPACKDEVSERVER-17353649':
+    - '* > webpack-dev-server@5.2.3':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-WEBPACKDEVSERVER-17812733':
+    - '* > webpack-dev-server@5.2.3':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-WEBPACKDEVSERVER-17812743':
+    - '* > webpack-dev-server@5.2.3':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-WS-16722635':
+    - '* > ws@8.19.0':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-WS-17344547':
+    - '* > ws@7.5.10':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+    - '* > ws@8.19.0':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-VITESTBROWSER-17375130':
+    - '* > @vitest/browser@4.0.18':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-VITESTBROWSERPLAYWRIGHT-17375133':
+    - '* > @vitest/browser-playwright@4.0.18':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-VITESTBROWSER-17120486':
+    - '* > @vitest/browser@4.0.18':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-VITESTBROWSER-17120327':
+    - '* > @vitest/browser@4.0.18':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-VITEST-17375131':
+    - '* > vitest@4.0.18':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-VITEST-17120487':
+    - '* > vitest@4.0.18':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-VITEST-17120326':
+    - '* > vitest@4.0.18':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-ESBUILD-17750815':
+    - '* > esbuild@0.27.4':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-ESBUILD-17750822':
+    - '* > esbuild@0.27.4':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
+  'SNYK-JS-VITE-17353904':
+    - '* > vite@7.3.2':
+        reason: 'Dev/build-time only dependency (test runner, bundler, or Docusaurus toolchain); not shipped to the production runtime. No patched version published upstream yet.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-08T00:00:00.000Z'
 
 # Snyk Code exclusions for local development tooling
 exclude:

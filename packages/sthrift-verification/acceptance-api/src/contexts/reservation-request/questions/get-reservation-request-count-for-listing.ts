@@ -8,9 +8,7 @@ const GET_RESERVATION_COUNT_QUERY = `
 	}
 `;
 
-export class GetReservationRequestCountForListing extends Question<
-	Promise<number>
-> {
+export class GetReservationRequestCountForListing extends Question<Promise<number>> {
 	static forListing(listingId: string) {
 		return new GetReservationRequestCountForListing(listingId);
 	}
@@ -20,7 +18,7 @@ export class GetReservationRequestCountForListing extends Question<
 	}
 
 	async answeredBy(actor: Actor): Promise<number> {
-		const graphql = GraphQLClient.as(actor);
+		const graphql = actor.abilityTo(GraphQLClient);
 		const response = await graphql.execute(GET_RESERVATION_COUNT_QUERY, {
 			listingId: this.listingId,
 		});

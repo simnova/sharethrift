@@ -1,14 +1,7 @@
 import { type Actor, notes, Task } from '@serenity-js/core';
 import { GraphQLClient } from '../../../../shared/abilities/graphql-client.ts';
-import {
-	DEFAULT_SHARING_PERIOD_DAYS,
-	ONE_DAY_MS,
-} from '../../../../shared/support/domain-test-helpers.ts';
-import type {
-	ItemListingResponse,
-	ListingDetails,
-	ListingNotes,
-} from '../../abilities/listing-types.ts';
+import { DEFAULT_SHARING_PERIOD_DAYS, ONE_DAY_MS } from '../../../../shared/support/domain-test-helpers.ts';
+import type { ItemListingResponse, ListingDetails, ListingNotes } from '../../abilities/listing-types.ts';
 
 const CREATE_LISTING_MUTATION = `
 	mutation CreateItemListing($input: ItemListingCreateInput!) {
@@ -41,11 +34,9 @@ export class CreateListing extends Task {
 	}
 
 	async performAs(actor: Actor): Promise<void> {
-		const graphql = GraphQLClient.as(actor);
+		const graphql = actor.abilityTo(GraphQLClient);
 
-		const isDraft = !(
-			this.details.isDraft === 'false' || this.details.isDraft === false
-		);
+		const isDraft = !(this.details.isDraft === 'false' || this.details.isDraft === false);
 
 		const response = await graphql.execute(CREATE_LISTING_MUTATION, {
 			input: {
@@ -60,65 +51,41 @@ export class CreateListing extends Task {
 			},
 		});
 
-		const mutationResult = response.data.createItemListing as Record<
-			string,
-			unknown
-		>;
+		const mutationResult = response.data.createItemListing as Record<string, unknown>;
 		const status = mutationResult.status as Record<string, unknown> | undefined;
 
 		if (status && !status.success) {
-			throw new Error(
-				String(status.errorMessage ?? 'Failed to create listing'),
-			);
+			throw new Error(String(status.errorMessage ?? 'Failed to create listing'));
 		}
 
-		const listing = this.deserializeListing(
-			(mutationResult.listing ?? {}) as Record<string, unknown>,
-		);
+		const listing = this.deserializeListing((mutationResult.listing ?? {}) as Record<string, unknown>);
 
 		if (!listing.id) {
 			throw new Error('API listing:create returned a listing without an id');
 		}
 		if (listing.title !== this.details.title) {
-			throw new Error(
-				`API listing:create returned title "${listing.title}", expected "${this.details.title}"`,
-			);
+			throw new Error(`API listing:create returned title "${listing.title}", expected "${this.details.title}"`);
 		}
 
 		const expectedState = isDraft ? 'draft' : 'active';
 		if (this.normalizeStatus(listing.state) !== expectedState) {
-			throw new Error(
-				`API listing:create returned state "${listing.state}", expected a normalized state of "${expectedState}"`,
-			);
+			throw new Error(`API listing:create returned state "${listing.state}", expected a normalized state of "${expectedState}"`);
 		}
 
 		// Re-query to verify persistence
 		const persistedResponse = await graphql.execute(GET_LISTING_QUERY, {
 			id: listing.id,
 		});
-		const persistedData = persistedResponse.data.itemListing as
-			| Record<string, unknown>
-			| undefined;
+		const persistedData = persistedResponse.data.itemListing as Record<string, unknown> | undefined;
 		if (!persistedData) {
-			throw new Error(
-				`Listing ${listing.id} was not found on re-query — API backend did not persist the listing`,
-			);
+			throw new Error(`Listing ${listing.id} was not found on re-query — API backend did not persist the listing`);
 		}
 		const persisted = this.deserializeListing(persistedData);
 		if (persisted.title !== this.details.title) {
-			throw new Error(
-				`Re-queried listing title "${persisted.title}" does not match created title "${this.details.title}"`,
-			);
+			throw new Error(`Re-queried listing title "${persisted.title}" does not match created title "${this.details.title}"`);
 		}
 
-		await actor.attemptsTo(
-			notes<ListingNotes>().set('lastListingId', listing.id),
-			notes<ListingNotes>().set('lastListingTitle', listing.title),
-			notes<ListingNotes>().set(
-				'lastListingStatus',
-				this.normalizeStatus(listing.state),
-			),
-		);
+		await actor.attemptsTo(notes<ListingNotes>().set('lastListingId', listing.id), notes<ListingNotes>().set('lastListingTitle', listing.title), notes<ListingNotes>().set('lastListingStatus', this.normalizeStatus(listing.state)));
 	}
 
 	private calculateStartDate(): Date {
@@ -134,9 +101,7 @@ export class CreateListing extends Task {
 		return normalized === 'published' ? 'active' : normalized;
 	}
 
-	private deserializeListing(
-		data: Record<string, unknown>,
-	): ItemListingResponse {
+	private deserializeListing(data: Record<string, unknown>): ItemListingResponse {
 		return {
 			id: String(data.id),
 			title: String(data.title),

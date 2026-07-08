@@ -11,12 +11,14 @@
 		"clean": "rimraf dist reports target coverage coverage-c8 coverage-vitest .c8-output"
 	},
 	"dependencies": {
-		"@cucumber/cucumber": "^12.7.0",
-		"@serenity-js/assertions": "^3.37.2",
-		"@serenity-js/console-reporter": "^3.37.2",
-		"@serenity-js/core": "^3.37.2",
-		"@serenity-js/cucumber": "^3.37.2",
-		"@serenity-js/serenity-bdd": "^3.42.2",
+		"@cellix/serenity-framework": "workspace:*",
+		"graphql-middleware": "^6.1.35",
+		"@cucumber/cucumber": "12.8.1",
+		"@serenity-js/assertions": "3.43.0",
+		"@serenity-js/console-reporter": "3.43.0",
+		"@serenity-js/core": "3.43.0",
+		"@serenity-js/cucumber": "3.43.0",
+		"@serenity-js/serenity-bdd": "3.43.0",
 		"std-env": "^4.0.0"
 	},
 	"devDependencies": {
@@ -29,6 +31,7 @@
 		"@sthrift/application-services": "workspace:*",
 		"@sthrift/context-spec": "workspace:*",
 		"@sthrift/domain": "workspace:*",
+		"@sthrift/graphql": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
 		"@sthrift-verification/verification-shared": "workspace:*",
 		"@types/node": "^24.6.1",

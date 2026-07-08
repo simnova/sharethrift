@@ -1,29 +1,20 @@
-import {
-	setWorldConstructor,
-	World,
-} from '@cucumber/cucumber';
-import { engage } from '@serenity-js/core';
-import {
-	clearMockListings,
-	clearMockReservationRequests,
-} from '@sthrift-verification/verification-shared/test-data';
-import './shared/support/hooks.ts';
-import { ShareThriftUiCast } from './shared/support/cast.ts';
+import { registerManagedSerenityWorld } from '@cellix/serenity-framework/cucumber';
+import { RenderInDom } from '@cellix/serenity-framework/dom/render-in-dom';
+import { SerenityCast } from '@cellix/serenity-framework/serenity';
+import { listingAbilities } from './contexts/listing/abilities/index.ts';
+import { reservationRequestAbilities } from './contexts/reservation-request/abilities/index.ts';
+import { registerLifecycleHooks } from './cucumber-lifecycle-hooks.ts';
+import { infrastructure } from './infrastructure.ts';
 
-export class ShareThriftUiWorld extends World {
+export const ShareThriftUiWorld = registerManagedSerenityWorld({
+	infrastructure,
+	createCast: () =>
+		new SerenityCast({
+			useNotepad: true,
+			abilities: [() => new RenderInDom(), ...listingAbilities.create().map((ability) => () => ability), ...reservationRequestAbilities.create().map((ability) => () => ability)],
+		}),
+});
 
-	init(): Promise<void> {
-		clearMockReservationRequests();
-		clearMockListings();
-		engage(new ShareThriftUiCast());
-		return Promise.resolve();
-	}
-
-	async cleanup(): Promise<void> {
-		// No cleanup needed per scenario.
-	}
-}
-
+export type ShareThriftUiWorld = InstanceType<typeof ShareThriftUiWorld>;
 export { ShareThriftUiWorld as ShareThriftWorld };
-
-setWorldConstructor(ShareThriftUiWorld);
+registerLifecycleHooks();

@@ -20,7 +20,7 @@
 		"start": "func start --typescript",
 		"predev": "pnpm run clean && pnpm run build",
 		"dev": "portless data-access.sharethrift.localhost node start-dev.mjs",
-		"azurite": "azurite-blob --silent --location ../../__blobstorage__ & azurite-queue --silent --location ../../__queuestorage__ & azurite-table --silent --location ../../__tablestorage__"
+		"azurite": "node start-azurite.mjs"
 	},
 	"dependencies": {
 		"@azure/functions": "catalog:",
@@ -35,7 +35,7 @@
 		"@cellix/service-messaging-mock": "workspace:*",
 		"@sthrift/persistence": "workspace:*",
 		"@sthrift/rest": "workspace:*",
-		"@cellix/service-blob": "workspace:*",
+		"@sthrift/service-blob-storage": "workspace:*",
 		"@cellix/service-payment-base": "workspace:*",
 		"@cellix/service-payment-mock": "workspace:*",
 		"@cellix/service-payment-cybersource": "workspace:*",

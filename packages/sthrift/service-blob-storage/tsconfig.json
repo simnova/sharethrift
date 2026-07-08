@@ -1,0 +1,6 @@
+{
+	"extends": "@cellix/typescript-config/node.json",
+	"compilerOptions": { "rootDir": "src", "outDir": "dist" },
+	"include": ["src/**/*.ts"],
+	"references": [{ "path": "../../cellix/service-blob-storage" }]
+}

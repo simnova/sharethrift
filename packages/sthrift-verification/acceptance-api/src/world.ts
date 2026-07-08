@@ -1,42 +1,27 @@
-import {
-	setWorldConstructor,
-	World,
-} from '@cucumber/cucumber';
-import { engage } from '@serenity-js/core';
-import {
-	clearMockListings,
-	clearMockReservationRequests,
-} from '@sthrift-verification/verification-shared/test-data';
-import './shared/support/hooks.ts';
-import { ShareThriftApiCast } from './shared/support/cast.ts';
-import * as infra from './shared/support/shared-infrastructure.ts';
+import { registerManagedSerenityWorld } from '@cellix/serenity-framework/cucumber';
+import type { ApiInfrastructureState } from '@cellix/serenity-framework/infrastructure/api';
+import { SerenityCast } from '@cellix/serenity-framework/serenity';
+import { registerLifecycleHooks } from './cucumber-lifecycle-hooks.ts';
+import { infrastructure } from './infrastructure.ts';
+import { GraphQLClient } from './shared/abilities/graphql-client.ts';
 
-export async function stopSharedServers(): Promise<void> {
-	await infra.stopAll();
-}
+export const ShareThriftApiWorld = registerManagedSerenityWorld({
+	infrastructure,
+	validateState: (state) => {
+		if (!graphqlUrl(state)) throw new Error('API acceptance infrastructure did not expose a GraphQL URL');
+	},
+	createCast: (state) =>
+		new SerenityCast({
+			useNotepad: true,
+			abilities: [() => GraphQLClient.at(graphqlUrl(state))],
+		}),
+});
 
-export class ShareThriftApiWorld extends World {
-	private apiUrl = '';
-
-	async init(): Promise<void> {
-		await infra.ensureApiServers();
-
-		const { apiUrl } = infra.getState();
-		if (apiUrl) {
-			this.apiUrl = apiUrl;
-		}
-
-		clearMockReservationRequests();
-		clearMockListings();
-
-		engage(new ShareThriftApiCast(this.apiUrl));
-	}
-
-	async cleanup(): Promise<void> {
-		// No cleanup needed per scenario.
-	}
-}
-
+export type ShareThriftApiWorld = InstanceType<typeof ShareThriftApiWorld>;
 export { ShareThriftApiWorld as ShareThriftWorld };
+registerLifecycleHooks();
 
-setWorldConstructor(ShareThriftApiWorld);
+function graphqlUrl(state: ApiInfrastructureState): string {
+	const server = state.servers['graphql'];
+	return server?.isRunning() ? server.getUrl() : '';
+}
