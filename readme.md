@@ -63,6 +63,7 @@ ShareThrift is a web‑based peer‑to‑peer sharing platform that enables peop
 - Draft, publish, pause, cancel, appeal, and reinstate listings
 - AI‑assisted draft creation using the integrated chatbot
 
+
 ### 📅 Reservation Lifecycle
 
 - Calendar‑based booking
