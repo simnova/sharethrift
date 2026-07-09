@@ -1,16 +1,10 @@
-import {
-	type Model,
-	Schema,
-	type SchemaDefinition,
-	type Types,
-} from 'mongoose';
 import { MongooseSeedwork } from '@cellix/mongoose-seedwork';
-import { type User, type UserModelType, userOptions } from './user.model.ts';
+import { type Model, Schema, type SchemaDefinition, type Types } from 'mongoose';
 import { Patterns } from '../../patterns.ts';
+import { type User, type UserModelType, userOptions } from './user.model.ts';
 
 // Location
-export interface PersonalUserAccountProfileLocation
-	extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfileLocation extends MongooseSeedwork.NestedPath {
 	address1: string;
 	address2: string | null;
 	city: string;
@@ -18,15 +12,14 @@ export interface PersonalUserAccountProfileLocation
 	country: string;
 	zipCode: string;
 }
-export const PersonalUserAccountProfileLocationType: SchemaDefinition<PersonalUserAccountProfileLocation> =
-	{
-		address1: { type: String, required: true },
-		address2: { type: String, required: false },
-		city: { type: String, required: true },
-		state: { type: String, required: true },
-		country: { type: String, required: true },
-		zipCode: { type: String, required: true },
-	};
+export const PersonalUserAccountProfileLocationType: SchemaDefinition<PersonalUserAccountProfileLocation> = {
+	address1: { type: String, required: true },
+	address2: { type: String, required: false },
+	city: { type: String, required: true },
+	state: { type: String, required: true },
+	country: { type: String, required: true },
+	zipCode: { type: String, required: true },
+};
 
 export const PaymentState = {
 	FAILED: 'FAILED',
@@ -40,16 +33,14 @@ export const SubscriptionStatus = {
 	FAILED: 'FAILED',
 	PENDING: 'PENDING',
 };
-export interface PersonalUserAccountProfileBillingSubscription
-	extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfileBillingSubscription extends MongooseSeedwork.NestedPath {
 	subscriptionId: string;
 	planCode: string;
 	status: string;
 	startDate: Date;
 }
 
-export interface PersonalUserAccountProfileBillingTransactions
-	extends MongooseSeedwork.SubdocumentBase {
+export interface PersonalUserAccountProfileBillingTransactions extends MongooseSeedwork.SubdocumentBase {
 	transactionId: string;
 	amount: number;
 	referenceId: string;
@@ -58,89 +49,79 @@ export interface PersonalUserAccountProfileBillingTransactions
 	errorMessage: string | null;
 }
 
-export interface PersonalUserAccountProfileBilling
-	extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfileBilling extends MongooseSeedwork.NestedPath {
 	cybersourceCustomerId: string;
 	subscription: PersonalUserAccountProfileBillingSubscription;
 	transactions: Types.DocumentArray<PersonalUserAccountProfileBillingTransactions>;
 }
 
-export const PersonalUserAccountProfileBillingSubscriptionType: SchemaDefinition<PersonalUserAccountProfileBillingSubscription> =
-	{
-		subscriptionId: { type: String, required: true },
-		planCode: { type: String, required: true },
-		status: {
-			type: String,
-			required: true,
-			enum: [
-				SubscriptionStatus.PENDING,
-				SubscriptionStatus.ACTIVE,
-				SubscriptionStatus.FAILED,
-			],
-		},
-		startDate: { type: Date, required: true, default: Date.now },
-	};
+export const PersonalUserAccountProfileBillingSubscriptionType: SchemaDefinition<PersonalUserAccountProfileBillingSubscription> = {
+	subscriptionId: { type: String, required: true },
+	planCode: { type: String, required: true },
+	status: {
+		type: String,
+		required: true,
+		enum: [
+			SubscriptionStatus.PENDING,
+			SubscriptionStatus.ACTIVE,
+			SubscriptionStatus.FAILED,
+			// Existing payment-provider records use lowercase status values.
+			'pending',
+			'active',
+			'failed',
+		],
+	},
+	startDate: { type: Date, required: true, default: Date.now },
+};
 
-export const PersonalUserAccountProfileBillingTransactionsSchema = new Schema<
-	PersonalUserAccountProfileBillingTransactions,
-	Model<PersonalUserAccountProfileBillingTransactions>,
-	PersonalUserAccountProfileBillingTransactions
->({
+export const PersonalUserAccountProfileBillingTransactionsSchema = new Schema<PersonalUserAccountProfileBillingTransactions, Model<PersonalUserAccountProfileBillingTransactions>, PersonalUserAccountProfileBillingTransactions>({
 	transactionId: { type: String, required: true },
 	amount: { type: Number, required: true },
 	referenceId: { type: String, required: true },
 	status: {
 		type: String,
 		required: true,
-		enum: [
-			PaymentState.FAILED,
-			PaymentState.PENDING,
-			PaymentState.REFUNDED,
-			PaymentState.SUCCEEDED,
-		],
+		enum: [PaymentState.FAILED, PaymentState.PENDING, PaymentState.REFUNDED, PaymentState.SUCCEEDED],
 	},
 	completedAt: { type: Date, required: false },
 	errorMessage: { type: String, required: false },
 });
-export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> =
-	{
-		cybersourceCustomerId: { type: String, required: false },
-		subscription: {
-			type: PersonalUserAccountProfileBillingSubscriptionType,
-			required: false,
-			...MongooseSeedwork.NestedPathOptions,
-		},
-		transactions: {
-			type: [PersonalUserAccountProfileBillingTransactionsSchema],
-			required: false,
-		},
-	};
+export const PersonalUserAccountProfileBillingType: SchemaDefinition<PersonalUserAccountProfileBilling> = {
+	cybersourceCustomerId: { type: String, required: false },
+	subscription: {
+		type: PersonalUserAccountProfileBillingSubscriptionType,
+		required: false,
+		...MongooseSeedwork.NestedPathOptions,
+	},
+	transactions: {
+		type: [PersonalUserAccountProfileBillingTransactionsSchema],
+		required: false,
+	},
+};
 
 // Profile
-export interface PersonalUserAccountProfile
-	extends MongooseSeedwork.NestedPath {
+export interface PersonalUserAccountProfile extends MongooseSeedwork.NestedPath {
 	firstName: string;
 	lastName: string;
 	aboutMe: string;
 	location: PersonalUserAccountProfileLocation;
 	billing: PersonalUserAccountProfileBilling;
 }
-export const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccountProfile> =
-	{
-		firstName: { type: String, required: true },
-		lastName: { type: String, required: true },
-		aboutMe: { type: String, required: false },
-		location: {
-			type: PersonalUserAccountProfileLocationType,
-			required: false,
-			...MongooseSeedwork.NestedPathOptions,
-		},
-		billing: {
-			type: PersonalUserAccountProfileBillingType,
-			required: false,
-			...MongooseSeedwork.NestedPathOptions,
-		},
-	};
+export const PersonalUserAccountProfileType: SchemaDefinition<PersonalUserAccountProfile> = {
+	firstName: { type: String, required: true },
+	lastName: { type: String, required: true },
+	aboutMe: { type: String, required: false },
+	location: {
+		type: PersonalUserAccountProfileLocationType,
+		required: false,
+		...MongooseSeedwork.NestedPathOptions,
+	},
+	billing: {
+		type: PersonalUserAccountProfileBillingType,
+		required: false,
+		...MongooseSeedwork.NestedPathOptions,
+	},
+};
 
 // Account
 export interface PersonalUserAccount extends MongooseSeedwork.NestedPath {
@@ -153,13 +134,7 @@ export const PersonalUserAccountType: SchemaDefinition<PersonalUserAccount> = {
 	accountType: {
 		type: String,
 		required: false,
-		enum: [
-			'non-verified-personal',
-			'verified-personal',
-			'verified-personal-plus',
-			'business',
-			'enterprise',
-		],
+		enum: ['non-verified-personal', 'verified-personal', 'verified-personal-plus', 'business', 'enterprise'],
 	},
 	email: {
 		type: String,
@@ -190,11 +165,7 @@ export interface PersonalUser extends User {
 	updatedAt: Date;
 }
 
-const PersonalUserSchema = new Schema<
-	PersonalUser,
-	Model<PersonalUser>,
-	PersonalUser
->(
+const PersonalUserSchema = new Schema<PersonalUser, Model<PersonalUser>, PersonalUser>(
 	{
 		isBlocked: { type: Boolean, required: false, default: false },
 		account: {

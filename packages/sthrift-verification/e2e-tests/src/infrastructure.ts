@@ -1,17 +1,22 @@
 import { E2EInfrastructure } from '@cellix/serenity-framework/infrastructure/e2e';
-import { testApiServer, testAzuriteServer, testMongoServer, testOAuth2Server, uiShareThriftPortalServer } from './servers/index.ts';
+import { testApiServer, testAzuriteServer, testMessagingServer, testMongoServer, testOAuth2Server, uiShareThriftPortalServer } from './servers/index.ts';
 import { cleanupTestEnvironment, initTestEnvironment } from './shared/environment/test-environment.ts';
 import { performOAuth2Login } from './shared/support/oauth2-login.ts';
 
 const runtime = E2EInfrastructure.create({
-	browserContextOptions: { ignoreHTTPSErrors: true },
+	browserContextOptions: {
+		ignoreHTTPSErrors: true,
+		screen: { width: 1440, height: 900 },
+		viewport: { width: 1440, height: 900 },
+	},
 	cleanupEnvironment: cleanupTestEnvironment,
 	setupEnvironment: initTestEnvironment,
 })
 	.addServer('mongo', testMongoServer)
 	.addServer('azurite', testAzuriteServer)
 	.addServer('auth', testOAuth2Server)
-	.addServer('api', testApiServer, { dependsOn: ['mongo', 'azurite', 'auth'] })
+	.addServer('messaging', testMessagingServer)
+	.addServer('api', testApiServer, { dependsOn: ['mongo', 'azurite', 'auth', 'messaging'] })
 	.addUiPortal('sharethrift', uiShareThriftPortalServer, {
 		dependsOn: ['api', 'auth'],
 	})

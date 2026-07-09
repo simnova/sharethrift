@@ -1,5 +1,10 @@
 version: v1.5.0
 ignore:
+  'SNYK-JS-OPENTELEMETRYPROPAGATORJAEGER-17901201':
+    - '* > @opentelemetry/propagator-jaeger':
+        reason: 'Transitive dependency bundled by @opentelemetry/sdk-node; the fix requires a major-version upgrade of the whole otel suite (deferred, same as SNYK-JS-OPENTELEMETRYCORE). Trace context is internal, not user-controlled.'
+        expires: '2026-10-08T00:00:00.000Z'
+        created: '2026-07-09T00:00:00.000Z'
   'SNYK-JS-SIRV-12558119':
     - '* > sirv@2.0.4':
         reason: 'Transitive dependency in Docusaurus; not exploitable in static site serving context (dev-only asset handler)'
