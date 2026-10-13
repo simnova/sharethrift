@@ -77,13 +77,7 @@ DAST analyzes the application in a running state by simulating real-world attack
 Runs later in CI/CD after deployment to a test/staging environment.
 
 **ShareThrift Implementation:**
-- **EdgeScan** - Primary DAST platform for comprehensive security testing
-  - Automated vulnerability scanning of live DEV environment
-  - Web application security testing (OWASP Top 10)
-  - GraphQL API security assessment
-  - Authentication and authorization testing
-  - Integration with Azure DevOps pipeline
-  - Continuous monitoring of production environment
+- No DAST tool is currently integrated into the CI/CD pipeline.
 
 ---
 
@@ -91,6 +85,4 @@ Runs later in CI/CD after deployment to a test/staging environment.
 
 **Quality Gates:**
 - **Build Stage:** SAST + SCA failures block deployment
-- **Security Stage:** DAST failures block production promotion
-- **Continuous Monitoring:** EdgeScan monitors production environment
 
