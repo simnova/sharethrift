@@ -11,7 +11,7 @@ informed:
 
 # Security Scanning Types in CI/CD
 
-This document outlines the four security scan types used in our CI/CD pipelines for both open-source and closed-source applications. Each scan type supports our overall application security posture and helps identify issues at various stages of the pipeline.
+This document outlines four security scan types for both open-source and closed-source applications. SAST, SCA, and secret scanning are integrated into our CI/CD pipelines; DAST is described for completeness but is not currently integrated. Each scan type supports our overall application security posture and helps identify issues at various stages of the pipeline.
 
 ## 1. SAST — Static Application Security Testing
 
