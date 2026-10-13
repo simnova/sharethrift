@@ -1,11 +1,6 @@
-import * as opentelemetry from '@opentelemetry/sdk-node';
-
-import {
-	ATTR_SERVICE_NAME,
-	ATTR_SERVICE_VERSION,
-} from '@opentelemetry/semantic-conventions';
-
 import type { SyncServiceBase } from '@cellix/api-services-spec';
+import * as opentelemetry from '@opentelemetry/sdk-node';
+import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic-conventions';
 import { OtelBuilder } from './otel-builder.js';
 
 // biome-ignore lint:noEmptyInterface
@@ -26,10 +21,7 @@ export class ServiceOtel implements SyncServiceBase<void> {
 	constructor(config: OtelConfig) {
 		const otelBuilder = new OtelBuilder();
 		const exporters = otelBuilder.buildExporters(config.exportToConsole);
-		const processors = otelBuilder.buildProcessors(
-			config.useSimpleProcessors,
-			exporters,
-		);
+		const processors = otelBuilder.buildProcessors(config.useSimpleProcessors, exporters);
 		const metricReader = otelBuilder.buildMetricReader(exporters);
 		const instrumentations = otelBuilder.buildInstrumentations();
 
@@ -38,8 +30,8 @@ export class ServiceOtel implements SyncServiceBase<void> {
 			metricReader: metricReader,
 			instrumentations: instrumentations,
 
-			resource: opentelemetry.resources.Resource.default().merge(
-				new opentelemetry.resources.Resource({
+			resource: opentelemetry.resources.defaultResource().merge(
+				opentelemetry.resources.resourceFromAttributes({
 					[ATTR_SERVICE_NAME]: 'Cellix Demo',
 					[ATTR_SERVICE_VERSION]: '1.0.0',
 				}),
@@ -50,7 +42,7 @@ export class ServiceOtel implements SyncServiceBase<void> {
 
 	public startUp() {
 		this.sdk.start();
-        console.log('ServiceOtel started');
+		console.log('ServiceOtel started');
 	}
 
 	public shutDown() {

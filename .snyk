@@ -41,26 +41,6 @@ ignore:
         reason: 'No fixed version available. Transitive via cybersource-rest-client; signatures verified are from the CyberSource API over TLS.'
         expires: '2027-01-13T00:00:00.000Z'
         created: '2026-10-13T00:00:00.000Z'
-  'SNYK-JS-OPENTELEMETRYCORE-17373280':
-    - '* > @opentelemetry/core':
-        reason: 'Transitive dependency of the OpenTelemetry SDK; fix requires a major-version upgrade of the whole otel suite (deferred). Telemetry payloads are internal, not user-controlled.'
-        expires: '2027-01-13T00:00:00.000Z'
-        created: '2026-10-13T00:00:00.000Z'
-  'SNYK-JS-OPENTELEMETRYEXPORTERPROMETHEUS-16758050':
-    - '* > @opentelemetry/exporter-prometheus@0.57.2':
-        reason: 'Transitive dependency of the OpenTelemetry SDK; fix requires a major-version upgrade of the whole otel suite (deferred). Telemetry payloads are internal, not user-controlled.'
-        expires: '2027-01-13T00:00:00.000Z'
-        created: '2026-10-13T00:00:00.000Z'
-  'SNYK-JS-OPENTELEMETRYPROPAGATORJAEGER-17901201':
-    - '* > @opentelemetry/propagator-jaeger@1.30.1':
-        reason: 'Transitive dependency of the OpenTelemetry SDK; fix requires a major-version upgrade of the whole otel suite (deferred). Telemetry payloads are internal, not user-controlled.'
-        expires: '2027-01-13T00:00:00.000Z'
-        created: '2026-10-13T00:00:00.000Z'
-  'SNYK-JS-POSTCSSSELECTORPARSER-20510276':
-    - '* > postcss-selector-parser@6.1.4':
-        reason: 'Fix only available in 7.x, which the Docusaurus CSS toolchain does not support. Transitive dependency of Docusaurus (apps/docs, build-time only); not shipped to the production runtime.'
-        expires: '2027-01-13T00:00:00.000Z'
-        created: '2026-10-13T00:00:00.000Z'
   'SNYK-JS-SIRV-12558119':
     - '* > sirv@2.0.4':
         reason: 'Fix only available in 3.x, which webpack-bundle-analyzer does not support. Transitive dependency of Docusaurus (apps/docs, build-time only); not shipped to the production runtime.'
