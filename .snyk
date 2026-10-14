@@ -36,6 +36,21 @@ ignore:
         reason: 'Fix requires mongoose 8.22+/8.24+, whose lean() return-type changes break persistence-layer read repositories; upgrade deferred to a dedicated effort. Query inputs are validated by the domain layer.'
         expires: '2027-01-13T00:00:00.000Z'
         created: '2026-10-13T00:00:00.000Z'
+  'SNYK-JS-OPENTELEMETRYCORE-17373280':
+    - '* > @opentelemetry/core':
+        reason: 'Transitive dependency of the OpenTelemetry SDK; fix requires a major-version upgrade of the whole otel suite (deferred). Telemetry payloads are internal, not user-controlled.'
+        expires: '2027-01-13T00:00:00.000Z'
+        created: '2026-10-13T00:00:00.000Z'
+  'SNYK-JS-OPENTELEMETRYEXPORTERPROMETHEUS-16758050':
+    - '* > @opentelemetry/exporter-prometheus@0.57.2':
+        reason: 'Requires upgrade of @opentelemetry/sdk-node to 0.217.0, which has type errors that break compilation. Created task to upgrade OTEL service to 2.x and resolve vulnerability that way.'
+        expires: '2027-01-13T00:00:00.000Z'
+        created: '2026-10-13T00:00:00.000Z'
+  'SNYK-JS-OPENTELEMETRYPROPAGATORJAEGER-17901201':
+    - '* > @opentelemetry/propagator-jaeger@1.30.1':
+        reason: 'Transitive dependency of the OpenTelemetry SDK; fix requires a major-version upgrade of the whole otel suite (deferred). Telemetry payloads are internal, not user-controlled.'
+        expires: '2027-01-13T00:00:00.000Z'
+        created: '2026-10-13T00:00:00.000Z'
   'SNYK-JS-NODEFORGE-19635204':
     - '* > node-forge@1.4.0':
         reason: 'No fixed version available. Transitive via cybersource-rest-client; signatures verified are from the CyberSource API over TLS.'

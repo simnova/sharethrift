@@ -4,7 +4,7 @@ import { DataloaderInstrumentation } from '@opentelemetry/instrumentation-datalo
 import { GraphQLInstrumentation } from '@opentelemetry/instrumentation-graphql';
 import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 import { MongooseInstrumentation } from '@opentelemetry/instrumentation-mongoose';
-import { BatchLogRecordProcessor, ConsoleLogRecordExporter, type LogRecordExporter, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
+import { BatchLogRecordProcessor, ConsoleLogRecordExporter, SimpleLogRecordProcessor } from '@opentelemetry/sdk-logs';
 import { ConsoleMetricExporter, PeriodicExportingMetricReader } from '@opentelemetry/sdk-metrics';
 import type { NodeSDKConfiguration } from '@opentelemetry/sdk-node';
 import { BatchSpanProcessor, ConsoleSpanExporter, SimpleSpanProcessor } from '@opentelemetry/sdk-trace-node';
@@ -16,16 +16,7 @@ const { AzureFunctionsInstrumentation } = azureOtel; //Need to use destructuring
 interface Exporters {
 	traceExporter: AzureMonitorTraceExporter | ConsoleSpanExporter;
 	metricExporter: AzureMonitorMetricExporter | ConsoleMetricExporter;
-	logExporter: LogRecordExporter;
-}
-
-/**
- * AzureMonitorLogExporter targets an older @opentelemetry/sdk-logs whose exporters have no
- * forceFlush, but newer log record processors call it unconditionally when flushing.
- * Its export() resolves once a batch is sent, so there is nothing extra to flush.
- */
-function withForceFlush(exporter: Omit<LogRecordExporter, 'forceFlush'>): LogRecordExporter {
-	return Object.assign(exporter, { forceFlush: () => Promise.resolve() });
+	logExporter: AzureMonitorLogExporter | ConsoleLogRecordExporter;
 }
 
 export class OtelBuilder {
@@ -52,22 +43,20 @@ export class OtelBuilder {
 						//biome-ignore lint:useLiteralKeys
 						process.env['APPLICATIONINSIGHTS_CONNECTION_STRING'],
 				}),
-				logExporter: withForceFlush(
-					new AzureMonitorLogExporter({
-						connectionString:
-							//biome-ignore lint:useLiteralKeys
-							process.env['APPLICATIONINSIGHTS_CONNECTION_STRING'],
-					}),
-				),
+				logExporter: new AzureMonitorLogExporter({
+					connectionString:
+						//biome-ignore lint:useLiteralKeys
+						process.env['APPLICATIONINSIGHTS_CONNECTION_STRING'],
+				}),
 			};
 		}
 	}
 
-	public buildProcessors(useSimpleProcessors: boolean = false, exporters: Exporters): Partial<NodeSDKConfiguration> {
+	public buildProcessors(useSimpleProcessors: boolean | undefined, exporters: Exporters): Partial<NodeSDKConfiguration> {
 		if (useSimpleProcessors) {
 			return {
 				spanProcessors: [new SimpleSpanProcessor(exporters.traceExporter)],
-				logRecordProcessors: [new SimpleLogRecordProcessor({ exporter: exporters.logExporter })],
+				logRecordProcessors: [new SimpleLogRecordProcessor(exporters.logExporter)],
 			};
 		} else {
 			const EXPORT_TIMEOUT_MILLIS = 15000;
@@ -80,8 +69,7 @@ export class OtelBuilder {
 					}),
 				],
 				logRecordProcessors: [
-					new BatchLogRecordProcessor({
-						exporter: exporters.logExporter,
+					new BatchLogRecordProcessor(exporters.logExporter, {
 						exportTimeoutMillis: EXPORT_TIMEOUT_MILLIS,
 						maxQueueSize: MAX_QUEUE_SIZE,
 					}),

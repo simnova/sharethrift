@@ -27,7 +27,6 @@ overrides:
   '@graphql-tools/utils@<12.0.1': ^12.0.1
   '@grpc/grpc-js': ^1.14.5
   '@humanfs/node': ^0.16.8
-  '@opentelemetry/core@1': ^2.8.0
   '@opentelemetry/core@2': ^2.8.0
   '@pnpm/npm-conf': '>=3.0.2'
   '@protobufjs/codegen': ^2.0.5
