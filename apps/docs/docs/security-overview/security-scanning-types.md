@@ -11,7 +11,7 @@ informed:
 
 # Security Scanning Types in CI/CD
 
-This document outlines the four security scan types used in our CI/CD pipelines for both open-source and closed-source applications. Each scan type supports our overall application security posture and helps identify issues at various stages of the pipeline.
+This document outlines four security scan types for both open-source and closed-source applications. SAST, SCA, and secret scanning are integrated into our CI/CD pipelines; DAST is described for completeness but is not currently integrated. Each scan type supports our overall application security posture and helps identify issues at various stages of the pipeline.
 
 ## 1. SAST — Static Application Security Testing
 
@@ -77,13 +77,7 @@ DAST analyzes the application in a running state by simulating real-world attack
 Runs later in CI/CD after deployment to a test/staging environment.
 
 **ShareThrift Implementation:**
-- **EdgeScan** - Primary DAST platform for comprehensive security testing
-  - Automated vulnerability scanning of live DEV environment
-  - Web application security testing (OWASP Top 10)
-  - GraphQL API security assessment
-  - Authentication and authorization testing
-  - Integration with Azure DevOps pipeline
-  - Continuous monitoring of production environment
+- No DAST tool is currently integrated into the CI/CD pipeline.
 
 ---
 
@@ -91,6 +85,4 @@ Runs later in CI/CD after deployment to a test/staging environment.
 
 **Quality Gates:**
 - **Build Stage:** SAST + SCA failures block deployment
-- **Security Stage:** DAST failures block production promotion
-- **Continuous Monitoring:** EdgeScan monitors production environment
 
